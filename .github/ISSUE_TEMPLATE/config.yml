@@ -1,0 +1,8 @@
+blank_issues_enabled: false
+contact_links:
+  - name: GitHub Discussions
+    url: https://github.com/your-org/your-repo/discussions
+    about: 请使用 GitHub Discussions 进行一般性讨论和问题咨询
+  - name: 项目文档
+    url: https://your-docs-url.com
+    about: 查看项目文档以了解更多信息
