@@ -1,21 +1,324 @@
+import React, { useState } from 'react'
 import { createRoot } from 'react-dom/client'
-import { Button } from '../index'
+import {
+  ThemeProvider,
+  Window,
+  Button,
+  Input,
+  Checkbox,
+  Radio,
+  Select,
+  Tabs,
+  WindowMenu,
+  Modal,
+  Text,
+  Textarea,
+  Splitter,
+  Collapse
+} from '../index'
+import '../styles/global.css'
 
-function App() {
+const Desktop = () => {
+  const [activeWindow, setActiveWindow] = useState<string>('controls')
+  const [showModal, setShowModal] = useState(false)
+
   return (
-    <div style={{ padding: 24, fontFamily: 'ui-sans-serif, system-ui' }}>
-      <h1>Chameleon 组件库 - 开发预览</h1>
-      <div style={{ display: 'flex', gap: 8 }}>
-        <Button onClick={() => alert('Primary')} variant='primary'>
-          Primary
-        </Button>
-        <Button onClick={() => alert('Secondary')} variant='secondary'>
-          Secondary
-        </Button>
-        <Button onClick={() => alert('Text')} variant='text'>
-          Text
-        </Button>
+    <div
+      style={{
+        width: '100vw',
+        height: '100vh',
+        backgroundColor: 'var(--cm-color-background)',
+        position: 'relative',
+        overflow: 'hidden',
+        display: 'flex',
+        flexDirection: 'column'
+      }}
+    >
+      {/* Desktop Area */}
+      <div style={{ flex: 1, position: 'relative', padding: '20px' }}>
+        {/* Controls Window */}
+        <Window
+          title='Component Gallery'
+          style={{
+            width: 400,
+            position: 'absolute',
+            top: 20,
+            left: 20,
+            zIndex: activeWindow === 'controls' ? 10 : 1
+          }}
+          isActive={activeWindow === 'controls'}
+          onMouseDown={() => setActiveWindow('controls')}
+          onClose={() => console.log('Close')}
+        >
+          <WindowMenu
+            items={[
+              { id: 'file', label: 'File' },
+              { id: 'edit', label: 'Edit' },
+              { id: 'view', label: 'View' },
+              { id: 'help', label: 'Help' }
+            ]}
+            className='mb-2'
+          />
+
+          <div
+            style={{
+              display: 'flex',
+              flexDirection: 'column',
+              gap: '12px',
+              marginTop: '12px'
+            }}
+          >
+            <div style={{ display: 'flex', gap: '8px', alignItems: 'center' }}>
+              <Button variant='primary'>Primary</Button>
+              <Button>Secondary</Button>
+              <Button disabled>Disabled</Button>
+            </div>
+
+            <div
+              style={{
+                border: '1px solid var(--cm-color-border-dark)',
+                padding: '8px'
+              }}
+            >
+              <Text variant='h4' className='mb-2'>
+                Form Controls
+              </Text>
+              <div
+                style={{ display: 'flex', flexDirection: 'column', gap: '8px' }}
+              >
+                <Input placeholder='Enter username...' />
+                <div style={{ display: 'flex', gap: '16px' }}>
+                  <Checkbox label='Remember me' defaultChecked />
+                  <Checkbox label='Disabled' disabled />
+                </div>
+                <div style={{ display: 'flex', gap: '16px' }}>
+                  <Radio name='opt' label='Option A' defaultChecked />
+                  <Radio name='opt' label='Option B' />
+                </div>
+                <Select
+                  options={[
+                    { value: 'win98', label: 'Windows 98' },
+                    { value: 'xp', label: 'Windows XP' },
+                    { value: '7', label: 'Windows 7' }
+                  ]}
+                  value='win98'
+                />
+              </div>
+            </div>
+
+            <Button onClick={() => setShowModal(true)}>Open Modal</Button>
+          </div>
+        </Window>
+
+        {/* Layout Window */}
+        <Window
+          title='Layout & Typography'
+          style={{
+            width: 450,
+            position: 'absolute',
+            top: 50,
+            left: 450,
+            zIndex: activeWindow === 'layout' ? 10 : 1
+          }}
+          isActive={activeWindow === 'layout'}
+          onMouseDown={() => setActiveWindow('layout')}
+        >
+          <Tabs
+            items={[
+              {
+                id: 'tab1',
+                label: 'General',
+                content: (
+                  <div style={{ height: 150 }}>
+                    <Text variant='h3'>Typography</Text>
+                    <Text>The quick brown fox jumps over the lazy dog.</Text>
+                    <Text bold>Bold text</Text>
+                    <Text italic>Italic text</Text>
+                    <div style={{ marginTop: 10 }}>
+                      <Textarea
+                        placeholder='Multi-line text area...'
+                        style={{ width: '100%' }}
+                      />
+                    </div>
+                  </div>
+                )
+              },
+              {
+                id: 'tab2',
+                label: 'Advanced',
+                content: (
+                  <div style={{ height: 150, display: 'flex' }}>
+                    <div style={{ flex: 1, padding: 4 }}>Left Pane</div>
+                    <Splitter />
+                    <div style={{ flex: 1, padding: 4 }}>Right Pane</div>
+                  </div>
+                )
+              },
+              {
+                id: 'tab3',
+                label: 'Collapse',
+                content: (
+                  <Collapse
+                    items={[
+                      { id: '1', title: 'Section 1', content: 'Content 1' },
+                      { id: '2', title: 'Section 2', content: 'Content 2' }
+                    ]}
+                    accordion
+                  />
+                )
+              }
+            ]}
+          />
+        </Window>
       </div>
+
+      {/* Taskbar */}
+      <div
+        style={{
+          height: '28px',
+          background: 'var(--cm-color-surface)',
+          borderTop: '1px solid var(--cm-color-border-light)',
+          display: 'flex',
+          alignItems: 'center',
+          padding: '2px',
+          gap: '4px',
+          zIndex: 100
+        }}
+      >
+        <Button
+          style={{
+            fontWeight: 'bold',
+            height: '100%',
+            display: 'flex',
+            alignItems: 'center',
+            gap: '4px'
+          }}
+        >
+          <span
+            style={{
+              display: 'inline-block',
+              width: 16,
+              height: 16,
+              background:
+                'linear-gradient(135deg, #e60012, #f39800, #fff100, #009944, #0068b7, #1d2088, #920783)',
+              borderRadius: 2
+            }}
+          />
+          Start
+        </Button>
+        <div
+          style={{
+            width: 2,
+            height: '80%',
+            borderLeft: '1px solid gray',
+            borderRight: '1px solid white',
+            margin: '0 4px'
+          }}
+        />
+
+        <div
+          style={{
+            flex: 1,
+            display: 'flex',
+            gap: '2px'
+          }}
+        >
+          <Button
+            className={activeWindow === 'controls' ? 'active' : ''}
+            onClick={() => setActiveWindow('controls')}
+            style={{
+              background:
+                activeWindow === 'controls'
+                  ? 'var(--cm-color-surface-active)'
+                  : undefined,
+              boxShadow:
+                activeWindow === 'controls'
+                  ? 'var(--cm-shadow-inset-bevel)'
+                  : undefined,
+              textAlign: 'left',
+              justifyContent: 'flex-start',
+              minWidth: 150
+            }}
+          >
+            Component Gallery
+          </Button>
+          <Button
+            className={activeWindow === 'layout' ? 'active' : ''}
+            onClick={() => setActiveWindow('layout')}
+            style={{
+              background:
+                activeWindow === 'layout'
+                  ? 'var(--cm-color-surface-active)'
+                  : undefined,
+              boxShadow:
+                activeWindow === 'layout'
+                  ? 'var(--cm-shadow-inset-bevel)'
+                  : undefined,
+              textAlign: 'left',
+              justifyContent: 'flex-start',
+              minWidth: 150
+            }}
+          >
+            Layout & Typography
+          </Button>
+        </div>
+
+        <div
+          style={{
+            border: '1px solid gray',
+            borderBottomColor: 'white',
+            borderRightColor: 'white',
+            padding: '0 8px',
+            height: '100%',
+            display: 'flex',
+            alignItems: 'center',
+            fontSize: 11
+          }}
+        >
+          09:41 PM
+        </div>
+      </div>
+
+      <Modal
+        title='System Error'
+        isOpen={showModal}
+        onClose={() => setShowModal(false)}
+        style={{ width: 300 }}
+      >
+        <div
+          style={{
+            display: 'flex',
+            gap: 16,
+            alignItems: 'center',
+            marginBottom: 24
+          }}
+        >
+          <div
+            style={{
+              width: 32,
+              height: 32,
+              background: 'red',
+              borderRadius: '50%',
+              color: 'white',
+              display: 'flex',
+              alignItems: 'center',
+              justifyContent: 'center',
+              fontWeight: 'bold',
+              fontSize: 20,
+              boxShadow: 'inset -2px -2px 5px rgba(0,0,0,0.5)'
+            }}
+          >
+            X
+          </div>
+          <Text>
+            A fatal exception 0E has occurred at 0028:C0011E36. The current
+            application will be terminated.
+          </Text>
+        </div>
+        <div style={{ display: 'flex', justifyContent: 'center' }}>
+          <Button onClick={() => setShowModal(false)}>Close</Button>
+        </div>
+      </Modal>
     </div>
   )
 }
@@ -23,5 +326,11 @@ function App() {
 const container = document.getElementById('root')
 if (container) {
   const root = createRoot(container)
-  root.render(<App />)
+  root.render(
+    <React.StrictMode>
+      <ThemeProvider>
+        <Desktop />
+      </ThemeProvider>
+    </React.StrictMode>
+  )
 }

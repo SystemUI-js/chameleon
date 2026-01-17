@@ -1,0 +1,65 @@
+.cm-checkbox {
+  display: inline-flex;
+  align-items: center;
+  cursor: default;
+  user-select: none;
+  font-family: var(--cm-typography-font-family);
+  font-size: var(--cm-typography-font-size);
+  color: var(--cm-color-text);
+  margin-right: var(--cm-spacing-md);
+}
+
+.cm-checkbox__input {
+  position: absolute;
+  opacity: 0;
+  width: 0;
+  height: 0;
+}
+
+.cm-checkbox__box {
+  width: 13px;
+  height: 13px;
+  background-color: var(--cm-color-text-invert);
+  box-shadow: var(--cm-shadow-inset-bevel);
+  margin-right: 6px;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  position: relative;
+}
+
+.cm-checkbox__check {
+  display: none;
+  width: 7px;
+  height: 7px;
+}
+
+.cm-checkbox__input:checked + .cm-checkbox__box .cm-checkbox__check {
+  display: block;
+}
+
+/* Focus state */
+.cm-checkbox__input:focus-visible + .cm-checkbox__box {
+  outline: 1px dotted var(--cm-color-text);
+  outline-offset: 2px;
+}
+
+/* Disabled state */
+.cm-checkbox--disabled {
+  color: var(--cm-color-text-muted);
+  text-shadow: 1px 1px 0 var(--cm-color-text-invert);
+}
+
+.cm-checkbox--disabled .cm-checkbox__box {
+  background-color: var(--cm-color-surface);
+  box-shadow: none; /* Win98 disabled checkbox is flat usually, or minimal bevel */
+  border: 1px solid var(--cm-color-border-light); /* Approximate look */
+}
+
+.cm-checkbox--disabled
+  .cm-checkbox__input:checked
+  + .cm-checkbox__box
+  .cm-checkbox__check {
+  fill: var(--cm-color-text-muted);
+  filter: drop-shadow(1px 1px 0 var(--cm-color-text-invert));
+}

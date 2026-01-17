@@ -1,0 +1,24 @@
+.cm-splitter {
+  background-color: var(--cm-color-surface);
+  position: relative;
+  touch-action: none;
+  z-index: 10;
+}
+
+.cm-splitter--vertical {
+  width: 4px;
+  cursor: col-resize;
+  border-left: 1px solid var(--cm-color-border-light);
+  border-right: 1px solid var(--cm-color-border-dark);
+}
+
+.cm-splitter--horizontal {
+  height: 4px;
+  cursor: row-resize;
+  border-top: 1px solid var(--cm-color-border-light);
+  border-bottom: 1px solid var(--cm-color-border-dark);
+}
+
+.cm-splitter:active {
+  background-color: var(--cm-color-border-dark);
+}

@@ -1,0 +1,38 @@
+.cm-transfer {
+  display: flex;
+  align-items: center;
+  gap: 8px;
+}
+
+.cm-transfer__list {
+  width: 150px;
+  height: 200px;
+  border: 1px solid var(--cm-color-border-dark);
+  box-shadow: var(--cm-shadow-inset-bevel);
+  background-color: var(--cm-color-text-invert);
+  overflow-y: auto;
+  padding: 2px;
+}
+
+.cm-transfer__item {
+  padding: 2px 4px;
+  cursor: default;
+  user-select: none;
+}
+
+.cm-transfer__item:hover {
+  background-color: var(--cm-color-selection-bg);
+  color: var(--cm-color-selection-text);
+}
+
+.cm-transfer__item--selected {
+  background-color: var(--cm-color-selection-bg);
+  color: var(--cm-color-selection-text);
+  border: 1px dotted var(--cm-color-text-invert);
+}
+
+.cm-transfer__actions {
+  display: flex;
+  flex-direction: column;
+  gap: 4px;
+}

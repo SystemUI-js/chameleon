@@ -13,7 +13,8 @@ export default defineConfig({
     })
   ],
   server: {
-    port: 5673
+    port: 5673,
+    host: '0.0.0.0'
   },
   build: {
     lib: {

@@ -1,0 +1,36 @@
+.cm-shortcut {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  width: 72px;
+  cursor: pointer;
+}
+
+.cm-shortcut__icon {
+  width: 32px;
+  height: 32px;
+  background-color: transparent;
+  margin-bottom: 4px;
+}
+
+.cm-shortcut__label {
+  font-family: var(--cm-typography-font-family);
+  font-size: var(--cm-typography-font-size);
+  color: var(--cm-color-text-invert); /* Usually white on desktop */
+  text-align: center;
+  padding: 0 2px;
+  border: 1px solid transparent;
+}
+
+/* Hover state */
+.cm-shortcut:hover .cm-shortcut__label {
+  background-color: rgba(0, 0, 128, 0.5); /* Semi-transparent blue */
+}
+
+/* Active/Selected state */
+.cm-shortcut:active .cm-shortcut__label,
+.cm-shortcut--selected .cm-shortcut__label {
+  background-color: var(--cm-color-selection-bg);
+  color: var(--cm-color-selection-text);
+  border: 1px dotted var(--cm-color-selection-text);
+}

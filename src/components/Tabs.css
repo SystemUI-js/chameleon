@@ -1,0 +1,51 @@
+.cm-tabs {
+  display: flex;
+  flex-direction: column;
+  font-family: var(--cm-typography-font-family);
+  font-size: var(--cm-typography-font-size);
+}
+
+.cm-tabs__list {
+  display: flex;
+  padding: 0 4px;
+  position: relative;
+  top: 1px; /* Overlap with panel border */
+  z-index: 1;
+}
+
+.cm-tabs__tab {
+  padding: 3px 6px;
+  margin-right: -1px; /* Tabs touch */
+  background-color: var(--cm-color-surface);
+  border-top: 1px solid var(--cm-color-border-lightest);
+  border-left: 1px solid var(--cm-color-border-lightest);
+  border-right: 1px solid var(--cm-color-border-dark);
+  border-bottom: 1px solid var(--cm-color-border-dark);
+  border-top-left-radius: 3px;
+  border-top-right-radius: 3px;
+  cursor: pointer;
+  user-select: none;
+  position: relative;
+  margin-bottom: -1px; /* Push down to cover panel top border */
+}
+
+.cm-tabs__tab--active {
+  z-index: 2;
+  border-bottom: 1px solid var(--cm-color-surface); /* Connect to panel */
+  margin-top: -2px; /* Pop up */
+  padding-top: 5px; /* Compensate margin */
+  padding-bottom: 4px;
+}
+
+.cm-tabs__panel {
+  border: 1px solid var(--cm-color-border-lightest);
+  border-right-color: var(--cm-color-border-darkest);
+  border-bottom-color: var(--cm-color-border-darkest);
+  box-shadow:
+    1px 1px 0 var(--cm-color-border-dark),
+    inset 1px 1px 0 var(--cm-color-border-light);
+  background-color: var(--cm-color-surface);
+  padding: var(--cm-spacing-md);
+  position: relative;
+  z-index: 0;
+}

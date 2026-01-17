@@ -1,0 +1,23 @@
+.cm-window-menu {
+  display: flex;
+  background-color: var(--cm-color-surface);
+  padding: 1px 0;
+  border-bottom: 1px solid var(--cm-color-border-light); /* Slight separator */
+  user-select: none;
+}
+
+.cm-window-menu__item {
+  padding: 2px 6px;
+  cursor: default;
+  position: relative;
+}
+
+.cm-window-menu__item:hover,
+.cm-window-menu__item--active {
+  background-color: var(--cm-color-selection-bg);
+  color: var(--cm-color-selection-text);
+}
+
+.cm-window-menu__item--disabled {
+  color: var(--cm-color-text-muted);
+}

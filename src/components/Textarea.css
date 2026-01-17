@@ -1,0 +1,27 @@
+.cm-textarea {
+  /* Layout */
+  display: inline-block;
+  box-sizing: border-box;
+  padding: 3px 4px;
+  min-height: 60px;
+
+  /* Typography */
+  font-family: var(--cm-typography-font-family);
+  font-size: var(--cm-typography-font-size);
+  line-height: var(--cm-typography-line-height);
+  color: var(--cm-color-text);
+
+  /* Visuals */
+  background: var(--cm-color-text-invert);
+  border: none;
+  box-shadow: var(--cm-shadow-inset-bevel);
+  outline: none;
+  resize: both;
+
+  -webkit-font-smoothing: none;
+}
+
+.cm-textarea:disabled {
+  background: var(--cm-color-surface);
+  color: var(--cm-color-text-muted);
+}
