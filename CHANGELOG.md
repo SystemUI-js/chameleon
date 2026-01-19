@@ -2,6 +2,9 @@
 
 - 对齐 ESLint 配置，引入 @system-ui-js/development-base React 规范
 - 更新 Prettier 忽略规则
+- Update Win98/WinXP theme styles
+- Add menu dropdown specification docs
+- Update AGENTS guidance
 
 ### 0.1.0 (2025-11-16)
 
