@@ -1,0 +1,10 @@
+.cm-theme-root[data-cm-theme='winxp'] {
+  .cm-radio__circle {
+    border: var(--cm-components-button-border, none);
+    box-shadow: none;
+  }
+
+  .cm-radio:hover .cm-radio__circle {
+    background-image: var(--cm-gradient-button-face-hover, none);
+  }
+}

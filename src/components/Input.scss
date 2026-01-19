@@ -1,0 +1,22 @@
+.cm-input {
+  display: inline-block;
+  box-sizing: border-box;
+  padding: 4px;
+  height: auto;
+  font-family: inherit;
+  font-size: 100%;
+  color: inherit;
+  background-color: white;
+  border: 1px solid #767676;
+  border-radius: 2px;
+  outline: none;
+
+  &:disabled {
+    background-color: #eee;
+    color: graytext;
+  }
+
+  &::placeholder {
+    color: #999;
+  }
+}

@@ -1,0 +1,45 @@
+.cm-checkbox {
+  display: inline-flex;
+  align-items: center;
+  cursor: default;
+  user-select: none;
+  font-family: sans-serif;
+  font-size: 14px;
+  margin-right: 8px;
+}
+
+.cm-checkbox__input {
+  position: absolute;
+  opacity: 0;
+  width: 0;
+  height: 0;
+}
+
+.cm-checkbox__box {
+  width: 13px;
+  height: 13px;
+  background-color: white;
+  border: 1px solid #767676;
+  border-radius: 2px;
+  margin-right: 6px;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  position: relative;
+}
+
+.cm-checkbox__check {
+  display: none;
+  width: 10px;
+  height: 10px;
+  color: black;
+}
+
+.cm-checkbox__input:checked + .cm-checkbox__box .cm-checkbox__check {
+  display: block;
+}
+
+.cm-checkbox__input:focus-visible + .cm-checkbox__box {
+  outline: 1px dotted black;
+  outline-offset: 2px;
+}

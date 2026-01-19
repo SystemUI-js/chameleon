@@ -1,0 +1,55 @@
+.cm-theme-root[data-cm-theme='win98'] {
+  .cm-btn {
+    /* Layout Overrides */
+    padding: var(--cm-spacing-sm) var(--cm-spacing-lg);
+    min-width: 75px;
+    min-height: 23px;
+    border-radius: var(--cm-radius-md);
+
+    /* Typography */
+    font-family: var(--cm-typography-font-family);
+    font-size: var(--cm-typography-font-size);
+    line-height: var(--cm-typography-line-height);
+    color: var(--cm-button-text, var(--cm-color-text));
+
+    /* Visuals */
+    background: var(
+      --cm-gradient-button-face,
+      var(--cm-button-face, var(--cm-color-surface))
+    );
+    border: var(--cm-components-button-border, none);
+    box-shadow: var(--cm-shadow-outset-bevel);
+    outline: none;
+    -webkit-font-smoothing: none;
+
+    &:hover:not(:disabled) {
+      background: var(
+        --cm-gradient-button-face-hover,
+        var(--cm-button-face-hover, var(--cm-color-surface))
+      );
+    }
+
+    &:active:not(:disabled) {
+      background: var(
+        --cm-gradient-button-face-active,
+        var(--cm-button-face-active, var(--cm-color-surface))
+      );
+      box-shadow: var(--cm-shadow-inset-bevel);
+      /* Shift text on active */
+      padding: calc(var(--cm-spacing-sm) + 1px) calc(var(--cm-spacing-lg) - 1px)
+        calc(var(--cm-spacing-sm) - 1px) calc(var(--cm-spacing-lg) + 1px);
+    }
+
+    &:focus-visible {
+      outline: 1px dotted var(--cm-button-focus-ring, var(--cm-color-text));
+      outline-offset: -4px;
+    }
+
+    &:disabled {
+      color: var(--cm-color-text-muted);
+      text-shadow: 1px 1px 0 var(--cm-color-text-invert);
+      box-shadow: var(--cm-shadow-outset-bevel);
+      opacity: 1; /* Reset native opacity */
+    }
+  }
+}

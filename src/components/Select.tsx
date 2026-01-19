@@ -1,5 +1,5 @@
-import React, { useState, useRef, useEffect, forwardRef } from 'react'
-import './Select.css'
+import { useState, useRef, useEffect, forwardRef } from 'react'
+import './Select.scss'
 
 export interface SelectOption {
   value: string | number

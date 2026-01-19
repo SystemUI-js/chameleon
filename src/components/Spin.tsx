@@ -1,5 +1,5 @@
 import React from 'react'
-import './Spin.css'
+import './Spin.scss'
 
 export interface SpinProps {
   spinning?: boolean

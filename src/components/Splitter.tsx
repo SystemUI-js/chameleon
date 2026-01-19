@@ -1,5 +1,5 @@
 import React, { HTMLAttributes, useState, useEffect, useRef } from 'react'
-import './Splitter.css'
+import './Splitter.scss'
 
 export interface SplitterProps extends HTMLAttributes<HTMLDivElement> {
   type?: 'vertical' | 'horizontal'

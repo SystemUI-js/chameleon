@@ -1,0 +1,16 @@
+.cm-theme-root[data-cm-theme='winxp'] {
+  .cm-select__trigger {
+    border: 1px solid #7f9db9;
+    box-shadow: none;
+    border-radius: 0;
+  }
+
+  .cm-select__arrow-btn {
+    background-image: var(--cm-gradient-button-face, none);
+    border: var(--cm-components-button-border, none);
+
+    &:hover {
+      background-image: var(--cm-gradient-button-face-hover, none);
+    }
+  }
+}

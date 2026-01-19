@@ -1,0 +1,19 @@
+.cm-textarea {
+  display: inline-block;
+  box-sizing: border-box;
+  padding: 4px;
+  min-height: 60px;
+  font-family: inherit;
+  font-size: 100%;
+  color: inherit;
+  background-color: white;
+  border: 1px solid #767676;
+  border-radius: 2px;
+  resize: both;
+  outline: none;
+
+  &:disabled {
+    background-color: #eee;
+    color: graytext;
+  }
+}

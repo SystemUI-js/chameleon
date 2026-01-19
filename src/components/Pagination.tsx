@@ -1,6 +1,6 @@
 import React from 'react'
 import Button from './Button'
-import './Pagination.css'
+import './Pagination.scss'
 
 export interface PaginationProps {
   current: number

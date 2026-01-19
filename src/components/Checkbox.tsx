@@ -1,5 +1,5 @@
-import React, { InputHTMLAttributes, forwardRef } from 'react'
-import './Checkbox.css'
+import { InputHTMLAttributes, forwardRef } from 'react'
+import './Checkbox.scss'
 
 export interface CheckboxProps extends InputHTMLAttributes<HTMLInputElement> {
   label?: string

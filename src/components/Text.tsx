@@ -1,5 +1,5 @@
 import React, { HTMLAttributes, ElementType } from 'react'
-import './Text.css'
+import './Text.scss'
 
 export interface TextProps extends HTMLAttributes<HTMLElement> {
   as?: ElementType

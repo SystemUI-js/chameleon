@@ -1,0 +1,50 @@
+.cm-theme-root[data-cm-theme='win98'] {
+  .cm-start-button {
+    background-color: var(--cm-components-start-button-bg, #c0c0c0);
+    border: 1px solid var(--cm-components-start-button-border-dark, #808080);
+    border-right-color: var(--cm-components-start-button-border-light, #ffffff);
+    border-bottom-color: var(
+      --cm-components-start-button-border-light,
+      #ffffff
+    );
+    box-shadow: var(--cm-shadow-outset-bevel);
+    color: var(--cm-components-start-button-text, #000000);
+    font-family: var(--cm-typography-font-family);
+    font-size: var(--cm-typography-font-size);
+    border-radius: 0;
+
+    &:hover {
+      background-color: var(--cm-components-start-button-bg-hover, #dfdfdf);
+    }
+
+    &:active {
+      background-color: var(--cm-components-start-button-bg-active, #808080);
+      border: 1px solid var(--cm-components-start-button-border-light, #ffffff);
+      border-right-color: var(
+        --cm-components-start-button-border-dark,
+        #808080
+      );
+      border-bottom-color: var(
+        --cm-components-start-button-border-dark,
+        #808080
+      );
+      box-shadow: var(--cm-shadow-inset-bevel);
+      padding-left: 9px;
+      padding-top: 3px;
+    }
+  }
+
+  .cm-start-button__icon {
+    width: 16px;
+    height: 16px;
+    background: linear-gradient(
+      135deg,
+      #ff6b6b 0%,
+      #fbbf24 33%,
+      #4ade80 66%,
+      #3b82f6 100%
+    );
+    border-radius: 2px;
+    border: 1px solid rgba(0, 0, 0, 0.2);
+  }
+}

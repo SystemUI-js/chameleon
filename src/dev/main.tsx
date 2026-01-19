@@ -1,7 +1,9 @@
 import React, { useState } from 'react'
+import { winxp } from '../theme/winxp'
 import { createRoot } from 'react-dom/client'
 import {
   ThemeProvider,
+  ThemeId,
   Window,
   Button,
   Input,
@@ -10,17 +12,23 @@ import {
   Select,
   Tabs,
   WindowMenu,
+  useTheme,
   Modal,
   Text,
   Textarea,
   Splitter,
-  Collapse
+  Collapse,
+  Taskbar,
+  StartButton
 } from '../index'
 import '../styles/global.css'
+import '../theme/win98/index.scss'
+import '../theme/winxp/index.scss'
 
 const Desktop = () => {
   const [activeWindow, setActiveWindow] = useState<string>('controls')
   const [showModal, setShowModal] = useState(false)
+  const { theme, setTheme } = useTheme()
 
   return (
     <div
@@ -97,11 +105,14 @@ const Desktop = () => {
                 </div>
                 <Select
                   options={[
+                    { value: 'default', label: 'Default' },
                     { value: 'win98', label: 'Windows 98' },
-                    { value: 'xp', label: 'Windows XP' },
-                    { value: '7', label: 'Windows 7' }
+                    { value: 'winxp', label: 'Windows XP' },
+                    { value: 'macos', label: 'macOS (Placeholder)' },
+                    { value: 'material', label: 'Material (Placeholder)' }
                   ]}
-                  value='win98'
+                  value={theme.id}
+                  onChange={(val) => setTheme(val as ThemeId)}
                 />
               </div>
             </div>
@@ -173,111 +184,46 @@ const Desktop = () => {
       </div>
 
       {/* Taskbar */}
-      <div
-        style={{
-          height: '28px',
-          background: 'var(--cm-color-surface)',
-          borderTop: '1px solid var(--cm-color-border-light)',
-          display: 'flex',
-          alignItems: 'center',
-          padding: '2px',
-          gap: '4px',
-          zIndex: 100
-        }}
-      >
+      <Taskbar startButton={<StartButton />}>
         <Button
+          className={activeWindow === 'controls' ? 'active' : ''}
+          onClick={() => setActiveWindow('controls')}
           style={{
-            fontWeight: 'bold',
-            height: '100%',
-            display: 'flex',
-            alignItems: 'center',
-            gap: '4px'
+            background:
+              activeWindow === 'controls'
+                ? 'var(--cm-color-surface-active)'
+                : undefined,
+            boxShadow:
+              activeWindow === 'controls'
+                ? 'var(--cm-shadow-inset-bevel)'
+                : undefined,
+            textAlign: 'left',
+            justifyContent: 'flex-start',
+            minWidth: 150
           }}
         >
-          <span
-            style={{
-              display: 'inline-block',
-              width: 16,
-              height: 16,
-              background:
-                'linear-gradient(135deg, #e60012, #f39800, #fff100, #009944, #0068b7, #1d2088, #920783)',
-              borderRadius: 2
-            }}
-          />
-          Start
+          Component Gallery
         </Button>
-        <div
+        <Button
+          className={activeWindow === 'layout' ? 'active' : ''}
+          onClick={() => setActiveWindow('layout')}
           style={{
-            width: 2,
-            height: '80%',
-            borderLeft: '1px solid gray',
-            borderRight: '1px solid white',
-            margin: '0 4px'
-          }}
-        />
-
-        <div
-          style={{
-            flex: 1,
-            display: 'flex',
-            gap: '2px'
-          }}
-        >
-          <Button
-            className={activeWindow === 'controls' ? 'active' : ''}
-            onClick={() => setActiveWindow('controls')}
-            style={{
-              background:
-                activeWindow === 'controls'
-                  ? 'var(--cm-color-surface-active)'
-                  : undefined,
-              boxShadow:
-                activeWindow === 'controls'
-                  ? 'var(--cm-shadow-inset-bevel)'
-                  : undefined,
-              textAlign: 'left',
-              justifyContent: 'flex-start',
-              minWidth: 150
-            }}
-          >
-            Component Gallery
-          </Button>
-          <Button
-            className={activeWindow === 'layout' ? 'active' : ''}
-            onClick={() => setActiveWindow('layout')}
-            style={{
-              background:
-                activeWindow === 'layout'
-                  ? 'var(--cm-color-surface-active)'
-                  : undefined,
-              boxShadow:
-                activeWindow === 'layout'
-                  ? 'var(--cm-shadow-inset-bevel)'
-                  : undefined,
-              textAlign: 'left',
-              justifyContent: 'flex-start',
-              minWidth: 150
-            }}
-          >
-            Layout & Typography
-          </Button>
-        </div>
-
-        <div
-          style={{
-            border: '1px solid gray',
-            borderBottomColor: 'white',
-            borderRightColor: 'white',
-            padding: '0 8px',
-            height: '100%',
-            display: 'flex',
-            alignItems: 'center',
-            fontSize: 11
+            background:
+              activeWindow === 'layout'
+                ? 'var(--cm-color-surface-active)'
+                : undefined,
+            boxShadow:
+              activeWindow === 'layout'
+                ? 'var(--cm-shadow-inset-bevel)'
+                : undefined,
+            textAlign: 'left',
+            justifyContent: 'flex-start',
+            minWidth: 150
           }}
         >
-          09:41 PM
-        </div>
-      </div>
+          Layout & Typography
+        </Button>
+      </Taskbar>
 
       <Modal
         title='System Error'
@@ -328,7 +274,7 @@ if (container) {
   const root = createRoot(container)
   root.render(
     <React.StrictMode>
-      <ThemeProvider>
+      <ThemeProvider defaultTheme={winxp}>
         <Desktop />
       </ThemeProvider>
     </React.StrictMode>

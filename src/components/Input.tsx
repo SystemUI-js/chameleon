@@ -1,5 +1,5 @@
-import React, { InputHTMLAttributes, forwardRef } from 'react'
-import './Input.css'
+import { InputHTMLAttributes, forwardRef } from 'react'
+import './Input.scss'
 
 export interface InputProps extends InputHTMLAttributes<HTMLInputElement> {
   // Add custom props here if needed

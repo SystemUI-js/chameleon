@@ -1,6 +1,6 @@
 import React, { ReactNode } from 'react'
 import Popover from './Popover'
-import './DropDownMenu.css'
+import './DropDownMenu.scss'
 
 export interface DropDownMenuItem {
   key: string

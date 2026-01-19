@@ -1,5 +1,5 @@
-import React, { InputHTMLAttributes, forwardRef } from 'react'
-import './Radio.css'
+import { InputHTMLAttributes, forwardRef } from 'react'
+import './Radio.scss'
 
 export interface RadioProps extends InputHTMLAttributes<HTMLInputElement> {
   label?: string

@@ -1,5 +1,5 @@
 import React, { ReactNode } from 'react'
-import './Shortcut.css'
+import './Shortcut.scss'
 
 export interface ShortcutProps {
   icon: ReactNode

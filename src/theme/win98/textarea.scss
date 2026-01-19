@@ -1,0 +1,19 @@
+.cm-theme-root[data-cm-theme='win98'] {
+  .cm-textarea {
+    padding: 3px 4px;
+    font-family: var(--cm-typography-font-family);
+    font-size: var(--cm-typography-font-size);
+    line-height: var(--cm-typography-line-height);
+    color: var(--cm-color-text);
+    background: var(--cm-color-text-invert);
+    border: none;
+    box-shadow: var(--cm-shadow-inset-bevel);
+    border-radius: var(--cm-radius-sm);
+    -webkit-font-smoothing: none;
+
+    &:disabled {
+      background: var(--cm-color-surface);
+      color: var(--cm-color-text-muted);
+    }
+  }
+}

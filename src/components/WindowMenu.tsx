@@ -1,5 +1,5 @@
-import React, { ReactNode } from 'react'
-import './WindowMenu.css'
+import React from 'react'
+import './WindowMenu.scss'
 
 export interface MenuItem {
   id: string

@@ -1,0 +1,44 @@
+.cm-theme-root[data-cm-theme='win98'] {
+  .cm-radio {
+    font-family: var(--cm-typography-font-family);
+    font-size: var(--cm-typography-font-size);
+    color: var(--cm-color-text);
+    margin-right: var(--cm-spacing-md);
+  }
+
+  .cm-radio__circle {
+    border-radius: var(--cm-radius-round);
+    background-color: var(--cm-color-text-invert);
+    /* Win98 Bevel for Radio */
+    box-shadow:
+      inset 1px 1px 0 var(--cm-color-border-dark),
+      inset 2px 2px 0 var(--cm-color-border-darkest),
+      inset -1px -1px 0 var(--cm-color-border-lightest),
+      inset -2px -2px 0 var(--cm-color-border-light);
+    border: none;
+  }
+
+  .cm-radio__dot {
+    background-color: var(--cm-color-text);
+    border-radius: var(--cm-radius-round);
+  }
+
+  .cm-radio__input:focus-visible + .cm-radio__circle {
+    outline: 1px dotted var(--cm-color-text);
+  }
+
+  .cm-radio--disabled {
+    color: var(--cm-color-text-muted);
+    text-shadow: 1px 1px 0 var(--cm-color-text-invert);
+
+    .cm-radio__circle {
+      background-color: var(--cm-color-surface);
+      box-shadow: none;
+      border: 1px solid var(--cm-color-border-dark);
+    }
+
+    .cm-radio__input:checked + .cm-radio__circle .cm-radio__dot {
+      background-color: var(--cm-color-text-muted);
+    }
+  }
+}

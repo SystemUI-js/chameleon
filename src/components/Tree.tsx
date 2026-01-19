@@ -1,5 +1,5 @@
-import React, { useState, ReactNode } from 'react'
-import './Tree.css'
+import React, { useState } from 'react'
+import './Tree.scss'
 
 export interface TreeNode {
   id: string

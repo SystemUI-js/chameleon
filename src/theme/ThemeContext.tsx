@@ -15,7 +15,9 @@ import {
   CSSVarValue,
   ThemeContextType
 } from './types'
+import { defaultTheme } from './default'
 import { win98 } from './win98'
+import { winxp } from './winxp'
 
 const ThemeContext = createContext<ThemeContextType | undefined>(undefined)
 
@@ -63,7 +65,9 @@ function themeToCSSVars(theme: Theme): Record<string, string> {
 export const ThemeProvider: React.FC<ThemeProviderProps> = (props) => {
   const themes = useMemo<Readonly<Record<ThemeId, Theme>>>(() => {
     const base: Record<ThemeId, Theme> = {
-      win98: win98,
+      default: defaultTheme,
+      win98,
+      winxp,
       macos: win98, // Placeholder
       material: win98 // Placeholder
     }

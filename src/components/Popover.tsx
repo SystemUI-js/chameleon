@@ -6,7 +6,7 @@ import React, {
   forwardRef
 } from 'react'
 import { createPortal } from 'react-dom'
-import './Popover.css'
+import './Popover.scss'
 
 export interface PopoverProps {
   content: ReactNode
@@ -25,7 +25,8 @@ export const Popover = forwardRef<HTMLDivElement, PopoverProps>(
       placement = 'bottom-start',
       className = ''
     },
-    ref
+    // eslint-disable-next-line @typescript-eslint/no-unused-vars
+    _ref
   ) => {
     const [isOpen, setIsOpen] = useState(false)
     const triggerRef = useRef<HTMLDivElement>(null)

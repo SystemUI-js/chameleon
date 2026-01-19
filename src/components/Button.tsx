@@ -1,5 +1,5 @@
-import React, { ButtonHTMLAttributes, forwardRef } from 'react'
-import './Button.css'
+import { ButtonHTMLAttributes, forwardRef } from 'react'
+import './Button.scss'
 
 export interface ButtonProps extends ButtonHTMLAttributes<HTMLButtonElement> {
   variant?: 'primary' | 'secondary'

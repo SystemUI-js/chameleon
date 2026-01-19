@@ -1,6 +1,6 @@
 import React, { useState } from 'react'
 import Button from './Button'
-import './Transfer.css'
+import './Transfer.scss'
 
 export interface TransferItem {
   key: string

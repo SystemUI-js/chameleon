@@ -1,0 +1,7 @@
+.cm-theme-root[data-cm-theme='win98'] {
+  .cm-spin-hourglass {
+    border: 2px solid var(--cm-color-text);
+    border-radius: var(--cm-radius-round);
+    border-top-color: transparent;
+  }
+}

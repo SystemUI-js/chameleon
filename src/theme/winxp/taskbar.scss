@@ -1,0 +1,14 @@
+.cm-theme-root[data-cm-theme='winxp'] {
+  .cm-taskbar {
+    border-top: 2px solid rgba(255, 255, 255, 0.2);
+    border-bottom: none;
+    background: linear-gradient(
+      to bottom,
+      #245edc 0%,
+      #3f8cf3 10%,
+      #245edc 30%,
+      #245edc 100%
+    );
+    box-shadow: 0 -1px 0 rgba(0, 0, 0, 0.2);
+  }
+}

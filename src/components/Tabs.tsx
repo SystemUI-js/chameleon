@@ -1,5 +1,5 @@
-import React, { useState, ReactNode, forwardRef } from 'react'
-import './Tabs.css'
+import { useState, ReactNode, forwardRef } from 'react'
+import './Tabs.scss'
 
 export interface TabItem {
   id: string

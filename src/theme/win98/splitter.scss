@@ -1,0 +1,19 @@
+.cm-theme-root[data-cm-theme='win98'] {
+  .cm-splitter {
+    background-color: var(--cm-color-surface);
+  }
+
+  .cm-splitter--vertical {
+    border-left: 1px solid var(--cm-color-border-light);
+    border-right: 1px solid var(--cm-color-border-dark);
+  }
+
+  .cm-splitter--horizontal {
+    border-top: 1px solid var(--cm-color-border-light);
+    border-bottom: 1px solid var(--cm-color-border-dark);
+  }
+
+  .cm-splitter:active {
+    background-color: var(--cm-color-border-dark);
+  }
+}

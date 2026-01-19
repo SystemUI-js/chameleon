@@ -1,0 +1,101 @@
+import { Theme } from '../types'
+
+export const defaultTheme: Theme = {
+  id: 'default',
+  name: 'Default',
+  tokens: {
+    color: {
+      surface: '#efefef',
+      surfaceRaised: '#ffffff',
+      text: '#000000',
+      textMuted: '#666666',
+      textInvert: '#ffffff',
+      border: '#767676',
+      borderStrong: '#000000',
+      borderLight: '#dcdcdc',
+      borderLightest: '#ffffff',
+      borderDark: '#808080',
+      borderDarkest: '#000000',
+      focusRing: '#000000',
+      selectionBg: '#0078d7',
+      selectionText: '#ffffff'
+    },
+    typography: {
+      fontFamily: 'sans-serif',
+      fontSize: '13px',
+      lineHeight: '1.2',
+      fontWeight: 400
+    },
+    spacing: {
+      xs: '2px',
+      sm: '4px',
+      md: '8px',
+      lg: '16px',
+      xl: '24px'
+    },
+    shadow: {
+      insetBevel: 'inset 1px 1px 0 #ffffff, inset -1px -1px 0 #a0a0a0',
+      outsetBevel: 'inset 1px 1px 0 #ffffff, inset -1px -1px 0 #a0a0a0',
+      popup: '2px 2px 4px rgba(0,0,0,0.3)'
+    },
+    radius: {
+      sm: '2px',
+      md: '3px',
+      lg: '4px',
+      round: '9999px'
+    },
+    gradient: {
+      titleBar: 'none',
+      titleBarInactive: 'none',
+      buttonFace: 'none',
+      buttonFaceHover: 'none',
+      buttonFaceActive: 'none',
+      tabBg: 'none',
+      tabBgActive: 'none'
+    }
+  },
+  components: {
+    button: {
+      face: '#efefef',
+      faceHover: '#e5e5e5',
+      faceActive: '#dcdcdc',
+      text: '#000000',
+      borderLight: '#ffffff',
+      borderDark: '#767676',
+      borderDarker: '#404040',
+      border: '1px solid #767676',
+      focusRing: '#000000'
+    },
+    window: {
+      frame: '#ffffff',
+      titleBarBg: '#f5f5f5',
+      titleBarText: '#333333',
+      titleBarBgInactive: '#fafafa',
+      titleBarTextInactive: '#999999',
+      titleBarHeight: '24px',
+      closeButtonBg: '#e0e0e0',
+      closeButtonBgHover: '#d0d0d0',
+      closeButtonBgActive: '#c0c0c0'
+    },
+    taskbar: {
+      bg: '#e0e0e0',
+      height: '28px',
+      borderLight: '#f5f5f5',
+      borderDark: '#b0b0b0',
+      itemBg: '#e0e0e0',
+      itemBgHover: '#d8d8d8',
+      itemBgActive: '#cfcfcf',
+      itemText: '#000000',
+      itemTextActive: '#000000'
+    },
+    startButton: {
+      bg: '#e0e0e0',
+      bgHover: '#d0d0d0',
+      bgActive: '#c0c0c0',
+      text: '#000000',
+      borderLight: '#f5f5f5',
+      borderDark: '#999999',
+      borderDarker: '#777777'
+    }
+  }
+}

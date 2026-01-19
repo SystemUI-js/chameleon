@@ -1,0 +1,10 @@
+.cm-theme-root[data-cm-theme='win98'] {
+  .cm-text {
+    font-family: var(--cm-typography-font-family);
+    color: var(--cm-color-text);
+  }
+
+  .cm-text--body {
+    font-size: var(--cm-typography-font-size);
+  }
+}

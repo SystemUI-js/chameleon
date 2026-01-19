@@ -1,7 +1,7 @@
-import React, { ReactNode, useEffect, useRef } from 'react'
+import React, { useEffect, useRef } from 'react'
 import ReactDOM from 'react-dom'
 import { Window, WindowProps } from './Window'
-import './Modal.css'
+import './Modal.scss'
 
 export interface ModalProps extends WindowProps {
   isOpen: boolean

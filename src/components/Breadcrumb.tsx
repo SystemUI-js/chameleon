@@ -1,5 +1,5 @@
 import React, { ReactNode } from 'react'
-import './Breadcrumb.css'
+import './Breadcrumb.scss'
 
 export interface BreadcrumbItem {
   id: string

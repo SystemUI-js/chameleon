@@ -1,4 +1,4 @@
-export type ThemeId = 'win98' | 'macos' | 'material'
+export type ThemeId = 'default' | 'win98' | 'winxp' | 'macos' | 'material'
 
 export type CSSVarValue = string | number
 
@@ -44,6 +44,21 @@ export interface Theme {
       readonly outsetBevel: string
       readonly popup: string
     }
+    readonly radius: {
+      readonly sm: string
+      readonly md: string
+      readonly lg: string
+      readonly round: string
+    }
+    readonly gradient: {
+      readonly titleBar: string
+      readonly titleBarInactive: string
+      readonly buttonFace: string
+      readonly buttonFaceHover: string
+      readonly buttonFaceActive: string
+      readonly tabBg: string
+      readonly tabBgActive: string
+    }
   }
   readonly components: {
     readonly button: {
@@ -54,6 +69,7 @@ export interface Theme {
       readonly borderLight: string
       readonly borderDark: string
       readonly borderDarker: string
+      readonly border: string
       readonly focusRing: string
     }
     readonly window: {
@@ -62,6 +78,30 @@ export interface Theme {
       readonly titleBarText: string
       readonly titleBarBgInactive: string
       readonly titleBarTextInactive: string
+      readonly titleBarHeight: string
+      readonly closeButtonBg: string
+      readonly closeButtonBgHover: string
+      readonly closeButtonBgActive: string
+    }
+    readonly taskbar: {
+      readonly bg: string
+      readonly height: string
+      readonly borderLight: string
+      readonly borderDark: string
+      readonly itemBg: string
+      readonly itemBgHover: string
+      readonly itemBgActive: string
+      readonly itemText: string
+      readonly itemTextActive: string
+    }
+    readonly startButton: {
+      readonly bg: string
+      readonly bgHover: string
+      readonly bgActive: string
+      readonly text: string
+      readonly borderLight: string
+      readonly borderDark: string
+      readonly borderDarker: string
     }
   }
 }

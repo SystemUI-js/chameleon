@@ -1,0 +1,31 @@
+.cm-taskbar {
+  display: flex;
+  align-items: center;
+  background-color: #eee;
+  height: 28px;
+  border-top: 1px solid #ccc;
+  padding: 2px;
+  user-select: none;
+  font-family: sans-serif;
+  font-size: 14px;
+}
+
+.cm-taskbar__start {
+  margin-right: 4px;
+}
+
+.cm-taskbar__items {
+  flex: 1;
+  display: flex;
+  gap: 2px;
+  overflow-x: auto;
+}
+
+.cm-taskbar__system-tray {
+  width: 80px;
+  display: flex;
+  align-items: center;
+  justify-content: flex-end;
+  padding-right: 4px;
+  gap: 4px;
+}

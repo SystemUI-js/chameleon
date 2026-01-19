@@ -1,0 +1,11 @@
+.cm-theme-root[data-cm-theme='winxp'] {
+  .cm-checkbox__box {
+    border: var(--cm-components-button-border, none);
+    border-radius: 0;
+    box-shadow: none;
+  }
+
+  .cm-checkbox:hover .cm-checkbox__box {
+    background-image: var(--cm-gradient-button-face-hover, none);
+  }
+}

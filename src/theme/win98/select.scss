@@ -1,0 +1,38 @@
+.cm-theme-root[data-cm-theme='win98'] {
+  .cm-select {
+    font-family: var(--cm-typography-font-family);
+    font-size: var(--cm-typography-font-size);
+    color: var(--cm-color-text);
+  }
+
+  .cm-select__trigger {
+    background-color: var(--cm-color-text-invert);
+    border: none;
+    box-shadow: var(--cm-shadow-inset-bevel);
+    border-radius: var(--cm-radius-sm);
+  }
+
+  .cm-select__arrow-btn {
+    background-color: var(--cm-color-surface);
+    background-image: var(--cm-gradient-button-face, none);
+    border: var(--cm-components-button-border, none);
+    box-shadow: none; // Win98 select arrow is often part of the bevel or a button
+
+    &:active {
+      box-shadow: var(--cm-shadow-inset-bevel);
+    }
+  }
+
+  .cm-select__option {
+    &:hover,
+    &--selected {
+      background-color: var(--cm-color-selection-bg);
+      color: var(--cm-color-selection-text);
+    }
+  }
+
+  .cm-select--disabled .cm-select__trigger {
+    background-color: var(--cm-color-surface);
+    color: var(--cm-color-text-muted);
+  }
+}

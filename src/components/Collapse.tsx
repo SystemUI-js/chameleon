@@ -1,5 +1,5 @@
 import React, { useState, ReactNode } from 'react'
-import './Collapse.css'
+import './Collapse.scss'
 
 export interface CollapseItem {
   id: string

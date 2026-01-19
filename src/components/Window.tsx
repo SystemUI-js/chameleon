@@ -1,5 +1,5 @@
-import React, { ReactNode, HTMLAttributes, forwardRef } from 'react'
-import './Window.css'
+import { ReactNode, HTMLAttributes, forwardRef } from 'react'
+import './Window.scss'
 
 export interface WindowProps extends HTMLAttributes<HTMLDivElement> {
   title: string

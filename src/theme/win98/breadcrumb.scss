@@ -1,0 +1,14 @@
+.cm-theme-root[data-cm-theme='win98'] {
+  .cm-breadcrumb {
+    font-family: var(--cm-typography-font-family);
+    font-size: var(--cm-typography-font-size);
+  }
+
+  .cm-breadcrumb-item {
+    color: var(--cm-color-text);
+  }
+
+  .cm-breadcrumb-separator {
+    color: var(--cm-color-text);
+  }
+}
