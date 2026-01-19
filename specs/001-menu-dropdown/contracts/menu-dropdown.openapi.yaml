@@ -1,0 +1,85 @@
+openapi: 3.0.3
+info:
+  title: Menu Dropdown API
+  version: 1.0.0
+paths:
+  /menu/activate:
+    post:
+      summary: Open a menu item dropdown
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/MenuActivateRequest'
+      responses:
+        '200':
+          description: Dropdown opened
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/MenuState'
+  /menu/select:
+    post:
+      summary: Select a menu item
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/MenuSelectRequest'
+      responses:
+        '200':
+          description: Item selected
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/MenuState'
+  /menu/close:
+    post:
+      summary: Close open submenu
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/MenuCloseRequest'
+      responses:
+        '200':
+          description: Submenu closed
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/MenuState'
+components:
+  schemas:
+    MenuActivateRequest:
+      type: object
+      required: [menuId, itemId]
+      properties:
+        menuId:
+          type: string
+        itemId:
+          type: string
+    MenuSelectRequest:
+      type: object
+      required: [menuId, itemId]
+      properties:
+        menuId:
+          type: string
+        itemId:
+          type: string
+    MenuCloseRequest:
+      type: object
+      required: [menuId]
+      properties:
+        menuId:
+          type: string
+    MenuState:
+      type: object
+      required: [openPath]
+      properties:
+        openPath:
+          type: array
+          items:
+            type: string
