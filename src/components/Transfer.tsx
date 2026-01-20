@@ -49,12 +49,21 @@ export const Transfer: React.FC<TransferProps> = ({
   }
 
   const renderList = (data: TransferItem[]) => (
-    <div className='cm-transfer__list'>
+    <div className='cm-transfer__list' role='listbox'>
       {data.map((item) => (
         <div
           key={item.key}
           className={`cm-transfer__item ${selectedKeys.includes(item.key) ? 'cm-transfer__item--selected' : ''}`}
           onClick={() => handleSelect(item.key)}
+          role='option'
+          aria-selected={selectedKeys.includes(item.key)}
+          tabIndex={0}
+          onKeyDown={(e) => {
+            if (e.key === 'Enter' || e.key === ' ') {
+              e.preventDefault()
+              handleSelect(item.key)
+            }
+          }}
         >
           {item.label}
         </div>

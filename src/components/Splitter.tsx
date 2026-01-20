@@ -58,7 +58,27 @@ export const Splitter: React.FC<SplitterProps> = ({
     .filter(Boolean)
     .join(' ')
 
-  return <div className={cls} onMouseDown={handleMouseDown} {...rest} />
+  return (
+    <div
+      className={cls}
+      onMouseDown={handleMouseDown}
+      role='button'
+      aria-label='Splitter'
+      tabIndex={0}
+      onKeyDown={(e) => {
+        if (onResize) {
+          if (e.key === 'ArrowRight' || e.key === 'ArrowDown') {
+            e.preventDefault()
+            onResize(10)
+          } else if (e.key === 'ArrowLeft' || e.key === 'ArrowUp') {
+            e.preventDefault()
+            onResize(-10)
+          }
+        }
+      }}
+      {...rest}
+    />
+  )
 }
 
 export default Splitter

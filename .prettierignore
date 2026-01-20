@@ -2,3 +2,7 @@ dist/
 coverage/
 node_modules/
 .worktrees/
+build/
+package-lock.json
+yarn.lock
+pnpm-lock.yaml

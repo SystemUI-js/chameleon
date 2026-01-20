@@ -91,4 +91,9 @@ yarn preview          # 预览构建产物
 - CI: PR 必须通过 lint → test → build → npm pack dry-run
 
 ## Recent Changes
+- 001-menu-dropdown: Added TypeScript 5.6 + React 18 (Vite) + React 18.2, Vite 5, Sass, Jest + React Testing Library
 - 001-menu-dropdown: Added [if applicable, e.g., PostgreSQL, CoreData, files or N/A]
+
+## Active Technologies
+- TypeScript 5.6 + React 18 (Vite) + React 18.2, Vite 5, Sass, Jest + React Testing Library (001-menu-dropdown)
+- N/A (组件库) (001-menu-dropdown)

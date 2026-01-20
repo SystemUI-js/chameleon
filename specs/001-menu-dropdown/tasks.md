@@ -1,9 +1,9 @@
-# Tasks: Menu Dropdown
+# Tasks: Menu SubMenu
 
 **Input**: Design documents from `/specs/001-menu-dropdown/`
 **Prerequisites**: plan.md (required), spec.md (required for user stories), research.md, data-model.md, contracts/
 
-**Tests**: Tests are REQUIRED (spec QG-002).
+**Tests**: Tests are REQUIRED because the spec mandates behavior/API changes include tests and requires a performance timing check.
 
 **Organization**: Tasks are grouped by user story to enable independent implementation and testing of each story.
 
@@ -15,22 +15,22 @@
 
 ## Phase 1: Setup (Shared Infrastructure)
 
-**Purpose**: Shared scaffolding used across user stories
+**Purpose**: Project-level preparation for menu submenu work
 
-- [ ] T001 Create shared menu fixtures in `tests/fixtures/menuItems.ts`
-- [ ] T002 [P] Add demo usage for nested menus in `src/dev/main.tsx`
+- [x] T001 Confirm current Menu/DropDownMenu/Popover APIs and usage in `src/components/WindowMenu.tsx`, `src/components/DropDownMenu.tsx`, `src/components/Popover.tsx`
+- [x] T002 [P] Add submenu test data fixtures in `tests/fixtures/menuItems.ts`
+- [x] T003 [P] Add shared submenu types in `src/components/menuTypes.ts`
 
 ---
 
 ## Phase 2: Foundational (Blocking Prerequisites)
 
-**Purpose**: Core building blocks needed for all stories
+**Purpose**: Shared behavior and utilities required before user story implementation
 
-**⚠️ CRITICAL**: No user story work can begin until this phase is complete
-
-- [ ] T003 [P] Define shared menu types with children in `src/components/menuTypes.ts`
-- [ ] T004 [P] Add keyboard navigation helpers in `src/components/menuNavigation.ts`
-- [ ] T005 Update exports for new helpers in `src/components/index.ts`
+- [x] T004 Add submenu state helpers (openPath, focusBehavior) in `src/components/menuState.ts`
+- [x] T005 [P] Add keyboard navigation helpers (roving tabindex) in `src/components/menuKeyboard.ts`
+- [x] T006 [P] Add focus management utilities in `src/components/menuFocus.ts`
+- [x] T007 Wire foundational helpers into menu entry points in `src/components/index.ts`
 
 **Checkpoint**: Foundation ready - user story implementation can now begin in parallel
 
@@ -38,77 +38,78 @@
 
 ## Phase 3: User Story 1 - Open and use a submenu (Priority: P1) 🎯 MVP
 
-**Goal**: Click-only open for nested submenus and select an item to trigger its action
+**Goal**: Click to open submenu, select item triggers action and closes submenu
 
-**Independent Test**: Open a submenu by clicking and select an item; submenu closes and action fires
+**Independent Test**: Open submenu by click, select submenu item, verify action and close
 
-### Tests for User Story 1
+### Tests for User Story 1 ⚠️
 
-- [ ] T006 [P] [US1] Add click open/select tests in `tests/DropDownMenu.click.test.tsx`
-- [ ] T007 [P] [US1] Add selection close behavior tests in `tests/WindowMenu.click.test.tsx`
+> **NOTE: Write these tests FIRST, ensure they FAIL before implementation**
+
+- [x] T008 [P] [US1] Add click-open and select tests in `tests/WindowMenu.submenu.click.test.tsx`
+- [x] T009 [P] [US1] Add DropDownMenu nested rendering test in `tests/DropDownMenu.submenu.render.test.tsx`
 
 ### Implementation for User Story 1
 
-- [ ] T008 [P] [US1] Extend item types with `children` in `src/components/DropDownMenu.tsx`
-- [ ] T009 [US1] Implement recursive submenu rendering in `src/components/DropDownMenu.tsx`
-- [ ] T010 [US1] Wire WindowMenu to render dropdowns for items with children in `src/components/WindowMenu.tsx`
-- [ ] T011 [US1] Add submenu indicator styles in `src/components/DropDownMenu.scss`
-- [ ] T012 [US1] Align theme overrides in `src/theme/win98/drop-down-menu.scss`
-- [ ] T013 [US1] Align theme overrides in `src/theme/winxp/drop-down-menu.scss`
+- [x] T010 [P] [US1] Extend menu item types with children and divider rules in `src/components/WindowMenu.tsx`
+- [x] T011 [US1] Render nested submenu structure and submenu indicators in `src/components/WindowMenu.tsx`
+- [x] T012 [US1] Integrate Popover-based submenu rendering for items with children in `src/components/DropDownMenu.tsx`
+- [x] T013 [US1] Close submenu on item selection in `src/components/DropDownMenu.tsx`
 
-**Checkpoint**: User Story 1 fully functional and testable independently
+**Checkpoint**: User Story 1 works independently
 
 ---
 
 ## Phase 4: User Story 2 - Dismiss a submenu (Priority: P2)
 
-**Goal**: Close submenus on outside click, Escape, or when switching to another submenu
+**Goal**: Dismiss submenu via outside click, Escape, and opening another submenu
 
-**Independent Test**: Open a submenu, dismiss via outside click or Escape, and verify close behavior
+**Independent Test**: Open submenu, dismiss by outside click/Escape/other submenu
 
-### Tests for User Story 2
+### Tests for User Story 2 ⚠️
 
-- [ ] T014 [P] [US2] Add dismiss tests (outside click, Escape) in `tests/DropDownMenu.dismiss.test.tsx`
-- [ ] T015 [P] [US2] Add submenu switch-close tests in `tests/WindowMenu.dismiss.test.tsx`
+- [x] T014 [P] [US2] Add outside click close test in `tests/WindowMenu.submenu.dismiss.test.tsx`
+- [x] T015 [P] [US2] Add Escape key close test in `tests/WindowMenu.submenu.keyboard.dismiss.test.tsx`
 
 ### Implementation for User Story 2
 
-- [ ] T016 [US2] Ensure Escape closes current submenu and returns focus to parent in `src/components/DropDownMenu.tsx`
-- [ ] T017 [US2] Close previous submenu when opening another in `src/components/WindowMenu.tsx`
-- [ ] T018 [US2] Update Popover close behavior for nested menus in `src/components/Popover.tsx`
+- [x] T016 [US2] Implement outside click handling and openPath reset in `src/components/WindowMenu.tsx`
+- [x] T017 [US2] Implement Escape key handling and focus return in `src/components/WindowMenu.tsx`
+- [x] T018 [US2] Ensure opening another submenu closes previous in `src/components/WindowMenu.tsx`
 
-**Checkpoint**: User Story 2 functional and testable independently
+**Checkpoint**: User Stories 1 & 2 work independently
 
 ---
 
 ## Phase 5: User Story 3 - Keyboard-only interaction (Priority: P3)
 
-**Goal**: Navigate multi-level menus with Right/Left arrows and select via Enter
+**Goal**: Keyboard navigation across nested submenus with configurable focus behavior
 
-**Independent Test**: Use only keyboard to open a child menu, return to parent, and select an item
+**Independent Test**: Use ArrowRight/ArrowLeft/Enter to navigate and select; focus behavior toggles
 
-### Tests for User Story 3
+### Tests for User Story 3 ⚠️
 
-- [ ] T019 [P] [US3] Add keyboard navigation tests in `tests/DropDownMenu.keyboard.test.tsx`
-- [ ] T020 [P] [US3] Add focus retention tests in `tests/WindowMenu.keyboard.test.tsx`
+- [x] T019 [P] [US3] Add arrow navigation and selection tests in `tests/WindowMenu.submenu.keyboard.test.tsx`
+- [x] T020 [P] [US3] Add focus behavior configuration tests in `tests/WindowMenu.submenu.focusBehavior.test.tsx`
+- [x] T021 [P] [US3] Add performance timing test (<200ms) in `tests/WindowMenu.submenu.performance.test.tsx`
 
 ### Implementation for User Story 3
 
-- [ ] T021 [US3] Add arrow key handling in `src/components/DropDownMenu.tsx`
-- [ ] T022 [US3] Integrate navigation helpers in `src/components/menuNavigation.ts`
-- [ ] T023 [US3] Keep focus unchanged when child opens in `src/components/DropDownMenu.tsx`
+- [x] T022 [US3] Add keyboard handlers and roving tabindex wiring in `src/components/WindowMenu.tsx`
+- [x] T023 [US3] Apply focusBehavior on open/close in `src/components/WindowMenu.tsx`
+- [x] T024 [US3] Ensure nested menu levels (3+) via recursion in `src/components/WindowMenu.tsx`
 
-**Checkpoint**: User Story 3 functional and testable independently
+**Checkpoint**: All user stories work independently
 
 ---
 
 ## Phase 6: Polish & Cross-Cutting Concerns
 
-**Purpose**: Cross-story alignment and documentation
+**Purpose**: Cross-story improvements and validation
 
-- [ ] T024 [P] Add automated performance test in `tests/DropDownMenu.perf.test.tsx` (p95 ≤ 200ms over 20 samples)
-- [ ] T025 [P] Add tree-shaking validation checklist in `specs/001-menu-dropdown/quickstart.md` (import only WindowMenu, verify unused components excluded)
-- [ ] T026 Run quickstart validation checklist in `specs/001-menu-dropdown/quickstart.md`
+- [x] T025 [P] Update component exports and docs in `src/components/index.ts` and `docs/`
+- [x] T026 Run quickstart validation steps in `specs/001-menu-dropdown/quickstart.md`
+- [x] T027 Run lint/test/build (`yarn lint`, `yarn test`, `yarn build`)
 
 ---
 
@@ -118,49 +119,28 @@
 
 - **Setup (Phase 1)**: No dependencies - can start immediately
 - **Foundational (Phase 2)**: Depends on Setup completion - BLOCKS all user stories
-- **User Stories (Phase 3+)**: Depend on Foundational phase completion
-- **Polish (Final Phase)**: Depends on all targeted user stories
+- **User Stories (Phase 3+)**: All depend on Foundational phase completion
+- **Polish (Phase 6)**: Depends on all desired user stories being complete
 
 ### User Story Dependencies
 
-- **User Story 1 (P1)**: Can start after Foundational (Phase 2)
-- **User Story 2 (P2)**: Can start after Foundational (Phase 2)
-- **User Story 3 (P3)**: Can start after Foundational (Phase 2)
+- **User Story 1 (P1)**: Can start after Foundational (Phase 2) - No dependencies on other stories
+- **User Story 2 (P2)**: Can start after Foundational (Phase 2) - Builds on US1 behaviors
+- **User Story 3 (P3)**: Can start after Foundational (Phase 2) - Builds on US1/US2 behaviors
 
 ### Parallel Opportunities
 
-- T001 and T002 can run in parallel
-- T003 and T004 can run in parallel
-- T006 and T007 can run in parallel
-- T014 and T015 can run in parallel
-- T019 and T020 can run in parallel
-- T024 and T025 can run in parallel
+- T002 and T003 can run in parallel
+- T004, T005, T006 can run in parallel
+- Tests within a story (marked [P]) can run in parallel
 
 ---
 
 ## Parallel Example: User Story 1
 
 ```bash
-Task: "T006 [US1] Add click open/select tests in tests/DropDownMenu.click.test.tsx"
-Task: "T007 [US1] Add selection close behavior tests in tests/WindowMenu.click.test.tsx"
-```
-
----
-
-## Parallel Example: User Story 2
-
-```bash
-Task: "T014 [US2] Add dismiss tests (outside click, Escape) in tests/DropDownMenu.dismiss.test.tsx"
-Task: "T015 [US2] Add submenu switch-close tests in tests/WindowMenu.dismiss.test.tsx"
-```
-
----
-
-## Parallel Example: User Story 3
-
-```bash
-Task: "T019 [US3] Add keyboard navigation tests in tests/DropDownMenu.keyboard.test.tsx"
-Task: "T020 [US3] Add focus retention tests in tests/WindowMenu.keyboard.test.tsx"
+Task: "Add click-open and select tests in tests/WindowMenu.submenu.click.test.tsx"
+Task: "Add DropDownMenu nested rendering test in tests/DropDownMenu.submenu.render.test.tsx"
 ```
 
 ---
@@ -172,19 +152,12 @@ Task: "T020 [US3] Add focus retention tests in tests/WindowMenu.keyboard.test.ts
 1. Complete Phase 1: Setup
 2. Complete Phase 2: Foundational
 3. Complete Phase 3: User Story 1
-4. Validate User Story 1 independently
+4. **Stop and validate**: run User Story 1 tests only
 
 ### Incremental Delivery
 
-1. Setup + Foundational → foundation ready
-2. Add User Story 1 → test independently
-3. Add User Story 2 → test independently
-4. Add User Story 3 → test independently
-
----
-
-## Notes
-
-- [P] tasks = different files, no dependencies
-- [Story] label maps task to specific user story for traceability
-- Tests must fail before implementation per constitution
+1. Foundation ready
+2. Add US1 → test independently
+3. Add US2 → test independently
+4. Add US3 → test independently
+5. Run full lint/test/build

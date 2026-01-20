@@ -2,6 +2,8 @@
 
 - 对齐 ESLint 配置，引入 @system-ui-js/development-base React 规范
 - 更新 Prettier 忽略规则
+- Fix jsx-a11y lint errors in Breadcrumb, Collapse, Modal, Select, Shortcut, Splitter, Tabs, Transfer, Tree components
+- Implement US2/US3 behaviors in WindowMenu/DropDownMenu (submenu dismissal, keyboard navigation, focus behavior, nested levels)
 - Update Win98/WinXP theme styles
 - Add menu dropdown specification docs
 - Update AGENTS guidance

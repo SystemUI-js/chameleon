@@ -32,6 +32,15 @@ const TreeNodeItem: React.FC<{ node: TreeNode; level: number }> = ({
               e.stopPropagation()
               setExpanded(!expanded)
             }}
+            role='button'
+            tabIndex={0}
+            onKeyDown={(e) => {
+              if (e.key === 'Enter' || e.key === ' ') {
+                e.preventDefault()
+                e.stopPropagation()
+                setExpanded(!expanded)
+              }
+            }}
           >
             {expanded ? '-' : '+'}
           </div>

@@ -42,7 +42,18 @@ export const Collapse: React.FC<CollapseProps> = ({
         const isOpen = activeIds.includes(item.id)
         return (
           <div key={item.id} className='cm-collapse-item'>
-            <div className='cm-collapse-header' onClick={() => toggle(item.id)}>
+            <div
+              className='cm-collapse-header'
+              onClick={() => toggle(item.id)}
+              role='button'
+              tabIndex={0}
+              onKeyDown={(e) => {
+                if (e.key === 'Enter' || e.key === ' ') {
+                  e.preventDefault()
+                  toggle(item.id)
+                }
+              }}
+            >
               <div className='cm-collapse-header__icon'>
                 {isOpen ? '-' : '+'}
               </div>

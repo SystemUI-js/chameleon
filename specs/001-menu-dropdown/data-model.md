@@ -7,13 +7,21 @@
 - **Relationships**: Menu contains MenuItem[]
 
 ### MenuItem
-- **Fields**: id, label, disabled, action, children[] (optional)
+- **Fields**: id, label, disabled, action, children[] (optional), divider (optional)
 - **Relationships**: MenuItem may contain MenuItem[] as children
-- **Validation Rules**: id must be unique within the same Menu; children is empty or omitted when no submenu exists
+- **Validation Rules**:
+  - id must be unique within the same Menu
+  - children is omitted or empty when no submenu exists
+  - divider items must not have children or action
 
 ### Action
 - **Fields**: type, payload (optional)
 - **Relationships**: MenuItem references Action
+
+### FocusBehavior
+- **Fields**: open, close
+- **Values**: parent | firstChild
+- **Relationships**: Applied per Menu instance
 
 ## State Transitions
 

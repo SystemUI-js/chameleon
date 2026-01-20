@@ -21,7 +21,7 @@ export const Select = forwardRef<HTMLDivElement, SelectProps>(
     ref
   ) => {
     const [isOpen, setIsOpen] = useState(false)
-    const containerRef = useRef<HTMLDivElement>(null)
+    const containerRef = useRef<HTMLDivElement | null>(null)
 
     const selectedOption = options.find((opt) => opt.value === value)
 
@@ -62,7 +62,6 @@ export const Select = forwardRef<HTMLDivElement, SelectProps>(
           // Handle both refs
           if (typeof ref === 'function') ref(node)
           else if (ref) ref.current = node
-          // @ts-ignore
           containerRef.current = node
         }}
         style={{ position: 'relative' }}
@@ -71,6 +70,17 @@ export const Select = forwardRef<HTMLDivElement, SelectProps>(
           className='cm-select__trigger'
           onClick={() => !disabled && setIsOpen(!isOpen)}
           tabIndex={disabled ? -1 : 0}
+          role='combobox'
+          aria-expanded={isOpen}
+          aria-haspopup='listbox'
+          aria-controls='select-listbox'
+          onKeyDown={(e) => {
+            if (disabled) return
+            if (e.key === 'Enter' || e.key === ' ' || e.key === 'ArrowDown') {
+              e.preventDefault()
+              setIsOpen((prev) => !prev)
+            }
+          }}
         >
           <span className='cm-select__value'>
             {selectedOption ? selectedOption.label : placeholder || ''}
@@ -83,12 +93,25 @@ export const Select = forwardRef<HTMLDivElement, SelectProps>(
         </div>
 
         {isOpen && (
-          <ul className='cm-select__dropdown'>
+          <ul
+            className='cm-select__dropdown'
+            role='listbox'
+            id='select-listbox'
+          >
             {options.map((option) => (
               <li
                 key={option.value}
                 className={`cm-select__option ${option.value === value ? 'cm-select__option--selected' : ''}`}
                 onClick={() => handleSelect(option.value)}
+                role='option'
+                aria-selected={option.value === value}
+                tabIndex={0}
+                onKeyDown={(e) => {
+                  if (e.key === 'Enter' || e.key === ' ') {
+                    e.preventDefault()
+                    handleSelect(option.value)
+                  }
+                }}
               >
                 {option.label}
               </li>
