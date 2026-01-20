@@ -68,6 +68,8 @@ export const WindowMenu: React.FC<WindowMenuProps> = ({
 
       const actionItem = item as MenuItemAction
       if (actionItem.children && actionItem.children.length > 0) {
+        // Submenu item: prevent bubbling to parent
+        e.stopPropagation()
         setOpenPath([item.id])
       } else {
         actionItem.onSelect?.()

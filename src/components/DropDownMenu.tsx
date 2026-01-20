@@ -62,7 +62,12 @@ export const DropDownMenu: React.FC<DropDownMenuProps> = ({
     onSelect?.()
 
     if (context) {
-      context.closeAll()
+      // For submenu items, let parent handle closing
+      // For leaf items (no children), don't close - let event bubble to parent
+      const hasChildren = item.children && item.children.length > 0
+      if (!hasChildren) {
+        context.closeAll()
+      }
     } else {
       popoverRef.current?.close()
     }
@@ -81,10 +86,12 @@ export const DropDownMenu: React.FC<DropDownMenuProps> = ({
 
     if (e.key === 'Enter' || e.key === ' ') {
       e.preventDefault()
-      e.stopPropagation()
       if (hasChildren) {
+        // Submenu item: prevent bubbling to parent, let submenu handle
+        e.stopPropagation()
         openSubmenu(item.id)
       } else {
+        // Leaf item: allow normal flow
         handleItemClick(item)
       }
     } else if (e.key === 'ArrowRight') {
