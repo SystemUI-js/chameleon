@@ -95,9 +95,7 @@ export const Popover = forwardRef<PopoverRef, PopoverProps>(
     const handleTriggerKeyDown = (e: React.KeyboardEvent) => {
       if (e.key === 'Enter' || e.key === ' ') {
         e.preventDefault()
-        if (trigger === 'click') {
-          toggle()
-        }
+        toggle()
       }
     }
 

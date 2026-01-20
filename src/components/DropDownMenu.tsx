@@ -45,10 +45,13 @@ export const DropDownMenu: React.FC<DropDownMenuProps> = ({
   // Focus management when opening
   useLayoutEffect(() => {
     if (isOpen) {
-      // If focusBehavior.open is 'firstChild' or we just opened it via keyboard
-      const indexToFocus = getFirstFocusableIndex(items)
-      if (indexToFocus !== -1) {
-        itemRefs.current[indexToFocus]?.focus()
+      const shouldFocusFirst =
+        !context || context.focusBehavior?.open === 'firstChild'
+      if (shouldFocusFirst) {
+        const indexToFocus = getFirstFocusableIndex(items)
+        if (indexToFocus !== -1) {
+          itemRefs.current[indexToFocus]?.focus()
+        }
       }
     }
   }, [isOpen, items, context?.focusBehavior])
@@ -109,10 +112,10 @@ export const DropDownMenu: React.FC<DropDownMenuProps> = ({
         itemRefs.current[nextIndex]?.focus()
       }
     } else if (e.key === 'ArrowLeft') {
-      // Close current menu
-      e.preventDefault()
-      e.stopPropagation()
       if (level > 0) {
+        // Close current menu
+        e.preventDefault()
+        e.stopPropagation()
         // Go back to parent
         context.setOpenPath(context.openPath.slice(0, level))
       } else {
@@ -172,6 +175,11 @@ export const DropDownMenu: React.FC<DropDownMenuProps> = ({
                 className={`cm-dropdown-item ${item.disabled ? 'cm-dropdown-item--disabled' : ''} cm-dropdown-item--submenu ${isSubmenuOpen ? 'cm-dropdown-item--active' : ''}`}
                 role='menuitem'
                 tabIndex={-1}
+                onClick={() => {
+                  if (!item.disabled) {
+                    openSubmenu(item.id)
+                  }
+                }}
                 onKeyDown={(e) => handleItemKeyDown(e, actionItem)}
                 onMouseEnter={() => {
                   if (context && !item.disabled) {

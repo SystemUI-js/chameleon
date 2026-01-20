@@ -5,10 +5,7 @@ import { WindowMenu } from '../src'
 import { MenuItem } from '../src/components/menuTypes'
 
 describe('WindowMenu submenu performance', () => {
-  it('opens submenu within 200ms (mocked timing)', () => {
-    const nowSpy = jest.spyOn(performance, 'now')
-    nowSpy.mockReturnValueOnce(100).mockReturnValueOnce(200)
-
+  it('opens submenu within 200ms (real timing)', () => {
     const items: MenuItem[] = [
       {
         id: 'edit',
@@ -25,10 +22,9 @@ describe('WindowMenu submenu performance', () => {
     const start = performance.now()
     fireEvent.click(screen.getByText('Edit'))
     expect(screen.getByText('Item 0')).toBeInTheDocument()
+    expect(screen.getByText('Item 49')).toBeInTheDocument()
     const end = performance.now()
 
     expect(end - start).toBeLessThan(200)
-
-    nowSpy.mockRestore()
   })
 })

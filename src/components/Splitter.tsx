@@ -12,6 +12,8 @@ export const Splitter: React.FC<SplitterProps> = ({
   onResize,
   onResizeEnd,
   className = '',
+  onKeyDown: onKeyDownProp,
+  onMouseDown: onMouseDownProp,
   ...rest
 }) => {
   const [isDragging, setIsDragging] = useState(false)
@@ -61,11 +63,17 @@ export const Splitter: React.FC<SplitterProps> = ({
   return (
     <div
       className={cls}
-      onMouseDown={handleMouseDown}
+      onMouseDown={(e) => {
+        onMouseDownProp?.(e)
+        if (!e.defaultPrevented) handleMouseDown(e)
+      }}
       role='button'
       aria-label='Splitter'
       tabIndex={0}
       onKeyDown={(e) => {
+        onKeyDownProp?.(e)
+        if (e.defaultPrevented) return
+
         if (onResize) {
           if (e.key === 'ArrowRight' || e.key === 'ArrowDown') {
             e.preventDefault()

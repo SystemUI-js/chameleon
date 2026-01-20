@@ -7,16 +7,17 @@
 - **Relationships**: Menu contains MenuItem[]
 
 ### MenuItem
-- **Fields**: id, label, disabled, action, children[] (optional), divider (optional)
+- **Fields**: id, label, disabled, onSelect, children[] (optional), divider (optional)
 - **Relationships**: MenuItem may contain MenuItem[] as children
 - **Validation Rules**:
   - id must be unique within the same Menu
   - children is omitted or empty when no submenu exists
-  - divider items must not have children or action
+  - divider items must not have children or onSelect
 
-### Action
+### Action (Planned)
 - **Fields**: type, payload (optional)
 - **Relationships**: MenuItem references Action
+- **Note**: Currently using onSelect callback (() => void) - Action entity to be implemented in future
 
 ### FocusBehavior
 - **Fields**: open, close

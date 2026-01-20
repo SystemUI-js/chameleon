@@ -19,16 +19,16 @@
 - **Decision**: Adopt ARIA Authoring Practices menu/menubar guidance for ArrowRight/ArrowLeft/Escape/Enter behavior and focus return to parent on close; support configurable focus behavior on open/close (parent vs firstChild).
 - **Rationale**: APG is the authoritative accessibility guidance; aligns with spec keyboard rules and ensures predictable behavior for assistive tech users.
 - **Alternatives considered**: Custom key bindings; hover-based submenu open; non-ARIA focus rules.
-- **Sources**: https://www.w3.org/WAI/ARIA/apg/patterns/menubar/ , https://www.w3.org/WAI/ARIA/apg/practices/keyboard-interface/
+- **Sources**: <https://www.w3.org/WAI/ARIA/apg/patterns/menubar/> , <https://www.w3.org/WAI/ARIA/apg/practices/keyboard-interface/>
 
 ## Decision 5: Focus management uses roving tabindex
 - **Decision**: Use roving tabindex to manage which menuitem is focusable while moving DOM focus between items.
 - **Rationale**: Matches existing component patterns (tabIndex usage) and is simpler than aria-activedescendant for a lightweight component library.
 - **Alternatives considered**: aria-activedescendant with container focus.
-- **Sources**: https://www.w3.org/WAI/ARIA/apg/practices/keyboard-interface/
+- **Sources**: <https://www.w3.org/WAI/ARIA/apg/practices/keyboard-interface/>
 
 ## Decision 6: Performance gate uses deterministic timing in tests
 - **Decision**: Verify <200ms open latency using deterministic mocks (e.g., `performance.now()` mock) in Jest + React Testing Library.
 - **Rationale**: CI environments are noisy; mocked timing is stable and aligns with spec requirement for automated timing checks.
 - **Alternatives considered**: Real-time measurement with `performance.now()`; sleep-based timing assertions (flaky).
-- **Sources**: https://jestjs.io/docs/timer-mocks , https://testing-library.com/docs/user-event/options/#advancetimers
+- **Sources**: <https://jestjs.io/docs/timer-mocks> , <https://testing-library.com/docs/user-event/options/#advancetimers>

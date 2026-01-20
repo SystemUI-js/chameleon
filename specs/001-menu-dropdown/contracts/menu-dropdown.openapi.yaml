@@ -2,6 +2,8 @@ openapi: 3.0.3
 info:
   title: Menu Dropdown API
   version: 1.0.0
+# Public API - no authentication required
+security: []
 paths:
   /menu/open:
     post:
@@ -85,6 +87,7 @@ components:
       properties:
         openPath:
           type: array
+          maxItems: 10
           items:
             type: string
     FocusBehavior:
