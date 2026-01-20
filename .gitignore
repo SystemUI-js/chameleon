@@ -141,6 +141,7 @@ temp/
 
 # Local development
 .local
+.worktrees/
 
 # Vite
 dist-ssr

@@ -1,3 +1,8 @@
+### [UnReleased]
+
+- 对齐 ESLint 配置，引入 @system-ui-js/development-base React 规范
+- 更新 Prettier 忽略规则
+
 ### 0.1.0 (2025-11-16)
 
 初始发布：
