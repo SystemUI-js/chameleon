@@ -12,6 +12,7 @@
 - Fix CI lint error: upgrade eslint-plugin-react-hooks to v5 for ESLint v9 compatibility
 - Fix Select component: resolve conditional useId() hook call violation
 - Fix DropDownMenu component: reduce cognitive complexity by extracting helper function
+- Fix submenu focus management: always focus first item when submenu opens
 
 ### 0.1.0 (2025-11-16)
 
