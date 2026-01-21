@@ -67,16 +67,16 @@ export const DropDownMenu: React.FC<DropDownMenuProps> = ({
   // Focus management when opening
   useLayoutEffect(() => {
     if (isOpen) {
-      const shouldFocusFirst =
-        !context || context.focusBehavior?.open === 'firstChild'
-      if (shouldFocusFirst) {
-        const indexToFocus = getFirstFocusableIndex(items)
-        if (indexToFocus !== -1) {
-          itemRefs.current[indexToFocus]?.focus()
+      const indexToFocus = getFirstFocusableIndex(items)
+      if (indexToFocus !== -1) {
+        const itemEl = itemRefs.current[indexToFocus]
+        if (itemEl) {
+          itemEl.tabIndex = 0
+          itemEl.focus()
         }
       }
     }
-  }, [isOpen, items, context?.focusBehavior])
+  }, [isOpen, items])
 
   const handleItemClick = (item: MenuItemAction) => {
     if (item.disabled) return
