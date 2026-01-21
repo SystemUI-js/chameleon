@@ -31,7 +31,8 @@ export const Select = forwardRef<HTMLDivElement, SelectProps>(
   ) => {
     const [isOpen, setIsOpen] = useState(false)
     const containerRef = useRef<HTMLDivElement | null>(null)
-    const baseId = id ?? useId()
+    const generatedId = useId()
+    const baseId = id ?? generatedId
     const listboxId = `${baseId}-listbox`
 
     const selectedOption = options.find((opt) => opt.value === value)

@@ -26,6 +26,28 @@ export interface DropDownMenuProps {
   level?: number
 }
 
+// Helper function to handle closing and focus logic for ArrowLeft and Escape
+const handleCloseAndFocus = (
+  level: number,
+  items: MenuItem[],
+  currentIndex: number,
+  itemRefs: React.MutableRefObject<(HTMLDivElement | null)[]>,
+  context: NonNullable<React.ContextType<typeof MenuContext>>
+) => {
+  const shouldFocusFirst = context.focusBehavior?.close === 'firstChild'
+  const indexToFocus = shouldFocusFirst
+    ? getFirstFocusableIndex(items)
+    : currentIndex
+
+  context.setOpenPath(context.openPath.slice(0, level))
+
+  if (indexToFocus !== -1) {
+    requestAnimationFrame(() => {
+      itemRefs.current[indexToFocus]?.focus()
+    })
+  }
+}
+
 export const DropDownMenu: React.FC<DropDownMenuProps> = ({
   items,
   children,
@@ -110,30 +132,34 @@ export const DropDownMenu: React.FC<DropDownMenuProps> = ({
       (ref) => ref === document.activeElement
     )
 
-    if (e.key === 'ArrowDown' || e.key === 'ArrowUp') {
-      e.preventDefault()
-      e.stopPropagation()
-      const direction = e.key === 'ArrowDown' ? 'next' : 'prev'
-      const nextIndex = getNextFocusableIndex(items, currentIndex, direction)
-      if (nextIndex !== -1) {
-        itemRefs.current[nextIndex]?.focus()
-      }
-    } else if (e.key === 'ArrowLeft') {
-      if (level > 0) {
-        // Close current menu
+    switch (e.key) {
+      case 'ArrowDown':
+      case 'ArrowUp': {
         e.preventDefault()
         e.stopPropagation()
-        // Go back to parent
-        context.setOpenPath(context.openPath.slice(0, level))
-      } else {
-        // Top level (root), let WindowMenu handle it (switch root)
-        return // Allow bubbling
+        const direction = e.key === 'ArrowDown' ? 'next' : 'prev'
+        const nextIndex = getNextFocusableIndex(items, currentIndex, direction)
+        if (nextIndex !== -1) {
+          itemRefs.current[nextIndex]?.focus()
+        }
+        break
       }
-    } else if (e.key === 'Escape') {
-      e.preventDefault()
-      e.stopPropagation()
-      // Close current level
-      context.setOpenPath(context.openPath.slice(0, level))
+
+      case 'ArrowLeft': {
+        if (level > 0) {
+          e.preventDefault()
+          e.stopPropagation()
+          handleCloseAndFocus(level, items, currentIndex, itemRefs, context)
+        }
+        break
+      }
+
+      case 'Escape': {
+        e.preventDefault()
+        e.stopPropagation()
+        handleCloseAndFocus(level, items, currentIndex, itemRefs, context)
+        break
+      }
     }
   }
 
@@ -190,7 +216,6 @@ export const DropDownMenu: React.FC<DropDownMenuProps> = ({
                 onKeyDown={(e) => handleItemKeyDown(e, actionItem)}
                 onMouseEnter={() => {
                   if (context && !item.disabled) {
-                    // Open submenu on hover
                     context.setOpenPath([
                       ...context.openPath.slice(0, level + 1),
                       item.id

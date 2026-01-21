@@ -9,6 +9,9 @@
 - Update AGENTS guidance
 - Fix Select component hardcoded ID to use useId() for unique listbox IDs
 - Fix Splitter component keyboard handler to call onResizeEnd after arrow key resize
+- Fix CI lint error: upgrade eslint-plugin-react-hooks to v5 for ESLint v9 compatibility
+- Fix Select component: resolve conditional useId() hook call violation
+- Fix DropDownMenu component: reduce cognitive complexity by extracting helper function
 
 ### 0.1.0 (2025-11-16)
 
