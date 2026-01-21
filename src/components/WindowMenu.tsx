@@ -19,6 +19,7 @@ export const WindowMenu: React.FC<WindowMenuProps> = ({
 }) => {
   const [openPath, setOpenPath] = useState<string[]>([])
   const menuRegistry = useRef<Map<string, MenuItem[]>>(new Map())
+  const rootItemRefs = useRef<Map<string, HTMLElement>>(new Map())
   const cls = ['cm-window-menu', className].filter(Boolean).join(' ')
 
   const registerMenu = useCallback((id: string, items: MenuItem[]) => {
@@ -35,6 +36,13 @@ export const WindowMenu: React.FC<WindowMenuProps> = ({
 
   const closeAll = useCallback(() => setOpenPath([]), [])
 
+  const focusRootItem = useCallback((id: string) => {
+    const el = rootItemRefs.current.get(id)
+    if (el) {
+      el.focus()
+    }
+  }, [])
+
   const handleRootKeyDown = (e: React.KeyboardEvent) => {
     if (openPath.length === 0) return
 
@@ -48,8 +56,15 @@ export const WindowMenu: React.FC<WindowMenuProps> = ({
       const nextIndex = getNextFocusableIndex(items, currentIndex, direction)
 
       if (nextIndex !== -1) {
-        e.preventDefault()
         const nextItem = items[nextIndex]
+
+        // If we are wrapping around to the same item that is already open,
+        // do not steal focus or re-open. This allows focus to remain in the submenu.
+        if (nextItem.id === openPath[0]) {
+          return
+        }
+
+        e.preventDefault()
         // Only open if it has children, otherwise just close?
         // Standard behavior: if I move to a simple button, it focuses it but doesn't "open" a menu.
         // But here we are in "menu mode".
@@ -57,14 +72,16 @@ export const WindowMenu: React.FC<WindowMenuProps> = ({
         // If it's a simple action, we might just focus it (but we don't have focus management for root yet).
         // Let's just setOpenPath to the new item.
         setOpenPath([nextItem.id])
+        focusRootItem(nextItem.id)
       }
     }
   }
 
   const handleItemKeyDown = (e: React.KeyboardEvent, item: MenuItem) => {
+    if (item.disabled) return
+
     if (e.key === 'Enter' || e.key === ' ') {
       e.preventDefault()
-      if (item.disabled) return
 
       const actionItem = item as MenuItemAction
       if (actionItem.children && actionItem.children.length > 0) {
@@ -125,8 +142,15 @@ export const WindowMenu: React.FC<WindowMenuProps> = ({
                 level={0}
               >
                 <div
+                  ref={(el) => {
+                    if (el) rootItemRefs.current.set(item.id, el)
+                    else rootItemRefs.current.delete(item.id)
+                  }}
                   role='menuitem'
-                  tabIndex={0}
+                  aria-haspopup='true'
+                  aria-expanded={isOpen}
+                  aria-disabled={item.disabled ? 'true' : undefined}
+                  tabIndex={item.disabled ? -1 : 0}
                   className={`cm-window-menu__item ${item.disabled ? 'cm-window-menu__item--disabled' : ''} ${isOpen ? 'cm-window-menu__item--active' : ''}`}
                   onClick={() => !item.disabled && setOpenPath([item.id])}
                   onKeyDown={(e) => handleItemKeyDown(e, item)}
@@ -134,6 +158,7 @@ export const WindowMenu: React.FC<WindowMenuProps> = ({
                     // If another menu is open, switch to this one
                     if (openPath.length > 0 && !isOpen && !item.disabled) {
                       setOpenPath([item.id])
+                      focusRootItem(item.id)
                     }
                   }}
                 >
@@ -146,8 +171,13 @@ export const WindowMenu: React.FC<WindowMenuProps> = ({
           return (
             <div
               key={item.id}
+              ref={(el) => {
+                if (el) rootItemRefs.current.set(item.id, el)
+                else rootItemRefs.current.delete(item.id)
+              }}
               role='menuitem'
-              tabIndex={0}
+              aria-disabled={item.disabled ? 'true' : undefined}
+              tabIndex={item.disabled ? -1 : 0}
               className={`cm-window-menu__item ${item.disabled ? 'cm-window-menu__item--disabled' : ''}`}
               onClick={() => {
                 if (!item.disabled) {
@@ -161,6 +191,7 @@ export const WindowMenu: React.FC<WindowMenuProps> = ({
                   setOpenPath([]) // Close others if hovering a simple button? Or keep open?
                   // Standard: hovering a simple button in menu bar closes the previous menu and highlights the button.
                   // But we don't have "highlight" state for root buttons yet other than openPath.
+                  focusRootItem(item.id)
                 }
               }}
             >
