@@ -7,6 +7,8 @@
 - Update Win98/WinXP theme styles
 - Add menu dropdown specification docs
 - Update AGENTS guidance
+- Fix Select component hardcoded ID to use useId() for unique listbox IDs
+- Fix Splitter component keyboard handler to call onResizeEnd after arrow key resize
 
 ### 0.1.0 (2025-11-16)
 

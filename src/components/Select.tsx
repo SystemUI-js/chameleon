@@ -1,4 +1,4 @@
-import { useState, useRef, useEffect, forwardRef } from 'react'
+import { useState, useRef, useEffect, forwardRef, useId } from 'react'
 import './Select.scss'
 
 export interface SelectOption {
@@ -13,15 +13,26 @@ export interface SelectProps {
   placeholder?: string
   className?: string
   disabled?: boolean
+  id?: string
 }
 
 export const Select = forwardRef<HTMLDivElement, SelectProps>(
   (
-    { options, value, onChange, placeholder, className = '', disabled = false },
+    {
+      options,
+      value,
+      onChange,
+      placeholder,
+      className = '',
+      disabled = false,
+      id
+    },
     ref
   ) => {
     const [isOpen, setIsOpen] = useState(false)
     const containerRef = useRef<HTMLDivElement | null>(null)
+    const baseId = id ?? useId()
+    const listboxId = `${baseId}-listbox`
 
     const selectedOption = options.find((opt) => opt.value === value)
 
@@ -73,7 +84,7 @@ export const Select = forwardRef<HTMLDivElement, SelectProps>(
           role='combobox'
           aria-expanded={isOpen}
           aria-haspopup='listbox'
-          aria-controls='select-listbox'
+          aria-controls={listboxId}
           onKeyDown={(e) => {
             if (disabled) return
             if (e.key === 'Enter' || e.key === ' ' || e.key === 'ArrowDown') {
@@ -93,11 +104,7 @@ export const Select = forwardRef<HTMLDivElement, SelectProps>(
         </div>
 
         {isOpen && (
-          <ul
-            className='cm-select__dropdown'
-            role='listbox'
-            id='select-listbox'
-          >
+          <ul className='cm-select__dropdown' role='listbox' id={listboxId}>
             {options.map((option) => (
               <li
                 key={option.value}

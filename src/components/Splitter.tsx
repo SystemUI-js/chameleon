@@ -78,9 +78,11 @@ export const Splitter: React.FC<SplitterProps> = ({
           if (e.key === 'ArrowRight' || e.key === 'ArrowDown') {
             e.preventDefault()
             onResize(10)
+            onResizeEnd?.()
           } else if (e.key === 'ArrowLeft' || e.key === 'ArrowUp') {
             e.preventDefault()
             onResize(-10)
+            onResizeEnd?.()
           }
         }
       }}
