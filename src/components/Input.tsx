@@ -1,9 +1,7 @@
 import { InputHTMLAttributes, forwardRef } from 'react'
 import './Input.scss'
 
-export interface InputProps extends InputHTMLAttributes<HTMLInputElement> {
-  // Add custom props here if needed
-}
+export type InputProps = InputHTMLAttributes<HTMLInputElement>
 
 export const Input = forwardRef<HTMLInputElement, InputProps>(
   ({ className = '', ...rest }, ref) => {

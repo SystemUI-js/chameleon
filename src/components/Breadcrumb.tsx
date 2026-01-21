@@ -26,7 +26,22 @@ export const Breadcrumb: React.FC<BreadcrumbProps> = ({
           {index > 0 && (
             <span className='cm-breadcrumb-separator'>{separator}</span>
           )}
-          <span className='cm-breadcrumb-item' onClick={item.onClick}>
+          <span
+            className='cm-breadcrumb-item'
+            onClick={item.onClick}
+            role={item.onClick ? 'button' : undefined}
+            tabIndex={item.onClick ? 0 : undefined}
+            onKeyDown={
+              item.onClick
+                ? (e) => {
+                    if (e.key === 'Enter' || e.key === ' ') {
+                      e.preventDefault()
+                      item.onClick?.()
+                    }
+                  }
+                : undefined
+            }
+          >
             {item.label}
           </span>
         </React.Fragment>

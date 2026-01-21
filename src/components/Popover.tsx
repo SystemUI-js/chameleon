@@ -3,7 +3,8 @@ import React, {
   useRef,
   useEffect,
   ReactNode,
-  forwardRef
+  forwardRef,
+  useImperativeHandle
 } from 'react'
 import { createPortal } from 'react-dom'
 import './Popover.scss'
@@ -12,32 +13,59 @@ export interface PopoverProps {
   content: ReactNode
   children: ReactNode
   trigger?: 'click' | 'hover'
-  placement?: 'bottom-start' | 'bottom-end' | 'top-start' | 'top-end'
+  placement?:
+    | 'bottom-start'
+    | 'bottom-end'
+    | 'top-start'
+    | 'top-end'
+    | 'right-start'
   className?: string
+  visible?: boolean
+  onVisibleChange?: (visible: boolean) => void
 }
 
-export const Popover = forwardRef<HTMLDivElement, PopoverProps>(
+export interface PopoverRef {
+  close: () => void
+}
+
+export const Popover = forwardRef<PopoverRef, PopoverProps>(
   (
     {
       content,
       children,
       trigger = 'click',
       placement = 'bottom-start',
-      className = ''
+      className = '',
+      visible,
+      onVisibleChange
     },
-    // eslint-disable-next-line @typescript-eslint/no-unused-vars
-    _ref
+    ref
   ) => {
-    const [isOpen, setIsOpen] = useState(false)
+    const [internalOpen, setInternalOpen] = useState(false)
+    const isControlled = visible !== undefined
+    const isOpen = isControlled ? visible : internalOpen
+
     const triggerRef = useRef<HTMLDivElement>(null)
     const popoverRef = useRef<HTMLDivElement>(null)
 
-    const toggle = () => setIsOpen(!isOpen)
-    const close = () => setIsOpen(false)
+    const handleOpenChange = (newOpen: boolean) => {
+      if (!isControlled) {
+        setInternalOpen(newOpen)
+      }
+      onVisibleChange?.(newOpen)
+    }
+
+    const toggle = () => handleOpenChange(!isOpen)
+    const close = () => handleOpenChange(false)
+
+    useImperativeHandle(ref, () => ({
+      close
+    }))
 
     useEffect(() => {
       const handleClickOutside = (e: MouseEvent) => {
         if (
+          isOpen &&
           popoverRef.current &&
           !popoverRef.current.contains(e.target as Node) &&
           triggerRef.current &&
@@ -46,9 +74,30 @@ export const Popover = forwardRef<HTMLDivElement, PopoverProps>(
           close()
         }
       }
+
+      const handleKeyDown = (e: KeyboardEvent) => {
+        if (e.key === 'Escape' && isOpen) {
+          // We handle Escape here for the Popover itself, but Menu might want to handle it too.
+          // If we close here, it might conflict with Menu's logic if Menu also listens to Escape.
+          // But for a generic Popover, closing on Escape is standard.
+          close()
+        }
+      }
+
       document.addEventListener('mousedown', handleClickOutside)
-      return () => document.removeEventListener('mousedown', handleClickOutside)
-    }, [])
+      document.addEventListener('keydown', handleKeyDown)
+      return () => {
+        document.removeEventListener('mousedown', handleClickOutside)
+        document.removeEventListener('keydown', handleKeyDown)
+      }
+    }, [isOpen, isControlled, onVisibleChange])
+
+    const handleTriggerKeyDown = (e: React.KeyboardEvent) => {
+      if (e.key === 'Enter' || e.key === ' ') {
+        e.preventDefault()
+        toggle()
+      }
+    }
 
     const getPosition = () => {
       if (!triggerRef.current) return {}
@@ -64,7 +113,7 @@ export const Popover = forwardRef<HTMLDivElement, PopoverProps>(
               window.scrollX -
               (popoverRef.current?.offsetWidth || 0)
             : rect.left + window.scrollX
-      } else {
+      } else if (placement.startsWith('top')) {
         style.bottom = window.innerHeight - rect.top - window.scrollY
         style.left =
           placement === 'top-end'
@@ -72,6 +121,9 @@ export const Popover = forwardRef<HTMLDivElement, PopoverProps>(
               window.scrollX -
               (popoverRef.current?.offsetWidth || 0)
             : rect.left + window.scrollX
+      } else if (placement === 'right-start') {
+        style.top = rect.top + window.scrollY
+        style.left = rect.right + window.scrollX
       }
 
       return style
@@ -81,10 +133,15 @@ export const Popover = forwardRef<HTMLDivElement, PopoverProps>(
       <>
         <div
           ref={triggerRef}
+          role='button'
+          tabIndex={0}
           onClick={trigger === 'click' ? toggle : undefined}
-          onMouseEnter={trigger === 'hover' ? () => setIsOpen(true) : undefined}
+          onKeyDown={handleTriggerKeyDown}
+          onMouseEnter={
+            trigger === 'hover' ? () => handleOpenChange(true) : undefined
+          }
           onMouseLeave={
-            trigger === 'hover' ? () => setIsOpen(false) : undefined
+            trigger === 'hover' ? () => handleOpenChange(false) : undefined
           }
           style={{ display: 'inline-block' }}
         >

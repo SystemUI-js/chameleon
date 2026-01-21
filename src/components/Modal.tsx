@@ -45,6 +45,7 @@ export const Modal: React.FC<ModalProps> = ({
       className='cm-modal-overlay'
       ref={overlayRef}
       onClick={handleClickOutside}
+      role='presentation'
     >
       <div className={`cm-modal-content ${className}`}>
         <Window {...windowProps} onClose={onClose} />

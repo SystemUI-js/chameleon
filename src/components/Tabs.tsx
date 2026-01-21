@@ -29,6 +29,13 @@ export const Tabs = forwardRef<HTMLDivElement, TabsProps>(
               aria-selected={activeId === item.id}
               className={`cm-tabs__tab ${activeId === item.id ? 'cm-tabs__tab--active' : ''}`}
               onClick={() => setActiveId(item.id)}
+              tabIndex={0}
+              onKeyDown={(e) => {
+                if (e.key === 'Enter' || e.key === ' ') {
+                  e.preventDefault()
+                  setActiveId(item.id)
+                }
+              }}
             >
               {item.label}
             </div>

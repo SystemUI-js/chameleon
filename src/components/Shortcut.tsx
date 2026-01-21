@@ -20,6 +20,14 @@ export const Shortcut: React.FC<ShortcutProps> = ({
     <div
       className={`cm-shortcut ${selected ? 'cm-shortcut--selected' : ''} ${className}`}
       onClick={onClick}
+      role='button'
+      tabIndex={0}
+      onKeyDown={(e) => {
+        if (e.key === 'Enter' || e.key === ' ') {
+          e.preventDefault()
+          onClick?.()
+        }
+      }}
     >
       <div className='cm-shortcut__icon'>{icon}</div>
       <div className='cm-shortcut__label'>{label}</div>

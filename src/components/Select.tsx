@@ -1,4 +1,4 @@
-import { useState, useRef, useEffect, forwardRef } from 'react'
+import { useState, useRef, useEffect, forwardRef, useId } from 'react'
 import './Select.scss'
 
 export interface SelectOption {
@@ -13,15 +13,27 @@ export interface SelectProps {
   placeholder?: string
   className?: string
   disabled?: boolean
+  id?: string
 }
 
 export const Select = forwardRef<HTMLDivElement, SelectProps>(
   (
-    { options, value, onChange, placeholder, className = '', disabled = false },
+    {
+      options,
+      value,
+      onChange,
+      placeholder,
+      className = '',
+      disabled = false,
+      id
+    },
     ref
   ) => {
     const [isOpen, setIsOpen] = useState(false)
-    const containerRef = useRef<HTMLDivElement>(null)
+    const containerRef = useRef<HTMLDivElement | null>(null)
+    const generatedId = useId()
+    const baseId = id ?? generatedId
+    const listboxId = `${baseId}-listbox`
 
     const selectedOption = options.find((opt) => opt.value === value)
 
@@ -62,7 +74,6 @@ export const Select = forwardRef<HTMLDivElement, SelectProps>(
           // Handle both refs
           if (typeof ref === 'function') ref(node)
           else if (ref) ref.current = node
-          // @ts-ignore
           containerRef.current = node
         }}
         style={{ position: 'relative' }}
@@ -71,6 +82,17 @@ export const Select = forwardRef<HTMLDivElement, SelectProps>(
           className='cm-select__trigger'
           onClick={() => !disabled && setIsOpen(!isOpen)}
           tabIndex={disabled ? -1 : 0}
+          role='combobox'
+          aria-expanded={isOpen}
+          aria-haspopup='listbox'
+          aria-controls={listboxId}
+          onKeyDown={(e) => {
+            if (disabled) return
+            if (e.key === 'Enter' || e.key === ' ' || e.key === 'ArrowDown') {
+              e.preventDefault()
+              setIsOpen((prev) => !prev)
+            }
+          }}
         >
           <span className='cm-select__value'>
             {selectedOption ? selectedOption.label : placeholder || ''}
@@ -83,12 +105,21 @@ export const Select = forwardRef<HTMLDivElement, SelectProps>(
         </div>
 
         {isOpen && (
-          <ul className='cm-select__dropdown'>
+          <ul className='cm-select__dropdown' role='listbox' id={listboxId}>
             {options.map((option) => (
               <li
                 key={option.value}
                 className={`cm-select__option ${option.value === value ? 'cm-select__option--selected' : ''}`}
                 onClick={() => handleSelect(option.value)}
+                role='option'
+                aria-selected={option.value === value}
+                tabIndex={0}
+                onKeyDown={(e) => {
+                  if (e.key === 'Enter' || e.key === ' ') {
+                    e.preventDefault()
+                    handleSelect(option.value)
+                  }
+                }}
               >
                 {option.label}
               </li>

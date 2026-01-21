@@ -60,10 +60,120 @@ const Desktop = () => {
         >
           <WindowMenu
             items={[
-              { id: 'file', label: 'File' },
-              { id: 'edit', label: 'Edit' },
-              { id: 'view', label: 'View' },
-              { id: 'help', label: 'Help' }
+              {
+                id: 'file',
+                label: 'File',
+                children: [
+                  {
+                    id: 'file-new',
+                    label: 'New',
+                    onSelect: () => console.log('New')
+                  },
+                  {
+                    id: 'file-open',
+                    label: 'Open',
+                    onSelect: () => console.log('Open')
+                  },
+                  { id: 'file-divider-1', divider: true },
+                  {
+                    id: 'file-recent',
+                    label: 'Recent',
+                    children: [
+                      {
+                        id: 'file-recent-1',
+                        label: 'Project A',
+                        onSelect: () => console.log('Project A')
+                      },
+                      {
+                        id: 'file-recent-2',
+                        label: 'Project B',
+                        onSelect: () => console.log('Project B')
+                      }
+                    ]
+                  },
+                  { id: 'file-divider-2', divider: true },
+                  {
+                    id: 'file-exit',
+                    label: 'Exit',
+                    onSelect: () => console.log('Exit')
+                  }
+                ]
+              },
+              {
+                id: 'edit',
+                label: 'Edit',
+                children: [
+                  {
+                    id: 'edit-undo',
+                    label: 'Undo',
+                    onSelect: () => console.log('Undo')
+                  },
+                  {
+                    id: 'edit-redo',
+                    label: 'Redo',
+                    onSelect: () => console.log('Redo')
+                  },
+                  { id: 'edit-divider-1', divider: true },
+                  {
+                    id: 'edit-cut',
+                    label: 'Cut',
+                    onSelect: () => console.log('Cut')
+                  },
+                  {
+                    id: 'edit-copy',
+                    label: 'Copy',
+                    onSelect: () => console.log('Copy')
+                  },
+                  {
+                    id: 'edit-paste',
+                    label: 'Paste',
+                    onSelect: () => console.log('Paste')
+                  }
+                ]
+              },
+              {
+                id: 'view',
+                label: 'View',
+                children: [
+                  {
+                    id: 'view-zoom',
+                    label: 'Zoom',
+                    children: [
+                      {
+                        id: 'view-zoom-in',
+                        label: 'Zoom In',
+                        onSelect: () => console.log('Zoom In')
+                      },
+                      {
+                        id: 'view-zoom-out',
+                        label: 'Zoom Out',
+                        onSelect: () => console.log('Zoom Out')
+                      },
+                      {
+                        id: 'view-zoom-reset',
+                        label: 'Reset Zoom',
+                        onSelect: () => console.log('Reset Zoom')
+                      }
+                    ]
+                  },
+                  {
+                    id: 'view-fullscreen',
+                    label: 'Full Screen',
+                    onSelect: () => console.log('Full Screen')
+                  }
+                ]
+              },
+              {
+                id: 'help',
+                label: 'Help',
+                children: [
+                  {
+                    id: 'help-about',
+                    label: 'About',
+                    onSelect: () => console.log('About')
+                  }
+                ]
+              }
             ]}
             className='mb-2'
           />
