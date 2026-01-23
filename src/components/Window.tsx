@@ -107,6 +107,7 @@ export const Window = forwardRef<HTMLDivElement, WindowProps>(
       startWidth: number
       startHeight: number
       pointerId: number | null
+      capturedElement: HTMLElement | null
       currentX: number
       currentY: number
       currentWidth: number
@@ -123,6 +124,7 @@ export const Window = forwardRef<HTMLDivElement, WindowProps>(
       startWidth: 0,
       startHeight: 0,
       pointerId: null,
+      capturedElement: null,
       currentX: 0,
       currentY: 0,
       currentWidth: 0,
@@ -193,6 +195,7 @@ export const Window = forwardRef<HTMLDivElement, WindowProps>(
         startWidth: currentRect.width,
         startHeight: currentRect.height,
         pointerId: e.pointerId,
+        capturedElement: target,
         currentX: pos.x,
         currentY: pos.y,
         currentWidth: currentRect.width,
@@ -216,6 +219,10 @@ export const Window = forwardRef<HTMLDivElement, WindowProps>(
 
         if (rafRef.current) return
 
+        // Capture event coordinates before RAF to avoid event object being recycled
+        const clientX = e.clientX
+        const clientY = e.clientY
+
         rafRef.current = requestAnimationFrame(() => {
           const {
             startX,
@@ -229,8 +236,8 @@ export const Window = forwardRef<HTMLDivElement, WindowProps>(
             mode
           } = interactionRef.current
 
-          const dx = e.clientX - startX
-          const dy = e.clientY - startY
+          const dx = clientX - startX
+          const dy = clientY - startY
 
           let newX = startLeft
           let newY = startTop
@@ -277,7 +284,9 @@ export const Window = forwardRef<HTMLDivElement, WindowProps>(
           if (type === 'move') {
             const newPos = { x: newX, y: newY }
 
-            setPos(newPos)
+            if (mode === 'follow') {
+              setPos(newPos)
+            }
             onMoving?.(newPos)
           } else if (type === 'resize') {
             const newSize = { width: newW, height: newH }
@@ -286,8 +295,8 @@ export const Window = forwardRef<HTMLDivElement, WindowProps>(
             if (mode === 'follow') {
               setPos(newPos)
               setSize(newSize)
-              onResizing?.(newSize)
             }
+            onResizing?.(newSize)
           }
 
           rafRef.current = null
@@ -296,47 +305,46 @@ export const Window = forwardRef<HTMLDivElement, WindowProps>(
       [grabEdge, minWidth, minHeight, onMoving, onResizing]
     )
 
-    const handlePointerUp = useCallback(
-      (e: PointerEvent<Element>) => {
-        if (!interactionRef.current.active) return
+    const handlePointerUp = useCallback(() => {
+      if (!interactionRef.current.active) return
 
-        const {
-          type,
-          pointerId,
-          currentX,
-          currentY,
-          currentWidth,
-          currentHeight
-        } = interactionRef.current
+      const {
+        type,
+        pointerId,
+        capturedElement,
+        currentX,
+        currentY,
+        currentWidth,
+        currentHeight
+      } = interactionRef.current
 
-        if (pointerId !== null) {
-          ;(e.target as HTMLElement).releasePointerCapture(pointerId)
-        }
+      if (pointerId !== null && capturedElement) {
+        capturedElement.releasePointerCapture(pointerId)
+      }
 
-        if (rafRef.current) {
-          cancelAnimationFrame(rafRef.current)
-          rafRef.current = null
-        }
+      if (rafRef.current) {
+        cancelAnimationFrame(rafRef.current)
+        rafRef.current = null
+      }
 
-        interactionRef.current.active = false
-        setIsDragging(false)
+      interactionRef.current.active = false
+      interactionRef.current.capturedElement = null
+      setIsDragging(false)
 
-        const finalPos = { x: currentX, y: currentY }
-        const finalSize = { width: currentWidth, height: currentHeight }
+      const finalPos = { x: currentX, y: currentY }
+      const finalSize = { width: currentWidth, height: currentHeight }
 
-        setPos(finalPos)
-        if (type === 'resize') {
-          setSize(finalSize)
-        }
+      setPos(finalPos)
+      if (type === 'resize') {
+        setSize(finalSize)
+      }
 
-        if (type === 'move') {
-          onMoveEnd?.(finalPos)
-        } else {
-          onResizeEnd?.(finalSize)
-        }
-      },
-      [onMoveEnd, onResizeEnd]
-    )
+      if (type === 'move') {
+        onMoveEnd?.(finalPos)
+      } else {
+        onResizeEnd?.(finalSize)
+      }
+    }, [onMoveEnd, onResizeEnd])
 
     const setMergedRef = (node: HTMLDivElement | null) => {
       internalRef.current = node

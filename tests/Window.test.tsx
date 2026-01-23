@@ -241,7 +241,8 @@ describe('Window interactions', () => {
       clientY: 250
     })
 
-    expect(onResizing).not.toHaveBeenCalled()
+    // In static mode, onResizing should be called for consumers to render ghost outline
+    expect(onResizing).toHaveBeenCalledWith({ width: 360, height: 250 })
 
     fireEvent.pointerUp(windowEl, { pointerId: 3 })
 

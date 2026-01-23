@@ -1,5 +1,6 @@
 ### [UnReleased]
 
+- Fix Window component: optimize pointer event handling with RAF, cache coordinates before frame, improve capture/release flow, and fix static mode callback behavior
 - 对齐 ESLint 配置，引入 @system-ui-js/development-base React 规范
 - 更新 Prettier 忽略规则
 - Fix jsx-a11y lint errors in Breadcrumb, Collapse, Modal, Select, Shortcut, Splitter, Tabs, Transfer, Tree components
