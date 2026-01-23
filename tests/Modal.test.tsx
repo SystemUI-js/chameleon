@@ -1,6 +1,7 @@
 import { render, fireEvent } from '@testing-library/react'
 import '@testing-library/jest-dom'
-import { Modal } from '../src'
+import { Modal, ThemeProvider } from '../src'
+import { winxp } from '../src/theme/winxp'
 
 const attachPointerCaptureMocks = (el: HTMLElement) => {
   Object.defineProperty(el, 'setPointerCapture', {
@@ -20,17 +21,19 @@ describe('Modal inherits Window behavior', () => {
       document.createElement('div')
     )
     render(
-      <Modal
-        title='Modal'
-        isOpen
-        onClose={() => undefined}
-        movable
-        resizable
-        onMoveStart={onMoveStart}
-        onResizeStart={onResizeStart}
-      >
-        Body
-      </Modal>,
+      <ThemeProvider defaultTheme={winxp}>
+        <Modal
+          title='Modal'
+          isOpen
+          onClose={() => undefined}
+          movable
+          resizable
+          onMoveStart={onMoveStart}
+          onResizeStart={onResizeStart}
+        >
+          Body
+        </Modal>
+      </ThemeProvider>,
       { container: testContainer }
     )
 
@@ -63,6 +66,10 @@ describe('Modal inherits Window behavior', () => {
 
     expect(onMoveStart).toHaveBeenCalledTimes(1)
     expect(onResizeStart).toHaveBeenCalledTimes(1)
+
+    const modalContent = document.querySelector('.cm-modal-content')
+
+    expect(modalContent).toHaveClass('cm-modal-content')
 
     testContainer.remove()
   })

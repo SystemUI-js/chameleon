@@ -102,5 +102,15 @@ export const winxp: Theme = {
       borderDark: '#2B7A2B',
       borderDarker: '#1F5A1F'
     }
+  },
+  behavior: {
+    windowDragMode: 'follow',
+    windowDefaults: {
+      interactionMode: 'follow',
+      movable: true,
+      resizable: false,
+      minWidth: 200,
+      minHeight: 100
+    }
   }
 }

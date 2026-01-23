@@ -6,6 +6,21 @@ export type TokenTree = {
   readonly [key: string]: CSSVarValue | TokenTree
 }
 
+export type WindowDragMode = 'static' | 'follow'
+
+export type WindowDefaults = {
+  readonly interactionMode?: WindowDragMode
+  readonly movable?: boolean
+  readonly resizable?: boolean
+  readonly minWidth?: number
+  readonly minHeight?: number
+}
+
+export type ThemeBehavior = {
+  readonly windowDragMode: WindowDragMode
+  readonly windowDefaults: WindowDefaults
+}
+
 export interface Theme {
   readonly id: ThemeId
   readonly name: string
@@ -104,6 +119,7 @@ export interface Theme {
       readonly borderDarker: string
     }
   }
+  readonly behavior: ThemeBehavior
 }
 
 export type ThemeContextType = {

@@ -76,7 +76,7 @@ export const ThemeProvider: React.FC<ThemeProviderProps> = (props) => {
 
   const isControlled = props.theme !== undefined
   const [internalTheme, setInternalTheme] = useState<Theme>(
-    props.defaultTheme ?? win98
+    props.defaultTheme ?? defaultTheme
   )
 
   const activeTheme = (props.theme ?? internalTheme) as Theme
@@ -128,6 +128,16 @@ export const useTheme = () => {
     throw new Error('useTheme must be used within a ThemeProvider')
   }
   return context
+}
+
+export const useOptionalTheme = (): Theme => {
+  const context = useContext(ThemeContext)
+  return context?.theme ?? defaultTheme
+}
+
+export const useThemeBehavior = (): Theme['behavior'] => {
+  const theme = useOptionalTheme()
+  return theme.behavior
 }
 
 export type WithThemeProps = {

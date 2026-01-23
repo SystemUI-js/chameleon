@@ -9,6 +9,7 @@ import {
   type MutableRefObject,
   type PointerEvent
 } from 'react'
+import { useThemeBehavior } from '../theme/ThemeContext'
 import './Window.scss'
 
 export interface Position {
@@ -31,6 +32,7 @@ export interface WindowProps
   onClose?: () => void
   onMinimize?: () => void
   onMaximize?: () => void
+  onActive?: () => void
   icon?: ReactNode
 
   position?: Position
@@ -66,6 +68,7 @@ export const Window = forwardRef<HTMLDivElement, WindowProps>(
       onClose,
       onMinimize,
       onMaximize,
+      onActive,
       icon,
       className = '',
       position: controlledPos,
@@ -74,9 +77,9 @@ export const Window = forwardRef<HTMLDivElement, WindowProps>(
       initialSize,
       minWidth = 200,
       minHeight = 100,
-      movable = true,
-      resizable = false,
-      interactionMode = 'follow',
+      movable,
+      resizable,
+      interactionMode,
       grabEdge = 30,
       onMoveStart,
       onMoving,
@@ -89,11 +92,22 @@ export const Window = forwardRef<HTMLDivElement, WindowProps>(
     },
     ref
   ) => {
+    const { windowDefaults, windowDragMode } = useThemeBehavior()
+    const resolvedInteractionMode =
+      interactionMode ?? windowDefaults.interactionMode ?? windowDragMode
+    const resolvedMovable = movable ?? windowDefaults.movable ?? true
+    const resolvedResizable = resizable ?? windowDefaults.resizable ?? false
+    const resolvedMinWidth = windowDefaults.minWidth ?? minWidth
+    const resolvedMinHeight = windowDefaults.minHeight ?? minHeight
+
     const [pos, setPos] = useState<Position>(controlledPos || initialPosition)
     const [size, setSize] = useState<Size | undefined>(
       controlledSize || initialSize
     )
     const [isDragging, setIsDragging] = useState(false)
+    const onActiveRef = useRef(onActive)
+    const isActiveRef = useRef(isActive)
+    const activationSourceRef = useRef<'pointer' | null>(null)
 
     const interactionRef = useRef<{
       active: boolean
@@ -144,6 +158,10 @@ export const Window = forwardRef<HTMLDivElement, WindowProps>(
     }, [])
 
     useEffect(() => {
+      onActiveRef.current = onActive
+    }, [onActive])
+
+    useEffect(() => {
       if (!interactionRef.current.active && controlledPos) {
         setPos(controlledPos)
       }
@@ -154,6 +172,16 @@ export const Window = forwardRef<HTMLDivElement, WindowProps>(
         setSize(controlledSize)
       }
     }, [controlledSize])
+
+    useEffect(() => {
+      if (!isActiveRef.current && isActive) {
+        if (activationSourceRef.current !== 'pointer') {
+          onActiveRef.current?.()
+        }
+      }
+      activationSourceRef.current = null
+      isActiveRef.current = isActive
+    }, [isActive])
 
     const getRect = () => {
       if (internalRef.current) {
@@ -166,8 +194,8 @@ export const Window = forwardRef<HTMLDivElement, WindowProps>(
         }
       }
       return {
-        width: size?.width || minWidth,
-        height: size?.height || minHeight,
+        width: size?.width || resolvedMinWidth,
+        height: size?.height || resolvedMinHeight,
         left: pos.x,
         top: pos.y
       }
@@ -179,10 +207,15 @@ export const Window = forwardRef<HTMLDivElement, WindowProps>(
       direction: ResizeDirection | null = null
     ) => {
       if (e.button !== 0) return
-      if (type === 'move' && !movable) return
-      if (type === 'resize' && !resizable) return
+      if (type === 'move' && !resolvedMovable) return
+      if (type === 'resize' && !resolvedResizable) return
 
       if ((e.target as HTMLElement).closest('.cm-window__controls')) return
+
+      if (type === 'move' && !isActive) {
+        activationSourceRef.current = 'pointer'
+        onActiveRef.current?.()
+      }
 
       e.preventDefault()
       e.stopPropagation()
@@ -195,7 +228,7 @@ export const Window = forwardRef<HTMLDivElement, WindowProps>(
       interactionRef.current = {
         active: true,
         type,
-        mode: interactionMode,
+        mode: resolvedInteractionMode ?? 'follow',
         direction,
         startX: e.clientX,
         startY: e.clientY,
@@ -270,18 +303,18 @@ export const Window = forwardRef<HTMLDivElement, WindowProps>(
             )
           } else if (type === 'resize' && direction) {
             if (direction.includes('e')) {
-              newW = Math.max(minWidth, startWidth + dx)
+              newW = Math.max(resolvedMinWidth, startWidth + dx)
             } else if (direction.includes('w')) {
-              const maxDelta = startWidth - minWidth
+              const maxDelta = startWidth - resolvedMinWidth
               const delta = Math.min(dx, maxDelta)
               newW = startWidth - delta
               newX = startLeft + delta
             }
 
             if (direction.includes('s')) {
-              newH = Math.max(minHeight, startHeight + dy)
+              newH = Math.max(resolvedMinHeight, startHeight + dy)
             } else if (direction.includes('n')) {
-              const maxDelta = startHeight - minHeight
+              const maxDelta = startHeight - resolvedMinHeight
               const delta = Math.min(dy, maxDelta)
               newH = startHeight - delta
               newY = startTop + delta
@@ -314,7 +347,7 @@ export const Window = forwardRef<HTMLDivElement, WindowProps>(
           rafRef.current = null
         })
       },
-      [grabEdge, minWidth, minHeight, onMoving, onResizing]
+      [grabEdge, onMoving, onResizing, resolvedMinHeight, resolvedMinWidth]
     )
 
     const handlePointerUp = useCallback(() => {
@@ -437,7 +470,7 @@ export const Window = forwardRef<HTMLDivElement, WindowProps>(
 
         <div className='cm-window__body'>{children}</div>
 
-        {resizable && (
+        {resolvedResizable && (
           <>
             {(
               ['n', 's', 'e', 'w', 'ne', 'nw', 'se', 'sw'] as ResizeDirection[]

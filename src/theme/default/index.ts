@@ -97,5 +97,15 @@ export const defaultTheme: Theme = {
       borderDark: '#999999',
       borderDarker: '#777777'
     }
+  },
+  behavior: {
+    windowDragMode: 'follow',
+    windowDefaults: {
+      interactionMode: 'follow',
+      movable: true,
+      resizable: false,
+      minWidth: 200,
+      minHeight: 100
+    }
   }
 }

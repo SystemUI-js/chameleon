@@ -1,3 +1,27 @@
 .cm-theme-root[data-cm-theme='winxp'] {
-  // Placeholder for dropdown menu overrides
+  .cm-dropdown-menu {
+    background-color: var(--cm-color-surface-raised);
+    border: 1px solid var(--cm-color-border);
+    padding: 2px;
+    box-shadow: var(--cm-shadow-popup);
+  }
+
+  .cm-dropdown-item {
+    border: 1px solid transparent;
+  }
+
+  .cm-dropdown-item:hover:not(.cm-dropdown-item--disabled) {
+    background-color: var(--cm-color-selection-bg);
+    color: var(--cm-color-selection-text);
+    border-color: var(--cm-color-selection-bg);
+  }
+
+  .cm-dropdown-item--disabled {
+    color: var(--cm-color-text-muted);
+  }
+
+  .cm-dropdown-divider {
+    background-color: var(--cm-color-border);
+    margin: 4px 2px;
+  }
 }
