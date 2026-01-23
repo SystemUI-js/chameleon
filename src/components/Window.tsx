@@ -264,7 +264,10 @@ export const Window = forwardRef<HTMLDivElement, WindowProps>(
               Math.max(newX, grabEdge - startWidth),
               viewportW - grabEdge
             )
-            newY = Math.min(Math.max(newY, 0), viewportH - grabEdge)
+            newY = Math.min(
+              Math.max(newY, grabEdge - startHeight),
+              viewportH - grabEdge
+            )
           } else if (type === 'resize' && direction) {
             if (direction.includes('e')) {
               newW = Math.max(minWidth, startWidth + dx)

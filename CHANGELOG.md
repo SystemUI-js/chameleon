@@ -2,7 +2,7 @@
 
 - Fix Window component: add cleanup for requestAnimationFrame to prevent state updates after unmount
 - Fix Window component: optimize pointer event handling with RAF, cache coordinates before frame, improve capture/release flow, and fix static mode callback behavior
-- Fix Window component: update onResizing and onResizeEnd callbacks to include position data (west/north resize changes position)
+- **Breaking:** Fix Window component: update onResizing and onResizeEnd callbacks to include position data (west/north resize changes position). Old: onResizing(size: Size), onResizeEnd(size: Size); New: onResizing({ size: Size; position: Position }), onResizeEnd({ size: Size; position: Position }). Migration: Update usages to handle position data, as west/north resize also changes position
 - 对齐 ESLint 配置，引入 @system-ui-js/development-base React 规范
 - 更新 Prettier 忽略规则
 - Fix jsx-a11y lint errors in Breadcrumb, Collapse, Modal, Select, Shortcut, Splitter, Tabs, Transfer, Tree components
