@@ -1,0 +1,8 @@
+.cm-context-menu {
+  z-index: var(--cm-z-index-menu, 1000);
+  position: fixed;
+
+  .cm-popover {
+    box-shadow: var(--cm-shadow-popup, 2px 2px 4px rgba(0, 0, 0, 0.2));
+  }
+}

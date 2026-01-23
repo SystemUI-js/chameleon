@@ -71,24 +71,16 @@
   user-select: none;
   cursor: move;
 
-  &::after {
-    content: '';
-    position: fixed;
-    top: 0;
-    left: 0;
-    right: 0;
-    bottom: 0;
-    z-index: 9999;
-    cursor: move;
-  }
-
-  * {
-    cursor: move !important;
-  }
-
   iframe {
     pointer-events: none;
   }
+}
+
+.cm-window-preview {
+  border: 2px dashed var(--cm-color-border-strong, #000);
+  background-color: transparent;
+  box-shadow: 0 0 4px var(--cm-color-border-dark, #808080);
+  border-radius: var(--cm-radius-sm, 0px);
 }
 
 .cm-window__resize-handle {

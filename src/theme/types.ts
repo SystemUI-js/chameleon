@@ -14,6 +14,7 @@ export type WindowDefaults = {
   readonly resizable?: boolean
   readonly minWidth?: number
   readonly minHeight?: number
+  readonly activateWholeArea?: boolean
 }
 
 export type ThemeBehavior = {

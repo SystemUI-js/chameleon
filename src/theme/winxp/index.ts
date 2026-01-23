@@ -110,7 +110,8 @@ export const winxp: Theme = {
       movable: true,
       resizable: false,
       minWidth: 200,
-      minHeight: 100
+      minHeight: 100,
+      activateWholeArea: true
     }
   }
 }

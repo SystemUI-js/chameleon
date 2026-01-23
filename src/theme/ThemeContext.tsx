@@ -3,7 +3,6 @@ import React, {
   useCallback,
   useContext,
   useMemo,
-  useRef,
   useState,
   useLayoutEffect,
   ReactNode
@@ -80,12 +79,9 @@ export const ThemeProvider: React.FC<ThemeProviderProps> = (props) => {
   )
 
   const activeTheme = (props.theme ?? internalTheme) as Theme
-  const rootRef = useRef<HTMLDivElement | null>(null)
 
   useLayoutEffect(() => {
-    const el = rootRef.current
-    if (!el) return
-
+    const el = document.documentElement
     const vars = themeToCSSVars(activeTheme)
     for (const [name, value] of Object.entries(vars)) {
       el.style.setProperty(name, value)
@@ -111,13 +107,7 @@ export const ThemeProvider: React.FC<ThemeProviderProps> = (props) => {
 
   return (
     <ThemeContext.Provider value={value}>
-      <div
-        ref={rootRef}
-        className='cm-theme-root'
-        style={{ display: 'contents' }}
-      >
-        {props.children}
-      </div>
+      {props.children}
     </ThemeContext.Provider>
   )
 }
