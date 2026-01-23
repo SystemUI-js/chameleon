@@ -75,8 +75,8 @@ export const Window = forwardRef<HTMLDivElement, WindowProps>(
       size: controlledSize,
       initialPosition = { x: 0, y: 0 },
       initialSize,
-      minWidth = 200,
-      minHeight = 100,
+      minWidth,
+      minHeight,
       movable,
       resizable,
       interactionMode,
@@ -97,8 +97,8 @@ export const Window = forwardRef<HTMLDivElement, WindowProps>(
       interactionMode ?? windowDefaults.interactionMode ?? windowDragMode
     const resolvedMovable = movable ?? windowDefaults.movable ?? true
     const resolvedResizable = resizable ?? windowDefaults.resizable ?? false
-    const resolvedMinWidth = windowDefaults.minWidth ?? minWidth
-    const resolvedMinHeight = windowDefaults.minHeight ?? minHeight
+    const resolvedMinWidth = minWidth ?? windowDefaults.minWidth ?? 200
+    const resolvedMinHeight = minHeight ?? windowDefaults.minHeight ?? 100
 
     const [pos, setPos] = useState<Position>(controlledPos || initialPosition)
     const [size, setSize] = useState<Size | undefined>(

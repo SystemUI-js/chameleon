@@ -9,8 +9,8 @@
   - Separate context flag per component (more boilerplate; harder to version with theme changes).
 
 **Sources**:
-- MUI theme components `defaultProps`: https://github.com/mui/material-ui/blob/master/docs/data/material/customization/theme-components/theme-components.md
-- MUI example defaultProps usage: https://github.com/mui/material-ui/blob/7a32c455273a4c669c9d21915f7939ae37e51aa4/docs/data/material/customization/theme-components/DefaultProps.tsx
+- MUI theme components `defaultProps`: [MUI theme components defaultProps](https://github.com/mui/material-ui/blob/master/docs/data/material/customization/theme-components/theme-components.md)
+- MUI example defaultProps usage: [MUI example defaultProps usage](https://github.com/mui/material-ui/blob/7a32c455273a4c669c9d21915f7939ae37e51aa4/docs/data/material/customization/theme-components/DefaultProps.tsx)
 
 ## Decision: Theme-scoped overrides for behavior & visuals
 
@@ -21,8 +21,8 @@
   - Runtime style injection in components (conflicts with project’s no CSS-in-JS rule).
 
 **Sources**:
-- Ant Design theme provider (ConfigProvider) and per-component overrides: https://github.com/ant-design/ant-design/blob/master/docs/react/customize-theme.en-US.md
-- Ant Design component-level theme override example: https://context7.com/ant-design/ant-design/llms.txt
+- Ant Design theme provider (ConfigProvider) and per-component overrides: [Ant Design theme provider (ConfigProvider)](https://github.com/ant-design/ant-design/blob/master/docs/react/customize-theme.en-US.md)
+- Ant Design component-level theme override example: [Ant Design component-level theme override example](https://context7.com/ant-design/ant-design/llms.txt)
 
 ## Decision: Window drag interaction modes remain `static` vs `follow`
 
@@ -33,7 +33,7 @@
   - Keep behavior hardcoded per theme class (harder to maintain and test).
 
 **Sources**:
-- Internal implementation: `/home/zhangxiao/frontend/SysUI/chameleon/src/components/Window.tsx` (InteractionMode `'static' | 'follow'`)
+- Internal implementation: [src/components/Window.tsx](src/components/Window.tsx) (InteractionMode `'static' | 'follow'`)
 
 ## Decision: SubMenu and Modal theme alignment via theme overrides
 

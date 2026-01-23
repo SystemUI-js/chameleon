@@ -96,5 +96,3 @@ yarn preview          # 预览构建产物
 
 ## Active Technologies
 - TypeScript 5.6, React 18.2, Vite 5, Sass, Jest + React Testing Library
-- TypeScript 5.6, React 18.2 + Vite 5, Sass, Jest, React Testing Library (003-theme-window-behavior)
-- N/A (component library) (003-theme-window-behavior)

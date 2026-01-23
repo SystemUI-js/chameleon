@@ -18,9 +18,18 @@
   - **window**: `frame`, `titleBarBg`, `titleBarText`, `titleBarBgInactive`, `titleBarTextInactive`, `titleBarHeight`, `closeButtonBg`, `closeButtonBgHover`, `closeButtonBgActive`
   - **taskbar**: `bg`, `height`, `borderLight`, `borderDark`, `itemBg`, `itemBgHover`, `itemBgActive`, `itemText`, `itemTextActive`
   - **startButton**: `bg`, `bgHover`, `bgActive`, `text`, `borderLight`, `borderDark`, `borderDarker`
-- **behavior (planned)**
-  - **windowDragMode**: `'static' | 'follow'`
-  - **windowDefaults**: partial defaults for Window props (e.g., `interactionMode`, `movable`, `resizable`)
+- **behavior**
+  - **windowDragMode**: `'static' | 'follow'` - Default interaction mode for window dragging/updates
+  - **windowDefaults**: Partial defaults for Window props. Example:
+    ```typescript
+    {
+      interactionMode: 'follow' | 'static',
+      movable: boolean,
+      resizable: boolean,
+      minWidth: number,
+      minHeight: number
+    }
+    ```
 
 ### WindowState
 

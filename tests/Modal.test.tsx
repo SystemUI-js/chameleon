@@ -69,7 +69,7 @@ describe('Modal inherits Window behavior', () => {
 
     const modalContent = document.querySelector('.cm-modal-content')
 
-    expect(modalContent).toHaveClass('cm-modal-content')
+    expect(modalContent).toBeInTheDocument()
 
     testContainer.remove()
   })

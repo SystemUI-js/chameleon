@@ -2,7 +2,7 @@
 
 **Purpose**: Validate specification completeness and quality before proceeding to planning
 **Created**: 2026-01-23
-**Feature**: [/home/zhangxiao/frontend/SysUI/chameleon/specs/003-theme-window-behavior/spec.md]
+**Feature**: [../spec.md]
 
 ## Content Quality
 
