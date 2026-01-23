@@ -1,10 +1,4 @@
-import React, {
-  ReactNode,
-  useRef,
-  useContext,
-  useEffect,
-  useLayoutEffect
-} from 'react'
+import React, { ReactNode, useRef, useContext, useLayoutEffect } from 'react'
 import Popover, { PopoverRef } from './Popover'
 import { MenuItem, MenuItemAction } from './menuTypes'
 import './DropDownMenu.scss'
@@ -162,13 +156,6 @@ export const DropDownMenu: React.FC<DropDownMenuProps> = ({
       }
     }
   }
-
-  // Restore focus when submenu closes?
-  useEffect(() => {
-    if (context && isOpen && context.openPath.length === level + 1) {
-      // We are the leaf menu.
-    }
-  }, [context?.openPath, level, isOpen])
 
   const content = (
     <div

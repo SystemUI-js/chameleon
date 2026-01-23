@@ -4,7 +4,8 @@ import React, {
   useEffect,
   ReactNode,
   forwardRef,
-  useImperativeHandle
+  useImperativeHandle,
+  useCallback
 } from 'react'
 import { createPortal } from 'react-dom'
 import './Popover.scss'
@@ -48,15 +49,21 @@ export const Popover = forwardRef<PopoverRef, PopoverProps>(
     const triggerRef = useRef<HTMLDivElement>(null)
     const popoverRef = useRef<HTMLDivElement>(null)
 
-    const handleOpenChange = (newOpen: boolean) => {
-      if (!isControlled) {
-        setInternalOpen(newOpen)
-      }
-      onVisibleChange?.(newOpen)
-    }
+    const handleOpenChange = useCallback(
+      (newOpen: boolean) => {
+        if (!isControlled) {
+          setInternalOpen(newOpen)
+        }
+        onVisibleChange?.(newOpen)
+      },
+      [isControlled, onVisibleChange]
+    )
 
-    const toggle = () => handleOpenChange(!isOpen)
-    const close = () => handleOpenChange(false)
+    const toggle = useCallback(
+      () => handleOpenChange(!isOpen),
+      [handleOpenChange, isOpen]
+    )
+    const close = useCallback(() => handleOpenChange(false), [handleOpenChange])
 
     useImperativeHandle(ref, () => ({
       close
@@ -77,9 +84,6 @@ export const Popover = forwardRef<PopoverRef, PopoverProps>(
 
       const handleKeyDown = (e: KeyboardEvent) => {
         if (e.key === 'Escape' && isOpen) {
-          // We handle Escape here for the Popover itself, but Menu might want to handle it too.
-          // If we close here, it might conflict with Menu's logic if Menu also listens to Escape.
-          // But for a generic Popover, closing on Escape is standard.
           close()
         }
       }
@@ -90,7 +94,7 @@ export const Popover = forwardRef<PopoverRef, PopoverProps>(
         document.removeEventListener('mousedown', handleClickOutside)
         document.removeEventListener('keydown', handleKeyDown)
       }
-    }, [isOpen, isControlled, onVisibleChange])
+    }, [isOpen, close])
 
     const handleTriggerKeyDown = (e: React.KeyboardEvent) => {
       if (e.key === 'Enter' || e.key === ' ') {
