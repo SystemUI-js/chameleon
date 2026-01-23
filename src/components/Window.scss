@@ -66,3 +66,80 @@
   background: #fafafa;
   color: #999;
 }
+
+.cm-window.isDragging {
+  user-select: none;
+  cursor: move;
+
+  iframe {
+    pointer-events: none;
+  }
+}
+
+.cm-window__resize-handle {
+  position: absolute;
+  z-index: 10;
+  touch-action: none;
+
+  &[data-direction='n'] {
+    top: -4px;
+    left: 4px;
+    right: 4px;
+    height: 8px;
+    cursor: n-resize;
+  }
+  &[data-direction='s'] {
+    bottom: -4px;
+    left: 4px;
+    right: 4px;
+    height: 8px;
+    cursor: s-resize;
+  }
+  &[data-direction='e'] {
+    right: -4px;
+    top: 4px;
+    bottom: 4px;
+    width: 8px;
+    cursor: e-resize;
+  }
+  &[data-direction='w'] {
+    left: -4px;
+    top: 4px;
+    bottom: 4px;
+    width: 8px;
+    cursor: w-resize;
+  }
+
+  &[data-direction='ne'] {
+    top: -4px;
+    right: -4px;
+    width: 12px;
+    height: 12px;
+    cursor: ne-resize;
+    z-index: 11;
+  }
+  &[data-direction='nw'] {
+    top: -4px;
+    left: -4px;
+    width: 12px;
+    height: 12px;
+    cursor: nw-resize;
+    z-index: 11;
+  }
+  &[data-direction='se'] {
+    bottom: -4px;
+    right: -4px;
+    width: 12px;
+    height: 12px;
+    cursor: se-resize;
+    z-index: 11;
+  }
+  &[data-direction='sw'] {
+    bottom: -4px;
+    left: -4px;
+    width: 12px;
+    height: 12px;
+    cursor: sw-resize;
+    z-index: 11;
+  }
+}

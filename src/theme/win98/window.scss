@@ -7,6 +7,10 @@
     font-family: var(--cm-typography-font-family);
     font-size: var(--cm-typography-font-size);
     border: none;
+
+    &.isDragging {
+      z-index: 9999;
+    }
   }
 
   .cm-window__title-bar {
