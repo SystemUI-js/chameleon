@@ -51,8 +51,8 @@ export interface WindowProps
   onMoveEnd?: (pos: Position) => void
 
   onResizeStart?: () => void
-  onResizing?: (size: Size) => void
-  onResizeEnd?: (size: Size) => void
+  onResizing?: (data: { size: Size; position: Position }) => void
+  onResizeEnd?: (data: { size: Size; position: Position }) => void
 }
 
 type ResizeDirection = 'n' | 's' | 'e' | 'w' | 'ne' | 'nw' | 'se' | 'sw'
@@ -305,7 +305,7 @@ export const Window = forwardRef<HTMLDivElement, WindowProps>(
               setPos(newPos)
               setSize(newSize)
             }
-            onResizing?.(newSize)
+            onResizing?.({ size: newSize, position: newPos })
           }
 
           rafRef.current = null
@@ -351,7 +351,7 @@ export const Window = forwardRef<HTMLDivElement, WindowProps>(
       if (type === 'move') {
         onMoveEnd?.(finalPos)
       } else {
-        onResizeEnd?.(finalSize)
+        onResizeEnd?.({ size: finalSize, position: finalPos })
       }
     }, [onMoveEnd, onResizeEnd])
 

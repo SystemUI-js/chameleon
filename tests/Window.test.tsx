@@ -191,11 +191,17 @@ describe('Window interactions', () => {
       clientY: 240
     })
 
-    expect(onResizing).toHaveBeenCalledWith({ width: 350, height: 240 })
+    expect(onResizing).toHaveBeenCalledWith({
+      size: { width: 350, height: 240 },
+      position: { x: 0, y: 0 }
+    })
 
     fireEvent.pointerUp(windowEl, { pointerId: 2 })
 
-    expect(onResizeEnd).toHaveBeenCalledWith({ width: 350, height: 240 })
+    expect(onResizeEnd).toHaveBeenCalledWith({
+      size: { width: 350, height: 240 },
+      position: { x: 0, y: 0 }
+    })
 
     testContainer.remove()
   })
@@ -242,11 +248,17 @@ describe('Window interactions', () => {
     })
 
     // In static mode, onResizing should be called for consumers to render ghost outline
-    expect(onResizing).toHaveBeenCalledWith({ width: 360, height: 250 })
+    expect(onResizing).toHaveBeenCalledWith({
+      size: { width: 360, height: 250 },
+      position: { x: 0, y: 0 }
+    })
 
     fireEvent.pointerUp(windowEl, { pointerId: 3 })
 
-    expect(onResizeEnd).toHaveBeenCalledWith({ width: 360, height: 250 })
+    expect(onResizeEnd).toHaveBeenCalledWith({
+      size: { width: 360, height: 250 },
+      position: { x: 0, y: 0 }
+    })
 
     testContainer.remove()
   })
