@@ -1,5 +1,6 @@
 ### [UnReleased]
 
+- Fix Window component: add cleanup for requestAnimationFrame to prevent state updates after unmount
 - Fix Window component: optimize pointer event handling with RAF, cache coordinates before frame, improve capture/release flow, and fix static mode callback behavior
 - 对齐 ESLint 配置，引入 @system-ui-js/development-base React 规范
 - 更新 Prettier 忽略规则

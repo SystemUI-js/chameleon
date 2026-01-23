@@ -135,6 +135,15 @@ export const Window = forwardRef<HTMLDivElement, WindowProps>(
     const rafRef = useRef<number | null>(null)
 
     useEffect(() => {
+      return () => {
+        if (rafRef.current) {
+          cancelAnimationFrame(rafRef.current)
+          rafRef.current = null
+        }
+      }
+    }, [])
+
+    useEffect(() => {
       if (!interactionRef.current.active && controlledPos) {
         setPos(controlledPos)
       }
