@@ -5,6 +5,10 @@
     border-radius: 6px 6px 0 0;
     box-shadow: 0;
     border: 3px solid rgb(2, 14, 121);
+
+    &.isDragging {
+      z-index: 9999;
+    }
   }
 
   .cm-window__title-bar {
