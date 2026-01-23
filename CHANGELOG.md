@@ -1,8 +1,21 @@
 ### [UnReleased]
 
-- Fix Window component: add cleanup for requestAnimationFrame to prevent state updates after unmount
+- Fix Window component: props should take precedence over theme defaults for minWidth/minHeight to enable per-component override
+- Fix specification documents: update data-model.md to reflect current implementation (remove planned, add windowDefaults examples)
+- Fix specification documents: convert absolute paths to relative paths in requirements.md and research.md
+- Fix specification documents: fix markdown list indentation in spec.md
+- Fix specification documents: wrap bare URLs with Markdown link text in research.md to resolve MD034 lint errors
+- Fix AGENTS.md: clean up Active Technologies section, remove duplicate entries
+- Fix Modal.test.tsx: replace redundant class check with existence assertion
 - Fix Window component: optimize pointer event handling with RAF, cache coordinates before frame, improve capture/release flow, and fix static mode callback behavior
 - **Breaking:** Fix Window component: update onResizing and onResizeEnd callbacks to include position data (west/north resize changes position). Old: onResizing(size: Size), onResizeEnd(size: Size); New: onResizing({ size: Size; position: Position }), onResizeEnd({ size: Size; position: Position }). Migration: Update usages to handle position data, as west/north resize also changes position
+- **Feature:** Add ThemeBehavior system to allow configuring window default behaviors at theme level (drag mode, movable, resizable, min dimensions)
+- Add useThemeBehavior hook to access theme behavior configuration
+- Window component now respects theme-level default behavior settings with per-component override support
+- Add Window component onActive callback for activation state change notifications
+- Add ThemeContext.test.tsx for theme behavior testing
+- Add 003-theme-window-behavior specification documentation
+- Update Win98 and WinXP themes with behavior configurations
 - 对齐 ESLint 配置，引入 @system-ui-js/development-base React 规范
 - 更新 Prettier 忽略规则
 - Fix jsx-a11y lint errors in Breadcrumb, Collapse, Modal, Select, Shortcut, Splitter, Tabs, Transfer, Tree components

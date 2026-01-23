@@ -1,8 +1,9 @@
 import { render } from '@testing-library/react'
 import { screen, fireEvent } from '@testing-library/dom'
 import '@testing-library/jest-dom'
-import { DropDownMenu } from '../src'
+import { DropDownMenu, ThemeProvider } from '../src'
 import { MenuItem } from '../src/components/menuTypes'
+import { winxp } from '../src/theme/winxp'
 
 describe('DropDownMenu submenu rendering', () => {
   it('renders nested submenu content when opened', () => {
@@ -18,9 +19,11 @@ describe('DropDownMenu submenu rendering', () => {
     ]
 
     render(
-      <DropDownMenu items={items}>
-        <button data-testid='dropdown-trigger'>Open</button>
-      </DropDownMenu>
+      <ThemeProvider defaultTheme={winxp}>
+        <DropDownMenu items={items}>
+          <button data-testid='dropdown-trigger'>Open</button>
+        </DropDownMenu>
+      </ThemeProvider>
     )
 
     expect(screen.queryByText('Edit')).not.toBeInTheDocument()
@@ -29,5 +32,8 @@ describe('DropDownMenu submenu rendering', () => {
 
     fireEvent.click(screen.getByText('Edit'))
     expect(screen.getByText('Undo')).toBeInTheDocument()
+
+    const menu = document.querySelector('.cm-dropdown-menu')
+    expect(menu).toHaveClass('cm-dropdown-menu')
   })
 })

@@ -1,7 +1,9 @@
 import { render } from '@testing-library/react'
 import { fireEvent } from '@testing-library/dom'
 import '@testing-library/jest-dom'
-import { Window } from '../src'
+import { Window, ThemeProvider } from '../src'
+import { winxp } from '../src/theme/winxp'
+import { win98 } from '../src/theme/win98'
 
 type RectInput = {
   width: number
@@ -60,14 +62,16 @@ describe('Window interactions', () => {
       document.createElement('div')
     )
     const { container } = render(
-      <Window
-        title='Test'
-        initialPosition={{ x: 100, y: 100 }}
-        movable
-        onMoveStart={onMoveStart}
-        onMoving={onMoving}
-        onMoveEnd={onMoveEnd}
-      />,
+      <ThemeProvider defaultTheme={winxp}>
+        <Window
+          title='Test'
+          initialPosition={{ x: 100, y: 100 }}
+          movable
+          onMoveStart={onMoveStart}
+          onMoving={onMoving}
+          onMoveEnd={onMoveEnd}
+        />
+      </ThemeProvider>,
       { container: testContainer }
     )
 
@@ -107,6 +111,66 @@ describe('Window interactions', () => {
     testContainer.remove()
   })
 
+  it('fires onActive when becoming active and not when already active', () => {
+    const onActive = jest.fn()
+
+    const testContainer = document.body.appendChild(
+      document.createElement('div')
+    )
+    const { rerender } = render(
+      <ThemeProvider defaultTheme={winxp}>
+        <Window title='Test' isActive={false} onActive={onActive} />
+      </ThemeProvider>,
+      { container: testContainer }
+    )
+
+    const getTitleBar = () =>
+      testContainer.querySelector('.cm-window__title-bar') as HTMLElement
+
+    attachPointerCaptureMocks(getTitleBar())
+
+    fireEvent.pointerDown(getTitleBar(), {
+      button: 0,
+      pointerId: 1,
+      clientX: 10,
+      clientY: 10
+    })
+
+    expect(onActive).toHaveBeenCalledTimes(1)
+
+    rerender(
+      <ThemeProvider defaultTheme={winxp}>
+        <Window title='Test' isActive onActive={onActive} />
+      </ThemeProvider>
+    )
+
+    fireEvent.pointerDown(getTitleBar(), {
+      button: 0,
+      pointerId: 2,
+      clientX: 12,
+      clientY: 12
+    })
+
+    expect(onActive).toHaveBeenCalledTimes(1)
+
+    rerender(
+      <ThemeProvider defaultTheme={winxp}>
+        <Window title='Test' isActive={false} onActive={onActive} />
+      </ThemeProvider>
+    )
+
+    fireEvent.pointerDown(getTitleBar(), {
+      button: 0,
+      pointerId: 3,
+      clientX: 14,
+      clientY: 14
+    })
+
+    expect(onActive).toHaveBeenCalledTimes(2)
+
+    testContainer.remove()
+  })
+
   it('does not move when movable is false', () => {
     const onMoveStart = jest.fn()
     const onMoveEnd = jest.fn()
@@ -115,12 +179,14 @@ describe('Window interactions', () => {
       document.createElement('div')
     )
     const { container } = render(
-      <Window
-        title='Test'
-        movable={false}
-        onMoveStart={onMoveStart}
-        onMoveEnd={onMoveEnd}
-      />,
+      <ThemeProvider defaultTheme={winxp}>
+        <Window
+          title='Test'
+          movable={false}
+          onMoveStart={onMoveStart}
+          onMoveEnd={onMoveEnd}
+        />
+      </ThemeProvider>,
       { container: testContainer }
     )
 
@@ -152,17 +218,19 @@ describe('Window interactions', () => {
       document.createElement('div')
     )
     const { container } = render(
-      <Window
-        title='Test'
-        resizable
-        initialSize={{ width: 300, height: 200 }}
-        minWidth={200}
-        minHeight={100}
-        interactionMode='follow'
-        onResizeStart={onResizeStart}
-        onResizing={onResizing}
-        onResizeEnd={onResizeEnd}
-      />,
+      <ThemeProvider defaultTheme={winxp}>
+        <Window
+          title='Test'
+          resizable
+          initialSize={{ width: 300, height: 200 }}
+          minWidth={200}
+          minHeight={100}
+          interactionMode='follow'
+          onResizeStart={onResizeStart}
+          onResizing={onResizing}
+          onResizeEnd={onResizeEnd}
+        />
+      </ThemeProvider>,
       { container: testContainer }
     )
 
@@ -214,14 +282,16 @@ describe('Window interactions', () => {
       document.createElement('div')
     )
     const { container } = render(
-      <Window
-        title='Test'
-        resizable
-        initialSize={{ width: 300, height: 200 }}
-        interactionMode='static'
-        onResizing={onResizing}
-        onResizeEnd={onResizeEnd}
-      />,
+      <ThemeProvider defaultTheme={winxp}>
+        <Window
+          title='Test'
+          resizable
+          initialSize={{ width: 300, height: 200 }}
+          interactionMode='static'
+          onResizing={onResizing}
+          onResizeEnd={onResizeEnd}
+        />
+      </ThemeProvider>,
       { container: testContainer }
     )
 
@@ -247,7 +317,6 @@ describe('Window interactions', () => {
       clientY: 250
     })
 
-    // In static mode, onResizing should be called for consumers to render ghost outline
     expect(onResizing).toHaveBeenCalledWith({
       size: { width: 360, height: 250 },
       position: { x: 0, y: 0 }
@@ -259,6 +328,53 @@ describe('Window interactions', () => {
       size: { width: 360, height: 250 },
       position: { x: 0, y: 0 }
     })
+
+    testContainer.remove()
+  })
+
+  it('uses theme default interactionMode when not provided', () => {
+    const onMoving = jest.fn()
+
+    const testContainer = document.body.appendChild(
+      document.createElement('div')
+    )
+    const { container } = render(
+      <ThemeProvider defaultTheme={win98}>
+        <Window
+          title='Test'
+          movable
+          initialPosition={{ x: 10, y: 10 }}
+          onMoving={onMoving}
+        />
+      </ThemeProvider>,
+      { container: testContainer }
+    )
+
+    const windowEl = container.querySelector('.cm-window') as HTMLElement
+    const titleBar = container.querySelector(
+      '.cm-window__title-bar'
+    ) as HTMLElement
+
+    attachPointerCaptureMocks(titleBar)
+    attachPointerCaptureMocks(windowEl)
+    setRect(windowEl, { width: 300, height: 200, left: 10, top: 10 })
+
+    fireEvent.pointerDown(titleBar, {
+      button: 0,
+      pointerId: 4,
+      clientX: 20,
+      clientY: 20
+    })
+
+    fireEvent.pointerMove(windowEl, {
+      pointerId: 4,
+      clientX: 40,
+      clientY: 40
+    })
+
+    expect(onMoving).toHaveBeenCalledWith({ x: 30, y: 30 })
+
+    fireEvent.pointerUp(windowEl, { pointerId: 4 })
 
     testContainer.remove()
   })

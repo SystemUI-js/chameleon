@@ -100,5 +100,15 @@ export const win98: Theme = {
       borderDark: '#808080',
       borderDarker: '#000000'
     }
+  },
+  behavior: {
+    windowDragMode: 'static',
+    windowDefaults: {
+      interactionMode: 'static',
+      movable: true,
+      resizable: false,
+      minWidth: 200,
+      minHeight: 100
+    }
   }
 }

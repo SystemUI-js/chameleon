@@ -91,6 +91,7 @@ yarn preview          # 预览构建产物
 - CI: PR 必须通过 lint → test → build → npm pack dry-run
 
 ## Recent Changes
+- 003-theme-window-behavior: Added TypeScript 5.6, React 18.2 + Vite 5, Sass, Jest, React Testing Library
 - 001-menu-dropdown: 新增多级子菜单功能，支持键盘导航与焦点管理
 
 ## Active Technologies

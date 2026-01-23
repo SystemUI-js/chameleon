@@ -1,5 +1,5 @@
 import React, { useState } from 'react'
-import { winxp } from '../theme/winxp'
+import { defaultTheme } from '../theme/default'
 import { createRoot } from 'react-dom/client'
 import {
   ThemeProvider,
@@ -47,6 +47,7 @@ const Desktop = () => {
         {/* Controls Window */}
         <Window
           title='Component Gallery'
+          resizable
           style={{
             width: 400,
             position: 'absolute',
@@ -55,7 +56,7 @@ const Desktop = () => {
             zIndex: activeWindow === 'controls' ? 10 : 1
           }}
           isActive={activeWindow === 'controls'}
-          onMouseDown={() => setActiveWindow('controls')}
+          onActive={() => setActiveWindow('controls')}
           onClose={() => console.log('Close')}
         >
           <WindowMenu
@@ -234,6 +235,7 @@ const Desktop = () => {
         {/* Layout Window */}
         <Window
           title='Layout & Typography'
+          resizable
           style={{
             width: 450,
             position: 'absolute',
@@ -242,7 +244,7 @@ const Desktop = () => {
             zIndex: activeWindow === 'layout' ? 10 : 1
           }}
           isActive={activeWindow === 'layout'}
-          onMouseDown={() => setActiveWindow('layout')}
+          onActive={() => setActiveWindow('layout')}
         >
           <Tabs
             items={[
@@ -384,7 +386,7 @@ if (container) {
   const root = createRoot(container)
   root.render(
     <React.StrictMode>
-      <ThemeProvider defaultTheme={winxp}>
+      <ThemeProvider defaultTheme={defaultTheme}>
         <Desktop />
       </ThemeProvider>
     </React.StrictMode>
