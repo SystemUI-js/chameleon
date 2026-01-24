@@ -109,7 +109,7 @@ export const Window = forwardRef<HTMLDivElement, WindowProps>(
     const [previewPos, setPreviewPos] = useState<Position | null>(null)
     const onActiveRef = useRef(onActive)
     const isActiveRef = useRef(isActive)
-    const activationSourceRef = useRef<'pointer' | null>(null)
+    const activationSourceRef = useRef<'pointer' | 'keyboard' | null>(null)
 
     const interactionRef = useRef<{
       active: boolean
@@ -213,6 +213,17 @@ export const Window = forwardRef<HTMLDivElement, WindowProps>(
       }
     }
 
+    const handleKeyDown = (e: React.KeyboardEvent<HTMLDivElement>) => {
+      if (!activateWholeArea) return
+      if ((e.target as HTMLElement).closest('.cm-window__controls')) return
+
+      if ((e.key === 'Enter' || e.key === ' ') && !isActive) {
+        e.preventDefault()
+        activationSourceRef.current = 'keyboard'
+        onActiveRef.current?.()
+      }
+    }
+
     const handlePointerDown = (
       e: PointerEvent<Element>,
       type: 'move' | 'resize',
@@ -277,6 +288,7 @@ export const Window = forwardRef<HTMLDivElement, WindowProps>(
         const clientX = e.clientX
         const clientY = e.clientY
 
+        /* eslint-disable sonarjs/cognitive-complexity */
         rafRef.current = requestAnimationFrame(() => {
           const {
             startX,
@@ -443,6 +455,9 @@ export const Window = forwardRef<HTMLDivElement, WindowProps>(
           className={cls}
           style={combinedStyle}
           onClick={handleClick}
+          onKeyDown={handleKeyDown}
+          role={activateWholeArea ? 'button' : undefined}
+          tabIndex={activateWholeArea ? 0 : undefined}
           onPointerMove={handlePointerMove}
           onPointerUp={handlePointerUp}
           onPointerCancel={handlePointerUp}

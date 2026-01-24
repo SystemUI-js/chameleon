@@ -11,4 +11,9 @@ export * from './theme/win98'
 export * from './theme/winxp'
 
 export * from './components'
-export type { WindowInteractionState, ResizeDirection, MenuPath } from './types'
+export type {
+  WindowInteractionState,
+  ResizeDirection,
+  MenuPath,
+  MenuItem
+} from './types'

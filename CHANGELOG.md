@@ -7,7 +7,6 @@
 - Fix AGENTS.md: clean up Active Technologies section, remove duplicate entries
 - Fix Modal.test.tsx: replace redundant class check with existence assertion
 - Fix Window component: optimize pointer event handling with RAF, cache coordinates before frame, improve capture/release flow, and fix static mode callback behavior
-- Fix Window component: update onResizing and onResizeEnd callbacks to include position data (west/north resize changes position). Old: onResizing(size: Size), onResizeEnd(size: Size); New: onResizing({ size: Size; position: Position }), onResizeEnd({ size: Size; position: Position }). Migration: Update usages to handle position data, as west/north resize also changes position
 - **Breaking:** Fix Window component: update onResizing and onResizeEnd callbacks to include position data (west/north resize changes position). Old: onResizing(size: Size), onResizeEnd(size: Size); New: onResizing({ size: Size; position: Position }), onResizeEnd({ size: Size; position: Position }). Migration: Update usages to handle position data, as west/north resize also changes position
 - **Feature:** Add ThemeBehavior system to allow configuring window default behaviors at theme level (drag mode, movable, resizable, min dimensions)
 - Add useThemeBehavior hook to access theme behavior configuration
@@ -24,7 +23,6 @@
 - Update AGENTS guidance
 - Fix Select component hardcoded ID to use useId() for unique listbox IDs
 - Fix Splitter component keyboard handler to call onResizeEnd after arrow key resize
-- Fix submenu focus management: always focus first item when submenu opens
 - Fix DropDownMenu component: reduce cognitive complexity by extracting helper function
 - **Feature:** Add activateWholeArea config for window behavior control
 - Add activateWholeArea to WindowDefaults interface in theme types

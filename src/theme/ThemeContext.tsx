@@ -87,6 +87,7 @@ export const ThemeProvider: React.FC<ThemeProviderProps> = (props) => {
       el.style.setProperty(name, value)
     }
     el.dataset.cmTheme = activeTheme.id
+    el.classList.add('cm-theme-root')
   }, [activeTheme])
 
   const setTheme = useCallback(

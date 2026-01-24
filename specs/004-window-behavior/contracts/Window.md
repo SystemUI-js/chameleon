@@ -56,7 +56,7 @@ Window 组件提供可拖拽、可缩放的窗口容器，支持主题化的外�
 | 模式 | 拖拽行为 | 缩放行为 |
 |------|----------|----------|
 | `'follow'` | 实时移动窗口 | 实时调整窗口大小 |
-| `'static'` (Win98) | 显示虚线预览框 | 拖拽结束才应用新位置 | 标准缩放行为 |
+| `'static'` (Win98) | 显示虚线预览框，拖拽结束才应用新位置 | 标准缩放行为 |
 
 ### 光标行为
 
@@ -90,7 +90,7 @@ function App() {
   const { theme, setTheme } = useTheme()
 
   return (
-    <ThemeProvider theme={theme} setTheme={setTheme}>
+    <ThemeProvider theme={theme}>
       <Window
         isActive={isActive}
         onActive={() => setIsActive(true)}
@@ -107,11 +107,11 @@ function App() {
 ### Win98 主题 + 静态拖拽模式
 
 ```tsx
-import { Window, winxp } from '@sysui/chameleon'
+import { Window, win98 } from '@sysui/chameleon'
 
 function Win98Window() {
   return (
-    <ThemeProvider theme={winxp}>
+    <ThemeProvider theme={win98}>
       <Window
         interactionMode="static"  // 启用虚线预览框
         title="Win98 风格窗口"

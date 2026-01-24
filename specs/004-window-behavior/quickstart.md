@@ -348,9 +348,9 @@ useLayoutEffect(() => {
 
 ## 5. 右键菜单实现
 
-### 5.1 创建 ContextMenu 组件
+### 5.1 创建 DropDownMenu 组件
 
-**目标**：提供通用的右键菜单能力，继承自 DropMenu
+**目标**：提供通用的右键菜单能力，继承自 DropDownMenu
 
 **实现步骤**：
 

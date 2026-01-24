@@ -1,3 +1,5 @@
+import type React from 'react'
+
 export type WindowInteractionState = {
   readonly active: boolean
   readonly type: 'move' | 'resize' | null

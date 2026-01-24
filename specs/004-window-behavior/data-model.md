@@ -173,7 +173,6 @@ Window (1) ────── (1) ContextMenu
 | 场景 | 交互状态 | 期望光标 |
 |------|----------|----------|
 | 拖拽中 | `type: 'move'` | `move` |
-| 拖拽中 | `type: 'resize'` | 保持 `move`（根据需求）|
 | 缩放中 | `type: 'resize', direction: 'n'` | `n-resize` |
 | 缩放中 | `type: 'resize', direction: 'se'` | `se-resize` |
 | 无交互 | `active: false` | `default` |
