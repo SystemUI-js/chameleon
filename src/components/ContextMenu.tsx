@@ -25,6 +25,7 @@ export const ContextMenu: React.FC<ContextMenuProps> = ({
   const [position, setPosition] = useState({ x: 0, y: 0 })
   const menuRef = useRef<HTMLDivElement>(null)
   const itemRefs = useRef<(HTMLDivElement | null)[]>([])
+  const refCounter = useRef(0)
   const [openPath, setOpenPath] = useState<string[]>([])
 
   const handleContextMenu = useCallback(
@@ -45,6 +46,22 @@ export const ContextMenu: React.FC<ContextMenuProps> = ({
     [items]
   )
 
+  const handleTriggerContextMenu = useCallback(
+    (e: React.MouseEvent) => {
+      if (React.isValidElement(children)) {
+        const childElement = children as React.ReactElement<{
+          onContextMenu?: React.MouseEventHandler
+        }>
+        childElement.props.onContextMenu?.(e)
+      }
+
+      if (!e.defaultPrevented) {
+        handleContextMenu(e)
+      }
+    },
+    [children, handleContextMenu]
+  )
+
   const handleClose = useCallback(() => {
     setIsOpen(false)
     setOpenPath([])
@@ -56,7 +73,8 @@ export const ContextMenu: React.FC<ContextMenuProps> = ({
 
       const menu = document.querySelector('.cm-context-menu')
       if (menu && !menu.contains(e.target as Node)) {
-        handleClose()
+        setIsOpen(false)
+        setOpenPath([])
       }
     }
 
@@ -64,7 +82,7 @@ export const ContextMenu: React.FC<ContextMenuProps> = ({
     return () => {
       document.removeEventListener('mousedown', handleClickOutside)
     }
-  }, [isOpen, handleClose])
+  }, [isOpen])
 
   useEffect(() => {
     if (isOpen && itemRefs.current[0]) {
@@ -79,17 +97,15 @@ export const ContextMenu: React.FC<ContextMenuProps> = ({
     }
   }
 
-  const renderMenuItem = (
-    item: MenuItem,
-    index: number,
-    level: number = 0
-  ): ReactNode => {
+  const renderMenuItem = (item: MenuItem, level: number = 0): ReactNode => {
     if (item.items) {
       const isSubmenuOpen = openPath[level] === item.id
       return (
         <div
           key={item.id}
-          ref={(el) => (itemRefs.current[index] = el)}
+          ref={(el) => {
+            itemRefs.current[refCounter.current++] = el
+          }}
           className={`cm-dropdown-item ${item.disabled ? 'cm-dropdown-item--disabled' : ''} cm-dropdown-item--submenu ${isSubmenuOpen ? 'cm-dropdown-item--active' : ''}`}
           role='menuitem'
           tabIndex={-1}
@@ -114,9 +130,7 @@ export const ContextMenu: React.FC<ContextMenuProps> = ({
           <span className='cm-dropdown-item__arrow'>▶</span>
           {isSubmenuOpen && (
             <div className='cm-context-submenu'>
-              {item.items.map((subItem, subIndex) =>
-                renderMenuItem(subItem, index + subIndex + 1, level + 1)
-              )}
+              {item.items.map((subItem) => renderMenuItem(subItem, level + 1))}
             </div>
           )}
         </div>
@@ -126,7 +140,9 @@ export const ContextMenu: React.FC<ContextMenuProps> = ({
     return (
       <div
         key={item.id}
-        ref={(el) => (itemRefs.current[index] = el)}
+        ref={(el) => {
+          itemRefs.current[refCounter.current++] = el
+        }}
         className={`cm-dropdown-item ${item.disabled ? 'cm-dropdown-item--disabled' : ''}`}
         role='menuitem'
         tabIndex={-1}
@@ -149,11 +165,24 @@ export const ContextMenu: React.FC<ContextMenuProps> = ({
     )
   }
 
-  const childrenWithHandler = React.isValidElement(children)
-    ? React.cloneElement(children as React.ReactElement, {
-        onContextMenu: handleContextMenu
-      })
-    : children
+  let childrenWithHandler: ReactNode
+  if (React.isValidElement(children)) {
+    childrenWithHandler = React.cloneElement(children as React.ReactElement, {
+      onContextMenu: handleTriggerContextMenu
+    })
+  } else if (children != null) {
+    childrenWithHandler = (
+      <div
+        className='cm-context-menu__trigger'
+        onContextMenu={handleTriggerContextMenu}
+        role='presentation'
+      >
+        {children}
+      </div>
+    )
+  } else {
+    childrenWithHandler = children
+  }
 
   return (
     <>
@@ -172,7 +201,10 @@ export const ContextMenu: React.FC<ContextMenuProps> = ({
             }}
           >
             <div className='cm-dropdown-menu'>
-              {items.map((item, index) => renderMenuItem(item, index))}
+              {(() => {
+                refCounter.current = 0
+                return items.map((item) => renderMenuItem(item))
+              })()}
             </div>
           </div>,
           document.body

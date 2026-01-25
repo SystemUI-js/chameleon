@@ -7,7 +7,7 @@
 - Fix AGENTS.md: clean up Active Technologies section, remove duplicate entries
 - Fix Modal.test.tsx: replace redundant class check with existence assertion
 - Fix Window component: optimize pointer event handling with RAF, cache coordinates before frame, improve capture/release flow, and fix static mode callback behavior
-- **Breaking:** Fix Window component: update onResizing and onResizeEnd callbacks to include position data (west/north resize changes position). Old: onResizing(size: Size), onResizeEnd(size: Size); New: onResizing({ size: Size; position: Position }), onResizeEnd({ size: Size; position: Position }). Migration: Update usages to handle position data, as west/north resize also changes position
+- **Breaking:** Fix Window component: update onResizing/onResizeEnd signatures to accept `{ size: Size; position: Position }` instead of `size: Size`. Migration: update usages to handle position data; west/north resizes also change position
 - **Feature:** Add ThemeBehavior system to allow configuring window default behaviors at theme level (drag mode, movable, resizable, min dimensions)
 - Add useThemeBehavior hook to access theme behavior configuration
 - Window component now respects theme-level default behavior settings with per-component override support

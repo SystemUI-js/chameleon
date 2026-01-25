@@ -84,22 +84,29 @@ Window 组件提供可拖拽、可缩放的窗口容器，支持主题化的外�
 ### 基本用法
 
 ```tsx
-import { Window, ThemeProvider, useTheme } from '@sysui/chameleon'
+import { Window, ThemeProvider, useTheme, win98 } from '@sysui/chameleon'
 
 function App() {
+  return (
+    <ThemeProvider theme={win98}>
+      <WindowExample />
+    </ThemeProvider>
+  )
+}
+
+function WindowExample() {
   const { theme, setTheme } = useTheme()
 
   return (
-    <ThemeProvider theme={theme}>
-      <Window
-        isActive={isActive}
-        onActive={() => setIsActive(true)}
-        onClose={() => setIsActive(false)}
-        title="示例窗口"
-      >
-        <div>窗口内容</div>
-      </Window>
-    </ThemeProvider>
+    <Window
+      isActive={isActive}
+      onActive={() => setIsActive(true)}
+      onClose={() => setIsActive(false)}
+      title="示例窗口"
+    >
+      <div>当前主题：{theme.name}</div>
+      <div>窗口内容</div>
+    </Window>
   )
 }
 ```
