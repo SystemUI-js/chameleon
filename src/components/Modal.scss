@@ -15,8 +15,7 @@
   min-width: 300px;
   max-width: 90vw;
   max-height: 90vh;
-  /* Native Default: White card */
-  background: white;
-  border-radius: 4px;
-  box-shadow: 0 4px 12px rgba(0, 0, 0, 0.15);
+  background: var(--cm-color-surface, white);
+  border-radius: var(--cm-radius-md, 4px);
+  box-shadow: var(--cm-shadow-popup, 0 4px 12px rgba(0, 0, 0, 0.15));
 }

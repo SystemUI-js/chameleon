@@ -1,7 +1,12 @@
-.cm-theme-root[data-cm-theme='winxp'] {
-  .cm-modal-content {
-    background: transparent;
-    border-radius: 0;
-    box-shadow: none;
-  }
+[data-cm-theme='winxp'] .cm-modal-overlay {
+  background-color: var(--cm-color-surface, #f5f3e5);
+}
+
+[data-cm-theme='winxp'] .cm-modal-content {
+  min-width: 300px;
+  max-width: 90vw;
+  max-height: 90vh;
+  background: var(--cm-components-modal-bg, #f5f3e5);
+  border-radius: var(--cm-radius-md, 4px);
+  box-shadow: var(--cm-shadow-popup, 4px 4px 12px rgba(0, 0, 0, 0.15));
 }

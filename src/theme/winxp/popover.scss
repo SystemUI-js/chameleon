@@ -1,3 +1,8 @@
-.cm-theme-root[data-cm-theme='winxp'] {
-  // Placeholder for popover overrides
+[data-cm-theme='winxp'] .cm-popover {
+  background-color: var(--cm-components-popover-bg, #f5f3e5);
+  border-color: var(--cm-components-popover-border, #d4c4b8);
+}
+
+[data-cm-theme='winxp'] .cm-popover-arrow {
+  border-color: var(--cm-color-border, #6f6f5f);
 }

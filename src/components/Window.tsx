@@ -99,15 +99,17 @@ export const Window = forwardRef<HTMLDivElement, WindowProps>(
     const resolvedResizable = resizable ?? windowDefaults.resizable ?? false
     const resolvedMinWidth = minWidth ?? windowDefaults.minWidth ?? 200
     const resolvedMinHeight = minHeight ?? windowDefaults.minHeight ?? 100
+    const activateWholeArea = windowDefaults.activateWholeArea ?? true
 
     const [pos, setPos] = useState<Position>(controlledPos || initialPosition)
     const [size, setSize] = useState<Size | undefined>(
       controlledSize || initialSize
     )
     const [isDragging, setIsDragging] = useState(false)
+    const [previewPos, setPreviewPos] = useState<Position | null>(null)
     const onActiveRef = useRef(onActive)
     const isActiveRef = useRef(isActive)
-    const activationSourceRef = useRef<'pointer' | null>(null)
+    const activationSourceRef = useRef<'pointer' | 'keyboard' | null>(null)
 
     const interactionRef = useRef<{
       active: boolean
@@ -201,6 +203,27 @@ export const Window = forwardRef<HTMLDivElement, WindowProps>(
       }
     }
 
+    const handleClick = (e: React.MouseEvent<HTMLDivElement>) => {
+      if (!activateWholeArea) return
+      if ((e.target as HTMLElement).closest('.cm-window__controls')) return
+
+      if (!isActive) {
+        activationSourceRef.current = 'pointer'
+        onActiveRef.current?.()
+      }
+    }
+
+    const handleKeyDown = (e: React.KeyboardEvent<HTMLDivElement>) => {
+      if (!activateWholeArea) return
+      if ((e.target as HTMLElement).closest('.cm-window__controls')) return
+
+      if ((e.key === 'Enter' || e.key === ' ') && !isActive) {
+        e.preventDefault()
+        activationSourceRef.current = 'keyboard'
+        onActiveRef.current?.()
+      }
+    }
+
     const handlePointerDown = (
       e: PointerEvent<Element>,
       type: 'move' | 'resize',
@@ -265,6 +288,7 @@ export const Window = forwardRef<HTMLDivElement, WindowProps>(
         const clientX = e.clientX
         const clientY = e.clientY
 
+        /* eslint-disable sonarjs/cognitive-complexity */
         rafRef.current = requestAnimationFrame(() => {
           const {
             startX,
@@ -331,6 +355,8 @@ export const Window = forwardRef<HTMLDivElement, WindowProps>(
 
             if (mode === 'follow') {
               setPos(newPos)
+            } else if (mode === 'static') {
+              setPreviewPos(newPos)
             }
             onMoving?.(newPos)
           } else if (type === 'resize') {
@@ -355,6 +381,7 @@ export const Window = forwardRef<HTMLDivElement, WindowProps>(
 
       const {
         type,
+        mode,
         pointerId,
         capturedElement,
         currentX,
@@ -379,8 +406,13 @@ export const Window = forwardRef<HTMLDivElement, WindowProps>(
       const finalPos = { x: currentX, y: currentY }
       const finalSize = { width: currentWidth, height: currentHeight }
 
-      setPos(finalPos)
-      if (type === 'resize') {
+      if (type === 'move' && mode === 'static' && previewPos) {
+        setPos(previewPos)
+        setPreviewPos(null)
+      } else if (type === 'move' && mode === 'follow') {
+        setPos(finalPos)
+      } else if (type === 'resize') {
+        setPos(finalPos)
         setSize(finalSize)
       }
 
@@ -389,7 +421,7 @@ export const Window = forwardRef<HTMLDivElement, WindowProps>(
       } else {
         onResizeEnd?.({ size: finalSize, position: finalPos })
       }
-    }, [onMoveEnd, onResizeEnd])
+    }, [onMoveEnd, onResizeEnd, previewPos])
 
     const setMergedRef = (node: HTMLDivElement | null) => {
       internalRef.current = node
@@ -417,74 +449,104 @@ export const Window = forwardRef<HTMLDivElement, WindowProps>(
     }
 
     return (
-      <div
-        ref={setMergedRef}
-        className={cls}
-        style={combinedStyle}
-        onPointerMove={handlePointerMove}
-        onPointerUp={handlePointerUp}
-        onPointerCancel={handlePointerUp}
-        {...rest}
-      >
+      <>
         <div
-          className='cm-window__title-bar'
-          onPointerDown={(e) => handlePointerDown(e, 'move')}
+          ref={setMergedRef}
+          className={cls}
+          style={combinedStyle}
+          onClick={handleClick}
+          onKeyDown={handleKeyDown}
+          role={activateWholeArea ? 'button' : undefined}
+          tabIndex={activateWholeArea ? 0 : undefined}
+          onPointerMove={handlePointerMove}
+          onPointerUp={handlePointerUp}
+          onPointerCancel={handlePointerUp}
+          {...rest}
         >
           <div
-            className='cm-window__title-text'
-            style={{ display: 'flex', alignItems: 'center', gap: '4px' }}
+            className='cm-window__title-bar'
+            onPointerDown={(e) => handlePointerDown(e, 'move')}
           >
-            {icon && <span className='cm-window__icon'>{icon}</span>}
-            {title}
+            <div
+              className='cm-window__title-text'
+              style={{ display: 'flex', alignItems: 'center', gap: '4px' }}
+            >
+              {icon && <span className='cm-window__icon'>{icon}</span>}
+              {title}
+            </div>
+            <div className='cm-window__controls'>
+              {onMinimize && (
+                <button
+                  className='cm-window__btn'
+                  onClick={onMinimize}
+                  aria-label='Minimize'
+                >
+                  _
+                </button>
+              )}
+              {onMaximize && (
+                <button
+                  className='cm-window__btn'
+                  onClick={onMaximize}
+                  aria-label='Maximize'
+                >
+                  □
+                </button>
+              )}
+              {onClose && (
+                <button
+                  className='cm-window__btn'
+                  onClick={onClose}
+                  aria-label='Close'
+                >
+                  ×
+                </button>
+              )}
+            </div>
           </div>
-          <div className='cm-window__controls'>
-            {onMinimize && (
-              <button
-                className='cm-window__btn'
-                onClick={onMinimize}
-                aria-label='Minimize'
-              >
-                _
-              </button>
-            )}
-            {onMaximize && (
-              <button
-                className='cm-window__btn'
-                onClick={onMaximize}
-                aria-label='Maximize'
-              >
-                □
-              </button>
-            )}
-            {onClose && (
-              <button
-                className='cm-window__btn'
-                onClick={onClose}
-                aria-label='Close'
-              >
-                ×
-              </button>
-            )}
-          </div>
+
+          <div className='cm-window__body'>{children}</div>
+
+          {resolvedResizable && (
+            <>
+              {(
+                [
+                  'n',
+                  's',
+                  'e',
+                  'w',
+                  'ne',
+                  'nw',
+                  'se',
+                  'sw'
+                ] as ResizeDirection[]
+              ).map((dir) => (
+                <div
+                  key={dir}
+                  className='cm-window__resize-handle'
+                  data-direction={dir}
+                  onPointerDown={(e) => handlePointerDown(e, 'resize', dir)}
+                />
+              ))}
+            </>
+          )}
         </div>
 
-        <div className='cm-window__body'>{children}</div>
-
-        {resolvedResizable && (
-          <>
-            {(
-              ['n', 's', 'e', 'w', 'ne', 'nw', 'se', 'sw'] as ResizeDirection[]
-            ).map((dir) => (
-              <div
-                key={dir}
-                className='cm-window__resize-handle'
-                data-direction={dir}
-                onPointerDown={(e) => handlePointerDown(e, 'resize', dir)}
-              />
-            ))}
-          </>
+        {resolvedInteractionMode === 'static' && isDragging && previewPos && (
+          <div
+            className='cm-window-preview'
+            style={{
+              position: 'fixed',
+              left: previewPos.x,
+              top: previewPos.y,
+              width: size?.width || resolvedMinWidth,
+              height: size?.height || resolvedMinHeight,
+              pointerEvents: 'none',
+              zIndex: 9999
+            }}
+          />
         )}
-      </div>
+      </>
     )
   }
 )
