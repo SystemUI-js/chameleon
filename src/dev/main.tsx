@@ -29,6 +29,7 @@ const Desktop = () => {
   const [activeWindow, setActiveWindow] = useState<string>('controls')
   const [showModal, setShowModal] = useState(false)
   const { theme, setTheme } = useTheme()
+  const noop = () => {}
 
   return (
     <div
@@ -57,7 +58,7 @@ const Desktop = () => {
           }}
           isActive={activeWindow === 'controls'}
           onActive={() => setActiveWindow('controls')}
-          onClose={() => console.log('Close')}
+          onClose={noop}
         >
           <WindowMenu
             items={[
@@ -68,12 +69,12 @@ const Desktop = () => {
                   {
                     id: 'file-new',
                     label: 'New',
-                    onSelect: () => console.log('New')
+                    onSelect: noop
                   },
                   {
                     id: 'file-open',
                     label: 'Open',
-                    onSelect: () => console.log('Open')
+                    onSelect: noop
                   },
                   { id: 'file-divider-1', divider: true },
                   {
@@ -83,12 +84,12 @@ const Desktop = () => {
                       {
                         id: 'file-recent-1',
                         label: 'Project A',
-                        onSelect: () => console.log('Project A')
+                        onSelect: noop
                       },
                       {
                         id: 'file-recent-2',
                         label: 'Project B',
-                        onSelect: () => console.log('Project B')
+                        onSelect: noop
                       }
                     ]
                   },
@@ -96,7 +97,7 @@ const Desktop = () => {
                   {
                     id: 'file-exit',
                     label: 'Exit',
-                    onSelect: () => console.log('Exit')
+                    onSelect: noop
                   }
                 ]
               },
@@ -107,28 +108,28 @@ const Desktop = () => {
                   {
                     id: 'edit-undo',
                     label: 'Undo',
-                    onSelect: () => console.log('Undo')
+                    onSelect: noop
                   },
                   {
                     id: 'edit-redo',
                     label: 'Redo',
-                    onSelect: () => console.log('Redo')
+                    onSelect: noop
                   },
                   { id: 'edit-divider-1', divider: true },
                   {
                     id: 'edit-cut',
                     label: 'Cut',
-                    onSelect: () => console.log('Cut')
+                    onSelect: noop
                   },
                   {
                     id: 'edit-copy',
                     label: 'Copy',
-                    onSelect: () => console.log('Copy')
+                    onSelect: noop
                   },
                   {
                     id: 'edit-paste',
                     label: 'Paste',
-                    onSelect: () => console.log('Paste')
+                    onSelect: noop
                   }
                 ]
               },
@@ -143,24 +144,24 @@ const Desktop = () => {
                       {
                         id: 'view-zoom-in',
                         label: 'Zoom In',
-                        onSelect: () => console.log('Zoom In')
+                        onSelect: noop
                       },
                       {
                         id: 'view-zoom-out',
                         label: 'Zoom Out',
-                        onSelect: () => console.log('Zoom Out')
+                        onSelect: noop
                       },
                       {
                         id: 'view-zoom-reset',
                         label: 'Reset Zoom',
-                        onSelect: () => console.log('Reset Zoom')
+                        onSelect: noop
                       }
                     ]
                   },
                   {
                     id: 'view-fullscreen',
                     label: 'Full Screen',
-                    onSelect: () => console.log('Full Screen')
+                    onSelect: noop
                   }
                 ]
               },
@@ -171,7 +172,7 @@ const Desktop = () => {
                   {
                     id: 'help-about',
                     label: 'About',
-                    onSelect: () => console.log('About')
+                    onSelect: noop
                   }
                 ]
               }
