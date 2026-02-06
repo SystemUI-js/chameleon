@@ -106,6 +106,7 @@ export const defaultTheme: Theme = {
       resizable: false,
       minWidth: 200,
       minHeight: 100
-    }
+    },
+    startMenuMount: 'top'
   }
 }

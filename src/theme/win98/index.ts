@@ -110,6 +110,7 @@ export const win98: Theme = {
       minWidth: 200,
       minHeight: 100,
       activateWholeArea: true
-    }
+    },
+    startMenuMount: 'bottom'
   }
 }

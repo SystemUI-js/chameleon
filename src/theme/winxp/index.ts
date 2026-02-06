@@ -112,6 +112,7 @@ export const winxp: Theme = {
       minWidth: 200,
       minHeight: 100,
       activateWholeArea: true
-    }
+    },
+    startMenuMount: 'bottom'
   }
 }

@@ -17,9 +17,12 @@ export type WindowDefaults = {
   readonly activateWholeArea?: boolean
 }
 
+export type StartMenuMountPosition = 'top' | 'bottom'
+
 export type ThemeBehavior = {
   readonly windowDragMode: WindowDragMode
   readonly windowDefaults: WindowDefaults
+  readonly startMenuMount: StartMenuMountPosition
 }
 
 export interface Theme {
