@@ -3,15 +3,6 @@ import '@testing-library/jest-dom'
 import { Modal, ThemeProvider } from '../src'
 import { winxp } from '../src/theme/winxp'
 
-const attachPointerCaptureMocks = (el: HTMLElement) => {
-  Object.defineProperty(el, 'setPointerCapture', {
-    value: jest.fn()
-  })
-  Object.defineProperty(el, 'releasePointerCapture', {
-    value: jest.fn()
-  })
-}
-
 describe('Modal inherits Window behavior', () => {
   it('passes move/resize props to Window', () => {
     const onMoveStart = jest.fn()
@@ -46,9 +37,6 @@ describe('Modal inherits Window behavior', () => {
 
     expect(titleBar).toBeInTheDocument()
     expect(handle).toBeInTheDocument()
-
-    attachPointerCaptureMocks(titleBar)
-    attachPointerCaptureMocks(handle)
 
     fireEvent.pointerDown(titleBar, {
       button: 0,

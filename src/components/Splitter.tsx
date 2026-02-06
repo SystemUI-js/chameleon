@@ -1,4 +1,10 @@
 import React, { HTMLAttributes, useState, useEffect, useRef } from 'react'
+import {
+  Drag,
+  DragOperationType,
+  FingerOperationType,
+  type Pose
+} from '@system-ui-js/multi-drag'
 import './Splitter.scss'
 
 export interface SplitterProps extends HTMLAttributes<HTMLDivElement> {
@@ -17,44 +23,90 @@ export const Splitter: React.FC<SplitterProps> = ({
   ...rest
 }) => {
   const [isDragging, setIsDragging] = useState(false)
-  const startPosRef = useRef(0)
+  const splitterRef = useRef<HTMLDivElement | null>(null)
+  const dragRef = useRef<Drag | null>(null)
+  const lastAxisRef = useRef(0)
+  const typeRef = useRef(type)
+  const onResizeRef = useRef(onResize)
+  const onResizeEndRef = useRef(onResizeEnd)
 
   useEffect(() => {
-    const handleMove = (e: MouseEvent) => {
-      if (!isDragging) return
-      const currentPos = type === 'vertical' ? e.clientX : e.clientY
-      const delta = currentPos - startPosRef.current
-      onResize?.(delta)
-      startPosRef.current = currentPos // Reset for relative delta
-    }
+    typeRef.current = type
+  }, [type])
 
-    const handleUp = () => {
-      if (isDragging) {
-        setIsDragging(false)
-        onResizeEnd?.()
-        document.body.style.cursor = 'unset'
-        document.body.style.userSelect = 'unset'
-      }
-    }
+  useEffect(() => {
+    onResizeRef.current = onResize
+    onResizeEndRef.current = onResizeEnd
+  }, [onResize, onResizeEnd])
 
-    if (isDragging) {
-      document.addEventListener('mousemove', handleMove)
-      document.addEventListener('mouseup', handleUp)
-      document.body.style.cursor =
-        type === 'vertical' ? 'col-resize' : 'row-resize'
-      document.body.style.userSelect = 'none'
-    }
+  useEffect(() => {
+    if (!isDragging) return
+    document.body.style.cursor =
+      type === 'vertical' ? 'col-resize' : 'row-resize'
+    document.body.style.userSelect = 'none'
 
     return () => {
-      document.removeEventListener('mousemove', handleMove)
-      document.removeEventListener('mouseup', handleUp)
+      document.body.style.cursor = 'unset'
+      document.body.style.userSelect = 'unset'
     }
-  }, [isDragging, onResize, onResizeEnd, type])
+  }, [isDragging, type])
 
-  const handleMouseDown = (e: React.MouseEvent) => {
-    setIsDragging(true)
-    startPosRef.current = type === 'vertical' ? e.clientX : e.clientY
-  }
+  useEffect(() => {
+    if (!splitterRef.current || dragRef.current) return
+    const drag = new Drag(splitterRef.current, {
+      getPose: () => {
+        const axisValue = lastAxisRef.current
+        return {
+          position: { x: axisValue, y: axisValue },
+          width: 0,
+          height: 0
+        }
+      },
+      setPose: (_element: HTMLElement, pose: Partial<Pose>) => {
+        const axisValue =
+          typeRef.current === 'vertical' ? pose.position?.x : pose.position?.y
+        if (axisValue === undefined) return
+        const delta = axisValue - lastAxisRef.current
+        if (delta === 0) return
+        lastAxisRef.current = axisValue
+        onResizeRef.current?.(delta)
+      }
+    })
+
+    drag.addEventListener(
+      DragOperationType.Start,
+      (
+        fingers: {
+          getLastOperation: (
+            type: FingerOperationType
+          ) => { event: PointerEvent } | undefined
+        }[]
+      ) => {
+        const startEvent = fingers[0]?.getLastOperation(
+          FingerOperationType.Start
+        )?.event
+        if (startEvent) {
+          lastAxisRef.current =
+            typeRef.current === 'vertical'
+              ? startEvent.clientX
+              : startEvent.clientY
+        }
+        setIsDragging(true)
+      }
+    )
+
+    drag.addEventListener(DragOperationType.End, () => {
+      setIsDragging(false)
+      onResizeEndRef.current?.()
+    })
+
+    dragRef.current = drag
+
+    return () => {
+      drag.setDisabled()
+      drag.setPassive(true)
+    }
+  }, [])
 
   const cls = ['cm-splitter', `cm-splitter--${type}`, className]
     .filter(Boolean)
@@ -62,10 +114,10 @@ export const Splitter: React.FC<SplitterProps> = ({
 
   return (
     <div
+      ref={splitterRef}
       className={cls}
       onMouseDown={(e) => {
         onMouseDownProp?.(e)
-        if (!e.defaultPrevented) handleMouseDown(e)
       }}
       role='button'
       aria-label='Splitter'
