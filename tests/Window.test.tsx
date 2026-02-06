@@ -29,27 +29,9 @@ const setRect = (el: HTMLElement, rect: RectInput) => {
   })
 }
 
-const attachPointerCaptureMocks = (el: HTMLElement) => {
-  Object.defineProperty(el, 'setPointerCapture', {
-    value: jest.fn()
-  })
-  Object.defineProperty(el, 'releasePointerCapture', {
-    value: jest.fn()
-  })
-}
-
 beforeAll(() => {
   Object.defineProperty(window, 'innerWidth', { writable: true, value: 800 })
   Object.defineProperty(window, 'innerHeight', { writable: true, value: 600 })
-  Object.defineProperty(global, 'requestAnimationFrame', {
-    value: (cb: FrameRequestCallback) => {
-      cb(0)
-      return 1
-    }
-  })
-  Object.defineProperty(global, 'cancelAnimationFrame', {
-    value: () => 0
-  })
 })
 
 describe('Window interactions', () => {
@@ -80,8 +62,6 @@ describe('Window interactions', () => {
       '.cm-window__title-bar'
     ) as HTMLElement
 
-    attachPointerCaptureMocks(titleBar)
-    attachPointerCaptureMocks(windowEl)
     setRect(windowEl, { width: 300, height: 200, left: 100, top: 100 })
 
     fireEvent.pointerDown(titleBar, {
@@ -94,7 +74,7 @@ describe('Window interactions', () => {
     expect(onMoveStart).toHaveBeenCalledTimes(1)
     expect(windowEl).toHaveClass('isDragging')
 
-    fireEvent.pointerMove(windowEl, {
+    fireEvent.pointerMove(document, {
       pointerId: 1,
       clientX: 140,
       clientY: 150
@@ -103,7 +83,11 @@ describe('Window interactions', () => {
     expect(onMoving).toHaveBeenCalled()
     expect(onMoving).toHaveBeenLastCalledWith({ x: 120, y: 130 })
 
-    fireEvent.pointerUp(windowEl, { pointerId: 1 })
+    fireEvent.pointerUp(document, {
+      pointerId: 1,
+      clientX: 140,
+      clientY: 150
+    })
 
     expect(onMoveEnd).toHaveBeenCalledWith({ x: 120, y: 130 })
     expect(windowEl).not.toHaveClass('isDragging')
@@ -127,11 +111,9 @@ describe('Window interactions', () => {
     const getTitleBar = () =>
       testContainer.querySelector('.cm-window__title-bar') as HTMLElement
 
-    attachPointerCaptureMocks(getTitleBar())
-
     fireEvent.pointerDown(getTitleBar(), {
       button: 0,
-      pointerId: 1,
+      pointerId: 2,
       clientX: 10,
       clientY: 10
     })
@@ -146,7 +128,7 @@ describe('Window interactions', () => {
 
     fireEvent.pointerDown(getTitleBar(), {
       button: 0,
-      pointerId: 2,
+      pointerId: 3,
       clientX: 12,
       clientY: 12
     })
@@ -161,7 +143,7 @@ describe('Window interactions', () => {
 
     fireEvent.pointerDown(getTitleBar(), {
       button: 0,
-      pointerId: 3,
+      pointerId: 4,
       clientX: 14,
       clientY: 14
     })
@@ -194,11 +176,9 @@ describe('Window interactions', () => {
       '.cm-window__title-bar'
     ) as HTMLElement
 
-    attachPointerCaptureMocks(titleBar)
-
     fireEvent.pointerDown(titleBar, {
       button: 0,
-      pointerId: 1,
+      pointerId: 5,
       clientX: 120,
       clientY: 120
     })
@@ -239,13 +219,11 @@ describe('Window interactions', () => {
       '[data-direction="se"]'
     ) as HTMLElement
 
-    attachPointerCaptureMocks(handle)
-    attachPointerCaptureMocks(windowEl)
     setRect(windowEl, { width: 300, height: 200, left: 100, top: 100 })
 
     fireEvent.pointerDown(handle, {
       button: 0,
-      pointerId: 2,
+      pointerId: 6,
       clientX: 300,
       clientY: 200
     })
@@ -253,8 +231,8 @@ describe('Window interactions', () => {
     expect(onResizeStart).toHaveBeenCalledTimes(1)
     expect(windowEl).toHaveClass('isDragging')
 
-    fireEvent.pointerMove(windowEl, {
-      pointerId: 2,
+    fireEvent.pointerMove(document, {
+      pointerId: 6,
       clientX: 350,
       clientY: 240
     })
@@ -264,7 +242,11 @@ describe('Window interactions', () => {
       position: { x: 0, y: 0 }
     })
 
-    fireEvent.pointerUp(windowEl, { pointerId: 2 })
+    fireEvent.pointerUp(document, {
+      pointerId: 6,
+      clientX: 350,
+      clientY: 240
+    })
 
     expect(onResizeEnd).toHaveBeenCalledWith({
       size: { width: 350, height: 240 },
@@ -300,19 +282,17 @@ describe('Window interactions', () => {
       '[data-direction="se"]'
     ) as HTMLElement
 
-    attachPointerCaptureMocks(handle)
-    attachPointerCaptureMocks(windowEl)
     setRect(windowEl, { width: 300, height: 200, left: 100, top: 100 })
 
     fireEvent.pointerDown(handle, {
       button: 0,
-      pointerId: 3,
+      pointerId: 7,
       clientX: 300,
       clientY: 200
     })
 
-    fireEvent.pointerMove(windowEl, {
-      pointerId: 3,
+    fireEvent.pointerMove(document, {
+      pointerId: 7,
       clientX: 360,
       clientY: 250
     })
@@ -322,7 +302,17 @@ describe('Window interactions', () => {
       position: { x: 0, y: 0 }
     })
 
-    fireEvent.pointerUp(windowEl, { pointerId: 3 })
+    const preview = container.querySelector('.cm-window-preview') as HTMLElement
+    expect(preview).toBeInTheDocument()
+    expect(preview).toHaveStyle({ width: '360px', height: '250px' })
+    expect(preview).toHaveStyle({ left: '0px', top: '0px' })
+    expect(windowEl).toHaveStyle({ width: '300px', height: '200px' })
+
+    fireEvent.pointerUp(document, {
+      pointerId: 7,
+      clientX: 360,
+      clientY: 250
+    })
 
     expect(onResizeEnd).toHaveBeenCalledWith({
       size: { width: 360, height: 250 },
@@ -355,26 +345,28 @@ describe('Window interactions', () => {
       '.cm-window__title-bar'
     ) as HTMLElement
 
-    attachPointerCaptureMocks(titleBar)
-    attachPointerCaptureMocks(windowEl)
     setRect(windowEl, { width: 300, height: 200, left: 10, top: 10 })
 
     fireEvent.pointerDown(titleBar, {
       button: 0,
-      pointerId: 4,
+      pointerId: 8,
       clientX: 20,
       clientY: 20
     })
 
-    fireEvent.pointerMove(windowEl, {
-      pointerId: 4,
+    fireEvent.pointerMove(document, {
+      pointerId: 8,
       clientX: 40,
       clientY: 40
     })
 
     expect(onMoving).toHaveBeenCalledWith({ x: 30, y: 30 })
 
-    fireEvent.pointerUp(windowEl, { pointerId: 4 })
+    fireEvent.pointerUp(document, {
+      pointerId: 8,
+      clientX: 40,
+      clientY: 40
+    })
 
     testContainer.remove()
   })

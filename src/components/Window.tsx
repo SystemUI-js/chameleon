@@ -6,9 +6,14 @@ import {
   useRef,
   useCallback,
   useEffect,
-  type MutableRefObject,
-  type PointerEvent
+  type MutableRefObject
 } from 'react'
+import {
+  Drag,
+  DragOperationType,
+  FingerOperationType,
+  type Pose
+} from '@system-ui-js/multi-drag'
 import { useThemeBehavior } from '../theme/ThemeContext'
 import './Window.scss'
 
@@ -59,6 +64,11 @@ export interface WindowProps
 
 type ResizeDirection = 'n' | 's' | 'e' | 'w' | 'ne' | 'nw' | 'se' | 'sw'
 
+type PreviewRect = {
+  position: Position
+  size: Size
+}
+
 export const Window = forwardRef<HTMLDivElement, WindowProps>(
   (
     {
@@ -106,7 +116,7 @@ export const Window = forwardRef<HTMLDivElement, WindowProps>(
       controlledSize || initialSize
     )
     const [isDragging, setIsDragging] = useState(false)
-    const [previewPos, setPreviewPos] = useState<Position | null>(null)
+    const [previewRect, setPreviewRect] = useState<PreviewRect | null>(null)
     const onActiveRef = useRef(onActive)
     const isActiveRef = useRef(isActive)
     const activationSourceRef = useRef<'pointer' | 'keyboard' | null>(null)
@@ -116,52 +126,125 @@ export const Window = forwardRef<HTMLDivElement, WindowProps>(
       type: 'move' | 'resize'
       mode: InteractionMode
       direction: ResizeDirection | null
-      startX: number
-      startY: number
       startLeft: number
       startTop: number
       startWidth: number
       startHeight: number
-      pointerId: number | null
-      capturedElement: HTMLElement | null
-      currentX: number
-      currentY: number
-      currentWidth: number
-      currentHeight: number
     }>({
       active: false,
       type: 'move',
       mode: 'follow',
       direction: null,
-      startX: 0,
-      startY: 0,
       startLeft: 0,
       startTop: 0,
       startWidth: 0,
-      startHeight: 0,
-      pointerId: null,
-      capturedElement: null,
-      currentX: 0,
-      currentY: 0,
-      currentWidth: 0,
-      currentHeight: 0
+      startHeight: 0
     })
 
     const internalRef = useRef<HTMLDivElement | null>(null)
-    const rafRef = useRef<number | null>(null)
+    const titleBarRef = useRef<HTMLDivElement | null>(null)
+    const moveDragRef = useRef<Drag | null>(null)
+    const resizeDragRefs = useRef<Record<ResizeDirection, Drag | null>>({
+      n: null,
+      s: null,
+      e: null,
+      w: null,
+      ne: null,
+      nw: null,
+      se: null,
+      sw: null
+    })
+    const resizeHandleRefs = useRef<
+      Record<ResizeDirection, HTMLDivElement | null>
+    >({
+      n: null,
+      s: null,
+      e: null,
+      w: null,
+      ne: null,
+      nw: null,
+      se: null,
+      sw: null
+    })
+    const lastMovePosRef = useRef<Position>(pos)
+    const lastResizeStateRef = useRef<{ size: Size; position: Position }>({
+      size: size || { width: resolvedMinWidth, height: resolvedMinHeight },
+      position: pos
+    })
+    const modeRef = useRef<InteractionMode>(
+      (resolvedInteractionMode ?? 'follow') as InteractionMode
+    )
+    const ignoreDragRef = useRef(false)
 
     useEffect(() => {
-      return () => {
-        if (rafRef.current) {
-          cancelAnimationFrame(rafRef.current)
-          rafRef.current = null
-        }
+      lastMovePosRef.current = pos
+    }, [pos])
+
+    useEffect(() => {
+      if (size) {
+        lastResizeStateRef.current = { size, position: pos }
       }
-    }, [])
+    }, [pos, size])
+
+    useEffect(() => {
+      modeRef.current = (resolvedInteractionMode ?? 'follow') as InteractionMode
+    }, [resolvedInteractionMode])
+
+    const posRef = useRef<Position>(pos)
+    const sizeRef = useRef<Size | undefined>(size)
+    const minWidthRef = useRef(resolvedMinWidth)
+    const minHeightRef = useRef(resolvedMinHeight)
+    const grabEdgeRef = useRef(grabEdge)
+    const movableRef = useRef(resolvedMovable)
+    const resizableRef = useRef(resolvedResizable)
+    const onMoveStartRef = useRef(onMoveStart)
+    const onMovingRef = useRef(onMoving)
+    const onMoveEndRef = useRef(onMoveEnd)
+    const onResizeStartRef = useRef(onResizeStart)
+    const onResizingRef = useRef(onResizing)
+    const onResizeEndRef = useRef(onResizeEnd)
 
     useEffect(() => {
       onActiveRef.current = onActive
     }, [onActive])
+
+    useEffect(() => {
+      posRef.current = pos
+    }, [pos])
+
+    useEffect(() => {
+      sizeRef.current = size
+    }, [size])
+
+    useEffect(() => {
+      minWidthRef.current = resolvedMinWidth
+      minHeightRef.current = resolvedMinHeight
+    }, [resolvedMinHeight, resolvedMinWidth])
+
+    useEffect(() => {
+      grabEdgeRef.current = grabEdge
+    }, [grabEdge])
+
+    useEffect(() => {
+      movableRef.current = resolvedMovable
+      resizableRef.current = resolvedResizable
+    }, [resolvedMovable, resolvedResizable])
+
+    useEffect(() => {
+      onMoveStartRef.current = onMoveStart
+      onMovingRef.current = onMoving
+      onMoveEndRef.current = onMoveEnd
+      onResizeStartRef.current = onResizeStart
+      onResizingRef.current = onResizing
+      onResizeEndRef.current = onResizeEnd
+    }, [
+      onMoveStart,
+      onMoving,
+      onMoveEnd,
+      onResizeStart,
+      onResizing,
+      onResizeEnd
+    ])
 
     useEffect(() => {
       if (!interactionRef.current.active && controlledPos) {
@@ -185,24 +268,6 @@ export const Window = forwardRef<HTMLDivElement, WindowProps>(
       isActiveRef.current = isActive
     }, [isActive])
 
-    const getRect = () => {
-      if (internalRef.current) {
-        const rect = internalRef.current.getBoundingClientRect()
-        return {
-          width: rect.width,
-          height: rect.height,
-          left: pos.x,
-          top: pos.y
-        }
-      }
-      return {
-        width: size?.width || resolvedMinWidth,
-        height: size?.height || resolvedMinHeight,
-        left: pos.x,
-        top: pos.y
-      }
-    }
-
     const handleClick = (e: React.MouseEvent<HTMLDivElement>) => {
       if (!activateWholeArea) return
       if ((e.target as HTMLElement).closest('.cm-window__controls')) return
@@ -224,204 +289,297 @@ export const Window = forwardRef<HTMLDivElement, WindowProps>(
       }
     }
 
-    const handlePointerDown = (
-      e: PointerEvent<Element>,
-      type: 'move' | 'resize',
-      direction: ResizeDirection | null = null
-    ) => {
-      if (e.button !== 0) return
-      if (type === 'move' && !resolvedMovable) return
-      if (type === 'resize' && !resolvedResizable) return
+    const getRectSnapshot = useCallback(() => {
+      const rect = internalRef.current?.getBoundingClientRect()
+      const width = rect?.width ?? sizeRef.current?.width ?? minWidthRef.current
+      const height =
+        rect?.height ?? sizeRef.current?.height ?? minHeightRef.current
+      return { width, height }
+    }, [])
 
-      if ((e.target as HTMLElement).closest('.cm-window__controls')) return
+    const clampMovePosition = useCallback(
+      (nextPos: Position) => {
+        const { width, height } = getRectSnapshot()
+        const viewportW = window.innerWidth
+        const viewportH = window.innerHeight
+        const edge = grabEdgeRef.current
 
-      if (type === 'move' && !isActive) {
-        activationSourceRef.current = 'pointer'
-        onActiveRef.current?.()
-      }
+        const clampedX = Math.min(
+          Math.max(nextPos.x, edge - width),
+          viewportW - edge
+        )
+        const clampedY = Math.min(
+          Math.max(nextPos.y, edge - height),
+          viewportH - edge
+        )
 
-      e.preventDefault()
-      e.stopPropagation()
-
-      const target = e.currentTarget as HTMLElement
-      target.setPointerCapture(e.pointerId)
-
-      const currentRect = getRect()
-
-      interactionRef.current = {
-        active: true,
-        type,
-        mode: resolvedInteractionMode ?? 'follow',
-        direction,
-        startX: e.clientX,
-        startY: e.clientY,
-        startLeft: pos.x,
-        startTop: pos.y,
-        startWidth: currentRect.width,
-        startHeight: currentRect.height,
-        pointerId: e.pointerId,
-        capturedElement: target,
-        currentX: pos.x,
-        currentY: pos.y,
-        currentWidth: currentRect.width,
-        currentHeight: currentRect.height
-      }
-
-      setIsDragging(true)
-
-      if (type === 'move') {
-        onMoveStart?.()
-      } else {
-        onResizeStart?.()
-      }
-    }
-
-    const handlePointerMove = useCallback(
-      (e: PointerEvent<Element>) => {
-        if (!interactionRef.current.active) return
-
-        e.preventDefault()
-
-        if (rafRef.current) return
-
-        // Capture event coordinates before RAF to avoid event object being recycled
-        const clientX = e.clientX
-        const clientY = e.clientY
-
-        /* eslint-disable sonarjs/cognitive-complexity */
-        rafRef.current = requestAnimationFrame(() => {
-          const {
-            startX,
-            startY,
-            startLeft,
-            startTop,
-            startWidth,
-            startHeight,
-            type,
-            direction,
-            mode
-          } = interactionRef.current
-
-          const dx = clientX - startX
-          const dy = clientY - startY
-
-          let newX = startLeft
-          let newY = startTop
-          let newW = startWidth
-          let newH = startHeight
-
-          if (type === 'move') {
-            const viewportW = window.innerWidth
-            const viewportH = window.innerHeight
-
-            newX = startLeft + dx
-            newY = startTop + dy
-
-            newX = Math.min(
-              Math.max(newX, grabEdge - startWidth),
-              viewportW - grabEdge
-            )
-            newY = Math.min(
-              Math.max(newY, grabEdge - startHeight),
-              viewportH - grabEdge
-            )
-          } else if (type === 'resize' && direction) {
-            if (direction.includes('e')) {
-              newW = Math.max(resolvedMinWidth, startWidth + dx)
-            } else if (direction.includes('w')) {
-              const maxDelta = startWidth - resolvedMinWidth
-              const delta = Math.min(dx, maxDelta)
-              newW = startWidth - delta
-              newX = startLeft + delta
-            }
-
-            if (direction.includes('s')) {
-              newH = Math.max(resolvedMinHeight, startHeight + dy)
-            } else if (direction.includes('n')) {
-              const maxDelta = startHeight - resolvedMinHeight
-              const delta = Math.min(dy, maxDelta)
-              newH = startHeight - delta
-              newY = startTop + delta
-            }
-          }
-
-          interactionRef.current.currentX = newX
-          interactionRef.current.currentY = newY
-          interactionRef.current.currentWidth = newW
-          interactionRef.current.currentHeight = newH
-
-          if (type === 'move') {
-            const newPos = { x: newX, y: newY }
-
-            if (mode === 'follow') {
-              setPos(newPos)
-            } else if (mode === 'static') {
-              setPreviewPos(newPos)
-            }
-            onMoving?.(newPos)
-          } else if (type === 'resize') {
-            const newSize = { width: newW, height: newH }
-            const newPos = { x: newX, y: newY }
-
-            if (mode === 'follow') {
-              setPos(newPos)
-              setSize(newSize)
-            }
-            onResizing?.({ size: newSize, position: newPos })
-          }
-
-          rafRef.current = null
-        })
+        return { x: clampedX, y: clampedY }
       },
-      [grabEdge, onMoving, onResizing, resolvedMinHeight, resolvedMinWidth]
+      [getRectSnapshot]
     )
 
-    const handlePointerUp = useCallback(() => {
-      if (!interactionRef.current.active) return
+    const applyMovePose = useCallback(
+      (pose: Partial<Pose>, finalize: boolean) => {
+        if (ignoreDragRef.current) return
+        if (!interactionRef.current.active) return
+        if (interactionRef.current.type !== 'move') return
 
-      const {
-        type,
-        mode,
-        pointerId,
-        capturedElement,
-        currentX,
-        currentY,
-        currentWidth,
-        currentHeight
-      } = interactionRef.current
+        const rawPos = pose.position ?? posRef.current
+        const nextPos = clampMovePosition({ x: rawPos.x, y: rawPos.y })
+        lastMovePosRef.current = nextPos
 
-      if (pointerId !== null && capturedElement) {
-        capturedElement.releasePointerCapture(pointerId)
+        if (modeRef.current === 'follow' || finalize) {
+          setPos(nextPos)
+          setPreviewRect(null)
+        } else {
+          const previewSize = lastResizeStateRef.current.size
+          setPreviewRect({ position: nextPos, size: previewSize })
+        }
+
+        if (!finalize) {
+          onMovingRef.current?.(nextPos)
+        } else {
+          setPreviewRect(null)
+        }
+      },
+      [clampMovePosition]
+    )
+
+    const applyResizePose = useCallback(
+      (pose: Partial<Pose>, finalize: boolean) => {
+        if (ignoreDragRef.current) return
+        if (!interactionRef.current.active) return
+        if (interactionRef.current.type !== 'resize') return
+        const { startLeft, startTop, startWidth, startHeight, direction } =
+          interactionRef.current
+        if (!direction) return
+
+        const rawPos = pose.position ?? { x: startLeft, y: startTop }
+        const dx = rawPos.x - startLeft
+        const dy = rawPos.y - startTop
+
+        let newX = startLeft
+        let newY = startTop
+        let newW = startWidth
+        let newH = startHeight
+
+        if (direction.includes('e')) {
+          newW = Math.max(minWidthRef.current, startWidth + dx)
+        } else if (direction.includes('w')) {
+          const maxDelta = startWidth - minWidthRef.current
+          const delta = Math.min(dx, maxDelta)
+          newW = startWidth - delta
+          newX = startLeft + delta
+        }
+
+        if (direction.includes('s')) {
+          newH = Math.max(minHeightRef.current, startHeight + dy)
+        } else if (direction.includes('n')) {
+          const maxDelta = startHeight - minHeightRef.current
+          const delta = Math.min(dy, maxDelta)
+          newH = startHeight - delta
+          newY = startTop + delta
+        }
+
+        const nextSize = { width: newW, height: newH }
+        const nextPos = { x: newX, y: newY }
+        lastResizeStateRef.current = { size: nextSize, position: nextPos }
+
+        if (modeRef.current === 'follow' || finalize) {
+          setPos(nextPos)
+          setSize(nextSize)
+          setPreviewRect(null)
+        } else {
+          setPreviewRect({ position: nextPos, size: nextSize })
+        }
+
+        if (!finalize) {
+          onResizingRef.current?.({ size: nextSize, position: nextPos })
+        }
+      },
+      []
+    )
+
+    const startInteraction = useCallback(
+      (type: 'move' | 'resize', direction: ResizeDirection | null) => {
+        const { width, height } = getRectSnapshot()
+        interactionRef.current = {
+          active: true,
+          type,
+          mode: modeRef.current,
+          direction,
+          startLeft: posRef.current.x,
+          startTop: posRef.current.y,
+          startWidth: width,
+          startHeight: height
+        }
+        lastMovePosRef.current = posRef.current
+        lastResizeStateRef.current = {
+          size: sizeRef.current || { width, height },
+          position: posRef.current
+        }
+        setIsDragging(true)
+      },
+      [getRectSnapshot]
+    )
+
+    const handleMoveStart = useCallback(
+      (
+        fingers: {
+          getLastOperation: (
+            type: FingerOperationType
+          ) => { event: PointerEvent } | undefined
+        }[]
+      ) => {
+        if (!movableRef.current) return
+        const startEvent = fingers[0]?.getLastOperation(
+          FingerOperationType.Start
+        )?.event
+        if (
+          startEvent &&
+          (startEvent.target as HTMLElement).closest('.cm-window__controls')
+        ) {
+          ignoreDragRef.current = true
+          return
+        }
+        ignoreDragRef.current = false
+        if (!isActiveRef.current) {
+          activationSourceRef.current = 'pointer'
+          onActiveRef.current?.()
+        }
+        startInteraction('move', null)
+        onMoveStartRef.current?.()
+      },
+      [startInteraction]
+    )
+
+    const handleResizeStart = useCallback(
+      (direction: ResizeDirection) => {
+        if (!resizableRef.current) return
+        ignoreDragRef.current = false
+        startInteraction('resize', direction)
+        onResizeStartRef.current?.()
+      },
+      [startInteraction]
+    )
+
+    const handleMoveEnd = useCallback(() => {
+      if (ignoreDragRef.current) {
+        ignoreDragRef.current = false
+        return
       }
-
-      if (rafRef.current) {
-        cancelAnimationFrame(rafRef.current)
-        rafRef.current = null
-      }
-
       interactionRef.current.active = false
-      interactionRef.current.capturedElement = null
       setIsDragging(false)
+      onMoveEndRef.current?.(lastMovePosRef.current)
+    }, [])
 
-      const finalPos = { x: currentX, y: currentY }
-      const finalSize = { width: currentWidth, height: currentHeight }
-
-      if (type === 'move' && mode === 'static' && previewPos) {
-        setPos(previewPos)
-        setPreviewPos(null)
-      } else if (type === 'move' && mode === 'follow') {
-        setPos(finalPos)
-      } else if (type === 'resize') {
-        setPos(finalPos)
-        setSize(finalSize)
+    const handleResizeEnd = useCallback(() => {
+      if (ignoreDragRef.current) {
+        ignoreDragRef.current = false
+        return
       }
+      interactionRef.current.active = false
+      setIsDragging(false)
+      onResizeEndRef.current?.(lastResizeStateRef.current)
+    }, [])
 
-      if (type === 'move') {
-        onMoveEnd?.(finalPos)
-      } else {
-        onResizeEnd?.({ size: finalSize, position: finalPos })
+    const setResizeHandleRef = useCallback(
+      (direction: ResizeDirection) => (node: HTMLDivElement | null) => {
+        resizeHandleRefs.current[direction] = node
+      },
+      []
+    )
+
+    useEffect(() => {
+      if (!titleBarRef.current || moveDragRef.current) return
+      const drag = new Drag(titleBarRef.current, {
+        getPose: () => {
+          const { width, height } = getRectSnapshot()
+          return {
+            position: posRef.current,
+            width,
+            height
+          }
+        },
+        setPose: (_element: HTMLElement, pose: Partial<Pose>) => {
+          applyMovePose(pose, false)
+        },
+        setPoseOnEnd: (_element: HTMLElement, pose: Partial<Pose>) => {
+          applyMovePose(pose, true)
+        }
+      })
+
+      drag.addEventListener(DragOperationType.Start, handleMoveStart)
+      drag.addEventListener(DragOperationType.End, handleMoveEnd)
+      moveDragRef.current = drag
+    }, [applyMovePose, getRectSnapshot, handleMoveEnd, handleMoveStart])
+
+    useEffect(() => {
+      const directions: ResizeDirection[] = [
+        'n',
+        's',
+        'e',
+        'w',
+        'ne',
+        'nw',
+        'se',
+        'sw'
+      ]
+      directions.forEach((direction) => {
+        const handle = resizeHandleRefs.current[direction]
+        if (!handle || resizeDragRefs.current[direction]) return
+        const drag = new Drag(handle, {
+          getPose: () => {
+            const { width, height } = getRectSnapshot()
+            return {
+              position: posRef.current,
+              width,
+              height
+            }
+          },
+          setPose: (_element: HTMLElement, pose: Partial<Pose>) => {
+            applyResizePose(pose, false)
+          },
+          setPoseOnEnd: (_element: HTMLElement, pose: Partial<Pose>) => {
+            applyResizePose(pose, true)
+          }
+        })
+        drag.addEventListener(DragOperationType.Start, () => {
+          handleResizeStart(direction)
+        })
+        drag.addEventListener(DragOperationType.End, handleResizeEnd)
+        resizeDragRefs.current[direction] = drag
+      })
+    }, [applyResizePose, getRectSnapshot, handleResizeEnd, handleResizeStart])
+
+    useEffect(() => {
+      if (moveDragRef.current) {
+        moveDragRef.current.setEnabled(resolvedMovable)
+        moveDragRef.current.setPassive(!resolvedMovable)
       }
-    }, [onMoveEnd, onResizeEnd, previewPos])
+    }, [resolvedMovable])
+
+    useEffect(() => {
+      Object.values(resizeDragRefs.current).forEach((drag) => {
+        if (!drag) return
+        drag.setEnabled(resolvedResizable)
+        drag.setPassive(!resolvedResizable)
+      })
+    }, [resolvedResizable])
+
+    useEffect(() => {
+      return () => {
+        if (moveDragRef.current) {
+          moveDragRef.current.setDisabled()
+          moveDragRef.current.setPassive(true)
+        }
+        Object.values(resizeDragRefs.current).forEach((drag) => {
+          if (!drag) return
+          drag.setDisabled()
+          drag.setPassive(true)
+        })
+      }
+    }, [])
 
     const setMergedRef = (node: HTMLDivElement | null) => {
       internalRef.current = node
@@ -458,15 +616,9 @@ export const Window = forwardRef<HTMLDivElement, WindowProps>(
           onKeyDown={handleKeyDown}
           role={activateWholeArea ? 'button' : undefined}
           tabIndex={activateWholeArea ? 0 : undefined}
-          onPointerMove={handlePointerMove}
-          onPointerUp={handlePointerUp}
-          onPointerCancel={handlePointerUp}
           {...rest}
         >
-          <div
-            className='cm-window__title-bar'
-            onPointerDown={(e) => handlePointerDown(e, 'move')}
-          >
+          <div className='cm-window__title-bar' ref={titleBarRef}>
             <div
               className='cm-window__title-text'
               style={{ display: 'flex', alignItems: 'center', gap: '4px' }}
@@ -525,22 +677,22 @@ export const Window = forwardRef<HTMLDivElement, WindowProps>(
                   key={dir}
                   className='cm-window__resize-handle'
                   data-direction={dir}
-                  onPointerDown={(e) => handlePointerDown(e, 'resize', dir)}
+                  ref={setResizeHandleRef(dir)}
                 />
               ))}
             </>
           )}
         </div>
 
-        {resolvedInteractionMode === 'static' && isDragging && previewPos && (
+        {resolvedInteractionMode === 'static' && isDragging && previewRect && (
           <div
             className='cm-window-preview'
             style={{
               position: 'fixed',
-              left: previewPos.x,
-              top: previewPos.y,
-              width: size?.width || resolvedMinWidth,
-              height: size?.height || resolvedMinHeight,
+              left: previewRect.position.x,
+              top: previewRect.position.y,
+              width: previewRect.size.width,
+              height: previewRect.size.height,
               pointerEvents: 'none',
               zIndex: 9999
             }}
