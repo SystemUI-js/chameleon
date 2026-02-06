@@ -31,3 +31,21 @@ export { default as MountConsumer } from './MountConsumer'
 export type { MountProviderProps } from './MountProvider'
 export type { MountConsumerProps } from './MountConsumer'
 export type { MountRegistryEntry, MountRegistrySnapshot } from './mountRegistry'
+export { GlobalRender } from './GlobalRender'
+export type { GlobalRenderProps } from './GlobalRender'
+export {
+  registerGlobalRenderer,
+  unregisterGlobalRenderer
+} from './globalRenderer'
+export type {
+  GlobalRendererName,
+  GlobalRendererProps,
+  GlobalRendererSnapshot,
+  ThemeAwareRendererName
+} from './globalRenderer'
+export type { WindowTitleRendererProps } from './WindowTitleRenderer'
+export {
+  DefaultWindowTitleRenderer,
+  Win98WindowTitleRenderer,
+  WinXPWindowTitleRenderer
+} from './WindowTitleRenderer'

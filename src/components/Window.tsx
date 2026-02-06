@@ -10,6 +10,8 @@ import {
   type PointerEvent
 } from 'react'
 import { useThemeBehavior } from '../theme/ThemeContext'
+import { GlobalRender } from './GlobalRender'
+import './WindowTitleRenderer'
 import './Window.scss'
 
 export interface Position {
@@ -463,47 +465,18 @@ export const Window = forwardRef<HTMLDivElement, WindowProps>(
           onPointerCancel={handlePointerUp}
           {...rest}
         >
-          <div
-            className='cm-window__title-bar'
-            onPointerDown={(e) => handlePointerDown(e, 'move')}
-          >
-            <div
-              className='cm-window__title-text'
-              style={{ display: 'flex', alignItems: 'center', gap: '4px' }}
-            >
-              {icon && <span className='cm-window__icon'>{icon}</span>}
-              {title}
-            </div>
-            <div className='cm-window__controls'>
-              {onMinimize && (
-                <button
-                  className='cm-window__btn'
-                  onClick={onMinimize}
-                  aria-label='Minimize'
-                >
-                  _
-                </button>
-              )}
-              {onMaximize && (
-                <button
-                  className='cm-window__btn'
-                  onClick={onMaximize}
-                  aria-label='Maximize'
-                >
-                  □
-                </button>
-              )}
-              {onClose && (
-                <button
-                  className='cm-window__btn'
-                  onClick={onClose}
-                  aria-label='Close'
-                >
-                  ×
-                </button>
-              )}
-            </div>
-          </div>
+          <GlobalRender
+            name='window-title'
+            title={title}
+            icon={icon}
+            isActive={isActive}
+            onMinimize={onMinimize}
+            onMaximize={onMaximize}
+            onClose={onClose}
+            onPointerDown={(e: PointerEvent<HTMLDivElement>) =>
+              handlePointerDown(e, 'move')
+            }
+          />
 
           <div className='cm-window__body'>{children}</div>
 
