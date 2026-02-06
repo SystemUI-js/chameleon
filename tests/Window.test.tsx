@@ -302,6 +302,12 @@ describe('Window interactions', () => {
       position: { x: 0, y: 0 }
     })
 
+    const preview = container.querySelector('.cm-window-preview') as HTMLElement
+    expect(preview).toBeInTheDocument()
+    expect(preview).toHaveStyle({ width: '360px', height: '250px' })
+    expect(preview).toHaveStyle({ left: '0px', top: '0px' })
+    expect(windowEl).toHaveStyle({ width: '300px', height: '200px' })
+
     fireEvent.pointerUp(document, {
       pointerId: 7,
       clientX: 360,

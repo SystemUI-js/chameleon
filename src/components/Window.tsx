@@ -64,6 +64,11 @@ export interface WindowProps
 
 type ResizeDirection = 'n' | 's' | 'e' | 'w' | 'ne' | 'nw' | 'se' | 'sw'
 
+type PreviewRect = {
+  position: Position
+  size: Size
+}
+
 export const Window = forwardRef<HTMLDivElement, WindowProps>(
   (
     {
@@ -111,7 +116,7 @@ export const Window = forwardRef<HTMLDivElement, WindowProps>(
       controlledSize || initialSize
     )
     const [isDragging, setIsDragging] = useState(false)
-    const [previewPos, setPreviewPos] = useState<Position | null>(null)
+    const [previewRect, setPreviewRect] = useState<PreviewRect | null>(null)
     const onActiveRef = useRef(onActive)
     const isActiveRef = useRef(isActive)
     const activationSourceRef = useRef<'pointer' | 'keyboard' | null>(null)
@@ -325,14 +330,16 @@ export const Window = forwardRef<HTMLDivElement, WindowProps>(
 
         if (modeRef.current === 'follow' || finalize) {
           setPos(nextPos)
+          setPreviewRect(null)
         } else {
-          setPreviewPos(nextPos)
+          const previewSize = lastResizeStateRef.current.size
+          setPreviewRect({ position: nextPos, size: previewSize })
         }
 
         if (!finalize) {
           onMovingRef.current?.(nextPos)
         } else {
-          setPreviewPos(null)
+          setPreviewRect(null)
         }
       },
       [clampMovePosition]
@@ -381,6 +388,9 @@ export const Window = forwardRef<HTMLDivElement, WindowProps>(
         if (modeRef.current === 'follow' || finalize) {
           setPos(nextPos)
           setSize(nextSize)
+          setPreviewRect(null)
+        } else {
+          setPreviewRect({ position: nextPos, size: nextSize })
         }
 
         if (!finalize) {
@@ -674,15 +684,15 @@ export const Window = forwardRef<HTMLDivElement, WindowProps>(
           )}
         </div>
 
-        {resolvedInteractionMode === 'static' && isDragging && previewPos && (
+        {resolvedInteractionMode === 'static' && isDragging && previewRect && (
           <div
             className='cm-window-preview'
             style={{
               position: 'fixed',
-              left: previewPos.x,
-              top: previewPos.y,
-              width: size?.width || resolvedMinWidth,
-              height: size?.height || resolvedMinHeight,
+              left: previewRect.position.x,
+              top: previewRect.position.y,
+              width: previewRect.size.width,
+              height: previewRect.size.height,
               pointerEvents: 'none',
               zIndex: 9999
             }}
