@@ -55,6 +55,12 @@ export const win98: Theme = {
       buttonFaceActive: 'none',
       tabBg: 'none',
       tabBgActive: 'none'
+    },
+    zIndex: {
+      base: 0,
+      alwaysTop: 600,
+      anchors: 800,
+      popups: 1000
     }
   },
   components: {

@@ -8,6 +8,8 @@ import React, {
   useCallback
 } from 'react'
 import { createPortal } from 'react-dom'
+import { useLayeredZIndex } from './useLayeredZIndex'
+import { useMountLayer } from './useMountLayer'
 import './Popover.scss'
 
 export interface PopoverProps {
@@ -48,6 +50,11 @@ export const Popover = forwardRef<PopoverRef, PopoverProps>(
 
     const triggerRef = useRef<HTMLDivElement>(null)
     const popoverRef = useRef<HTMLDivElement>(null)
+    const portalTarget = useMountLayer(
+      'layer-popups',
+      typeof document === 'undefined' ? null : document.body
+    )
+    const { zIndex } = useLayeredZIndex('popups', isOpen)
 
     const handleOpenChange = useCallback(
       (newOpen: boolean) => {
@@ -152,15 +159,16 @@ export const Popover = forwardRef<PopoverRef, PopoverProps>(
           {children}
         </div>
         {isOpen &&
+          portalTarget &&
           createPortal(
             <div
               ref={popoverRef}
               className={`cm-popover ${className}`}
-              style={getPosition()}
+              style={{ ...getPosition(), zIndex }}
             >
               {content}
             </div>,
-            document.body
+            portalTarget
           )}
       </>
     )

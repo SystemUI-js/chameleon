@@ -1,6 +1,8 @@
 import React, { useEffect, useRef } from 'react'
 import ReactDOM from 'react-dom'
 import { Window, WindowProps } from './Window'
+import { useLayeredZIndex } from './useLayeredZIndex'
+import { useMountLayer } from './useMountLayer'
 import './Modal.scss'
 
 export interface ModalProps extends WindowProps {
@@ -17,6 +19,11 @@ export const Modal: React.FC<ModalProps> = ({
   ...windowProps
 }) => {
   const overlayRef = useRef<HTMLDivElement>(null)
+  const portalTarget = useMountLayer(
+    'layer-popups',
+    typeof document === 'undefined' ? null : document.body
+  )
+  const { zIndex } = useLayeredZIndex('popups', isOpen)
 
   useEffect(() => {
     const handleEscape = (e: KeyboardEvent) => {
@@ -40,18 +47,21 @@ export const Modal: React.FC<ModalProps> = ({
     }
   }
 
+  if (!portalTarget) return null
+
   return ReactDOM.createPortal(
     <div
       className='cm-modal-overlay'
       ref={overlayRef}
       onClick={handleClickOutside}
       role='presentation'
+      style={{ zIndex }}
     >
       <div className={`cm-modal-content ${className}`}>
         <Window {...windowProps} onClose={onClose} />
       </div>
     </div>,
-    document.body
+    portalTarget
   )
 }
 

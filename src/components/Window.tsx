@@ -11,6 +11,7 @@ import {
 } from 'react'
 import { useThemeBehavior } from '../theme/ThemeContext'
 import { GlobalRender } from './GlobalRender'
+import { useLayeredZIndex } from './useLayeredZIndex'
 import './WindowTitleRenderer'
 import './Window.scss'
 
@@ -109,6 +110,10 @@ export const Window = forwardRef<HTMLDivElement, WindowProps>(
     )
     const [isDragging, setIsDragging] = useState(false)
     const [previewPos, setPreviewPos] = useState<Position | null>(null)
+    const { zIndex: stackedZIndex, order: stackOrder } = useLayeredZIndex(
+      'base',
+      isActive
+    )
     const onActiveRef = useRef(onActive)
     const isActiveRef = useRef(isActive)
     const activationSourceRef = useRef<'pointer' | 'keyboard' | null>(null)
@@ -441,14 +446,19 @@ export const Window = forwardRef<HTMLDivElement, WindowProps>(
       .filter(Boolean)
       .join(' ')
 
+    const resolvedZIndex = style?.zIndex ?? stackedZIndex
+
     const combinedStyle = {
       ...style,
       left: pos.x,
       top: pos.y,
       width: size?.width,
       height: size?.height,
-      position: 'absolute' as const
+      position: 'absolute' as const,
+      zIndex: resolvedZIndex
     }
+
+    const previewZIndex = `calc(var(--cm-z-index-base) + ${stackOrder + 1})`
 
     return (
       <>
@@ -515,7 +525,7 @@ export const Window = forwardRef<HTMLDivElement, WindowProps>(
               width: size?.width || resolvedMinWidth,
               height: size?.height || resolvedMinHeight,
               pointerEvents: 'none',
-              zIndex: 9999
+              zIndex: previewZIndex
             }}
           />
         )}

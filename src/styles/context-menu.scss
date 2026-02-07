@@ -1,5 +1,5 @@
 .cm-context-menu {
-  z-index: var(--cm-z-index-menu, 1000);
+  z-index: var(--cm-z-index-popups);
   position: fixed;
 
   .cm-popover {

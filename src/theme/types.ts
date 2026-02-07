@@ -78,6 +78,12 @@ export interface Theme {
       readonly tabBg: string
       readonly tabBgActive: string
     }
+    readonly zIndex: {
+      readonly base: number
+      readonly alwaysTop: number
+      readonly anchors: number
+      readonly popups: number
+    }
   }
   readonly components: {
     readonly button: {

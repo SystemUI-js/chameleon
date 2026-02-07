@@ -7,6 +7,8 @@ import React, {
 } from 'react'
 import { createPortal } from 'react-dom'
 import type { MenuItem } from '../types'
+import { useLayeredZIndex } from './useLayeredZIndex'
+import { useMountLayer } from './useMountLayer'
 
 export interface ContextMenuProps {
   items: MenuItem[]
@@ -27,6 +29,11 @@ export const ContextMenu: React.FC<ContextMenuProps> = ({
   const itemRefs = useRef<(HTMLDivElement | null)[]>([])
   const refCounter = useRef(0)
   const [openPath, setOpenPath] = useState<string[]>([])
+  const portalTarget = useMountLayer(
+    'layer-popups',
+    typeof document === 'undefined' ? null : document.body
+  )
+  const { zIndex } = useLayeredZIndex('popups', isOpen)
 
   const handleContextMenu = useCallback(
     (e: React.MouseEvent) => {
@@ -188,6 +195,7 @@ export const ContextMenu: React.FC<ContextMenuProps> = ({
     <>
       {childrenWithHandler}
       {isOpen &&
+        portalTarget &&
         createPortal(
           <div
             ref={menuRef}
@@ -197,7 +205,8 @@ export const ContextMenu: React.FC<ContextMenuProps> = ({
             style={{
               position: 'absolute',
               left: position.x,
-              top: position.y
+              top: position.y,
+              zIndex
             }}
           >
             <div className='cm-dropdown-menu'>
@@ -207,7 +216,7 @@ export const ContextMenu: React.FC<ContextMenuProps> = ({
               })()}
             </div>
           </div>,
-          document.body
+          portalTarget
         )}
     </>
   )

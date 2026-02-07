@@ -1,5 +1,9 @@
 :root {
   box-sizing: border-box;
+  --cm-z-index-base: 0;
+  --cm-z-index-always-top: 600;
+  --cm-z-index-anchors: 800;
+  --cm-z-index-popups: 1000;
 }
 
 *,
@@ -35,4 +39,39 @@ body {
   height: 16px;
   background: var(--cm-color-surface, #c0c0c0);
   box-shadow: var(--cm-shadow-outset-bevel);
+}
+
+.cm-layer-root {
+  position: relative;
+  width: 100%;
+  height: 100%;
+}
+
+.cm-layer {
+  position: absolute;
+  inset: 0;
+  pointer-events: none;
+}
+
+.cm-layer__content {
+  position: relative;
+  width: 100%;
+  height: 100%;
+  pointer-events: auto;
+}
+
+.cm-layer--base {
+  z-index: var(--cm-z-index-base);
+}
+
+.cm-layer--always-top {
+  z-index: var(--cm-z-index-always-top);
+}
+
+.cm-layer--anchors {
+  z-index: var(--cm-z-index-anchors);
+}
+
+.cm-layer--popups {
+  z-index: var(--cm-z-index-popups);
 }

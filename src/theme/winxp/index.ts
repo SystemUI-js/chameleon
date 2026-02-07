@@ -57,6 +57,12 @@ export const winxp: Theme = {
         'linear-gradient(to bottom, #CD9C45 0%, #BE923F 45%, #AD8432 50%, #D4AC5F 100%)',
       tabBg: 'linear-gradient(to bottom, #ECE9D8, #ECE9D8)',
       tabBgActive: 'linear-gradient(to bottom, #ffffff, #ECE9D8)'
+    },
+    zIndex: {
+      base: 0,
+      alwaysTop: 600,
+      anchors: 800,
+      popups: 1000
     }
   },
   components: {

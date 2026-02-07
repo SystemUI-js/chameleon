@@ -1,4 +1,11 @@
-import type { FC, PointerEventHandler, ReactNode } from 'react'
+import type {
+  FC,
+  MouseEventHandler,
+  PointerEventHandler,
+  ReactNode
+} from 'react'
+import type { MenuItem } from '../types'
+import { ContextMenu } from './ContextMenu'
 import { registerGlobalRenderer } from './globalRenderer'
 
 export type WindowTitleRendererProps = {
@@ -9,15 +16,28 @@ export type WindowTitleRendererProps = {
   onMaximize?: () => void
   onClose?: () => void
   onPointerDown?: PointerEventHandler<HTMLDivElement>
+  onContextMenu?: MouseEventHandler<HTMLDivElement>
 }
 
 export const DefaultWindowTitleRenderer: FC<WindowTitleRendererProps> = (
   props
 ) => {
-  const { title, icon, onMinimize, onMaximize, onClose, onPointerDown } = props
+  const {
+    title,
+    icon,
+    onMinimize,
+    onMaximize,
+    onClose,
+    onPointerDown,
+    onContextMenu
+  } = props
 
   return (
-    <div className='cm-window__title-bar' onPointerDown={onPointerDown}>
+    <div
+      className='cm-window__title-bar'
+      onPointerDown={onPointerDown}
+      onContextMenu={onContextMenu}
+    >
       <div
         className='cm-window__title-text'
         style={{ display: 'flex', alignItems: 'center', gap: '4px' }}
@@ -58,17 +78,33 @@ export const DefaultWindowTitleRenderer: FC<WindowTitleRendererProps> = (
   )
 }
 
-export const Win98WindowTitleRenderer: FC<WindowTitleRendererProps> = (
-  props
-) => {
-  return <DefaultWindowTitleRenderer {...props} />
+const createWindowTitleRenderer = (
+  menuLabel: string
+): FC<WindowTitleRendererProps> => {
+  const Renderer: FC<WindowTitleRendererProps> = (props) => {
+    const menuItems: MenuItem[] = [
+      {
+        id: 'close',
+        label: 'Close',
+        onClick: () => {
+          props.onClose?.()
+        }
+      }
+    ]
+
+    return (
+      <ContextMenu items={menuItems} menuLabel={menuLabel}>
+        <DefaultWindowTitleRenderer {...props} />
+      </ContextMenu>
+    )
+  }
+
+  Renderer.displayName = `WindowTitleRenderer(${menuLabel})`
+  return Renderer
 }
 
-export const WinXPWindowTitleRenderer: FC<WindowTitleRendererProps> = (
-  props
-) => {
-  return <DefaultWindowTitleRenderer {...props} />
-}
+export const Win98WindowTitleRenderer = createWindowTitleRenderer('Window menu')
+export const WinXPWindowTitleRenderer = createWindowTitleRenderer('Window menu')
 
 registerGlobalRenderer('window-title', DefaultWindowTitleRenderer)
 registerGlobalRenderer('win98:window-title', Win98WindowTitleRenderer)
