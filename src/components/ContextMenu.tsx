@@ -1,194 +1,186 @@
-import React, {
-  ReactNode,
-  useState,
-  useCallback,
-  useEffect,
-  useRef
-} from 'react'
-import { createPortal } from 'react-dom'
-import type { MenuItem } from '../types'
-import { useLayeredZIndex } from './useLayeredZIndex'
-import { useMountLayer } from './useMountLayer'
+import React, { ReactNode, useState, useCallback, useEffect, useRef } from 'react';
+import { createPortal } from 'react-dom';
+import type { MenuItem } from '../types';
+import { useLayeredZIndex } from './useLayeredZIndex';
+import { useMountLayer } from './useMountLayer';
 
 export interface ContextMenuProps {
-  items: MenuItem[]
-  children?: ReactNode
-  className?: string
-  menuLabel?: string
+  items: MenuItem[];
+  children?: ReactNode;
+  className?: string;
+  menuLabel?: string;
 }
 
 export const ContextMenu: React.FC<ContextMenuProps> = ({
   items,
   children,
   className,
-  menuLabel = 'Context menu'
+  menuLabel = 'Context menu',
 }) => {
-  const [isOpen, setIsOpen] = useState(false)
-  const [position, setPosition] = useState({ x: 0, y: 0 })
-  const menuRef = useRef<HTMLDivElement>(null)
-  const itemRefs = useRef<(HTMLDivElement | null)[]>([])
-  const refCounter = useRef(0)
-  const [openPath, setOpenPath] = useState<string[]>([])
+  const [isOpen, setIsOpen] = useState(false);
+  const [position, setPosition] = useState({ x: 0, y: 0 });
+  const menuRef = useRef<HTMLDivElement>(null);
+  const itemRefs = useRef<(HTMLDivElement | null)[]>([]);
+  const refCounter = useRef(0);
+  const [openPath, setOpenPath] = useState<string[]>([]);
   const portalTarget = useMountLayer(
     'layer-popups',
-    typeof document === 'undefined' ? null : document.body
-  )
-  const { zIndex } = useLayeredZIndex('popups', isOpen)
+    typeof document === 'undefined' ? null : document.body,
+  );
+  const { zIndex } = useLayeredZIndex('popups', isOpen);
 
   const handleContextMenu = useCallback(
     (e: React.MouseEvent) => {
-      e.preventDefault()
-      e.stopPropagation()
+      e.preventDefault();
+      e.stopPropagation();
 
-      const menuWidth = 200
-      const menuHeight = items.length * 32
+      const menuWidth = 200;
+      const menuHeight = items.length * 32;
 
-      const x = Math.min(e.clientX, window.innerWidth - menuWidth)
-      const y = Math.min(e.clientY, window.innerHeight - menuHeight)
+      const x = Math.min(e.clientX, window.innerWidth - menuWidth);
+      const y = Math.min(e.clientY, window.innerHeight - menuHeight);
 
-      setPosition({ x, y })
-      setIsOpen(true)
-      setOpenPath([])
+      setPosition({ x, y });
+      setIsOpen(true);
+      setOpenPath([]);
     },
-    [items]
-  )
+    [items],
+  );
 
   const handleTriggerContextMenu = useCallback(
     (e: React.MouseEvent) => {
       if (React.isValidElement(children)) {
         const childElement = children as React.ReactElement<{
-          onContextMenu?: React.MouseEventHandler
-        }>
-        childElement.props.onContextMenu?.(e)
+          onContextMenu?: React.MouseEventHandler;
+        }>;
+        childElement.props.onContextMenu?.(e);
       }
 
       if (!e.defaultPrevented) {
-        handleContextMenu(e)
+        handleContextMenu(e);
       }
     },
-    [children, handleContextMenu]
-  )
+    [children, handleContextMenu],
+  );
 
   const handleClose = useCallback(() => {
-    setIsOpen(false)
-    setOpenPath([])
-  }, [])
+    setIsOpen(false);
+    setOpenPath([]);
+  }, []);
 
   useEffect(() => {
     const handleClickOutside = (e: MouseEvent) => {
-      if (!isOpen) return
+      if (!isOpen) return;
 
-      const menu = document.querySelector('.cm-context-menu')
+      const menu = document.querySelector('.cm-context-menu');
       if (menu && !menu.contains(e.target as Node)) {
-        setIsOpen(false)
-        setOpenPath([])
+        setIsOpen(false);
+        setOpenPath([]);
       }
-    }
+    };
 
-    document.addEventListener('mousedown', handleClickOutside)
+    document.addEventListener('mousedown', handleClickOutside);
     return () => {
-      document.removeEventListener('mousedown', handleClickOutside)
-    }
-  }, [isOpen])
+      document.removeEventListener('mousedown', handleClickOutside);
+    };
+  }, [isOpen]);
 
   useEffect(() => {
     if (isOpen && itemRefs.current[0]) {
-      itemRefs.current[0].focus()
+      itemRefs.current[0].focus();
     }
-  }, [isOpen])
+  }, [isOpen]);
 
   const handleItemClick = (item: MenuItem) => {
     if (!item.disabled) {
-      item.onClick?.()
-      handleClose()
+      item.onClick?.();
+      handleClose();
     }
-  }
+  };
 
   const renderMenuItem = (item: MenuItem, level: number = 0): ReactNode => {
     if (item.items) {
-      const isSubmenuOpen = openPath[level] === item.id
+      const isSubmenuOpen = openPath[level] === item.id;
       return (
         <div
           key={item.id}
           ref={(el) => {
-            itemRefs.current[refCounter.current++] = el
+            itemRefs.current[refCounter.current++] = el;
           }}
           className={`cm-dropdown-item ${item.disabled ? 'cm-dropdown-item--disabled' : ''} cm-dropdown-item--submenu ${isSubmenuOpen ? 'cm-dropdown-item--active' : ''}`}
-          role='menuitem'
+          role="menuitem"
           tabIndex={-1}
           onClick={() => {
             if (!item.disabled) {
-              setOpenPath([...openPath.slice(0, level), item.id])
+              setOpenPath([...openPath.slice(0, level), item.id]);
             }
           }}
           onKeyDown={(e) => {
             if ((e.key === 'Enter' || e.key === ' ') && !item.disabled) {
-              e.preventDefault()
-              setOpenPath([...openPath.slice(0, level), item.id])
+              e.preventDefault();
+              setOpenPath([...openPath.slice(0, level), item.id]);
             }
           }}
           onMouseEnter={() => {
             if (!item.disabled) {
-              setOpenPath([...openPath.slice(0, level), item.id])
+              setOpenPath([...openPath.slice(0, level), item.id]);
             }
           }}
         >
           {item.label}
-          <span className='cm-dropdown-item__arrow'>▶</span>
+          <span className="cm-dropdown-item__arrow">▶</span>
           {isSubmenuOpen && (
-            <div className='cm-context-submenu'>
+            <div className="cm-context-submenu">
               {item.items.map((subItem) => renderMenuItem(subItem, level + 1))}
             </div>
           )}
         </div>
-      )
+      );
     }
 
     return (
       <div
         key={item.id}
         ref={(el) => {
-          itemRefs.current[refCounter.current++] = el
+          itemRefs.current[refCounter.current++] = el;
         }}
         className={`cm-dropdown-item ${item.disabled ? 'cm-dropdown-item--disabled' : ''}`}
-        role='menuitem'
+        role="menuitem"
         tabIndex={-1}
         onClick={() => handleItemClick(item)}
         onKeyDown={(e) => {
           if ((e.key === 'Enter' || e.key === ' ') && !item.disabled) {
-            e.preventDefault()
-            handleItemClick(item)
+            e.preventDefault();
+            handleItemClick(item);
           }
         }}
         onMouseEnter={() => {
-          setOpenPath(openPath.slice(0, level))
+          setOpenPath(openPath.slice(0, level));
         }}
       >
-        {item.icon && (
-          <span className='cm-dropdown-item__icon'>{item.icon}</span>
-        )}
+        {item.icon && <span className="cm-dropdown-item__icon">{item.icon}</span>}
         {item.label}
       </div>
-    )
-  }
+    );
+  };
 
-  let childrenWithHandler: ReactNode
+  let childrenWithHandler: ReactNode;
   if (React.isValidElement(children)) {
     childrenWithHandler = React.cloneElement(children as React.ReactElement, {
-      onContextMenu: handleTriggerContextMenu
-    })
+      onContextMenu: handleTriggerContextMenu,
+    });
   } else if (children != null) {
     childrenWithHandler = (
       <div
-        className='cm-context-menu__trigger'
+        className="cm-context-menu__trigger"
         onContextMenu={handleTriggerContextMenu}
-        role='presentation'
+        role="presentation"
       >
         {children}
       </div>
-    )
+    );
   } else {
-    childrenWithHandler = children
+    childrenWithHandler = children;
   }
 
   return (
@@ -200,26 +192,27 @@ export const ContextMenu: React.FC<ContextMenuProps> = ({
           <div
             ref={menuRef}
             className={`cm-context-menu ${className || ''}`}
-            role='menu'
+            role="menu"
             aria-label={menuLabel}
             style={{
               position: 'absolute',
               left: position.x,
               top: position.y,
-              zIndex
+              zIndex,
+              pointerEvents: 'auto',
             }}
           >
-            <div className='cm-dropdown-menu'>
+            <div className="cm-dropdown-menu">
               {(() => {
-                refCounter.current = 0
-                return items.map((item) => renderMenuItem(item))
+                refCounter.current = 0;
+                return items.map((item) => renderMenuItem(item));
               })()}
             </div>
           </div>,
-          portalTarget
+          portalTarget,
         )}
     </>
-  )
-}
+  );
+};
 
-ContextMenu.displayName = 'ContextMenu'
+ContextMenu.displayName = 'ContextMenu';

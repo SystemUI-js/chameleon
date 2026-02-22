@@ -1,77 +1,81 @@
 :root {
-  box-sizing: border-box;
-  --cm-z-index-base: 0;
-  --cm-z-index-always-top: 600;
-  --cm-z-index-anchors: 800;
-  --cm-z-index-popups: 1000;
+    box-sizing: border-box;
+    --cm-z-index-base: 0;
+    --cm-z-index-always-top: 600;
+    --cm-z-index-anchors: 800;
+    --cm-z-index-popups: 1000;
 }
 
 *,
 *::before,
 *::after {
-  box-sizing: inherit;
+    box-sizing: inherit;
 }
 
 body {
-  margin: 0;
-  padding: 0;
-  background-color: var(--cm-color-background, #008080);
-  color: var(--cm-color-text, #000000);
-  font-family: var(--cm-typography-font-family, sans-serif);
-  font-size: var(--cm-typography-font-size, 12px);
-  -webkit-font-smoothing: none;
+    margin: 0;
+    padding: 0;
+    background-color: var(--cm-color-background, #008080);
+    color: var(--cm-color-text, #000000);
+    font-family: var(--cm-typography-font-family, sans-serif);
+    font-size: var(--cm-typography-font-size, 12px);
+    -webkit-font-smoothing: none;
 }
 
 ::-webkit-scrollbar {
-  width: 16px;
-  height: 16px;
-  background: var(--cm-color-surface, #c0c0c0);
+    width: 16px;
+    height: 16px;
+    background: var(--cm-color-surface, #c0c0c0);
 }
 
 ::-webkit-scrollbar-thumb {
-  background: var(--cm-color-surface, #c0c0c0);
-  border: 1px solid var(--cm-color-surface, #c0c0c0);
-  box-shadow: var(--cm-shadow-outset-bevel);
+    background: var(--cm-color-surface, #c0c0c0);
+    border: 1px solid var(--cm-color-surface, #c0c0c0);
+    box-shadow: var(--cm-shadow-outset-bevel);
 }
 
 ::-webkit-scrollbar-button {
-  width: 16px;
-  height: 16px;
-  background: var(--cm-color-surface, #c0c0c0);
-  box-shadow: var(--cm-shadow-outset-bevel);
+    width: 16px;
+    height: 16px;
+    background: var(--cm-color-surface, #c0c0c0);
+    box-shadow: var(--cm-shadow-outset-bevel);
 }
 
 .cm-layer-root {
-  position: relative;
-  width: 100%;
-  height: 100%;
+    position: relative;
+    width: 100%;
+    height: 100%;
 }
 
 .cm-layer {
-  position: absolute;
-  inset: 0;
-  pointer-events: none;
+    position: absolute;
+    inset: 0;
+    pointer-events: none;
 }
 
 .cm-layer__content {
-  position: relative;
-  width: 100%;
-  height: 100%;
-  pointer-events: auto;
+    position: relative;
+    width: 100%;
+    height: 100%;
+    pointer-events: auto;
+}
+
+.cm-layer__content--passive {
+    pointer-events: none;
 }
 
 .cm-layer--base {
-  z-index: var(--cm-z-index-base);
+    z-index: var(--cm-z-index-base);
 }
 
 .cm-layer--always-top {
-  z-index: var(--cm-z-index-always-top);
+    z-index: var(--cm-z-index-always-top);
 }
 
 .cm-layer--anchors {
-  z-index: var(--cm-z-index-anchors);
+    z-index: var(--cm-z-index-anchors);
 }
 
 .cm-layer--popups {
-  z-index: var(--cm-z-index-popups);
+    z-index: var(--cm-z-index-popups);
 }

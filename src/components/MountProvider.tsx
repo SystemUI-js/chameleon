@@ -1,40 +1,40 @@
-import { forwardRef, useCallback, useEffect, useRef } from 'react'
-import type { HTMLAttributes } from 'react'
-import { registerMountSlot, unregisterMountSlot } from './mountRegistry'
+import { forwardRef, useCallback, useEffect, useRef } from 'react';
+import type { HTMLAttributes } from 'react';
+import { registerMountSlot, unregisterMountSlot } from './mountRegistry';
 
 export interface MountProviderProps extends HTMLAttributes<HTMLDivElement> {
-  name: string
+  name: string;
 }
 
 export const MountProvider = forwardRef<HTMLDivElement, MountProviderProps>(
   ({ name, className = '', ...rest }, ref) => {
-    const innerRef = useRef<HTMLDivElement | null>(null)
+    const innerRef = useRef<HTMLDivElement | null>(null);
 
     const setRefs = useCallback(
       (node: HTMLDivElement | null) => {
-        innerRef.current = node
+        innerRef.current = node;
         if (typeof ref === 'function') {
-          ref(node)
+          ref(node);
         } else if (ref) {
-          ref.current = node
+          ref.current = node;
         }
       },
-      [ref]
-    )
+      [ref],
+    );
 
     useEffect(() => {
-      const node = innerRef.current
-      if (!node) return
-      registerMountSlot(name, node)
-      return () => unregisterMountSlot(name, node)
-    }, [name])
+      const node = innerRef.current;
+      if (!node) return;
+      registerMountSlot(name, node);
+      return () => unregisterMountSlot(name, node);
+    }, [name]);
 
-    const cls = ['cm-mount-provider', className].filter(Boolean).join(' ')
+    const cls = ['cm-mount-provider', className].filter(Boolean).join(' ');
 
-    return <div ref={setRefs} className={cls} {...rest} />
-  }
-)
+    return <div ref={setRefs} className={cls} {...rest} />;
+  },
+);
 
-MountProvider.displayName = 'MountProvider'
+MountProvider.displayName = 'MountProvider';
 
-export default MountProvider
+export default MountProvider;

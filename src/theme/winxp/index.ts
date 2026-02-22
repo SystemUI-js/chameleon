@@ -1,4 +1,4 @@
-import { Theme } from '../types'
+import { Theme } from '../types';
 
 export const winxp: Theme = {
   id: 'winxp',
@@ -18,52 +18,51 @@ export const winxp: Theme = {
       borderDarkest: '#716F64',
       focusRing: '#3D7BD9',
       selectionBg: '#316AC5',
-      selectionText: '#FFFFFF'
+      selectionText: '#FFFFFF',
     },
     typography: {
       fontFamily: "'Tahoma', 'Segoe UI', sans-serif",
       fontSize: '11px',
       lineHeight: '13px',
-      fontWeight: 400
+      fontWeight: 400,
     },
     spacing: {
       xs: '2px',
       sm: '3px',
       md: '6px',
       lg: '12px',
-      xl: '20px'
+      xl: '20px',
     },
     shadow: {
       insetBevel: 'inset 1px 1px 0 #ACA899, inset -1px -1px 0 #FFFFFF',
       outsetBevel: 'inset 1px 1px 0 #FFFFFF, inset -1px -1px 0 #ACA899',
-      popup: '4px 4px 4px rgba(0,0,0,0.4)'
+      popup: '4px 4px 4px rgba(0,0,0,0.4)',
     },
     radius: {
       sm: '2px',
       md: '3px',
       lg: '5px',
-      round: '9999px'
+      round: '9999px',
     },
     gradient: {
       titleBar:
         'linear-gradient(to bottom, #0058EE 0%, #3593FF 4%, #288EFF 18%, #127DFF 44%, #0369FD 100%)',
       titleBarInactive:
         'linear-gradient(to bottom, #7697E7 0%, #7E9EE3 3%, #94AFED 6%, #97B4F3 8%, #82A5E4 14%, #7C9FE2 17%, #7996DE 25%, #7B99E1 56%, #82A9E9 81%, #80A5E7 89%, #7B96E1 94%, #7A93DF 97%, #ABBAE3 100%)',
-      buttonFace:
-        'linear-gradient(to bottom, #F8F8F8 0%, #F1F1F1 45%, #E5E5E5 50%, #F8F8F8 100%)',
+      buttonFace: 'linear-gradient(to bottom, #F8F8F8 0%, #F1F1F1 45%, #E5E5E5 50%, #F8F8F8 100%)',
       buttonFaceHover:
         'linear-gradient(to bottom, #FFF0CF 0%, #FDDFA3 45%, #F8B500 50%, #FCE4A9 100%)',
       buttonFaceActive:
         'linear-gradient(to bottom, #CD9C45 0%, #BE923F 45%, #AD8432 50%, #D4AC5F 100%)',
       tabBg: 'linear-gradient(to bottom, #ECE9D8, #ECE9D8)',
-      tabBgActive: 'linear-gradient(to bottom, #ffffff, #ECE9D8)'
+      tabBgActive: 'linear-gradient(to bottom, #ffffff, #ECE9D8)',
     },
     zIndex: {
       base: 0,
       alwaysTop: 600,
       anchors: 800,
-      popups: 1000
-    }
+      popups: 1000,
+    },
   },
   components: {
     button: {
@@ -75,7 +74,7 @@ export const winxp: Theme = {
       borderDark: '#ACA899',
       borderDarker: '#003c74',
       border: '1px solid #003c74',
-      focusRing: '#3D7BD9'
+      focusRing: '#3D7BD9',
     },
     window: {
       frame: '#00138C',
@@ -86,7 +85,7 @@ export const winxp: Theme = {
       titleBarHeight: '30px',
       closeButtonBg: '#D75531',
       closeButtonBgHover: '#E57373',
-      closeButtonBgActive: '#C0392B'
+      closeButtonBgActive: '#C0392B',
     },
     taskbar: {
       bg: '#245EDC',
@@ -97,7 +96,7 @@ export const winxp: Theme = {
       itemBgHover: '#3178E8',
       itemBgActive: '#2159C6',
       itemText: '#FFFFFF',
-      itemTextActive: '#FFFFFF'
+      itemTextActive: '#FFFFFF',
     },
     startButton: {
       bg: '#3C9F3C',
@@ -106,8 +105,8 @@ export const winxp: Theme = {
       text: '#FFFFFF',
       borderLight: '#5FBF5F',
       borderDark: '#2B7A2B',
-      borderDarker: '#1F5A1F'
-    }
+      borderDarker: '#1F5A1F',
+    },
   },
   behavior: {
     windowDragMode: 'follow',
@@ -117,8 +116,80 @@ export const winxp: Theme = {
       resizable: false,
       minWidth: 200,
       minHeight: 100,
-      activateWholeArea: true
+      activateWholeArea: true,
     },
-    startMenuMount: 'bottom'
-  }
-}
+    startMenuMount: 'bottom',
+    docking: {
+      zones: [
+        {
+          id: 'top-left',
+          gridColumnStart: 1,
+          gridColumnEnd: 2,
+          gridRowStart: 1,
+          gridRowEnd: 2,
+          priority: 3,
+        },
+        {
+          id: 'top',
+          gridColumnStart: 2,
+          gridColumnEnd: 3,
+          gridRowStart: 1,
+          gridRowEnd: 2,
+          priority: 2,
+        },
+        {
+          id: 'top-right',
+          gridColumnStart: 3,
+          gridColumnEnd: 4,
+          gridRowStart: 1,
+          gridRowEnd: 2,
+          priority: 3,
+        },
+        {
+          id: 'left',
+          gridColumnStart: 1,
+          gridColumnEnd: 2,
+          gridRowStart: 2,
+          gridRowEnd: 3,
+          priority: 2,
+        },
+        {
+          id: 'right',
+          gridColumnStart: 3,
+          gridColumnEnd: 4,
+          gridRowStart: 2,
+          gridRowEnd: 3,
+          priority: 2,
+        },
+        {
+          id: 'bottom-left',
+          gridColumnStart: 1,
+          gridColumnEnd: 2,
+          gridRowStart: 3,
+          gridRowEnd: 4,
+          priority: 3,
+        },
+        {
+          id: 'bottom',
+          gridColumnStart: 2,
+          gridColumnEnd: 3,
+          gridRowStart: 3,
+          gridRowEnd: 4,
+          priority: 2,
+        },
+        {
+          id: 'bottom-right',
+          gridColumnStart: 3,
+          gridColumnEnd: 4,
+          gridRowStart: 3,
+          gridRowEnd: 4,
+          priority: 3,
+        },
+      ],
+      policy: {
+        thresholdPx: 28,
+        mode: 'follow',
+      },
+    },
+  },
+};
