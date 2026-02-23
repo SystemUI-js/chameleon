@@ -68,10 +68,19 @@ export type WindowDefaults = {
 
 export type StartMenuMountPosition = 'top' | 'bottom';
 
+export type StartMenuHeightLevel = '1x' | '2x';
+
+export type StartMenuDiscreteHeightBehavior = {
+  readonly enabled: boolean;
+  readonly levelHeights: Readonly<Record<StartMenuHeightLevel, number>>;
+  readonly switchThresholdPx: number;
+};
+
 export type ThemeBehavior = {
   readonly windowDragMode: WindowDragMode;
   readonly windowDefaults: WindowDefaults;
   readonly startMenuMount: StartMenuMountPosition;
+  readonly startMenuDiscreteHeight: StartMenuDiscreteHeightBehavior;
   readonly docking: DockingBehavior;
 };
 

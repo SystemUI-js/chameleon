@@ -205,6 +205,13 @@ export const GridMountLayout: React.FC = () => {
         <MountConsumer name="layer-anchors" exclude priority={0}>
           <Taskbar
             startButton={<StartButton />}
+            startMenu={
+              <div style={{ display: 'flex', flexDirection: 'column', gap: 6 }}>
+                <Button style={{ justifyContent: 'flex-start' }}>My Computer</Button>
+                <Button style={{ justifyContent: 'flex-start' }}>Control Panel</Button>
+                <Button style={{ justifyContent: 'flex-start' }}>Run...</Button>
+              </div>
+            }
             style={{
               position: 'absolute',
               left: 0,

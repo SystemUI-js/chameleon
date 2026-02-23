@@ -114,6 +114,14 @@ export const defaultTheme: Theme = {
       minHeight: 100,
     },
     startMenuMount: 'top',
+    startMenuDiscreteHeight: {
+      enabled: false,
+      levelHeights: {
+        '1x': 220,
+        '2x': 360,
+      },
+      switchThresholdPx: 32,
+    },
     docking: {
       zones: [
         {

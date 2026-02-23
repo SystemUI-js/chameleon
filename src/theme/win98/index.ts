@@ -117,6 +117,14 @@ export const win98: Theme = {
       activateWholeArea: true,
     },
     startMenuMount: 'bottom',
+    startMenuDiscreteHeight: {
+      enabled: true,
+      levelHeights: {
+        '1x': 220,
+        '2x': 360,
+      },
+      switchThresholdPx: 32,
+    },
     docking: {
       zones: [
         {
