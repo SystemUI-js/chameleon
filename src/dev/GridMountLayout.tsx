@@ -9,6 +9,7 @@ import {
   StartButton,
   Taskbar,
   Text,
+  Window,
   useTheme,
 } from '../index';
 import type { ThemeId } from '../index';
@@ -22,8 +23,37 @@ const THEME_OPTIONS: readonly { readonly value: ThemeId; readonly label: string 
   { value: 'material', label: 'Material (Placeholder)' },
 ];
 
+type DemoWindowItem = {
+  readonly id: number;
+  readonly title: string;
+  readonly initialPosition: {
+    readonly x: number;
+    readonly y: number;
+  };
+  readonly bodyText: string;
+};
+
+const DEMO_WINDOW_BASE_OFFSET = 24;
+const DEMO_WINDOW_STEP_OFFSET = 24;
+
+const createDemoWindow = (id: number): DemoWindowItem => {
+  const offset = DEMO_WINDOW_BASE_OFFSET + (id - 1) * DEMO_WINDOW_STEP_OFFSET;
+
+  return {
+    id,
+    title: `Demo Window #${id}`,
+    initialPosition: {
+      x: offset,
+      y: offset,
+    },
+    bodyText: `This is demo window ${id}.`,
+  };
+};
+
 export const GridMountLayout: React.FC = () => {
   const [showModal, setShowModal] = useState(false);
+  const [demoWindows, setDemoWindows] = useState<DemoWindowItem[]>([]);
+  const [nextWindowId, setNextWindowId] = useState(1);
   const { theme, setTheme } = useTheme();
   const taskbarPosition = 'bottom';
   const slotRefs = useRef<Record<string, HTMLDivElement | null>>({});
@@ -96,6 +126,13 @@ export const GridMountLayout: React.FC = () => {
 
   const bindSlotRef = (slotName: string) => (node: HTMLDivElement | null) => {
     slotRefs.current[slotName] = node;
+  };
+
+  const handleCreateWindow = () => {
+    setNextWindowId((currentId) => {
+      setDemoWindows((previousWindows) => [...previousWindows, createDemoWindow(currentId)]);
+      return currentId + 1;
+    });
   };
 
   return (
@@ -179,6 +216,9 @@ export const GridMountLayout: React.FC = () => {
               value={theme.id}
               onChange={(value) => setTheme(value as ThemeId)}
             />
+            <Button onClick={handleCreateWindow} title={`Next window id: ${nextWindowId}`}>
+              New Window
+            </Button>
             <Popover
               content={<Text>Popover mounts to layer-popups and stays above grid.</Text>}
               placement="bottom-start"
@@ -187,6 +227,23 @@ export const GridMountLayout: React.FC = () => {
             </Popover>
             <Button onClick={() => setShowModal(true)}>Open Modal</Button>
           </div>
+        </MountConsumer>
+
+        <MountConsumer name="layout-center">
+          {demoWindows.map((windowItem) => (
+            <Window
+              key={windowItem.id}
+              title={windowItem.title}
+              initialPosition={windowItem.initialPosition}
+              initialSize={{ width: 280, height: 180 }}
+              movable
+              resizable
+              minWidth={220}
+              minHeight={140}
+            >
+              <Text>{windowItem.bodyText}</Text>
+            </Window>
+          ))}
         </MountConsumer>
       </div>
 
