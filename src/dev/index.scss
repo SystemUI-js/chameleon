@@ -1,0 +1,60 @@
+:where(html, body, #root) {
+    width: 100%;
+    height: 100%;
+}
+
+#root {
+    min-height: 480px;
+}
+
+.cm-layer-root {
+    background-color: var(--cm-color-background, #008080);
+    overflow: hidden;
+}
+
+.cm-layer__grid {
+    display: grid;
+    grid-template-columns: var(--cm-grid-left-size, 0px) minmax(0, 1fr) var(
+            --cm-grid-right-size,
+            0px
+        );
+    grid-template-rows: var(--cm-grid-top-size, 0px) minmax(0, 1fr) var(--cm-grid-bottom-size, 0px);
+    width: 100%;
+    height: 100%;
+    min-height: 0;
+    min-width: 0;
+    overflow: hidden;
+}
+
+.cm-grid-slot {
+    position: relative;
+    min-width: 0;
+    min-height: 0;
+    border: 1px dashed transparent;
+}
+
+.cm-grid-slot--center {
+    background: color-mix(in srgb, var(--cm-color-surface, #efefef) 75%, transparent);
+    border: 1px solid var(--cm-color-border, #767676);
+    overflow: hidden;
+}
+
+.cm-grid-slot[data-dock-enabled='true'] {
+    border-color: color-mix(in srgb, var(--cm-color-focus-ring, #0078d7) 65%, transparent);
+}
+
+.cm-grid-slot[data-dock-enabled='false'] {
+    border-color: color-mix(in srgb, var(--cm-color-border-dark, #808080) 35%, transparent);
+}
+
+.cm-dock-panel {
+    display: flex;
+    align-items: center;
+    gap: 8px;
+    padding: 8px;
+    pointer-events: auto;
+}
+
+.cm-dock-panel__title {
+    margin-right: 8px;
+}

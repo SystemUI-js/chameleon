@@ -5,28 +5,25 @@ import React, {
   ReactNode,
   forwardRef,
   useImperativeHandle,
-  useCallback
-} from 'react'
-import { createPortal } from 'react-dom'
-import './Popover.scss'
+  useCallback,
+} from 'react';
+import { createPortal } from 'react-dom';
+import { useLayeredZIndex } from './useLayeredZIndex';
+import { useMountLayer } from './useMountLayer';
+import './Popover.scss';
 
 export interface PopoverProps {
-  content: ReactNode
-  children: ReactNode
-  trigger?: 'click' | 'hover'
-  placement?:
-    | 'bottom-start'
-    | 'bottom-end'
-    | 'top-start'
-    | 'top-end'
-    | 'right-start'
-  className?: string
-  visible?: boolean
-  onVisibleChange?: (visible: boolean) => void
+  content: ReactNode;
+  children: ReactNode;
+  trigger?: 'click' | 'hover';
+  placement?: 'bottom-start' | 'bottom-end' | 'top-start' | 'top-end' | 'right-start';
+  className?: string;
+  visible?: boolean;
+  onVisibleChange?: (visible: boolean) => void;
 }
 
 export interface PopoverRef {
-  close: () => void
+  close: () => void;
 }
 
 export const Popover = forwardRef<PopoverRef, PopoverProps>(
@@ -38,36 +35,38 @@ export const Popover = forwardRef<PopoverRef, PopoverProps>(
       placement = 'bottom-start',
       className = '',
       visible,
-      onVisibleChange
+      onVisibleChange,
     },
-    ref
+    ref,
   ) => {
-    const [internalOpen, setInternalOpen] = useState(false)
-    const isControlled = visible !== undefined
-    const isOpen = isControlled ? visible : internalOpen
+    const [internalOpen, setInternalOpen] = useState(false);
+    const isControlled = visible !== undefined;
+    const isOpen = isControlled ? visible : internalOpen;
 
-    const triggerRef = useRef<HTMLDivElement>(null)
-    const popoverRef = useRef<HTMLDivElement>(null)
+    const triggerRef = useRef<HTMLDivElement>(null);
+    const popoverRef = useRef<HTMLDivElement>(null);
+    const portalTarget = useMountLayer(
+      'layer-popups',
+      typeof document === 'undefined' ? null : document.body,
+    );
+    const { zIndex } = useLayeredZIndex('popups', isOpen);
 
     const handleOpenChange = useCallback(
       (newOpen: boolean) => {
         if (!isControlled) {
-          setInternalOpen(newOpen)
+          setInternalOpen(newOpen);
         }
-        onVisibleChange?.(newOpen)
+        onVisibleChange?.(newOpen);
       },
-      [isControlled, onVisibleChange]
-    )
+      [isControlled, onVisibleChange],
+    );
 
-    const toggle = useCallback(
-      () => handleOpenChange(!isOpen),
-      [handleOpenChange, isOpen]
-    )
-    const close = useCallback(() => handleOpenChange(false), [handleOpenChange])
+    const toggle = useCallback(() => handleOpenChange(!isOpen), [handleOpenChange, isOpen]);
+    const close = useCallback(() => handleOpenChange(false), [handleOpenChange]);
 
     useImperativeHandle(ref, () => ({
-      close
-    }))
+      close,
+    }));
 
     useEffect(() => {
       const handleClickOutside = (e: MouseEvent) => {
@@ -78,95 +77,88 @@ export const Popover = forwardRef<PopoverRef, PopoverProps>(
           triggerRef.current &&
           !triggerRef.current.contains(e.target as Node)
         ) {
-          close()
+          close();
         }
-      }
+      };
 
       const handleKeyDown = (e: KeyboardEvent) => {
         if (e.key === 'Escape' && isOpen) {
-          close()
+          close();
         }
-      }
+      };
 
-      document.addEventListener('mousedown', handleClickOutside)
-      document.addEventListener('keydown', handleKeyDown)
+      document.addEventListener('mousedown', handleClickOutside);
+      document.addEventListener('keydown', handleKeyDown);
       return () => {
-        document.removeEventListener('mousedown', handleClickOutside)
-        document.removeEventListener('keydown', handleKeyDown)
-      }
-    }, [isOpen, close])
+        document.removeEventListener('mousedown', handleClickOutside);
+        document.removeEventListener('keydown', handleKeyDown);
+      };
+    }, [isOpen, close]);
 
     const handleTriggerKeyDown = (e: React.KeyboardEvent) => {
       if (e.key === 'Enter' || e.key === ' ') {
-        e.preventDefault()
-        toggle()
+        e.preventDefault();
+        toggle();
       }
-    }
+    };
 
     const getPosition = () => {
-      if (!triggerRef.current) return {}
-      const rect = triggerRef.current.getBoundingClientRect()
-      const style: React.CSSProperties = { position: 'absolute' }
+      if (!triggerRef.current) return {};
+      const rect = triggerRef.current.getBoundingClientRect();
+      const style: React.CSSProperties = { position: 'absolute' };
 
       // Simplistic positioning logic based on placement
       if (placement.startsWith('bottom')) {
-        style.top = rect.bottom + window.scrollY
+        style.top = rect.bottom + window.scrollY;
         style.left =
           placement === 'bottom-end'
-            ? rect.right +
-              window.scrollX -
-              (popoverRef.current?.offsetWidth || 0)
-            : rect.left + window.scrollX
+            ? rect.right + window.scrollX - (popoverRef.current?.offsetWidth || 0)
+            : rect.left + window.scrollX;
       } else if (placement.startsWith('top')) {
-        style.bottom = window.innerHeight - rect.top - window.scrollY
+        style.bottom = window.innerHeight - rect.top - window.scrollY;
         style.left =
           placement === 'top-end'
-            ? rect.right +
-              window.scrollX -
-              (popoverRef.current?.offsetWidth || 0)
-            : rect.left + window.scrollX
+            ? rect.right + window.scrollX - (popoverRef.current?.offsetWidth || 0)
+            : rect.left + window.scrollX;
       } else if (placement === 'right-start') {
-        style.top = rect.top + window.scrollY
-        style.left = rect.right + window.scrollX
+        style.top = rect.top + window.scrollY;
+        style.left = rect.right + window.scrollX;
       }
 
-      return style
-    }
+      return style;
+    };
 
     return (
       <>
         <div
           ref={triggerRef}
-          role='button'
+          role="button"
           tabIndex={0}
           onClick={trigger === 'click' ? toggle : undefined}
           onKeyDown={handleTriggerKeyDown}
-          onMouseEnter={
-            trigger === 'hover' ? () => handleOpenChange(true) : undefined
-          }
-          onMouseLeave={
-            trigger === 'hover' ? () => handleOpenChange(false) : undefined
-          }
+          onMouseEnter={trigger === 'hover' ? () => handleOpenChange(true) : undefined}
+          onMouseLeave={trigger === 'hover' ? () => handleOpenChange(false) : undefined}
           style={{ display: 'inline-block' }}
         >
           {children}
         </div>
         {isOpen &&
+          portalTarget &&
           createPortal(
             <div
               ref={popoverRef}
               className={`cm-popover ${className}`}
-              style={getPosition()}
+              style={{ ...getPosition(), zIndex, pointerEvents: 'auto' }}
             >
               {content}
             </div>,
-            document.body
+            portalTarget,
           )}
       </>
-    )
-  }
-)
+    );
+  },
+);
 
-Popover.displayName = 'Popover'
+Popover.displayName = 'Popover';
 
-export default Popover
+export default Popover;

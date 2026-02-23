@@ -1,4 +1,4 @@
-import { Theme } from '../types'
+import { Theme } from '../types';
 
 export const win98: Theme = {
   id: 'win98',
@@ -18,34 +18,33 @@ export const win98: Theme = {
       borderDarkest: '#000000',
       focusRing: '#000000', // Dotted line in win98 usually
       selectionBg: '#000080',
-      selectionText: '#ffffff'
+      selectionText: '#ffffff',
     },
     typography: {
-      fontFamily:
-        "'MS Sans Serif', 'Microsoft Sans Serif', 'Segoe UI', sans-serif",
+      fontFamily: "'MS Sans Serif', 'Microsoft Sans Serif', 'Segoe UI', sans-serif",
       fontSize: '12px',
       lineHeight: '1.2',
-      fontWeight: 400
+      fontWeight: 400,
     },
     spacing: {
       xs: '2px',
       sm: '4px',
       md: '8px',
       lg: '16px',
-      xl: '24px'
+      xl: '24px',
     },
     shadow: {
       insetBevel:
         'inset 1px 1px 0 #000000, inset 2px 2px 0 #808080, inset -1px -1px 0 #ffffff, inset -2px -2px 0 #dfdfdf',
       outsetBevel:
         'inset 1px 1px 0 #ffffff, inset 2px 2px 0 #dfdfdf, inset -1px -1px 0 #000000, inset -2px -2px 0 #808080',
-      popup: '2px 2px 0 #000000'
+      popup: '2px 2px 0 #000000',
     },
     radius: {
       sm: '0px',
       md: '0px',
       lg: '0px',
-      round: '9999px'
+      round: '9999px',
     },
     gradient: {
       titleBar: 'linear-gradient(90deg, #000080, #1084d0)',
@@ -54,8 +53,14 @@ export const win98: Theme = {
       buttonFaceHover: 'none',
       buttonFaceActive: 'none',
       tabBg: 'none',
-      tabBgActive: 'none'
-    }
+      tabBgActive: 'none',
+    },
+    zIndex: {
+      base: 0,
+      alwaysTop: 600,
+      anchors: 800,
+      popups: 1000,
+    },
   },
   components: {
     button: {
@@ -67,7 +72,7 @@ export const win98: Theme = {
       borderDark: '#808080',
       borderDarker: '#000000',
       border: 'none',
-      focusRing: '#000000'
+      focusRing: '#000000',
     },
     window: {
       frame: '#c0c0c0',
@@ -78,7 +83,7 @@ export const win98: Theme = {
       titleBarHeight: '18px',
       closeButtonBg: '#c0c0c0',
       closeButtonBgHover: '#c0c0c0',
-      closeButtonBgActive: '#c0c0c0'
+      closeButtonBgActive: '#c0c0c0',
     },
     taskbar: {
       bg: '#c0c0c0',
@@ -89,7 +94,7 @@ export const win98: Theme = {
       itemBgHover: '#dfdfdf',
       itemBgActive: '#808080',
       itemText: '#000000',
-      itemTextActive: '#ffffff'
+      itemTextActive: '#ffffff',
     },
     startButton: {
       bg: '#c0c0c0',
@@ -98,8 +103,8 @@ export const win98: Theme = {
       text: '#000000',
       borderLight: '#ffffff',
       borderDark: '#808080',
-      borderDarker: '#000000'
-    }
+      borderDarker: '#000000',
+    },
   },
   behavior: {
     windowDragMode: 'static',
@@ -109,7 +114,89 @@ export const win98: Theme = {
       resizable: false,
       minWidth: 200,
       minHeight: 100,
-      activateWholeArea: true
-    }
-  }
-}
+      activateWholeArea: true,
+    },
+    startMenuMount: 'bottom',
+    startMenuDiscreteHeight: {
+      enabled: true,
+      levelHeights: {
+        '1x': 220,
+        '2x': 360,
+      },
+      switchThresholdPx: 32,
+    },
+    docking: {
+      zones: [
+        {
+          id: 'top-left',
+          gridColumnStart: 1,
+          gridColumnEnd: 2,
+          gridRowStart: 1,
+          gridRowEnd: 2,
+          priority: 4,
+        },
+        {
+          id: 'top',
+          gridColumnStart: 2,
+          gridColumnEnd: 3,
+          gridRowStart: 1,
+          gridRowEnd: 2,
+          enabled: false,
+          priority: 1,
+        },
+        {
+          id: 'top-right',
+          gridColumnStart: 3,
+          gridColumnEnd: 4,
+          gridRowStart: 1,
+          gridRowEnd: 2,
+          priority: 4,
+        },
+        {
+          id: 'left',
+          gridColumnStart: 1,
+          gridColumnEnd: 2,
+          gridRowStart: 2,
+          gridRowEnd: 3,
+          priority: 1,
+        },
+        {
+          id: 'right',
+          gridColumnStart: 3,
+          gridColumnEnd: 4,
+          gridRowStart: 2,
+          gridRowEnd: 3,
+          priority: 1,
+        },
+        {
+          id: 'bottom-left',
+          gridColumnStart: 1,
+          gridColumnEnd: 2,
+          gridRowStart: 3,
+          gridRowEnd: 4,
+          priority: 4,
+        },
+        {
+          id: 'bottom',
+          gridColumnStart: 2,
+          gridColumnEnd: 3,
+          gridRowStart: 3,
+          gridRowEnd: 4,
+          priority: 1,
+        },
+        {
+          id: 'bottom-right',
+          gridColumnStart: 3,
+          gridColumnEnd: 4,
+          gridRowStart: 3,
+          gridRowEnd: 4,
+          priority: 4,
+        },
+      ],
+      policy: {
+        thresholdPx: 18,
+        mode: 'release',
+      },
+    },
+  },
+};

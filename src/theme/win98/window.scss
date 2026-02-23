@@ -9,7 +9,7 @@
     border: none;
 
     &.isDragging {
-      z-index: 9999;
+      z-index: auto;
     }
   }
 

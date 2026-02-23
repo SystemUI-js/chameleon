@@ -1,6 +1,6 @@
 .cm-popover {
   position: absolute;
-  z-index: 1000;
+  z-index: var(--cm-z-index-popups);
   background-color: var(--cm-color-surface, white);
   border: 1px solid var(--cm-color-border, #ccc);
   padding: 4px;

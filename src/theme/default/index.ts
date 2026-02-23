@@ -1,4 +1,4 @@
-import { Theme } from '../types'
+import { Theme } from '../types';
 
 export const defaultTheme: Theme = {
   id: 'default',
@@ -18,31 +18,31 @@ export const defaultTheme: Theme = {
       borderDarkest: '#000000',
       focusRing: '#000000',
       selectionBg: '#0078d7',
-      selectionText: '#ffffff'
+      selectionText: '#ffffff',
     },
     typography: {
       fontFamily: 'sans-serif',
       fontSize: '13px',
       lineHeight: '1.2',
-      fontWeight: 400
+      fontWeight: 400,
     },
     spacing: {
       xs: '2px',
       sm: '4px',
       md: '8px',
       lg: '16px',
-      xl: '24px'
+      xl: '24px',
     },
     shadow: {
       insetBevel: 'inset 1px 1px 0 #ffffff, inset -1px -1px 0 #a0a0a0',
       outsetBevel: 'inset 1px 1px 0 #ffffff, inset -1px -1px 0 #a0a0a0',
-      popup: '2px 2px 4px rgba(0,0,0,0.3)'
+      popup: '2px 2px 4px rgba(0,0,0,0.3)',
     },
     radius: {
       sm: '2px',
       md: '3px',
       lg: '4px',
-      round: '9999px'
+      round: '9999px',
     },
     gradient: {
       titleBar: 'none',
@@ -51,8 +51,14 @@ export const defaultTheme: Theme = {
       buttonFaceHover: 'none',
       buttonFaceActive: 'none',
       tabBg: 'none',
-      tabBgActive: 'none'
-    }
+      tabBgActive: 'none',
+    },
+    zIndex: {
+      base: 0,
+      alwaysTop: 600,
+      anchors: 800,
+      popups: 1000,
+    },
   },
   components: {
     button: {
@@ -64,7 +70,7 @@ export const defaultTheme: Theme = {
       borderDark: '#767676',
       borderDarker: '#404040',
       border: '1px solid #767676',
-      focusRing: '#000000'
+      focusRing: '#000000',
     },
     window: {
       frame: '#ffffff',
@@ -75,7 +81,7 @@ export const defaultTheme: Theme = {
       titleBarHeight: '24px',
       closeButtonBg: '#e0e0e0',
       closeButtonBgHover: '#d0d0d0',
-      closeButtonBgActive: '#c0c0c0'
+      closeButtonBgActive: '#c0c0c0',
     },
     taskbar: {
       bg: '#e0e0e0',
@@ -86,7 +92,7 @@ export const defaultTheme: Theme = {
       itemBgHover: '#d8d8d8',
       itemBgActive: '#cfcfcf',
       itemText: '#000000',
-      itemTextActive: '#000000'
+      itemTextActive: '#000000',
     },
     startButton: {
       bg: '#e0e0e0',
@@ -95,8 +101,8 @@ export const defaultTheme: Theme = {
       text: '#000000',
       borderLight: '#f5f5f5',
       borderDark: '#999999',
-      borderDarker: '#777777'
-    }
+      borderDarker: '#777777',
+    },
   },
   behavior: {
     windowDragMode: 'follow',
@@ -105,7 +111,88 @@ export const defaultTheme: Theme = {
       movable: true,
       resizable: false,
       minWidth: 200,
-      minHeight: 100
-    }
-  }
-}
+      minHeight: 100,
+    },
+    startMenuMount: 'top',
+    startMenuDiscreteHeight: {
+      enabled: false,
+      levelHeights: {
+        '1x': 220,
+        '2x': 360,
+      },
+      switchThresholdPx: 32,
+    },
+    docking: {
+      zones: [
+        {
+          id: 'top-left',
+          gridColumnStart: 1,
+          gridColumnEnd: 2,
+          gridRowStart: 1,
+          gridRowEnd: 2,
+          priority: 3,
+        },
+        {
+          id: 'top',
+          gridColumnStart: 2,
+          gridColumnEnd: 3,
+          gridRowStart: 1,
+          gridRowEnd: 2,
+          priority: 2,
+        },
+        {
+          id: 'top-right',
+          gridColumnStart: 3,
+          gridColumnEnd: 4,
+          gridRowStart: 1,
+          gridRowEnd: 2,
+          priority: 3,
+        },
+        {
+          id: 'left',
+          gridColumnStart: 1,
+          gridColumnEnd: 2,
+          gridRowStart: 2,
+          gridRowEnd: 3,
+          priority: 2,
+        },
+        {
+          id: 'right',
+          gridColumnStart: 3,
+          gridColumnEnd: 4,
+          gridRowStart: 2,
+          gridRowEnd: 3,
+          priority: 2,
+        },
+        {
+          id: 'bottom-left',
+          gridColumnStart: 1,
+          gridColumnEnd: 2,
+          gridRowStart: 3,
+          gridRowEnd: 4,
+          priority: 3,
+        },
+        {
+          id: 'bottom',
+          gridColumnStart: 2,
+          gridColumnEnd: 3,
+          gridRowStart: 3,
+          gridRowEnd: 4,
+          priority: 2,
+        },
+        {
+          id: 'bottom-right',
+          gridColumnStart: 3,
+          gridColumnEnd: 4,
+          gridRowStart: 3,
+          gridRowEnd: 4,
+          priority: 3,
+        },
+      ],
+      policy: {
+        thresholdPx: 24,
+        mode: 'release',
+      },
+    },
+  },
+};
