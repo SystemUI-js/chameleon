@@ -25,5 +25,5 @@
 ## 5. Quality and documentation
 
 - [x] 5.1 Update relevant docs/examples to show explicit `CWindowTitle` composition and parent-window drag behavior.
-- [ ] 5.2 Run lint, tests, and build; fix issues until all checks pass.
-- [ ] 5.3 Perform final verification pass against proposal/design/specs acceptance intent before implementation handoff.
+- [x] 5.2 Run lint, tests, and build; fix issues until all checks pass.
+- [x] 5.3 Perform final verification pass against proposal/design/specs acceptance intent before implementation handoff.
