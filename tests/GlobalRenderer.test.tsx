@@ -1,131 +1,117 @@
-import { render, screen } from '@testing-library/react'
-import '@testing-library/jest-dom'
-import {
-  GlobalRender,
-  registerGlobalRenderer,
-  ThemeProvider,
-  Window
-} from '../src'
-import { winxp } from '../src/theme/winxp'
+import { render, screen } from '@testing-library/react';
+import '@testing-library/jest-dom';
+import { GlobalRender, registerGlobalRenderer, ThemeProvider, Window } from '../src';
+import { winxp } from '../src/theme/winxp';
 import {
   DefaultWindowTitleRenderer,
   Win98WindowTitleRenderer,
   WinXPWindowTitleRenderer,
-  type WindowTitleRendererProps
-} from '../src/components/WindowTitleRenderer'
-import {
-  getRendererSnapshot,
-  unregisterRenderer
-} from '../src/components/globalRendererRegistry'
+  type WindowTitleRendererProps,
+} from '../src/components/WindowTitleRenderer';
+import { getRendererSnapshot, unregisterRenderer } from '../src/components/globalRendererRegistry';
 
 const clearRenderer = (name: string) => {
-  const snapshot = getRendererSnapshot(name)
-  if (!snapshot) return
-  unregisterRenderer(snapshot.name, snapshot.renderer)
-}
+  const snapshot = getRendererSnapshot(name);
+  if (!snapshot) return;
+  unregisterRenderer(snapshot.name, snapshot.renderer);
+};
 
 const clearDefaultRenderers = () => {
-  clearRenderer('window-title')
-  clearRenderer('win98:window-title')
-  clearRenderer('winxp:window-title')
-}
+  clearRenderer('window-title');
+  clearRenderer('win98:window-title');
+  clearRenderer('winxp:window-title');
+};
 
 const ensureDefaultRenderers = () => {
   if (!getRendererSnapshot('window-title')) {
-    registerGlobalRenderer('window-title', DefaultWindowTitleRenderer)
+    registerGlobalRenderer('window-title', DefaultWindowTitleRenderer);
   }
   if (!getRendererSnapshot('win98:window-title')) {
-    registerGlobalRenderer('win98:window-title', Win98WindowTitleRenderer)
+    registerGlobalRenderer('win98:window-title', Win98WindowTitleRenderer);
   }
   if (!getRendererSnapshot('winxp:window-title')) {
-    registerGlobalRenderer('winxp:window-title', WinXPWindowTitleRenderer)
+    registerGlobalRenderer('winxp:window-title', WinXPWindowTitleRenderer);
   }
-}
+};
 
 beforeEach(() => {
-  clearDefaultRenderers()
-})
+  clearDefaultRenderers();
+});
 
 afterEach(() => {
-  clearDefaultRenderers()
-  ensureDefaultRenderers()
-})
+  clearDefaultRenderers();
+  ensureDefaultRenderers();
+});
 
 describe('Global renderer registry', () => {
   it('registers renderer and prevents duplicates', () => {
     const TestRenderer = ({ title }: WindowTitleRendererProps) => (
-      <span data-testid='registered-renderer'>{title}</span>
-    )
+      <span data-testid="registered-renderer">{title}</span>
+    );
 
-    registerGlobalRenderer('window-title', TestRenderer)
+    registerGlobalRenderer('window-title', TestRenderer);
 
-    const snapshot = getRendererSnapshot('window-title')
-    expect(snapshot?.renderer).toBe(TestRenderer)
+    const snapshot = getRendererSnapshot('window-title');
+    expect(snapshot?.renderer).toBe(TestRenderer);
 
     expect(() => registerGlobalRenderer('window-title', TestRenderer)).toThrow(
-      'already registered'
-    )
-  })
-})
+      'already registered',
+    );
+  });
+});
 
 describe('GlobalRender', () => {
   it('prefers theme-specific renderer when available', () => {
     const DefaultRenderer = ({ title }: WindowTitleRendererProps) => (
-      <span data-testid='default-renderer'>{title}</span>
-    )
+      <span data-testid="default-renderer">{title}</span>
+    );
     const ThemeRenderer = ({ title }: WindowTitleRendererProps) => (
-      <span data-testid='theme-renderer'>{title}</span>
-    )
+      <span data-testid="theme-renderer">{title}</span>
+    );
 
-    registerGlobalRenderer('window-title', DefaultRenderer)
-    registerGlobalRenderer('winxp:window-title', ThemeRenderer)
+    registerGlobalRenderer('window-title', DefaultRenderer);
+    registerGlobalRenderer('winxp:window-title', ThemeRenderer);
 
     render(
       <ThemeProvider defaultTheme={winxp}>
-        <GlobalRender name='window-title' title='Theme Title' />
-      </ThemeProvider>
-    )
+        <GlobalRender name="window-title" title="Theme Title" />
+      </ThemeProvider>,
+    );
 
-    expect(screen.getByTestId('theme-renderer')).toHaveTextContent(
-      'Theme Title'
-    )
-  })
+    expect(screen.getByTestId('theme-renderer')).toHaveTextContent('Theme Title');
+  });
 
   it('falls back to default renderer when theme-specific is missing', () => {
     const DefaultRenderer = ({ title }: WindowTitleRendererProps) => (
-      <span data-testid='default-renderer'>{title}</span>
-    )
+      <span data-testid="default-renderer">{title}</span>
+    );
 
-    registerGlobalRenderer('window-title', DefaultRenderer)
+    registerGlobalRenderer('window-title', DefaultRenderer);
 
     render(
       <ThemeProvider defaultTheme={winxp}>
-        <GlobalRender name='window-title' title='Default Title' />
-      </ThemeProvider>
-    )
+        <GlobalRender name="window-title" title="Default Title" />
+      </ThemeProvider>,
+    );
 
-    expect(screen.getByTestId('default-renderer')).toHaveTextContent(
-      'Default Title'
-    )
-  })
-})
+    expect(screen.getByTestId('default-renderer')).toHaveTextContent('Default Title');
+  });
+});
 
 describe('Window title rendering', () => {
   it('renders title bar via GlobalRender', () => {
     const CustomRenderer = ({ title }: WindowTitleRendererProps) => (
-      <span data-testid='custom-title'>{title}</span>
-    )
+      <span data-testid="custom-title">{title}</span>
+    );
 
-    registerGlobalRenderer('window-title', CustomRenderer)
+    registerGlobalRenderer('window-title', CustomRenderer);
 
     render(
       <ThemeProvider defaultTheme={winxp}>
-        <Window title='Custom Window' />
-      </ThemeProvider>
-    )
+        <Window title="Custom Window" />
+      </ThemeProvider>,
+    );
 
-    expect(screen.getByTestId('custom-title')).toHaveTextContent(
-      'Custom Window'
-    )
-  })
-})
+    expect(screen.getByTestId('custom-title')).toHaveTextContent('Custom Window');
+  });
+});

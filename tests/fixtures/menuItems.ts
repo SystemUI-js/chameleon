@@ -1,4 +1,4 @@
-import { MenuItem } from '../../src/components/menuTypes'
+import { MenuItem } from '../../src/components/menuTypes';
 
 export const menuItemsFixture: MenuItem[] = [
   { id: 'file', label: 'File' },
@@ -14,10 +14,10 @@ export const menuItemsFixture: MenuItem[] = [
         label: 'Preferences',
         children: [
           { id: 'theme', label: 'Theme', onSelect: jest.fn() },
-          { id: 'shortcuts', label: 'Shortcuts', onSelect: jest.fn() }
-        ]
-      }
-    ]
+          { id: 'shortcuts', label: 'Shortcuts', onSelect: jest.fn() },
+        ],
+      },
+    ],
   },
-  { id: 'view', label: 'View', disabled: true }
-]
+  { id: 'view', label: 'View', disabled: true },
+];

@@ -70,6 +70,7 @@
   },
   "packageManager": "yarn@1.22.22",
   "dependencies": {
+    "@system-ui-js/multi-drag": "^0.2.7",
     "eventemitter3": "^5.0.4"
   }
 }

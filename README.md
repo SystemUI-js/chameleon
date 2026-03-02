@@ -126,3 +126,18 @@ export * from './theme/winxp'
 ```css
 border-radius: var(--cm-radius-md);
 ```
+
+## Window composition
+
+`CWindow` 不会隐式注入标题栏，使用时需要显式组合 `CWindowTitle`。
+
+```tsx
+import { CWindow, CWindowTitle } from '@system-ui-js/chameleon'
+
+<CWindow x={24} y={24} width={320} height={220}>
+  <CWindowTitle>My Window</CWindowTitle>
+  <div>Window body</div>
+</CWindow>
+```
+
+拖动 `CWindowTitle` 会移动所属 `CWindow`，内容区域不会触发窗口移动。

@@ -1,6 +1,7 @@
 import React from 'react';
 import { act, render } from '@testing-library/react';
 import '@testing-library/jest-dom';
+import { CWidget } from '../src/components/Widget/Widget';
 import { CWindow } from '../src/components/Window/Window';
 import { CWindowManager } from '../src/components/Window/WindowManager';
 
@@ -61,7 +62,7 @@ describe('CWindowManager window class registration', () => {
     const { queryByTestId } = render(<CWindowManager ref={managerRef}>{null}</CWindowManager>);
 
     act(() => {
-      managerRef.current?.addWindow(InvalidWindow as unknown as typeof CWindow);
+      managerRef.current?.addWindow(InvalidWindow as unknown as typeof CWidget);
     });
 
     expect(queryByTestId('invalid-window')).not.toBeInTheDocument();
@@ -90,5 +91,16 @@ describe('CWindowManager window class registration', () => {
     );
 
     expect(queryByTestId('invalid-window')).not.toBeInTheDocument();
+  });
+
+  it('accepts direct CWidget constructor through addWindow', () => {
+    const managerRef = React.createRef<CWindowManager>();
+    const { getAllByTestId } = render(<CWindowManager ref={managerRef}>{null}</CWindowManager>);
+
+    act(() => {
+      managerRef.current?.addWindow(CWidget);
+    });
+
+    expect(getAllByTestId('widget-frame')).toHaveLength(1);
   });
 });
