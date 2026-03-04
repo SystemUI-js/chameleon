@@ -1,5 +1,6 @@
 import React from 'react';
 import { CWidget } from '../Widget/Widget';
+import { isManagedConstructor } from '../Manager/isManagedConstructor';
 
 interface Props {
   children: React.ReactNode;
@@ -63,20 +64,7 @@ export class CWindowManager extends React.Component<Props> {
   }
 
   private isWindowConstructor(candidate: unknown): candidate is WindowConstructor {
-    if (typeof candidate !== 'function') {
-      return false;
-    }
-
-    const constructorWithPrototype = candidate as { prototype?: unknown };
-    const { prototype } = constructorWithPrototype;
-
-    if (!prototype || typeof prototype !== 'object') {
-      return false;
-    }
-
-    return (
-      candidate === CWidget || Object.prototype.isPrototypeOf.call(CWidget.prototype, prototype)
-    );
+    return isManagedConstructor(candidate, CWidget);
   }
 
   render() {
