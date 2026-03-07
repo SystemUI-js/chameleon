@@ -1,5 +1,5 @@
 import React from 'react';
-import { act, render } from '@testing-library/react';
+import { act, render, waitFor } from '@testing-library/react';
 import '@testing-library/jest-dom';
 import { CWidget } from '../src/components/Widget/Widget';
 import { CWindow } from '../src/components/Window/Window';
@@ -102,5 +102,31 @@ describe('CWindowManager window class registration', () => {
     });
 
     expect(getAllByTestId('widget-frame')).toHaveLength(1);
+  });
+
+  it('updates cached window element when same constructor receives new props', async () => {
+    const { getByTestId, rerender } = render(
+      <CWindowManager>
+        <CWindow x={12}>
+          <div data-testid="window-body">version-a</div>
+        </CWindow>
+      </CWindowManager>,
+    );
+
+    expect(getByTestId('window-frame')).toHaveStyle({ left: '12px' });
+    expect(getByTestId('window-body')).toHaveTextContent('version-a');
+
+    rerender(
+      <CWindowManager>
+        <CWindow x={56}>
+          <div data-testid="window-body">version-b</div>
+        </CWindow>
+      </CWindowManager>,
+    );
+
+    await waitFor(() => {
+      expect(getByTestId('window-frame')).toHaveStyle({ left: '56px' });
+      expect(getByTestId('window-body')).toHaveTextContent('version-b');
+    });
   });
 });

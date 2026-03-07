@@ -1,5 +1,5 @@
 import React from 'react';
-import { act, render } from '@testing-library/react';
+import { act, render, waitFor } from '@testing-library/react';
 import '@testing-library/jest-dom';
 import { CScreen } from '../src/components/Screen/Screen';
 import { CScreenManager } from '../src/components/Screen/ScreenManager';
@@ -89,5 +89,29 @@ describe('CScreenManager screen class registration', () => {
     );
 
     expect(queryByTestId('invalid-screen')).not.toBeInTheDocument();
+  });
+
+  it('updates cached screen element when same constructor receives new props', async () => {
+    const { getByTestId, rerender } = render(
+      <CScreenManager>
+        <CScreen>
+          <div data-testid="screen-body">version-a</div>
+        </CScreen>
+      </CScreenManager>,
+    );
+
+    expect(getByTestId('screen-body')).toHaveTextContent('version-a');
+
+    rerender(
+      <CScreenManager>
+        <CScreen>
+          <div data-testid="screen-body">version-b</div>
+        </CScreen>
+      </CScreenManager>,
+    );
+
+    await waitFor(() => {
+      expect(getByTestId('screen-body')).toHaveTextContent('version-b');
+    });
   });
 });

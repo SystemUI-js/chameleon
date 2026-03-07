@@ -79,15 +79,13 @@ export class CGridItem extends React.Component<GridItemProps> {
     return (
       <div
         className={this.props.className || 'c-grid-item'}
-        style={
-          (this.props.style,
-          {
-            gridRowStart: this.props.grid[0],
-            gridRowEnd: this.props.grid[1],
-            gridColumnStart: this.props.grid[2],
-            gridColumnEnd: this.props.grid[3],
-          })
-        }
+        style={{
+          ...this.props.style,
+          gridRowStart: this.props.grid[0],
+          gridRowEnd: this.props.grid[1],
+          gridColumnStart: this.props.grid[2],
+          gridColumnEnd: this.props.grid[3],
+        }}
       >
         {this.props.children}
       </div>

@@ -34,6 +34,7 @@ export class CScreenManager extends React.Component<Props> {
 
   private registerChildren(children: React.ReactNode): void {
     let hasNewRegistration = false;
+    let hasElementUpdate = false;
 
     React.Children.forEach(children, (child) => {
       if (!React.isValidElement(child)) {
@@ -41,18 +42,24 @@ export class CScreenManager extends React.Component<Props> {
       }
 
       if (this.isScreenConstructor(child.type)) {
-        this.registerScreenElement(child.type, child);
+        hasElementUpdate = this.registerScreenElement(child.type, child) || hasElementUpdate;
         hasNewRegistration = this.registerScreenConstructor(child.type) || hasNewRegistration;
       }
     });
 
-    if (hasNewRegistration) {
+    if (hasNewRegistration || hasElementUpdate) {
       this.forceUpdate();
     }
   }
 
-  private registerScreenElement(screenCtor: ScreenConstructor, element: React.ReactElement): void {
+  private registerScreenElement(
+    screenCtor: ScreenConstructor,
+    element: React.ReactElement,
+  ): boolean {
+    const previousElement = this.registeredScreenElements.get(screenCtor);
     this.registeredScreenElements.set(screenCtor, element);
+
+    return previousElement !== element;
   }
 
   private registerScreenConstructor(screenCtor: ScreenConstructor): boolean {

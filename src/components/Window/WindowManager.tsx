@@ -34,6 +34,7 @@ export class CWindowManager extends React.Component<Props> {
 
   private registerChildren(children: React.ReactNode): void {
     let hasNewRegistration = false;
+    let hasElementUpdate = false;
 
     React.Children.forEach(children, (child) => {
       if (!React.isValidElement(child)) {
@@ -41,18 +42,24 @@ export class CWindowManager extends React.Component<Props> {
       }
 
       if (this.isWindowConstructor(child.type)) {
-        this.registerWindowElement(child.type, child);
+        hasElementUpdate = this.registerWindowElement(child.type, child) || hasElementUpdate;
         hasNewRegistration = this.registerWindowConstructor(child.type) || hasNewRegistration;
       }
     });
 
-    if (hasNewRegistration) {
+    if (hasNewRegistration || hasElementUpdate) {
       this.forceUpdate();
     }
   }
 
-  private registerWindowElement(windowCtor: WindowConstructor, element: React.ReactElement): void {
+  private registerWindowElement(
+    windowCtor: WindowConstructor,
+    element: React.ReactElement,
+  ): boolean {
+    const previousElement = this.registeredWindowElements.get(windowCtor);
     this.registeredWindowElements.set(windowCtor, element);
+
+    return previousElement !== element;
   }
 
   private registerWindowConstructor(windowCtor: WindowConstructor): boolean {
