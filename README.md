@@ -126,3 +126,47 @@ export * from './theme/winxp'
 ```css
 border-radius: var(--cm-radius-md);
 ```
+
+## Window composition
+
+`CWindow` 不会隐式注入标题栏，使用时需要显式组合 `CWindowTitle`。
+
+```tsx
+import { CWindow, CWindowTitle } from '@system-ui-js/chameleon'
+
+<CWindow x={24} y={24} width={320} height={220}>
+  <CWindowTitle>My Window</CWindowTitle>
+  <div>Window body</div>
+</CWindow>
+```
+
+拖动 `CWindowTitle` 会移动所属 `CWindow`，内容区域不会触发窗口移动。
+
+### Border resize
+
+`CWindow` 默认支持 8 方向边框缩放（N/S/E/W/NE/NW/SE/SW），可通过 `resizable` 与 `resizeOptions` 配置：
+
+```tsx
+<CWindow
+  x={24}
+  y={24}
+  width={320}
+  height={220}
+  resizable
+  resizeOptions={{
+    edgeWidth: 4,
+    minContentWidth: 1,
+    minContentHeight: 1,
+    maxContentWidth: 640,
+    maxContentHeight: 480,
+  }}
+>
+  <CWindowTitle>Resizable Window</CWindowTitle>
+  <div>Window body</div>
+</CWindow>
+```
+
+- `resizable`：是否启用边框缩放，默认 `true`
+- `resizeOptions.edgeWidth`：边框拖动热区宽度，默认 `4`
+- `resizeOptions.minContentWidth/minContentHeight`：最小内容尺寸，默认 `1`
+- `resizeOptions.maxContentWidth/maxContentHeight`：可选最大内容尺寸

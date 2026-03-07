@@ -1,5 +1,9 @@
 ### [UnReleased]
 
+- **Feature:** Add global renderer registry with `GlobalRender` and theme-aware resolution for component rendering
+- Add Window title renderers (default/Win98/WinXP) and route Window title bar through `GlobalRender`
+- Add tests for global renderer registration, theme-specific resolution, and Window title rendering
+
 - Fix Window component: props should take precedence over theme defaults for minWidth/minHeight to enable per-component override
 - Fix specification documents: update data-model.md to reflect current implementation (remove planned, add windowDefaults examples)
 - Fix specification documents: convert absolute paths to relative paths in requirements.md and research.md
