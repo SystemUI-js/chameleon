@@ -14,7 +14,9 @@ const DEV_THEME_COMPONENTS: Record<DevThemeId, React.ComponentType> = {
   [DEV_THEME.winxp]: WinXpTheme,
 };
 
-export const ACTIVE_THEME: DevThemeId = DEV_THEME.win98;
+export const DEFAULT_DEV_THEME: DevThemeId = DEV_THEME.winxp;
+
+export const ACTIVE_THEME: DevThemeId = DEFAULT_DEV_THEME;
 
 export function resolveDevThemeComponent(themeId: DevThemeId): React.ComponentType {
   return DEV_THEME_COMPONENTS[themeId];
@@ -25,7 +27,7 @@ interface DevThemeRootProps {
 }
 
 export function DevThemeRoot({
-  activeTheme = ACTIVE_THEME,
+  activeTheme = DEFAULT_DEV_THEME,
 }: DevThemeRootProps): React.ReactElement {
   const ThemeRoot = resolveDevThemeComponent(activeTheme);
   return <ThemeRoot />;
