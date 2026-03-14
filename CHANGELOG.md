@@ -1,5 +1,6 @@
 ### [UnReleased]
 
+- Fix PR merge-context lint failure by adding a `GlobalRenderer.test.tsx` compatibility test aligned with the explicit `CWindowTitle` composition model
 - **Feature:** Add global renderer registry with `GlobalRender` and theme-aware resolution for component rendering
 - Add Window title renderers (default/Win98/WinXP) and route Window title bar through `GlobalRender`
 - Add tests for global renderer registration, theme-specific resolution, and Window title rendering
