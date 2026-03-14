@@ -34,8 +34,6 @@ export class CGrid extends React.Component<Props, State> {
           children.push(
             React.cloneElement(child, {
               key: index,
-              parentGrid: this.props.grid,
-              setGridSize: this.setGridSize,
             }),
           );
         }
