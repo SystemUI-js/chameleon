@@ -1,5 +1,7 @@
 ### [UnReleased]
 
+- Fix PR CI merge-context failures by removing invalid merge-only tests for unimplemented mount registry and window title context menu APIs
+- Fix PR CI test execution by removing duplicate `jest.config.js` and keeping `jest.config.ts` as the single Jest config
 - Fix review nits in default theme imports and testing-library import consistency
 - Fix PR merge-context lint failure by adding a `GlobalRenderer.test.tsx` compatibility test aligned with the explicit `CWindowTitle` composition model
 - **Feature:** Add global renderer registry with `GlobalRender` and theme-aware resolution for component rendering
