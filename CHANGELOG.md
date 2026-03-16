@@ -1,5 +1,10 @@
 ### [UnReleased]
 
+- **Feature:** Add default window theme with extensible styling system
+  - Add protected methods `getWindowContentClassName()` and `getWindowFrameClassName()` to CWindow for theme-specific class customization
+  - Add DefaultWindow component that extends CWindow with gradient backgrounds and border effects
+  - Add DefaultWindowTheme composition with DefaultWindow, DefaultWindowTitle, and DefaultTheme components
+  - Add comprehensive unit tests for theme class preservation and drag interaction
 - Fix PR CI merge-context failures by removing invalid merge-only tests for unimplemented mount registry and window title context menu APIs
 - Fix PR CI test execution by removing duplicate `jest.config.js` and keeping `jest.config.ts` as the single Jest config
 - Fix review nits in default theme imports and testing-library import consistency
