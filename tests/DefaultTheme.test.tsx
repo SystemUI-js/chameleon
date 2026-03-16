@@ -1,5 +1,4 @@
-import { fireEvent } from '@testing-library/dom';
-import { render, waitFor } from '@testing-library/react';
+import { fireEvent, render, waitFor } from '@testing-library/react';
 import '@testing-library/jest-dom';
 import { DefaultTheme } from '../src/theme/default';
 

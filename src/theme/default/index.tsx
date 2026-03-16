@@ -1,8 +1,8 @@
+import React from 'react';
 import { CScreen } from '@/components/Screen/Screen';
 import { CWindow } from '@/components/Window/Window';
 import { CWindowManager } from '@/components/Window/WindowManager';
 import { CWindowTitle } from '@/components/Window/WindowTitle';
-import React from 'react';
 import './styles/index.scss';
 
 export class DefaultWindow extends CWindow {
