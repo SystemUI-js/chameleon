@@ -1,0 +1,26 @@
+{
+  "lockfileVersion": 1,
+  "configVersion": 1,
+  "workspaces": {
+    "": {
+      "dependencies": {
+        "@opencode-ai/plugin": "1.2.27",
+      },
+      "devDependencies": {
+        "jsonc-parser": "3.3.1",
+        "zod": "4.3.5",
+      },
+    },
+  },
+  "packages": {
+    "@opencode-ai/plugin": ["@opencode-ai/plugin@1.2.27", "https://registry.npmmirror.com/@opencode-ai/plugin/-/plugin-1.2.27.tgz", { "dependencies": { "@opencode-ai/sdk": "1.2.27", "zod": "4.1.8" } }, "sha512-h+8Bw9v9nghMg7T+SUCTzxlIhOrsTqXW7U0HVLGQST5DjbN7uyCUM51roZWZ8LRjGxzbzFhvPnY1bj8i+ioZyw=="],
+
+    "@opencode-ai/sdk": ["@opencode-ai/sdk@1.2.27", "https://registry.npmmirror.com/@opencode-ai/sdk/-/sdk-1.2.27.tgz", {}, "sha512-Wk0o/I+Fo+wE3zgvlJDs8Fb67KlKqX0PrV8dK5adSDkANq6r4Z25zXJg2iOir+a8ntg3rAcpel1OY4FV/TwRUA=="],
+
+    "jsonc-parser": ["jsonc-parser@3.3.1", "https://registry.npmmirror.com/jsonc-parser/-/jsonc-parser-3.3.1.tgz", {}, "sha512-HUgH65KyejrUFPvHFPbqOY0rsFip3Bo5wb4ngvdi1EpCYWUQDC5V+Y7mZws+DLkr4M//zQJoanu1SP+87Dv1oQ=="],
+
+    "zod": ["zod@4.3.5", "https://registry.npmmirror.com/zod/-/zod-4.3.5.tgz", {}, "sha512-k7Nwx6vuWx1IJ9Bjuf4Zt1PEllcwe7cls3VNzm4CQ1/hgtFUK2bRNG3rvnpPUhFjmqJKAKtjV576KnUkHocg/g=="],
+
+    "@opencode-ai/plugin/zod": ["zod@4.1.8", "https://registry.yarnpkg.com/zod/-/zod-4.1.8.tgz", {}, "sha512-5R1P+WwQqmmMIEACyzSvo4JXHY5WiAFHRMg+zBZKgKS+Q1viRa0C1hmUKtHltoIFKtIdki3pRxkmpP74jnNYHQ=="],
+  }
+}
