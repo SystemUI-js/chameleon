@@ -128,6 +128,14 @@ export class CWindow extends CWidget {
     }));
   };
 
+  protected getWindowContentClassName(): string {
+    return 'cm-window';
+  }
+
+  protected getWindowFrameClassName(): string {
+    return 'cm-window-frame';
+  }
+
   private readonly windowFrameRef = React.createRef<HTMLDivElement>();
 
   private getNormalizedResizeOptions(): Required<
@@ -398,7 +406,11 @@ export class CWindow extends CWidget {
 
   public render() {
     const content = (
-      <div data-testid="window-content" className="cm-window" data-window-uuid={this.uuid}>
+      <div
+        data-testid="window-content"
+        className={this.getWindowContentClassName()}
+        data-window-uuid={this.uuid}
+      >
         {this.mapComposedChildren()}
       </div>
     );
@@ -422,7 +434,7 @@ export class CWindow extends CWidget {
         height: this.state.height,
       },
       {
-        className: 'cm-window-frame',
+        className: this.getWindowFrameClassName(),
         testId: 'window-frame',
       },
     );
