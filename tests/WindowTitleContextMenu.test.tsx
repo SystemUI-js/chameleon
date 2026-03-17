@@ -1,79 +1,73 @@
-import { render, screen } from '@testing-library/react'
-import { fireEvent } from '@testing-library/dom'
-import { ThemeProvider, Window, defaultTheme, type Theme } from '../src'
-import { win98 } from '../src/theme/win98'
-import { winxp } from '../src/theme/winxp'
+import { render, screen } from '@testing-library/react';
+import { fireEvent } from '@testing-library/dom';
+import { ThemeProvider, Window, defaultTheme, type Theme } from '../src';
+import { win98 } from '../src/theme/win98';
+import { winxp } from '../src/theme/winxp';
 
 const openTitleMenu = (titleBar: HTMLElement) => {
-  fireEvent.contextMenu(titleBar, { clientX: 120, clientY: 90 })
-}
+  fireEvent.contextMenu(titleBar, { clientX: 120, clientY: 90 });
+};
 
 const renderWindowWithTheme = (theme: Theme) => {
   const { container } = render(
     <ThemeProvider defaultTheme={theme}>
-      <Window title='Test Window' />
-    </ThemeProvider>
-  )
+      <Window title="Test Window" />
+    </ThemeProvider>,
+  );
 
-  const titleBar = container.querySelector(
-    '.cm-window__title-bar'
-  ) as HTMLElement
+  const titleBar = container.querySelector('.cm-window__title-bar') as HTMLElement;
 
-  return { container, titleBar }
-}
+  return { container, titleBar };
+};
 
 describe('Window title bar context menu', () => {
   it('opens context menu on Win98 title bar right-click', () => {
-    const { titleBar } = renderWindowWithTheme(win98)
+    const { titleBar } = renderWindowWithTheme(win98);
 
-    openTitleMenu(titleBar)
+    openTitleMenu(titleBar);
 
-    expect(screen.getByRole('menu')).toBeInTheDocument()
-    expect(screen.getByText('Close')).toBeInTheDocument()
-  })
+    expect(screen.getByRole('menu')).toBeInTheDocument();
+    expect(screen.getByText('Close')).toBeInTheDocument();
+  });
 
   it('opens context menu on WinXP title bar right-click', () => {
-    const { titleBar } = renderWindowWithTheme(winxp)
+    const { titleBar } = renderWindowWithTheme(winxp);
 
-    openTitleMenu(titleBar)
+    openTitleMenu(titleBar);
 
-    expect(screen.getByRole('menu')).toBeInTheDocument()
-    expect(screen.getByText('Close')).toBeInTheDocument()
-  })
+    expect(screen.getByRole('menu')).toBeInTheDocument();
+    expect(screen.getByText('Close')).toBeInTheDocument();
+  });
 
   it('invokes onClose when clicking Close', () => {
-    const onClose = jest.fn()
+    const onClose = jest.fn();
     const { container } = render(
       <ThemeProvider defaultTheme={winxp}>
-        <Window title='Test Window' onClose={onClose} />
-      </ThemeProvider>
-    )
+        <Window title="Test Window" onClose={onClose} />
+      </ThemeProvider>,
+    );
 
-    const titleBar = container.querySelector(
-      '.cm-window__title-bar'
-    ) as HTMLElement
+    const titleBar = container.querySelector('.cm-window__title-bar') as HTMLElement;
 
-    openTitleMenu(titleBar)
+    openTitleMenu(titleBar);
 
-    fireEvent.click(screen.getByText('Close'))
+    fireEvent.click(screen.getByText('Close'));
 
-    expect(onClose).toHaveBeenCalledTimes(1)
-  })
+    expect(onClose).toHaveBeenCalledTimes(1);
+  });
 
   it('does not show context menu for non Win98/WinXP themes', () => {
     const { container } = render(
       <ThemeProvider defaultTheme={defaultTheme}>
-        <Window title='Test Window' />
-      </ThemeProvider>
-    )
+        <Window title="Test Window" />
+      </ThemeProvider>,
+    );
 
-    const titleBar = container.querySelector(
-      '.cm-window__title-bar'
-    ) as HTMLElement
+    const titleBar = container.querySelector('.cm-window__title-bar') as HTMLElement;
 
-    openTitleMenu(titleBar)
+    openTitleMenu(titleBar);
 
-    expect(screen.queryByRole('menu')).not.toBeInTheDocument()
-    expect(screen.queryByText('Close')).not.toBeInTheDocument()
-  })
-})
+    expect(screen.queryByRole('menu')).not.toBeInTheDocument();
+    expect(screen.queryByText('Close')).not.toBeInTheDocument();
+  });
+});

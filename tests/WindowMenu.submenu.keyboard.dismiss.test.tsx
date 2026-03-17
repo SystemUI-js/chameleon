@@ -1,8 +1,8 @@
-import { render } from '@testing-library/react'
-import { screen, fireEvent } from '@testing-library/dom'
-import '@testing-library/jest-dom'
-import { WindowMenu } from '../src'
-import { MenuItem } from '../src/components/menuTypes'
+import { render } from '@testing-library/react';
+import { screen, fireEvent } from '@testing-library/dom';
+import '@testing-library/jest-dom';
+import { WindowMenu } from '../src';
+import { MenuItem } from '../src/components/menuTypes';
 
 describe('WindowMenu submenu keyboard dismiss', () => {
   it('closes submenu on Escape', () => {
@@ -12,17 +12,17 @@ describe('WindowMenu submenu keyboard dismiss', () => {
         label: 'Edit',
         children: [
           { id: 'undo', label: 'Undo' },
-          { id: 'redo', label: 'Redo' }
-        ]
-      }
-    ]
+          { id: 'redo', label: 'Redo' },
+        ],
+      },
+    ];
 
-    render(<WindowMenu items={items} />)
+    render(<WindowMenu items={items} />);
 
-    fireEvent.click(screen.getByText('Edit'))
-    expect(screen.getByText('Undo')).toBeInTheDocument()
+    fireEvent.click(screen.getByText('Edit'));
+    expect(screen.getByText('Undo')).toBeInTheDocument();
 
-    fireEvent.keyDown(document.body, { key: 'Escape' })
-    expect(screen.queryByText('Undo')).not.toBeInTheDocument()
-  })
-})
+    fireEvent.keyDown(document.body, { key: 'Escape' });
+    expect(screen.queryByText('Undo')).not.toBeInTheDocument();
+  });
+});
