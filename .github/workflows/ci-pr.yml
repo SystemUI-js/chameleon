@@ -41,6 +41,32 @@ jobs:
         run: |
           yarn test
 
+      - name: Install Playwright Chromium
+        id: install-playwright
+        run: |
+          npx playwright install --with-deps chromium
+
+      - name: Run Playwright UI tests
+        id: run-playwright-ui-tests
+        run: |
+          yarn test:ui
+
+      - name: Upload Playwright report
+        if: ${{ always() && (steps.install-playwright.conclusion == 'failure' || steps.run-playwright-ui-tests.conclusion == 'failure') }}
+        uses: actions/upload-artifact@v4
+        with:
+          name: playwright-report
+          path: playwright-report/
+          if-no-files-found: ignore
+
+      - name: Upload Playwright test results
+        if: ${{ always() && (steps.install-playwright.conclusion == 'failure' || steps.run-playwright-ui-tests.conclusion == 'failure') }}
+        uses: actions/upload-artifact@v4
+        with:
+          name: test-results
+          path: test-results/
+          if-no-files-found: ignore
+
       - name: Build
         run: |
           yarn build

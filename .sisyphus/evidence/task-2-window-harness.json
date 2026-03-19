@@ -1,0 +1,104 @@
+[
+  {
+    "name": "default",
+    "url": "http://127.0.0.1:5673/playwright-window.html?fixture=default",
+    "frameCount": 1,
+    "titleCount": 1,
+    "contentCount": 1,
+    "resizeHandles": [
+      "window-resize-n",
+      "window-resize-s",
+      "window-resize-e",
+      "window-resize-w",
+      "window-resize-ne",
+      "window-resize-nw",
+      "window-resize-se",
+      "window-resize-sw"
+    ],
+    "style": "left: 10px; top: 20px; width: 240px; height: 160px; position: absolute;",
+    "errorCount": 0,
+    "errorText": null
+  },
+  {
+    "name": "drag-only",
+    "url": "http://127.0.0.1:5673/playwright-window.html?fixture=drag-only",
+    "frameCount": 1,
+    "titleCount": 1,
+    "contentCount": 1,
+    "resizeHandles": [],
+    "style": "left: 12px; top: 24px; width: 200px; height: 120px; position: absolute;",
+    "errorCount": 0,
+    "errorText": null
+  },
+  {
+    "name": "min-clamp",
+    "url": "http://127.0.0.1:5673/playwright-window.html?fixture=min-clamp",
+    "frameCount": 1,
+    "titleCount": 1,
+    "contentCount": 1,
+    "resizeHandles": [
+      "window-resize-n",
+      "window-resize-s",
+      "window-resize-e",
+      "window-resize-w",
+      "window-resize-ne",
+      "window-resize-nw",
+      "window-resize-se",
+      "window-resize-sw"
+    ],
+    "style": "left: 30px; top: 30px; width: 40px; height: 30px; position: absolute;",
+    "errorCount": 0,
+    "errorText": null
+  },
+  {
+    "name": "max-clamp",
+    "url": "http://127.0.0.1:5673/playwright-window.html?fixture=max-clamp",
+    "frameCount": 1,
+    "titleCount": 1,
+    "contentCount": 1,
+    "resizeHandles": [
+      "window-resize-n",
+      "window-resize-s",
+      "window-resize-e",
+      "window-resize-w",
+      "window-resize-ne",
+      "window-resize-nw",
+      "window-resize-se",
+      "window-resize-sw"
+    ],
+    "style": "left: 50px; top: 60px; width: 120px; height: 100px; position: absolute;",
+    "errorCount": 0,
+    "errorText": null
+  },
+  {
+    "name": "unknown-mode",
+    "url": "http://127.0.0.1:5673/playwright-window.html?fixture=unknown-mode",
+    "frameCount": 0,
+    "titleCount": 0,
+    "contentCount": 0,
+    "resizeHandles": [],
+    "style": null,
+    "errorCount": 1,
+    "errorText": "Unknown fixture: unknown-mode"
+  },
+  {
+    "name": "fixed-path-no-param",
+    "url": "http://127.0.0.1:5673/playwright-window.html",
+    "frameCount": 1,
+    "titleCount": 1,
+    "contentCount": 1,
+    "resizeHandles": [
+      "window-resize-n",
+      "window-resize-s",
+      "window-resize-e",
+      "window-resize-w",
+      "window-resize-ne",
+      "window-resize-nw",
+      "window-resize-se",
+      "window-resize-sw"
+    ],
+    "style": "left: 10px; top: 20px; width: 240px; height: 160px; position: absolute;",
+    "errorCount": 0,
+    "errorText": null
+  }
+]

@@ -11,16 +11,16 @@ const config: Config = {
       'ts-jest',
       {
         tsconfig: '<rootDir>/tsconfig.json',
-        useESM: true
-      }
-    ]
+        useESM: true,
+      },
+    ],
   },
   extensionsToTreatAsEsm: ['.ts', '.tsx'],
   moduleNameMapper: {
     '^@/(.*)$': '<rootDir>/src/$1',
-    '\\.(css|less|scss|sass)$': 'identity-obj-proxy'
+    '\\.(css|less|scss|sass)$': 'identity-obj-proxy',
   },
-  testPathIgnorePatterns: ['/node_modules/', '/dist/']
+  testPathIgnorePatterns: ['/node_modules/', '/dist/', '<rootDir>/tests/ui/'],
 };
 
 export default config;
