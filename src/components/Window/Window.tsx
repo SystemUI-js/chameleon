@@ -136,8 +136,6 @@ export class CWindow extends CWidget {
     return 'cm-window-frame';
   }
 
-  private readonly windowFrameRef = React.createRef<HTMLDivElement>();
-
   private getNormalizedResizeOptions(): Required<
     Pick<CWindowResizeOptions, 'edgeWidth' | 'minContentWidth' | 'minContentHeight'>
   > &
@@ -352,16 +350,17 @@ export class CWindow extends CWidget {
     }
 
     const edgeWidth = this.getNormalizedResizeOptions().edgeWidth;
+    const edgeInset = edgeWidth / 2;
 
     const regions: Record<ResizeDirection, ResizeRegionPosition> = {
-      n: { top: 0, left: edgeWidth, right: edgeWidth, height: edgeWidth },
-      s: { bottom: 0, left: edgeWidth, right: edgeWidth, height: edgeWidth },
-      e: { top: edgeWidth, right: 0, bottom: edgeWidth, width: edgeWidth },
-      w: { top: edgeWidth, left: 0, bottom: edgeWidth, width: edgeWidth },
-      ne: { top: 0, right: 0, width: edgeWidth, height: edgeWidth },
-      nw: { top: 0, left: 0, width: edgeWidth, height: edgeWidth },
-      se: { bottom: 0, right: 0, width: edgeWidth, height: edgeWidth },
-      sw: { bottom: 0, left: 0, width: edgeWidth, height: edgeWidth },
+      n: { top: -edgeInset, left: edgeInset, right: edgeInset, height: edgeWidth },
+      s: { bottom: -edgeInset, left: edgeInset, right: edgeInset, height: edgeWidth },
+      e: { top: edgeInset, right: -edgeInset, bottom: edgeInset, width: edgeWidth },
+      w: { top: edgeInset, left: -edgeInset, bottom: edgeInset, width: edgeWidth },
+      ne: { top: -edgeInset, right: -edgeInset, width: edgeWidth, height: edgeWidth },
+      nw: { top: -edgeInset, left: -edgeInset, width: edgeWidth, height: edgeWidth },
+      se: { bottom: -edgeInset, right: -edgeInset, width: edgeWidth, height: edgeWidth },
+      sw: { bottom: -edgeInset, left: -edgeInset, width: edgeWidth, height: edgeWidth },
     };
 
     return RESIZE_DIRECTIONS.map((direction) => (
@@ -416,17 +415,10 @@ export class CWindow extends CWidget {
     );
 
     return this.renderFrame(
-      <div
-        ref={this.windowFrameRef}
-        style={{
-          position: 'relative',
-          width: '100%',
-          height: '100%',
-        }}
-      >
+      <>
         {content}
         {this.renderResizeHandles()}
-      </div>,
+      </>,
       {
         x: this.state.x,
         y: this.state.y,
@@ -436,6 +428,9 @@ export class CWindow extends CWidget {
       {
         className: this.getWindowFrameClassName(),
         testId: 'window-frame',
+        style: {
+          position: 'relative',
+        },
       },
     );
   }

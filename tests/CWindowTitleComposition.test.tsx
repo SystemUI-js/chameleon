@@ -231,8 +231,10 @@ describe('CWindow and CWindowTitle composition', () => {
     const eastHandle = getByTestId('window-resize-e');
 
     expect(northHandle.style.height).toBe('4px');
-    expect(northHandle.style.left).toBe('4px');
+    expect(northHandle.style.top).toBe('-2px');
+    expect(northHandle.style.left).toBe('2px');
     expect(eastHandle.style.width).toBe('4px');
+    expect(eastHandle.style.right).toBe('-2px');
   });
 
   it('applies custom edgeWidth from resizeOptions', () => {
@@ -246,8 +248,10 @@ describe('CWindow and CWindowTitle composition', () => {
     const eastHandle = getByTestId('window-resize-e');
 
     expect(northHandle.style.height).toBe('12px');
-    expect(northHandle.style.left).toBe('12px');
+    expect(northHandle.style.top).toBe('-6px');
+    expect(northHandle.style.left).toBe('6px');
     expect(eastHandle.style.width).toBe('12px');
+    expect(eastHandle.style.right).toBe('-6px');
   });
 
   it('clamps min size to default 1px when shrinking past zero', () => {
