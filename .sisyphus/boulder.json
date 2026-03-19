@@ -1,0 +1,30 @@
+{
+  "active_plan": "/Users/zhangxiao/frontend/SysUI/chameleon/.sisyphus/plans/window-playwright-ui-tests.md",
+  "started_at": "2026-03-19T00:35:18.355Z",
+  "session_ids": [
+    "ses_2fc7b5946ffeMQhqwjrxztW0Ms",
+    "ses_2fc79bda5ffeQByOE4WdSodIzk",
+    "ses_2fc79bdb0ffedq8NZEp8c2ZWcD",
+    "ses_2fc79bd40ffefv1xbQNFr26Bzl",
+    "ses_2fc79bd36ffe5O2aQtQeBE3Tac",
+    "ses_2fc7748fdffeFH8OuGgghZMi5I",
+    "ses_2fc682da1ffe3T2pBtQwLPrwi9",
+    "ses_2fc608ad7ffeudscbz4rKjoS28",
+    "ses_2fc58174fffeqzqASOK3rlkVxe",
+    "ses_2fc52f11fffeYWPmkDIh9ZU6J6",
+    "ses_2fc42b9faffe1kb6VWQ2LQPZ5Y",
+    "ses_2fc288929ffevMvuZCIE8Weuzw",
+    "ses_2fc137d0cffe4k57S2odcoIA9s",
+    "ses_2fc08a3caffeJygyNR5kY8W6xM",
+    "ses_2fc0155a4ffevCJjf022fTSW1I",
+    "ses_2fbfd9851ffexMRXCQILW8QzUx",
+    "ses_2fbf83a15ffeUJ60sH7pgZVyYn",
+    "ses_2fbebdd0cffe6feIntbXoGOECi",
+    "ses_2fbebde3dffenE9OAHaao8Vj3I",
+    "ses_2fbebdddfffeaYU83laAY2xTA9",
+    "ses_2fbebdd75ffequ2goph2az147o",
+    "ses_2fbe3322cffei33eaBSywZADsH"
+  ],
+  "plan_name": "window-playwright-ui-tests",
+  "agent": "atlas"
+}
