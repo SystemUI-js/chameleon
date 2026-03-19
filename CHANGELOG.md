@@ -1,5 +1,8 @@
 ### [UnReleased]
 
+- **Test:** 升级 `@playwright/test` 到 `^1.58.2`，补充 Playwright 在 CI 环境下的 `forbidOnly`、重试和并发配置，提升 Window UI 测试在持续集成中的稳定性
+- Fix Window 的 Playwright resize 用例方向标签与筛选逻辑，统一为小写方向标识，降低 `--grep` 定向执行时的误匹配风险
+
 - **Feature:** Add default window theme with extensible styling system
   - Add protected methods `getWindowContentClassName()` and `getWindowFrameClassName()` to CWindow for theme-specific class customization
   - Add DefaultWindow component that extends CWindow with gradient backgrounds and border effects
