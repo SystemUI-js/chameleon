@@ -48,6 +48,23 @@ const DEFAULT_EDGE_WIDTH = 4;
 const DEFAULT_MIN_CONTENT_WIDTH = 1;
 const DEFAULT_MIN_CONTENT_HEIGHT = 1;
 
+const getResizeCursor = (direction: ResizeDirection): React.CSSProperties['cursor'] => {
+  switch (direction) {
+    case 'n':
+    case 's':
+      return 'ns-resize';
+    case 'e':
+    case 'w':
+      return 'ew-resize';
+    case 'ne':
+    case 'sw':
+      return 'nesw-resize';
+    case 'nw':
+    case 'se':
+      return 'nwse-resize';
+  }
+};
+
 export class CWindow extends CWidget {
   declare public props: CWindowProps;
   public state: WindowState;
@@ -324,7 +341,10 @@ export class CWindow extends CWidget {
     this.resizePointerDownHandlers.clear();
   }
 
-  private getResizeRegionStyle(position: ResizeRegionPosition): React.CSSProperties {
+  private getResizeRegionStyle(
+    position: ResizeRegionPosition,
+    direction: ResizeDirection,
+  ): React.CSSProperties {
     const edgeWidth = this.getNormalizedResizeOptions().edgeWidth;
 
     return {
@@ -339,6 +359,7 @@ export class CWindow extends CWidget {
       touchAction: 'none',
       userSelect: 'none',
       pointerEvents: 'auto',
+      cursor: getResizeCursor(direction),
       minWidth: typeof position.width === 'number' ? position.width : edgeWidth,
       minHeight: typeof position.height === 'number' ? position.height : edgeWidth,
     };
@@ -368,7 +389,7 @@ export class CWindow extends CWidget {
         key={direction}
         ref={this.resizeHandleRefs[direction]}
         data-testid={`window-resize-${direction}`}
-        style={this.getResizeRegionStyle(regions[direction])}
+        style={this.getResizeRegionStyle(regions[direction], direction)}
       />
     ));
   }
