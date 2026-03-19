@@ -1,9 +1,11 @@
 import { expect, test } from '@playwright/test';
 import { dragLocatorBy, gotoWindowFixture, readFrameMetrics } from './window.helpers';
 
+type ResizeDir = 'n' | 's' | 'e' | 'w' | 'ne' | 'nw' | 'se' | 'sw';
+
 type Case = {
-  dir: string;
-  label: string;
+  dir: ResizeDir;
+  label: ResizeDir;
   dx: number;
   dy: number;
   expected: { x: number; y: number; width: number; height: number };
@@ -33,9 +35,9 @@ const readExactGrepArg = (): string | undefined => {
 const cases: Case[] = [
   { dir: 'e', label: 'e', dx: +20, dy: 0, expected: { x: 10, y: 20, width: 260, height: 160 } },
   { dir: 'w', label: 'w', dx: -20, dy: 0, expected: { x: -10, y: 20, width: 260, height: 160 } },
-  { dir: 'n', label: 'N', dx: 0, dy: -10, expected: { x: 10, y: 10, width: 240, height: 170 } },
-  { dir: 's', label: 'S', dx: 0, dy: +10, expected: { x: 10, y: 20, width: 240, height: 170 } },
-  { dir: 'ne', label: 'NE', dx: +20, dy: -10, expected: { x: 10, y: 10, width: 260, height: 170 } },
+  { dir: 'n', label: 'n', dx: 0, dy: -10, expected: { x: 10, y: 10, width: 240, height: 170 } },
+  { dir: 's', label: 's', dx: 0, dy: +10, expected: { x: 10, y: 20, width: 240, height: 170 } },
+  { dir: 'ne', label: 'ne', dx: +20, dy: -10, expected: { x: 10, y: 10, width: 260, height: 170 } },
   {
     dir: 'nw',
     label: 'nw',
@@ -46,7 +48,7 @@ const cases: Case[] = [
   { dir: 'se', label: 'se', dx: +20, dy: +10, expected: { x: 10, y: 20, width: 260, height: 170 } },
   {
     dir: 'sw',
-    label: 'SW',
+    label: 'sw',
     dx: -20,
     dy: +10,
     expected: { x: -10, y: 20, width: 260, height: 170 },

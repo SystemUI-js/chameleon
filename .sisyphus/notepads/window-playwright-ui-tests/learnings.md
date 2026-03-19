@@ -14,7 +14,7 @@
 - playwright-report/ - ALREADY IGNORED (line 152)
 - No additional ignore entries needed
 
-## CI Workflow Order (.github/workflows/ci-pr.yml)
+## GitHub CI 工作流顺序（文件：`.github/workflows/ci-pr.yml`）
 Current job sequence:
 1. Install dependencies
 2. Run lint
@@ -84,7 +84,7 @@ for (let i = 0; i < 5; i++) {
 await page.mouse.up();
 ```
 
-### Locator BoundingBox Caveats
+### Locator.boundingBox() Caveats
 
 **Source**: [Playwright Locator API - boundingBox](https://playwright.dev/docs/api/class-locator#locator-bounding-box)
 
@@ -117,7 +117,7 @@ const box = await page.getByRole('button').boundingBox();
 **Source**: [Vite Multi-Page App Documentation](https://vite.dev/guide/build.html#multi-page-app)
 
 #### Directory Structure Pattern
-```
+```text
 ├── package.json
 ├── vite.config.js
 ├── index.html
@@ -132,7 +132,7 @@ const box = await page.getByRole('button').boundingBox();
 
 **Key insight**: Vite dev server automatically serves any `.html` file in the project root (or subdirectories) without explicit configuration. The URL path corresponds to the file path:
 - `index.html` → `/`
-- `playwright-window.html` → `/playwright-window/`
+- `playwright-window.html` → `/playwright-window.html`
 - `nested/index.html` → `/nested/`
 
 #### Build Configuration (for reference)
@@ -151,14 +151,14 @@ export default defineConfig({
 
 #### Implication for playwright-window.html
 - Place `playwright-window.html` at project root
-- Access via `http://localhost:5673/playwright-window/` (trailing slash matters for directory-style routing)
+- Access via `http://localhost:5673/playwright-window.html`
 - No vite.config changes needed for dev server
 
 ### Implementation Recommendations
 
 1. **Drag helper**: Use manual hover→down→hover→hover→up sequence for dragover reliability
 2. **Resize helper**: Use boundingBox + incremental mouse.move() with fixed step values
-3. **Vite entry**: Place `playwright-window.html` at root, access via `/playwright-window/`
+3. **Vite entry**: Place `playwright-window.html` at root, access via `/playwright-window.html`
 4. **No waits**: Rely on Playwright's built-in auto-waiting, not explicit sleeps
 5. **Geometry assertions**: Use DOM-based checks (getAttribute, getComputedStyle, data-testid markers) not screenshots
 
@@ -211,12 +211,10 @@ Task 2 (Window harness) added a deterministic Playwright harness for the Window 
   - Leverages existing helpers: gotoWindowFixture(), readFrameMetrics(), dragLocatorBy().
   - Verifies exact frame metrics after dragging each resize handle.
   - Ensures tests target route: /playwright-window.html?fixture=default and use data-testid selectors for handles.
-- grep-safe naming: The window.resize.spec.ts test titles now use a minimal label scheme:
-  - e and se tests have lowercase labels 'e' and 'se' to trigger the --grep "e|se" filter.
-  - w and nw tests use lowercase 'w' and 'nw' to trigger the --grep "w|nw" filter.
-  - All other tests use uppercase labels to avoid accidental matches by lowercase grep patterns.
-  - The describe title is changed to avoid matching lowercase grep patterns.
-  - Test titles avoid embedding metrics in the title to keep grep accuracy stable.
+- grep-safe naming: The window.resize.spec.ts test titles now use consistent lowercase direction labels.
+- Targeted `--grep "e|se"` and `--grep "w|nw"` runs are stabilized by filtering `registeredCases` from exact top-level `process.argv` matches instead of relying on mixed-case labels.
+- The describe title is changed to avoid matching lowercase grep patterns.
+- Test titles avoid embedding metrics in the title to keep grep accuracy stable.
 
 ## 2026-03-19 Task 7
 - `.github/workflows/ci-pr.yml` now inserts Playwright immediately after `Run unit tests` and before `Build`, preserving the PR gate order `lint -> unit tests -> Playwright UI -> build -> npm pack`.

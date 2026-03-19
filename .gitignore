@@ -142,6 +142,7 @@ temp/
 # Local development
 .local
 .worktrees/
+.sisyphus/boulder.json
 
 # Vite
 dist-ssr

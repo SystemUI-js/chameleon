@@ -100,25 +100,5 @@
     "style": "left: 10px; top: 20px; width: 240px; height: 160px; position: absolute;",
     "errorCount": 0,
     "errorText": null
-  },
-  {
-    "name": "slash-route",
-    "url": "http://127.0.0.1:5673/playwright-window/",
-    "frameCount": 1,
-    "titleCount": 1,
-    "contentCount": 1,
-    "resizeHandles": [
-      "window-resize-n",
-      "window-resize-s",
-      "window-resize-e",
-      "window-resize-w",
-      "window-resize-ne",
-      "window-resize-nw",
-      "window-resize-se",
-      "window-resize-sw"
-    ],
-    "style": "left: 32px; top: 28px; width: 332px; height: 228px; position: absolute;",
-    "errorCount": 0,
-    "errorText": null
   }
 ]

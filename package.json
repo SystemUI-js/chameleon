@@ -36,7 +36,7 @@
   },
   "devDependencies": {
     "@eslint/js": "^9.39.2",
-    "@playwright/test": "^1.56.1",
+    "@playwright/test": "^1.58.2",
     "@system-ui-js/development-base": "0.1.3",
     "@testing-library/dom": "^10.4.1",
     "@testing-library/jest-dom": "^6.5.0",

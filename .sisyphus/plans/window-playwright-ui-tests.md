@@ -80,6 +80,7 @@ Wave 2: Task 4 (move coverage), Task 5 (resize direction matrix), Task 6 (resize
 Wave 3: Task 7 (PR CI wiring and failure artifacts)
 
 ### Dependency Matrix (full, all tasks)
+
 | Task | Depends On | Blocks |
 |------|------------|--------|
 | 1 | none | 2, 3, 7 |
