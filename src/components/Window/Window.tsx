@@ -1,6 +1,7 @@
-import React from 'react';
 import { Drag } from '@system-ui-js/multi-drag';
+import React from 'react';
 import { CWidget, type CWidgetProps } from '../Widget/Widget';
+import './index.scss';
 import { CWindowTitle, type WindowPosition } from './WindowTitle';
 
 export interface CWindowResizeOptions {
@@ -151,6 +152,10 @@ export class CWindow extends CWidget {
 
   protected getWindowFrameClassName(): string {
     return 'cm-window-frame';
+  }
+
+  protected getWindowInnerClassName(): string {
+    return 'cm-window__inner';
   }
 
   private getNormalizedResizeOptions(): Required<
@@ -435,11 +440,15 @@ export class CWindow extends CWidget {
       </div>
     );
 
-    return this.renderFrame(
-      <>
+    const inner = (
+      <div data-testid="window-inner" className={this.getWindowInnerClassName()}>
         {content}
         {this.renderResizeHandles()}
-      </>,
+      </div>
+    );
+
+    return this.renderFrame(
+      inner,
       {
         x: this.state.x,
         y: this.state.y,
@@ -449,9 +458,6 @@ export class CWindow extends CWidget {
       {
         className: this.getWindowFrameClassName(),
         testId: 'window-frame',
-        style: {
-          position: 'relative',
-        },
       },
     );
   }

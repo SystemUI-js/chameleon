@@ -96,6 +96,27 @@ describe('CWindow and CWindowTitle composition', () => {
     expect(getByTestId('window-title')).toHaveTextContent('Composed Title');
   });
 
+  it('keeps the outer frame absolute and places resize handles in an inner wrapper', () => {
+    const { getByTestId } = render(
+      <CWindow x={10} y={20} width={240} height={160}>
+        <CWindowTitle>Layered</CWindowTitle>
+        <div data-testid="window-body">body</div>
+      </CWindow>,
+    );
+
+    const frame = getByTestId('window-frame');
+    const inner = getByTestId('window-inner');
+    const content = getByTestId('window-content');
+    const eastHandle = getByTestId('window-resize-e');
+
+    expect(frame.style.position).toBe('absolute');
+    expect(inner).toHaveClass('cm-window__inner');
+    expect(frame.firstElementChild).toBe(inner);
+    expect(inner).toContainElement(content);
+    expect(inner).toContainElement(eastHandle);
+    expect(content).not.toContainElement(eastHandle);
+  });
+
   it('moves window frame when dragging title bar', () => {
     const { getByTestId } = render(
       <CWindow x={10} y={20} width={240} height={160}>
