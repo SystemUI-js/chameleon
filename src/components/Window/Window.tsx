@@ -1,6 +1,7 @@
-import React from 'react';
 import { Drag } from '@system-ui-js/multi-drag';
+import React from 'react';
 import { CWidget, type CWidgetProps } from '../Widget/Widget';
+import './index.scss';
 import { CWindowTitle, type WindowPosition } from './WindowTitle';
 
 export interface CWindowResizeOptions {
@@ -47,6 +48,23 @@ const RESIZE_DIRECTIONS: ResizeDirection[] = ['n', 's', 'e', 'w', 'ne', 'nw', 's
 const DEFAULT_EDGE_WIDTH = 4;
 const DEFAULT_MIN_CONTENT_WIDTH = 1;
 const DEFAULT_MIN_CONTENT_HEIGHT = 1;
+
+const getResizeCursor = (direction: ResizeDirection): React.CSSProperties['cursor'] => {
+  switch (direction) {
+    case 'n':
+    case 's':
+      return 'ns-resize';
+    case 'e':
+    case 'w':
+      return 'ew-resize';
+    case 'ne':
+    case 'sw':
+      return 'nesw-resize';
+    case 'nw':
+    case 'se':
+      return 'nwse-resize';
+  }
+};
 
 export class CWindow extends CWidget {
   declare public props: CWindowProps;
@@ -136,7 +154,9 @@ export class CWindow extends CWidget {
     return 'cm-window-frame';
   }
 
-  private readonly windowFrameRef = React.createRef<HTMLDivElement>();
+  protected getWindowInnerClassName(): string {
+    return 'cm-window__inner';
+  }
 
   private getNormalizedResizeOptions(): Required<
     Pick<CWindowResizeOptions, 'edgeWidth' | 'minContentWidth' | 'minContentHeight'>
@@ -326,7 +346,10 @@ export class CWindow extends CWidget {
     this.resizePointerDownHandlers.clear();
   }
 
-  private getResizeRegionStyle(position: ResizeRegionPosition): React.CSSProperties {
+  private getResizeRegionStyle(
+    position: ResizeRegionPosition,
+    direction: ResizeDirection,
+  ): React.CSSProperties {
     const edgeWidth = this.getNormalizedResizeOptions().edgeWidth;
 
     return {
@@ -341,6 +364,7 @@ export class CWindow extends CWidget {
       touchAction: 'none',
       userSelect: 'none',
       pointerEvents: 'auto',
+      cursor: getResizeCursor(direction),
       minWidth: typeof position.width === 'number' ? position.width : edgeWidth,
       minHeight: typeof position.height === 'number' ? position.height : edgeWidth,
     };
@@ -352,16 +376,17 @@ export class CWindow extends CWidget {
     }
 
     const edgeWidth = this.getNormalizedResizeOptions().edgeWidth;
+    const edgeInset = edgeWidth / 2;
 
     const regions: Record<ResizeDirection, ResizeRegionPosition> = {
-      n: { top: 0, left: edgeWidth, right: edgeWidth, height: edgeWidth },
-      s: { bottom: 0, left: edgeWidth, right: edgeWidth, height: edgeWidth },
-      e: { top: edgeWidth, right: 0, bottom: edgeWidth, width: edgeWidth },
-      w: { top: edgeWidth, left: 0, bottom: edgeWidth, width: edgeWidth },
-      ne: { top: 0, right: 0, width: edgeWidth, height: edgeWidth },
-      nw: { top: 0, left: 0, width: edgeWidth, height: edgeWidth },
-      se: { bottom: 0, right: 0, width: edgeWidth, height: edgeWidth },
-      sw: { bottom: 0, left: 0, width: edgeWidth, height: edgeWidth },
+      n: { top: -edgeInset, left: edgeInset, right: edgeInset, height: edgeWidth },
+      s: { bottom: -edgeInset, left: edgeInset, right: edgeInset, height: edgeWidth },
+      e: { top: edgeInset, right: -edgeInset, bottom: edgeInset, width: edgeWidth },
+      w: { top: edgeInset, left: -edgeInset, bottom: edgeInset, width: edgeWidth },
+      ne: { top: -edgeInset, right: -edgeInset, width: edgeWidth, height: edgeWidth },
+      nw: { top: -edgeInset, left: -edgeInset, width: edgeWidth, height: edgeWidth },
+      se: { bottom: -edgeInset, right: -edgeInset, width: edgeWidth, height: edgeWidth },
+      sw: { bottom: -edgeInset, left: -edgeInset, width: edgeWidth, height: edgeWidth },
     };
 
     return RESIZE_DIRECTIONS.map((direction) => (
@@ -369,7 +394,7 @@ export class CWindow extends CWidget {
         key={direction}
         ref={this.resizeHandleRefs[direction]}
         data-testid={`window-resize-${direction}`}
-        style={this.getResizeRegionStyle(regions[direction])}
+        style={this.getResizeRegionStyle(regions[direction], direction)}
       />
     ));
   }
@@ -415,18 +440,15 @@ export class CWindow extends CWidget {
       </div>
     );
 
-    return this.renderFrame(
-      <div
-        ref={this.windowFrameRef}
-        style={{
-          position: 'relative',
-          width: '100%',
-          height: '100%',
-        }}
-      >
+    const inner = (
+      <div data-testid="window-inner" className={this.getWindowInnerClassName()}>
         {content}
         {this.renderResizeHandles()}
-      </div>,
+      </div>
+    );
+
+    return this.renderFrame(
+      inner,
       {
         x: this.state.x,
         y: this.state.y,
