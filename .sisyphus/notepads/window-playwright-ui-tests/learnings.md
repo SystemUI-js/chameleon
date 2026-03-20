@@ -224,3 +224,6 @@ Task 2 (Window harness) added a deterministic Playwright harness for the Window 
 ## 2026-03-19 Task 5 verification blocker fix
 - `tests/ui/window.resize.spec.ts` now inspects top-level `process.argv` for the exact grep texts `e|se` and `w|nw` before defining tests, then registers only the matching case pair for those invocations.
 - This avoids Playwright grep overmatching the spec file path (`window.resize.spec.ts`) while preserving the full 8-direction resize matrix for every other command.
+
+## 2026-03-20 Harness favicon hygiene
+- `playwright-window.html` should declare an inline favicon with `<link rel="icon" href="data:," />` so manual QA on `/playwright-window.html` stays console-clean without adding a real asset file or touching the harness module entry.
