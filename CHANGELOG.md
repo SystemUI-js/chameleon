@@ -1,5 +1,10 @@
 ### [UnReleased]
 
+- **Fix:** 优化 Window 边框缩放手柄的定位与交互反馈
+  - 修正 8 个方向 resize handle 的边缘与角落热区定位，保证拖拽命中范围与视觉边界一致
+  - 为不同方向的 resize handle 补充对应 cursor，提升桌面窗口缩放时的交互可预期性
+  - 恢复 `cm-window__inner` 包装层，稳定内容区与缩放热区的分层关系
+
 - **Test:** 升级 `@playwright/test` 到 `^1.58.2`，补充 Playwright 在 CI 环境下的 `forbidOnly`、重试和并发配置，提升 Window UI 测试在持续集成中的稳定性
 - Fix Window 的 Playwright resize 用例方向标签与筛选逻辑，统一为小写方向标识，降低 `--grep` 定向执行时的误匹配风险
 
