@@ -1,46 +1,48 @@
-.cm-default-window-frame {
-    box-sizing: border-box;
-    padding: 2px;
-    border: 1px solid #7d7d7d;
-    background: linear-gradient(180deg, #fefefe 0%, #d9d9d9 100%);
-    box-shadow:
-        0 10px 24px rgba(0, 0, 0, 0.22),
-        inset 1px 1px 0 rgba(255, 255, 255, 0.85),
-        inset -1px -1px 0 rgba(0, 0, 0, 0.12);
-}
+.cm-system--default.cm-theme--default {
+    .cm-window-frame {
+        box-sizing: border-box;
+        padding: 2px;
+        border: 1px solid #7d7d7d;
+        background: linear-gradient(180deg, #fefefe 0%, #d9d9d9 100%);
+        box-shadow:
+            0 10px 24px rgba(0, 0, 0, 0.22),
+            inset 1px 1px 0 rgba(255, 255, 255, 0.85),
+            inset -1px -1px 0 rgba(0, 0, 0, 0.12);
+    }
 
-.cm-default-window {
-    box-sizing: border-box;
-    display: flex;
-    flex-direction: column;
-    width: 100%;
-    height: 100%;
-    overflow: hidden;
-    border: 1px solid #b8b8b8;
-    background: linear-gradient(180deg, #fbfbfb 0%, #ececec 100%);
-    color: #1f1f1f;
-}
+    .cm-window {
+        box-sizing: border-box;
+        display: flex;
+        flex-direction: column;
+        width: 100%;
+        height: 100%;
+        overflow: hidden;
+        border: 1px solid #b8b8b8;
+        background: linear-gradient(180deg, #fbfbfb 0%, #ececec 100%);
+        color: #1f1f1f;
+    }
 
-.cm-default-window-title {
-    flex-shrink: 0;
-    padding: 7px 10px;
-    border-bottom: 1px solid rgba(16, 24, 40, 0.22);
-    background: linear-gradient(180deg, #6f97ce 0%, #5478a8 100%);
-    color: #ffffff;
-    font-size: 13px;
-    font-weight: 600;
-    letter-spacing: 0.02em;
-    text-shadow: 0 1px 0 rgba(0, 0, 0, 0.28);
-    user-select: none;
-    cursor: grab;
-}
+    .cm-window__title-bar {
+        flex-shrink: 0;
+        padding: 7px 10px;
+        border-bottom: 1px solid rgba(16, 24, 40, 0.22);
+        background: linear-gradient(180deg, #6f97ce 0%, #5478a8 100%);
+        color: #ffffff;
+        font-size: 13px;
+        font-weight: 600;
+        letter-spacing: 0.02em;
+        text-shadow: 0 1px 0 rgba(0, 0, 0, 0.28);
+        user-select: none;
+        cursor: grab;
+    }
 
-.cm-default-window-title:active {
-    cursor: grabbing;
-}
+    .cm-window__title-bar:active {
+        cursor: grabbing;
+    }
 
-.cm-default-window > :not(.cm-default-window-title) {
-    flex: 1;
-    padding: 12px;
-    background: linear-gradient(180deg, #ffffff 0%, #f3f3f3 100%);
+    .cm-window > :not(.cm-window__title-bar) {
+        flex: 1;
+        padding: 12px;
+        background: linear-gradient(180deg, #ffffff 0%, #f3f3f3 100%);
+    }
 }
