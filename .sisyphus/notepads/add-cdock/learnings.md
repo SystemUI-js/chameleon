@@ -42,3 +42,22 @@
 
 ## 2026-03-22 f2-f4 corrective fix
 - `src/components/index.ts` must stay a pure component barrel; removing stray `export const A = 1;` restores the intended public API shape while keeping `export * from './Dock/Dock';` intact.
+
+## 2026-03-23 testing guidance for class component inline styles
+- **RTL `toHaveStyle` matcher** (from `@testing-library/jest-dom`) verifies inline styles on DOM elements. Supports exact match and partial match. Reference: https://github.com/testing-library/jest-dom#tohavestyle
+- **RTL `rerender` function** updates props of a rendered component in tests. For class components, wrap async assertions in `waitFor()` since `setState` is asynchronous. Reference: https://testing-library.com/docs/react-testing-library/api#rerender
+- **Controlled prop rerender pattern**: Use `render()` → get element → `rerender(<Component newProps />)` → `await waitFor(() => { expect(...).toHaveStyle(...) })`. This tests that `componentDidUpdate` correctly syncs controlled props.
+- **Default prop stability pattern**: Mount with defaults → `rerender()` with changed defaults → assert state unchanged. This verifies that post-mount default changes are ignored (critical for CDock's controlled/default pattern).
+- **Style precedence verification**: Assert both caller styles (e.g., `backgroundColor`) AND internal layout styles (e.g., `position`, `height`) in same test. The `toHaveStyle` matcher checks computed styles, so merge order matters in implementation.
+
+## 2026-03-23 f2 code quality review
+- `src/components/Dock/Dock.tsx` keeps the planned contract intact: `CDockProps` requires `height` or `defaultHeight`, `CDock` truly extends `CWidget`, and `render()` routes through `renderFrame()` with an empty layout object so inherited widget `height` does not leak into dock sizing semantics.
+- Dock style precedence is guarded correctly: `getDockFrameStyle()` strips reserved layout keys from caller `style`, reapplies computed dock edge keys after visual styles, and forces `position: 'absolute'`, so consumer styles cannot override edge placement or thickness.
+- `tests/Dock.test.tsx` is behavior-focused rather than snapshot-only: it covers public export, compile-time prop contract (backed by passing `yarn tsc --noEmit`), directional style mapping, controlled/default state behavior, and callback silence.
+
+## 2026-03-23 f3 manual QA verdict
+- Fresh executable evidence: `yarn test -- --runTestsByPath tests/Dock.test.tsx` passed with 12/12 tests in 0.592s, so the F3 judgment can rely on current runtime output rather than missing historical artifacts.
+- `tests/Dock.test.tsx` meaningfully proves four-edge docking at DOM level: dedicated top/bottom and left/right assertions check exact inline edge/thickness styles, and the controlled rerender case proves stale style cleanup on axis change by verifying old `right` and `height` fields are removed after `top -> left` transition.
+- Default-value behavior is adequately covered: initial fallback to `defaultPosition`/`defaultHeight` is asserted, and post-mount default prop changes are shown to be ignored, matching `src/components/Dock/Dock.tsx` constructor-plus-controlled-sync behavior.
+- Style precedence and callback silence are materially exercised: caller visual styles survive while reserved edge/layout keys are overridden back to dock-controlled values, and `onPositionChange` / `onHeightChange` remain uncalled across mount, default-prop rerender, and controlled rerender.
+- Browser validation was unnecessary for F3 because `CDock` phase 1 behavior is non-interactive and the Jest/RTL assertions already exercise the rendered DOM contract, including package-entry export visibility via `../src` and runtime identity check.
