@@ -1,37 +1,66 @@
-import { DefaultTheme } from '@/theme/default';
-import { Win98Theme } from '@/theme/win98';
-import { WinXpTheme } from '@/theme/winxp';
-import React from 'react';
+import { SystemHost } from '@/system/SystemHost';
+import {
+  resolveSystemTypeDefinition,
+  resolveThemeDefinition,
+  SYSTEM_TYPE,
+  THEME,
+} from '@/system/registry';
+import type {
+  SystemThemeSelection,
+  SystemTypeDefinition,
+  SystemTypeId,
+  ThemeDefinition,
+  ThemeId,
+} from '@/system/types';
+import type { ReactElement } from 'react';
 
-export const DEV_THEME = {
-  default: 'default',
-  win98: 'win98',
-  winxp: 'winxp',
-} as const;
+export const DEV_SYSTEM_TYPE = SYSTEM_TYPE;
+
+export const DEV_THEME = THEME;
 
 export type DevThemeId = (typeof DEV_THEME)[keyof typeof DEV_THEME];
 
-const DEV_THEME_COMPONENTS: Record<DevThemeId, React.ComponentType> = {
-  [DEV_THEME.default]: DefaultTheme,
-  [DEV_THEME.win98]: Win98Theme,
-  [DEV_THEME.winxp]: WinXpTheme,
-};
+export type DevSystemTypeId = (typeof DEV_SYSTEM_TYPE)[keyof typeof DEV_SYSTEM_TYPE];
 
-export const DEFAULT_DEV_THEME: DevThemeId = DEV_THEME.default;
+export const DEFAULT_DEV_SELECTION = {
+  systemType: DEV_SYSTEM_TYPE.default,
+  theme: DEV_THEME.default,
+} as const satisfies SystemThemeSelection;
 
-export const ACTIVE_THEME: DevThemeId = DEFAULT_DEV_THEME;
-
-export function resolveDevThemeComponent(themeId: DevThemeId): React.ComponentType {
-  return DEV_THEME_COMPONENTS[themeId];
+interface DevSelectionInput {
+  readonly systemType?: SystemTypeId;
+  readonly theme?: ThemeId;
 }
 
-interface DevThemeRootProps {
-  activeTheme?: DevThemeId;
+const resolveDevSelection = ({
+  systemType = DEFAULT_DEV_SELECTION.systemType,
+  theme = DEFAULT_DEV_SELECTION.theme,
+}: DevSelectionInput = {}): SystemThemeSelection => ({
+  systemType,
+  theme,
+});
+
+export function resolveDevSystemDefinition(
+  systemType: DevSystemTypeId = DEFAULT_DEV_SELECTION.systemType,
+): SystemTypeDefinition {
+  return resolveSystemTypeDefinition(systemType);
 }
 
-export function DevThemeRoot({
-  activeTheme = DEFAULT_DEV_THEME,
-}: DevThemeRootProps): React.ReactElement {
-  const ThemeRoot = resolveDevThemeComponent(activeTheme);
-  return <ThemeRoot />;
+export function resolveDevThemeDefinition(selection: DevSelectionInput = {}): ThemeDefinition {
+  return resolveThemeDefinition(resolveDevSelection(selection));
+}
+
+interface DevSystemRootProps {
+  readonly systemType?: DevSystemTypeId;
+  readonly theme?: DevThemeId;
+}
+
+export function DevSystemRoot({
+  systemType = DEFAULT_DEV_SELECTION.systemType,
+  theme = DEFAULT_DEV_SELECTION.theme,
+}: DevSystemRootProps): ReactElement {
+  resolveDevSystemDefinition(systemType);
+  resolveDevThemeDefinition({ systemType, theme });
+
+  return <SystemHost systemType={systemType} theme={theme} />;
 }
