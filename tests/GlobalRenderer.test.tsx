@@ -2,20 +2,21 @@ import { render, screen } from '@testing-library/react';
 import '@testing-library/jest-dom';
 import { CWindow } from '../src/components/Window/Window';
 import { CWindowTitle } from '../src/components/Window/WindowTitle';
-import { DefaultTheme } from '../src/theme/default';
-import { WinXpTheme } from '../src/theme/winxp';
+import { SystemHost } from '../src/system/SystemHost';
 
 describe('Window title rendering compatibility', () => {
-  it('renders the default theme title through explicit composition', () => {
-    render(<DefaultTheme />);
+  it('renders the default system title through SystemHost', () => {
+    render(<SystemHost systemType="default" theme="default" />);
 
+    expect(screen.getByTestId('screen-root')).toHaveAttribute('data-theme', 'default');
     expect(screen.getByTestId('window-title')).toHaveTextContent('Default Window');
   });
 
-  it('renders the winxp theme title through explicit composition', () => {
-    render(<WinXpTheme />);
+  it('renders the winxp system title through SystemHost', () => {
+    render(<SystemHost systemType="windows" theme="winxp" />);
 
-    expect(screen.getByTestId('window-title')).toHaveTextContent('WinXP Window');
+    expect(screen.getByTestId('screen-root')).toHaveAttribute('data-theme', 'winxp');
+    expect(screen.getByTestId('window-title')).toHaveTextContent('Windows Window');
   });
 
   it('renders custom window titles without a registry layer', () => {
