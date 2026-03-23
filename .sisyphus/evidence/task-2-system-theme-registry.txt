@@ -1,0 +1,21 @@
+$ yarn test -- --runInBand tests/SystemTypeThemeRegistry.test.tsx -t "resolves only legal system theme pairs"
+yarn run v1.22.19
+warning ../../../package.json: No license field
+warning From Yarn 1.0 onwards, scripts don't require "--" for options to be forwarded. In a future version, any explicit "--" will be forwarded as-is to the scripts.
+$ jest --runInBand tests/SystemTypeThemeRegistry.test.tsx -t 'resolves only legal system theme pairs'
+PASS tests/SystemTypeThemeRegistry.test.tsx
+  system type and theme registry
+    ✓ resolves only legal system theme pairs (1 ms)
+    ○ skipped uses default as the shared default system type constant
+    ○ skipped defines deterministic default themes by system type
+    ○ skipped resolves windows system type metadata
+    ○ skipped resolves a legal windows theme definition
+    ○ skipped resolves the default theme for the default system type
+    ○ skipped rejects invalid theme for system type
+
+Test Suites: 1 passed, 1 total
+Tests:       6 skipped, 1 passed, 7 total
+Snapshots:   0 total
+Time:        0.395 s, estimated 1 s
+Ran all test suites matching /tests\/SystemTypeThemeRegistry.test.tsx/i with tests matching "resolves only legal system theme pairs".
+Done in 3.40s.

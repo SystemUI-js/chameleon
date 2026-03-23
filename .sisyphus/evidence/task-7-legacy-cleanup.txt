@@ -1,0 +1,14 @@
+yarn run v1.22.19
+warning ../../../package.json: No license field
+warning From Yarn 1.0 onwards, scripts don't require "--" for options to be forwarded. In a future version, any explicit "--" will be forwarded as-is to the scripts.
+$ jest --runInBand tests/Win98WindowTitle.test.tsx tests/GlobalRenderer.test.tsx tests/SystemShellCharacterization.test.tsx
+PASS tests/SystemShellCharacterization.test.tsx
+PASS tests/Win98WindowTitle.test.tsx
+PASS tests/GlobalRenderer.test.tsx
+
+Test Suites: 3 passed, 3 total
+Tests:       9 passed, 9 total
+Snapshots:   0 total
+Time:        0.69 s, estimated 1 s
+Ran all test suites matching /tests\/Win98WindowTitle.test.tsx|tests\/GlobalRenderer.test.tsx|tests\/SystemShellCharacterization.test.tsx/i.
+Done in 2.24s.
