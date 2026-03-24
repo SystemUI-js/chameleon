@@ -10,8 +10,6 @@ export interface CRadioGroupProps {
   required?: boolean;
   children?: React.ReactNode;
   className?: string;
-  'aria-label'?: string;
-  'aria-labelledby'?: string;
   'data-testid'?: string;
 }
 
@@ -34,8 +32,6 @@ export function CRadioGroup({
   required = false,
   children,
   className,
-  'aria-label': ariaLabel,
-  'aria-labelledby': ariaLabelledBy,
   'data-testid': dataTestId,
 }: CRadioGroupProps): React.ReactElement {
   const [uncontrolledValue, setUncontrolledValue] = React.useState(defaultValue);
@@ -83,15 +79,7 @@ export function CRadioGroup({
 
   return (
     <RadioGroupContext.Provider value={contextValue}>
-      <div
-        aria-disabled={disabled || undefined}
-        aria-label={ariaLabel}
-        aria-labelledby={ariaLabelledBy}
-        aria-required={required || undefined}
-        className={classNames.join(' ')}
-        data-testid={dataTestId}
-        role="radiogroup"
-      >
+      <div className={classNames.join(' ')} data-testid={dataTestId}>
         {children}
       </div>
     </RadioGroupContext.Provider>

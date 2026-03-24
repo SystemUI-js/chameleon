@@ -25,12 +25,7 @@ describe('CRadioGroup', () => {
 
   it('shares the same name across grouped radios', () => {
     render(
-      <CRadioGroup
-        aria-label="Favorite fruit"
-        data-testid="radio-group"
-        name="fruit"
-        defaultValue="apple"
-      >
+      <CRadioGroup data-testid="radio-group" name="fruit" defaultValue="apple">
         <CRadio data-testid="radio-apple" value="apple">
           Apple
         </CRadio>
@@ -40,12 +35,10 @@ describe('CRadioGroup', () => {
       </CRadioGroup>,
     );
 
-    expect(screen.getByRole('radiogroup', { name: 'Favorite fruit' })).toHaveClass(
-      'cm-radio-group',
-    );
-    expect(screen.getByTestId('radio-group')).toHaveAttribute('role', 'radiogroup');
+    expect(screen.getByTestId('radio-group')).toHaveClass('cm-radio-group');
     expect(screen.getByTestId('radio-apple')).toHaveAttribute('name', 'fruit');
     expect(screen.getByTestId('radio-orange')).toHaveAttribute('name', 'fruit');
+    expect(screen.queryByRole('radiogroup')).not.toBeInTheDocument();
   });
 
   it('initializes uncontrolled state from defaultValue and ignores later defaultValue changes', () => {
