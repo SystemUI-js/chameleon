@@ -22,7 +22,40 @@ Chameleon
 
 发布与使用
 
-- 作为库发布后，以 @sysui/chameleon 安装并在代码中导入组件使用。
+- 作为库发布后，以 `@system-ui-js/chameleon` 安装并在代码中导入组件使用。
+
+```bash
+yarn add @system-ui-js/chameleon
+```
+
+```tsx
+import { CButton, CRadio, CRadioGroup, CSelect } from '@system-ui-js/chameleon'
+
+const sizeOptions = [
+  { label: 'Small', value: 'small' },
+  { label: 'Medium', value: 'medium' },
+  { label: 'Large', value: 'large' },
+] as const
+
+export function Demo() {
+  return (
+    <>
+      <CButton>Default</CButton>
+      <CButton variant="primary">Primary</CButton>
+
+      <CRadioGroup name="fruit" defaultValue="apple">
+        <CRadio value="apple">Apple</CRadio>
+        <CRadio value="orange">Orange</CRadio>
+      </CRadioGroup>
+
+      <CSelect
+        options={sizeOptions}
+        placeholder="Select a size"
+      />
+    </>
+  )
+}
+```
 
 ## How to create a theme
 

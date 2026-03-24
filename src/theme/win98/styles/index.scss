@@ -3,4 +3,182 @@
         background: #000080;
         color: #ffffff;
     }
+
+    .cm-window > :not(.cm-window__title-bar) {
+        background: #c0c0c0;
+    }
+
+    .cm-common-controls-preview {
+        display: flex;
+        flex-direction: column;
+        gap: 12px;
+        color: #000000;
+        font-family: 'MS Sans Serif', 'Tahoma', sans-serif;
+    }
+
+    .cm-common-controls-preview__header,
+    .cm-common-controls-preview__stack {
+        display: flex;
+        flex-direction: column;
+        gap: 6px;
+    }
+
+    .cm-common-controls-preview__eyebrow,
+    .cm-common-controls-preview__description,
+    .cm-common-controls-preview__value {
+        margin: 0;
+        font-size: 11px;
+    }
+
+    .cm-common-controls-preview__title,
+    .cm-common-controls-preview__panel-title {
+        margin: 0;
+        font-size: 12px;
+        font-weight: 700;
+    }
+
+    .cm-common-controls-preview__grid {
+        display: grid;
+        grid-template-columns: repeat(auto-fit, minmax(170px, 1fr));
+        gap: 8px;
+    }
+
+    .cm-common-controls-preview__panel {
+        display: flex;
+        flex-direction: column;
+        gap: 10px;
+        padding: 10px;
+        border: 2px solid #808080;
+        border-top-color: #ffffff;
+        border-left-color: #ffffff;
+        background: #c0c0c0;
+        box-shadow: inset -1px -1px 0 #000000;
+    }
+
+    .cm-common-controls-preview__row,
+    .cm-common-controls-preview__choice-row {
+        display: flex;
+        flex-wrap: wrap;
+        gap: 8px;
+    }
+
+    .cm-button {
+        min-height: 24px;
+        padding: 0 12px;
+        border: 2px solid #808080;
+        border-top-color: #ffffff;
+        border-left-color: #ffffff;
+        background: #c0c0c0;
+        box-shadow: inset -1px -1px 0 #000000;
+        color: #000000;
+        font-size: 11px;
+        cursor: pointer;
+    }
+
+    .cm-button:hover:not(:disabled) {
+        background: #d6d6d6;
+    }
+
+    .cm-button:active:not(:disabled) {
+        border-color: #ffffff;
+        border-top-color: #808080;
+        border-left-color: #808080;
+        box-shadow: inset 1px 1px 0 #000000;
+        background: #b3b3b3;
+    }
+
+    .cm-button:focus-visible,
+    .cm-radio__input:focus-visible,
+    .cm-select:focus-visible {
+        outline: 1px dotted #000000;
+        outline-offset: 1px;
+    }
+
+    .cm-button--primary {
+        font-weight: 700;
+    }
+
+    .cm-button--ghost {
+        background: #d9d9d9;
+    }
+
+    .cm-button:disabled {
+        color: #808080;
+        text-shadow: 1px 1px 0 #ffffff;
+        cursor: not-allowed;
+    }
+
+    .cm-radio {
+        display: inline-flex;
+        align-items: center;
+        gap: 6px;
+        cursor: pointer;
+    }
+
+    .cm-radio--disabled {
+        color: #808080;
+        cursor: not-allowed;
+    }
+
+    .cm-radio__input {
+        width: 14px;
+        height: 14px;
+        margin: 0;
+        appearance: none;
+        border: 1px solid #000000;
+        border-radius: 999px;
+        background: #ffffff;
+        box-shadow: inset 1px 1px 0 #808080;
+        cursor: inherit;
+    }
+
+    .cm-radio__input:checked {
+        background: radial-gradient(circle at center, #000000 0 28%, #ffffff 29% 100%);
+    }
+
+    .cm-radio__input:disabled {
+        background: #c0c0c0;
+    }
+
+    .cm-radio__label {
+        font-size: 11px;
+        line-height: 1.2;
+    }
+
+    .cm-select {
+        min-height: 24px;
+        padding: 0 26px 0 8px;
+        border: 2px solid #808080;
+        border-top-color: #808080;
+        border-left-color: #808080;
+        border-right-color: #ffffff;
+        border-bottom-color: #ffffff;
+        appearance: none;
+        background-color: #ffffff;
+        background-image:
+            linear-gradient(180deg, #ffffff 0%, #f0f0f0 100%),
+            linear-gradient(45deg, transparent 50%, #000000 50%),
+            linear-gradient(135deg, #000000 50%, transparent 50%);
+        background-position:
+            0 0,
+            calc(100% - 14px) 10px,
+            calc(100% - 9px) 10px;
+        background-size:
+            100% 100%,
+            5px 5px,
+            5px 5px;
+        background-repeat: no-repeat;
+        color: #000000;
+        font-size: 11px;
+    }
+
+    .cm-select:disabled {
+        background-color: #c0c0c0;
+        background-image:
+            linear-gradient(180deg, #d9d9d9 0%, #c0c0c0 100%),
+            linear-gradient(45deg, transparent 50%, #808080 50%),
+            linear-gradient(135deg, #808080 50%, transparent 50%);
+        color: #808080;
+        cursor: not-allowed;
+    }
 }
