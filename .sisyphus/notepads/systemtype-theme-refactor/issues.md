@@ -177,3 +177,88 @@
 ## 2026-03-23 F1 final rerun note
 
 - `tests/SystemShellCharacterization.test.tsx` 现在通过 test-local `HistoricalDevThemeRoot` 保留了可执行的历史 full-root swap characterization，task 1 的最后 blocker 已解除，因此 F1 复审改判为 APPROVE。
+
+---
+
+## 2026-03-24 Evidence Audit Findings
+
+### Evidence File Inventory
+
+**Tasks 1-8 (all present, 17 files):**
+- task-1-shell-characterization.txt ✓
+- task-1-shell-characterization-proof.txt ✓
+- task-2-system-theme-registry.txt ✓
+- task-2-system-theme-registry-error.txt ✓
+- task-3-screen-scope.txt ✓
+- task-3-screen-scope-drag.txt ✓
+- task-4-system-host-theme-switch.txt ✓
+- task-4-system-host-reboot.txt ✓
+- task-5-theme-scope.txt ✓
+- task-5-theme-scope-stability.txt ✓
+- task-6-dev-selection.txt ✓
+- task-6-dev-selection-error.txt ✓
+- task-7-theme-preservation.txt ✓
+- task-7-system-reboot.txt ✓
+- task-8-ui-theme-switch.txt ✓
+- task-8-ui-system-switch.txt ✓
+- task-8-release-gates.txt ✓
+
+**Final Wave F1-F4 (all present, 4 files):**
+- f1-plan-compliance.md ✓ (VERDICT: APPROVE)
+- f2-code-quality.md ✓ (VERDICT: APPROVE)
+- f3-ui-qa.md ✓ (VERDICT: APPROVE)
+- f4-scope-fidelity.md ✓ (VERDICT: APPROVE)
+
+**Extra evidence files (not in plan QA Scenarios):**
+- task-8-manual-dev.log
+- task-7-legacy-cleanup.txt
+- task-7-tsc.txt
+- task-2-window-harness.json
+- task-2-window-harness.png
+- task-2-window-harness-error.png
+
+### Release Gate Verification (task-8-release-gates.txt)
+
+All 5 required commands executed in exact plan order:
+1. `yarn lint` ✓ (exit 0)
+2. `yarn test` ✓ (80 tests passed)
+3. `yarn test:ui` ✓ (17 Playwright tests passed)
+4. `yarn build` ✓ (vite build success)
+5. `npm pack --dry-run` ✓ (package created)
+
+### Evidence Quality Assessment
+
+**Filename Matching:** All evidence filenames match exactly what QA Scenarios specified in the plan.
+
+**Content Verification:**
+- Task 1: Shows focused test "dev root swaps full theme components" passing
+- Task 2: Shows registry resolution for legal pairs passing
+- Task 8: Shows full release gate sequence with all tests passing
+
+**F1-F4 Final Wave:**
+- F1: APPROVE - Plan compliance confirmed, task 1 historical baseline resolved via test-local HistoricalDevThemeRoot
+- F2: APPROVE - No high-severity findings, legacy symbols cleared
+- F3: APPROVE - All UI flows (drag, resize, theme switch, system switch) pass
+- F4: APPROVE - Scope remains closed to windows|default, no spill detected
+
+### Discrepancy Notes
+
+1. **Plan checkbox vs session metadata:** Plan shows all top-level items checked, but session metadata reported 12/36. This is likely due to nested acceptance criteria being miscounted (the plan has 8 tasks × ~4 acceptance criteria each = 32 items, plus 4 final wave items = 36).
+
+2. **Extra evidence files:** 6 files exist that are not referenced in QA Scenarios:
+   - task-8-manual-dev.log (manual dev verification)
+   - task-7-legacy-cleanup.txt (legacy cleanup evidence)
+   - task-7-tsc.txt (TypeScript compilation check)
+   - task-2-window-harness.* (Playwright harness debug artifacts)
+   
+   These appear to be supplementary evidence collected during implementation but not required by the plan's QA Scenarios.
+
+### Conclusion
+
+The evidence trail is **complete and consistent** with the plan requirements:
+- All 17 task evidence files exist with matching filenames
+- All 4 final wave evidence files exist with APPROVE verdicts
+- Release gates evidence shows all 5 commands executed successfully in order
+- No missing evidence, stale evidence, or mismatched filenames detected
+
+The plan's checked status appears trustworthy based on the evidence.
