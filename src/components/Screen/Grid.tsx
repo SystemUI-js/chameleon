@@ -27,18 +27,12 @@ export class CGrid extends React.Component<Props, State> {
     };
   }
   render() {
-    const children: React.ReactNode[] = [];
-    if (this.props.children) {
-      React.Children.forEach(this.props.children, (child, index) => {
-        if (React.isValidElement(child)) {
-          children.push(
-            React.cloneElement(child, {
-              key: index,
-            }),
-          );
-        }
-      });
-    }
+    const children = this.props.children
+      ? React.Children.map(this.props.children, (child) =>
+          React.isValidElement(child) ? child : null,
+        ).filter((child): child is React.ReactElement => child !== null)
+      : null;
+
     return (
       <div
         className={this.props.className || 'c-grid'}
