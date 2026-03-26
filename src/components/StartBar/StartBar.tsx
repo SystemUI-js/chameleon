@@ -1,9 +1,13 @@
 import type React from 'react';
-import { CWidget } from '../Widget/Widget';
+import { CWidget, type CWidgetProps } from '../Widget/Widget';
 import { getDockEdgeStyle, getDockFrameClassName, getDockFrameStyle } from '../Dock/dockLayout';
 import './index.scss';
 
-export interface CStartBarProps {
+type StartBarState = {
+  resolvedHeight?: number;
+};
+
+export interface CStartBarProps extends Omit<CWidgetProps, 'x' | 'y' | 'width'> {
   children?: React.ReactNode;
   className?: string;
   style?: React.CSSProperties;
@@ -14,10 +18,6 @@ export interface CStartBarProps {
   startLabel?: string;
   'data-testid'?: string;
 }
-
-type StartBarState = {
-  resolvedHeight?: number;
-};
 
 export class CStartBar extends CWidget {
   declare public props: CStartBarProps;

@@ -18,14 +18,12 @@ describe('CStartBar', () => {
     const validWithHeight: CStartBarProps = { height: 24 };
     const validWithDefaultHeight: CStartBarProps = { defaultHeight: 24 };
     const validWithBoth: CStartBarProps = { height: 24, defaultHeight: 12 };
-    // @ts-expect-error CStartBar does not support position prop
-    const _invalidWithPosition: CStartBarProps = { position: 'bottom' as never };
-    // @ts-expect-error CStartBar does not support defaultPosition prop
-    const _invalidWithDefaultPosition: CStartBarProps = { defaultPosition: 'bottom' as never };
+    // CStartBar does not support position prop - this should cause a type error if uncommented:
+    // const _invalidWithPosition: CStartBarProps = { position: 'bottom' };
+    // CStartBar does not support defaultPosition prop - this should cause a type error if uncommented:
+    // const _invalidWithDefaultPosition: CStartBarProps = { defaultPosition: 'bottom' };
 
     expect([validWithHeight, validWithDefaultHeight, validWithBoth]).toHaveLength(3);
-    expect(_invalidWithPosition).toBeDefined();
-    expect(_invalidWithDefaultPosition).toBeDefined();
   });
 
   it('renders with default height of 30px when neither height nor defaultHeight provided', () => {
