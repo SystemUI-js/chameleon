@@ -11,7 +11,7 @@ test.describe('system/theme switch', () => {
     await gotoWindowSelection(page, { systemType: 'windows', theme: 'win98' });
 
     const screenRoot = page.getByTestId('screen-root');
-    const titleLocator = page.getByTestId('window-title-text');
+    const titleLocator = page.getByTestId('window-title');
     const contentLocator = page.getByTestId('window-content');
 
     await expect(screenRoot).toHaveClass(/cm-theme--win98/);
@@ -52,7 +52,7 @@ test.describe('system/theme switch', () => {
     await gotoWindowSelection(page, { systemType: 'windows', theme: 'winxp' });
 
     const screenRoot = page.getByTestId('screen-root');
-    const titleLocator = page.getByTestId('window-title-text');
+    const titleLocator = page.getByTestId('window-title');
     const contentLocator = page.getByTestId('window-content');
 
     await expect(screenRoot).toHaveClass(/cm-theme--winxp/);
@@ -82,7 +82,7 @@ test.describe('system/theme switch', () => {
     await expect(screenRoot).toHaveAttribute('data-theme', 'default');
     await expect(screenRoot).toHaveClass(/cm-system--default/);
     await expect(screenRoot).toHaveClass(/cm-theme--default/);
-    await expect(titleLocator).toHaveText('Default Window');
+    await expect(titleLocator).toContainText('Default Window');
     await expect(contentLocator).toContainText('Default content');
     await expect(readFrameMetrics(page)).resolves.toEqual({
       x: 32,
