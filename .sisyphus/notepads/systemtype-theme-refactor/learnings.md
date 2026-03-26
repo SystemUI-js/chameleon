@@ -1233,3 +1233,155 @@ Per task 8 requirements, the spec should capture evidence for:
 ## 2026-03-23 Final Wave F4 rerun learning
 
 - F4 复核通过的关键标志是：`src/theme/*/index.tsx` 只剩纯 `ThemeDefinition` metadata，`src/system/registry.ts` 只依赖 metadata，且共享基础组件/系统壳里不再残留任何 legacy class 注入 props；这样才能证明兼容清理没有反向扩张成新的正式 API。
+
+## 2026-03-24 External Authority: Verification Strategy Documentation
+
+### Domain 1: Jest/React Testing Library Rerender Semantics
+
+**Source 1: React Testing Library API - `rerender`**
+- **URL**: https://testing-library.com/docs/react-testing-library/api/
+- **Key Quote**: 
+  > "If you'd prefer to update the props of a rendered component in your test, this function can be used to update props of the rendered component."
+  > ```javascript
+  > const {rerender} = render(<NumberDisplay number={1} />)
+  > rerender(<NumberDisplay number={2} />)
+  > ```
+
+**Source 2: DOM Testing Library Queries - Priority**
+- **URL**: https://testing-library.com/docs/queries/about
+- **Key Quote**:
+  > "getByTestId: The user cannot see (or hear) these, so this is only recommended for cases where you can't match by role or text or it doesn't make sense (e.g. the text is dynamic)."
+- **Applicability**: Repo uses `data-testid="screen-root"`, `data-testid="window-frame"`, `data-testid="window-content"`, `data-testid="window-title"` as stable anchors
+
+**Source 3: React Testing Library Example**
+- **URL**: https://testing-library.com/docs/react-testing-library/example-intro
+- **Pattern**: ARRANGE → ACT → ASSERT workflow with `fireEvent` and `screen` queries
+
+### Domain 2: Playwright UI Regression Patterns
+
+**Source 4: Playwright Actions - Drag and Drop**
+- **URL**: https://playwright.dev/docs/input
+- **Key Quote**:
+  > "If you want precise control over the drag operation, use lower-level methods like locator.hover(), mouse.down(), mouse.move() and mouse.up."
+  > ```javascript
+  > await page.locator('#item-to-be-dragged').hover();
+  > await page.mouse.down();
+  > await page.locator('#item-to-drop-at').hover();
+  > await page.mouse.up();
+  > ```
+- **Applicability**: Repo's `dragLocatorBy()` helper uses similar mouse event sequencing
+
+**Source 5: Playwright Test Assertions**
+- **URL**: https://playwright.dev/docs/test-assertions
+- **Key Patterns**:
+  1. **Auto-retrying assertions**: `await expect(locator).toHaveText(...)` - waits until condition is met
+  2. **Non-retrying assertions**: `expect(value).toBe(...)` - single check
+  3. **Custom expect message**: `await expect(locator, 'message').toBeVisible()`
+- **Key Quote**:
+  > "Playwright includes web-specific async matchers that will wait until the expected condition is met."
+
+### Mapping: External Docs → Repo Test Patterns
+
+| Repo Test Pattern | External Authority | How It Supports |
+|------------------|-------------------|-----------------|
+| `rerender(<SystemHost theme="winxp" />)` | RTL `rerender` API | Tests same-tree prop updates without DOM rebuild |
+| `screen.getByTestId('window-content')` | RTL `getByTestId` query | Stable selector for window identity |
+| `expect(uuidBefore).toBe(uuidAfter)` | RTL `rerender` preserves tree | Proves same component instance |
+| `dragLocatorBy(titleBar, {dx: 24, dy: 24})` | Playwright mouse events | Simulates real user drag interaction |
+| `await expect(frame).toHaveCSS('left', '48px')` | Playwright `toHaveCSS` | Auto-retry assertion for style verification |
+| `await expect(page).toHaveURL(/theme=winxp/)` | Playwright `toHaveURL` | Verifies navigation state |
+
+### Verification Strategy Validation
+
+**Same-System Theme Switch (Preservation)**:
+- Uses RTL `rerender()` to update props while component tree stays mounted
+- Asserts `data-window-uuid` attribute equality → proves DOM identity preserved
+- Uses Playwright `toHaveCSS` to verify theme class changed on scope wrapper
+
+**Cross-System Switch (Reboot)**:
+- Uses RTL `rerender()` with different `key` prop (systemType changes)
+- Asserts `data-window-uuid` inequality → proves component remounted
+- Uses Playwright `toContainText` to verify boot content changed
+
+**Drag/Resize Regression**:
+- Uses Playwright mouse events (`hover`, `down`, `move`, `up`) for precise control
+- Uses `readFrameMetrics()` helper to read inline styles
+- Uses Playwright `expect.poll` for geometry stabilization
+
+---
+
+*External authority research completed: 2026-03-24*
+
+## 2026-03-24 External Authority: React Official Documentation Validation
+
+### Keyed Remount Boundaries
+**Source**: [React Dev - Preserving and Resetting State](https://react.dev/learn/preserving-and-resetting-state)
+
+**Core Pattern**:
+- React preserves component state as long as the same component renders at the same position in the UI tree
+- Changing the component's `key` prop forces React to treat it as a new instance, resetting ALL state
+- Keys are not globally unique; they only specify position within the parent
+
+**Key Quote**: "You can force a subtree to reset its state by giving it a different key."
+
+**Implementation for SystemType Switch**:
+```tsx
+// SystemType switch uses key to force remount
+<SystemHost key={systemType} systemType={systemType} theme={theme} />
+```
+
+### State Preservation Within Same Position
+- Same component at same position preserves state across re-renders
+- Different component types at same position resets state
+- Props changes alone do NOT reset state if component type stays the same
+
+**Implementation for Theme Switch**:
+- Theme switch should NOT change component type or key
+- Only change CSS class names on Screen wrapper
+- Window instances (identified by `data-window-uuid`) remain stable
+
+### State Lifting Above Remount Boundaries
+**Source**: [React Dev - Sharing State Between Components](https://react.dev/learn/sharing-state-between-components)
+
+**Pattern**: Lift persistent state above the remount boundary
+- Persistent data (file system, user data) stays in parent component
+- Runtime state (open windows, z-order, focus) goes inside keyed subtree
+
+```tsx
+// Parent holds persistent state
+function App() {
+  const [persistentData, setPersistentData] = useState(...);
+  
+  return (
+    // SystemType key forces remount on system change
+    <SystemHost 
+      key={systemType}
+      systemType={systemType}
+      theme={theme}
+      persistentData={persistentData}
+    />
+  );
+}
+```
+
+### Architecture Validation Summary
+
+| Plan Pattern | React Official Source | Quote |
+|-------------|----------------------|-------|
+| `key={systemType}` for reboot | Preserving and Resetting State | "You can force a subtree to reset its state by giving it a different key." |
+| Same-system theme preserves state | Preserving and Resetting State | "React preserves a component's state for as long as it's being rendered at its position" |
+| Persistent data above boundary | Sharing State Between Components | "lift the state up... the parent that keeps the important information" |
+
+### Applicability to This Repo
+
+The plan's `SystemHost` boundary follows React's recommended patterns exactly:
+
+1. **Reboot semantics** (`key={systemType}`): When systemType changes (e.g., `windows` → `default`), React sees a different key and remounts the entire subtree, destroying runtime state (open windows, z-order, focus). This matches the "key forces reset" pattern.
+
+2. **Same-system theme preservation**: When only theme changes within the same system (e.g., `win98` → `winxp`), the key stays the same. React preserves all internal state - window positions, UUIDs, focus - while only updating the CSS class on the screen wrapper. This matches the "same position preserves state" pattern.
+
+3. **Persistent data lifting**: File system and user data are passed as props from the parent, not stored in the keyed subtree. After remount, these props are re-passed and remain accessible. This matches the "lift state up" pattern.
+
+---
+
+*External authority research completed: 2026-03-24*
