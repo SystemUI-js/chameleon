@@ -3,14 +3,17 @@
 ## External Authority: React Official Documentation
 
 ### Keyed Remount Boundaries
+
 **Source**: [React Dev - Preserving and Resetting State](https://react.dev/learn/preserving-and-resetting-state)
 
 **Core Pattern**:
+
 - React preserves component state as long as the same component renders at the same position in the UI tree
 - Changing the component's `key` prop forces React to treat it as a new instance, resetting ALL state
 - Keys are not globally unique; they only specify position within the parent
 
 **Implementation for SystemType Switch**:
+
 ```tsx
 // SystemType switch uses key to force remount
 <SystemHost key={systemType} systemType={systemType} theme={theme} />
@@ -19,19 +22,23 @@
 **Key Quote**: "You can force a subtree to reset its state by giving it a different key."
 
 ### State Preservation Within Same Position
+
 - Same component at same position preserves state across re-renders
 - Different component types at same position resets state
 - Props changes alone do NOT reset state if component type stays the same
 
 **Implementation for Theme Switch**:
+
 - Theme switch should NOT change component type or key
 - Only change CSS class names on Screen wrapper
 - Window instances (identified by `data-window-uuid`) remain stable
 
 ### State Lifting Above Remount Boundaries
+
 **Source**: [React Dev - Sharing State Between Components](https://react.dev/learn/sharing-state-between-components)
 
 **Pattern**: Lift persistent state above the remount boundary
+
 - Persistent data (file system, user data) stays in parent component
 - Runtime state (open windows, z-order, focus) goes inside keyed subtree
 
@@ -39,10 +46,10 @@
 // Parent holds persistent state
 function App() {
   const [persistentData, setPersistentData] = useState(...);
-  
+
   return (
     // SystemType key forces remount on system change
-    <SystemHost 
+    <SystemHost
       key={systemType}
       systemType={systemType}
       theme={theme}
@@ -55,17 +62,20 @@ function App() {
 ## CSS Scoping Patterns
 
 ### CSS Variables Theming (Current Repo Pattern)
+
 **Source**: README.md - Theme tokens become CSS variables
 
 **Pattern**:
+
 - Theme defines tokens as plain objects
 - Tokens are flattened to CSS variables with prefix `--cm-{category}-{token}`
 - Components use CSS variables, not theme objects
 
 **Implementation for Theme Class Scoping**:
+
 ```tsx
 // Screen accepts className and renders scope wrapper
-<Screen 
+<Screen
   className="cm-system--windows cm-theme--win98"
   data-system-type={systemType}
   data-theme={theme}
@@ -75,7 +85,9 @@ function App() {
 ```
 
 ### CSS Selector Scope
+
 **Pattern**: Theme CSS targets scoped selectors
+
 ```scss
 // Theme styles target scoped selectors
 .cm-system--windows.cm-theme--win98 {
@@ -87,7 +99,7 @@ function App() {
 
 .cm-system--windows.cm-theme--winxp {
   .cm-window__title-bar {
-    background: #316AC5;
+    background: #316ac5;
     color: #ffffff;
   }
 }
@@ -96,6 +108,7 @@ function App() {
 ## Repo-Local Precedent
 
 ### Window UUID Stability
+
 **Source**: `src/components/Window/Window.tsx:437`
 
 ```tsx
@@ -105,15 +118,18 @@ data-window-uuid={this.uuid}
 **Finding**: Window components already have stable UUID via `this.uuid`. This can be used to verify window instance preservation across theme switches.
 
 ### Screen Component Structure
+
 **Source**: `src/components/Screen/Screen.tsx`
 
 **Current**: Returns CGrid directly, no root wrapper
 **Required**: Add root wrapper with scope hooks
 
 ### Theme Component Pattern (To Be Replaced)
+
 **Source**: `src/theme/default/index.tsx:27`
 
 Current pattern exports React.Component that mounts full shell:
+
 ```tsx
 export class DefaultTheme extends React.Component {
   render() {
@@ -129,12 +145,13 @@ export class DefaultTheme extends React.Component {
 ```
 
 **Required**: Convert to CSS-only theme definition:
+
 ```tsx
 export const defaultTheme: ThemeDefinition = {
   id: 'default',
   label: 'Default',
   systemType: 'default',
-  className: 'cm-theme--default'
+  className: 'cm-theme--default',
 };
 ```
 
@@ -187,54 +204,49 @@ export const defaultTheme: ThemeDefinition = {
 ## Verification Patterns
 
 ### Same-System Theme Switch (Preservation)
+
 ```tsx
 // Test: Theme switch preserves window UUID
-const { rerender } = render(
-  <SystemHost systemType="windows" theme="win98" />
-);
-const uuidBefore = screen.getByTestId('window-content')
-  .getAttribute('data-window-uuid');
+const { rerender } = render(<SystemHost systemType="windows" theme="win98" />);
+const uuidBefore = screen.getByTestId('window-content').getAttribute('data-window-uuid');
 
 rerender(<SystemHost systemType="windows" theme="winxp" />);
-const uuidAfter = screen.getByTestId('window-content')
-  .getAttribute('data-window-uuid');
+const uuidAfter = screen.getByTestId('window-content').getAttribute('data-window-uuid');
 
 expect(uuidBefore).toBe(uuidAfter);
 ```
 
 ### Cross-System Switch (Reboot)
+
 ```tsx
 // Test: System switch remounts windows
-const { rerender } = render(
-  <SystemHost systemType="windows" theme="winxp" />
-);
-const uuidBefore = screen.getByTestId('window-content')
-  .getAttribute('data-window-uuid');
+const { rerender } = render(<SystemHost systemType="windows" theme="winxp" />);
+const uuidBefore = screen.getByTestId('window-content').getAttribute('data-window-uuid');
 
 rerender(<SystemHost systemType="default" theme="default" />);
-const uuidAfter = screen.getByTestId('window-content')
-  .getAttribute('data-window-uuid');
+const uuidAfter = screen.getByTestId('window-content').getAttribute('data-window-uuid');
 
 expect(uuidBefore).not.toBe(uuidAfter);
 ```
 
 ### Persistent State Above Boundary
+
 ```tsx
 // Test: Persistent data survives system switch
 const { rerender } = render(
-  <SystemHost 
-    systemType="windows" 
+  <SystemHost
+    systemType="windows"
     theme="winxp"
     persistentData={{ note: 'persistent-note-123' }}
-  />
+  />,
 );
 
 rerender(
-  <SystemHost 
-    systemType="default" 
+  <SystemHost
+    systemType="default"
     theme="default"
     persistentData={{ note: 'persistent-note-123' }}
-  />
+  />,
 );
 
 // Persistent data still accessible (passed as prop, not internal state)
@@ -242,18 +254,18 @@ rerender(
 
 ## Summary
 
-| Concern | Pattern | Source |
-|---------|---------|--------|
-| Remount boundary | `key={systemType}` on SystemHost | React key docs |
-| State preservation | Same component at same position | React state docs |
-| CSS scoping | Theme class on Screen root | Current repo + CSS variables |
-| Window identity | `data-window-uuid` attribute | Window.tsx:437 |
-| Persistent data | Lift above keyed subtree | React state lifting |
-| Theme-only styling | CSS selectors, no JSX in theme | Plan requirement |
+| Concern            | Pattern                          | Source                       |
+| ------------------ | -------------------------------- | ---------------------------- |
+| Remount boundary   | `key={systemType}` on SystemHost | React key docs               |
+| State preservation | Same component at same position  | React state docs             |
+| CSS scoping        | Theme class on Screen root       | Current repo + CSS variables |
+| Window identity    | `data-window-uuid` attribute     | Window.tsx:437               |
+| Persistent data    | Lift above keyed subtree         | React state lifting          |
+| Theme-only styling | CSS selectors, no JSX in theme   | Plan requirement             |
 
 ---
 
-*Research completed: 2026-03-23*
+_Research completed: 2026-03-23_
 
 ## 2026-03-23 Wave 1 implementation learnings
 
@@ -280,39 +292,45 @@ rerender(
 
 ### Theme Files Identified
 
-| Theme | File | Exports |
-|-------|------|---------|
+| Theme   | File                                                                    | Exports                                         |
+| ------- | ----------------------------------------------------------------------- | ----------------------------------------------- |
 | Default | `/Users/zhangxiao/frontend/SysUI/chameleon/src/theme/default/index.tsx` | DefaultTheme, DefaultWindow, DefaultWindowTitle |
-| Win98 | `/Users/zhangxiao/frontend/SysUI/chameleon/src/theme/win98/index.tsx` | Win98Theme, Win98WindowTitle |
-| WinXP | `/Users/zhangxiao/frontend/SysUI/chameleon/src/theme/winxp/index.tsx` | WinXpTheme, WinXpWindowTitle |
+| Win98   | `/Users/zhangxiao/frontend/SysUI/chameleon/src/theme/win98/index.tsx`   | Win98Theme, Win98WindowTitle                    |
+| WinXP   | `/Users/zhangxiao/frontend/SysUI/chameleon/src/theme/winxp/index.tsx`   | WinXpTheme, WinXpWindowTitle                    |
 
 ### Theme-Specific Class Names (Current)
 
 **Default Theme** (structural override via subclass):
+
 - `cm-default-window-frame` - via `DefaultWindow.getWindowFrameClassName()`
 - `cm-default-window` - via `DefaultWindow.getWindowContentClassName()`
 - `cm-window__title-bar cm-window__title-bar--default cm-default-window-title` - via `DefaultWindowTitle.render()`
 
 **Win98 Theme** (title bar only):
+
 - `cm-window__title-bar cm-window__title-bar--win98` - via `Win98WindowTitle.render()`
 
 **WinXP Theme** (title bar only):
+
 - `cm-window__title-bar cm-window__title-bar--winxp` - via `WinXpWindowTitle.render()`
 
 ### Structural vs Pure Style Differences
 
 **Structural Differences (require JSX changes):**
+
 - Default theme: Has custom `DefaultWindow` subclass overriding `getWindowContentClassName()` and `getWindowFrameClassName()`
 - Default theme: Has custom `DefaultWindowTitle` subclass
 - Win98/WinXP: Use base `CWindow`, only custom `WindowTitle` subclasses
 
 **Pure Style Differences (can collapse to CSS):**
+
 - Win98 vs WinXP title bar: Only differ in modifier class (`--win98` vs `--winxp`)
 - Both use same `CWindow` base with no customization
 
 ### Shared Renderer Analysis
 
 **Can Win98 and WinXP share CWindowTitle?**
+
 - YES. Both custom title classes only pass different className to `renderTitle()`:
   - Win98: `'cm-window__title-bar cm-window__title-bar--win98'`
   - WinXP: `'cm-window__title-bar cm-window__title-bar--winxp'`
@@ -323,17 +341,18 @@ rerender(
   ```
 
 **Can Win98 and WinXP share CWindow?**
+
 - YES. Both use base `CWindow` with no overrides. Window structure is identical.
 
 ### Exact Selectors to Retarget
 
-| Current Selector | Target Scope | Notes |
-|-----------------|--------------|-------|
-| `.cm-window__title-bar--win98` | `.cm-system--windows.cm-theme--win98 .cm-window__title-bar` | Title bar bg/text |
-| `.cm-window__title-bar--winxp` | `.cm-system--windows.cm-theme--winxp .cm-window__title-bar` | Title bar bg/text |
-| `.cm-default-window-frame` | `.cm-system--default.cm-theme--default .cm-window-frame` | Frame gradient/border |
-| `.cm-default-window` | `.cm-system--default.cm-theme--default .cm-window` | Content bg/border |
-| `.cm-default-window-title` | `.cm-system--default.cm-theme--default .cm-window__title-bar` | Title bar styling |
+| Current Selector               | Target Scope                                                  | Notes                 |
+| ------------------------------ | ------------------------------------------------------------- | --------------------- |
+| `.cm-window__title-bar--win98` | `.cm-system--windows.cm-theme--win98 .cm-window__title-bar`   | Title bar bg/text     |
+| `.cm-window__title-bar--winxp` | `.cm-system--windows.cm-theme--winxp .cm-window__title-bar`   | Title bar bg/text     |
+| `.cm-default-window-frame`     | `.cm-system--default.cm-theme--default .cm-window-frame`      | Frame gradient/border |
+| `.cm-default-window`           | `.cm-system--default.cm-theme--default .cm-window`            | Content bg/border     |
+| `.cm-default-window-title`     | `.cm-system--default.cm-theme--default .cm-window__title-bar` | Title bar styling     |
 
 ### CSS Files to Create/Modify
 
@@ -352,41 +371,46 @@ rerender(
 ### Verification Anchors
 
 - `window-frame` selector in `Window.tsx:436` - stable across themes
-- `window-content` selector in `Window.tsx:435` - stable across themes  
+- `window-content` selector in `Window.tsx:435` - stable across themes
 - `window-title` selector in `WindowTitle.tsx:65` - stable across themes
 - `data-window-uuid` in `Window.tsx:437` - window identity preserved
 
 ---
 
-*Task 5 research completed: 2026-03-23*
+_Task 5 research completed: 2026-03-23_
 
 ## 2026-03-23 Task 4 SystemHost exploration findings
 
 ### Files identified for future insertion
 
 **SystemHost (main entry)**:
+
 - `/Users/zhangxiao/frontend/SysUI/chameleon/src/system/SystemHost.tsx` — 尚未创建，将是唯一选择活跃系统 shell 的组件
 
 **Windows system shell**:
+
 - `/Users/zhangxiao/frontend/SysUI/chameleon/src/system/windows/WindowsScreen.tsx` — 尚未创建，扩展 CScreen，应用 `cm-system--windows`
 - `/Users/zhangxiao/frontend/SysUI/chameleon/src/system/windows/WindowsSystem.tsx` — 尚未创建，托管共享 Windows boot layout
 
 **Default system shell**:
+
 - `/Users/zhangxiao/frontend/SysUI/chameleon/src/system/default/DefaultScreen.tsx` — 尚未创建，扩展 CScreen，应用 `cm-system--default`
 - `/Users/zhangxiao/frontend/SysUI/chameleon/src/system/default/DefaultSystem.tsx` — 尚未创建，托管默认 boot layout
 
 **Test file**:
+
 - `/Users/zhangxiao/frontend/SysUI/chameleon/tests/SystemHost.test.tsx` — 尚未创建，验证同系统主题切换保持运行时窗口 UUID，跨系统切换重置
 
 ### Current boot window coordinates and content
 
-| System/Theme | x | y | width | height | body test ID | title text |
-|--------------|---|---|-------|--------|--------------|------------|
-| default/default | 32 | 28 | 332 | 228 | `default-window-body` | "Default Window" |
-| windows/win98 | 24 | 24 | 320 | 220 | `win98-window-body` | "Win98 Window" |
-| windows/winxp | 40 | 32 | 340 | 236 | `winxp-window-body` | "WinXP Window" |
+| System/Theme    | x   | y   | width | height | body test ID          | title text       |
+| --------------- | --- | --- | ----- | ------ | --------------------- | ---------------- |
+| default/default | 32  | 28  | 332   | 228    | `default-window-body` | "Default Window" |
+| windows/win98   | 24  | 24  | 320   | 220    | `win98-window-body`   | "Win98 Window"   |
+| windows/winxp   | 40  | 32  | 340   | 236    | `winxp-window-body`   | "WinXP Window"   |
 
 **Source evidence**:
+
 - Default: `src/theme/default/index.tsx:32` — `<DefaultWindow x={32} y={28} width={332} height={228}>`
 - Win98: `src/theme/win98/index.tsx:22` — `<CWindow x={24} y={24} width={320} height={220}>`
 - WinXP: `src/theme/winxp/index.tsx:21` — `<CWindow x={40} y={32} width={340} height={236}>`
@@ -394,44 +418,52 @@ rerender(
 ### Shared Windows-family structure (unifiable without theme-conditional behavior)
 
 **DOM seam (proven identical in tests)**:
+
 - `tests/SystemShellCharacterization.test.tsx:130-140` — "win98 and winxp share the window seam" 验证两者共享相同结构
 
 **Shared anchors**:
+
 - `src/components/Window/Window.tsx:437` — `data-window-uuid={this.uuid}` 提供稳定窗口标识
 - `src/components/Window/Window.tsx:460` — `data-testid="window-frame"` 帧元素
 - `src/components/Window/Window.tsx:435` — `data-testid="window-content"` 内容元素
 - `src/components/Window/WindowTitle.tsx:65` — `data-testid="window-title"` 标题元素
 
 **Composition pattern**:
+
 - 所有主题根使用相同结构: `<CScreen><CWindowManager><CWindow>...</CWindow></CWindowManager></CScreen>`
 - 现有 `CWindowTitle` 作为共享渲染器，无需主题特定子类（除非具体结构差异存活）
 
 ### Boundary: what stays above vs inside systemType-keyed remount
 
 **Above (persistent, survives system switch)**:
+
 - `src/system/types.ts` — 类型定义
 - `src/system/registry.ts` — 注册表和校验逻辑
 - `tests/helpers/systemSession.fixture.tsx` — `PersistentSystemStoreState` 定义
 - 父组件传入的持久化数据 (file system, user data)
 
 **Inside (runtime, resets on system switch)**:
+
 - `src/system/SystemHost.tsx` (keyed by systemType) — 整个运行时子树
 - 打开的窗口实例、z-order、焦点顺序
 - 窗口几何坐标 (x, y, width, height)
 - `data-window-uuid` 标识
 
 **Remount mechanism**:
+
 - `SystemHost` 使用 `key={systemType}` 强制 React 在系统切换时重新挂载
 - 同系统主题切换不改变 key，保持相同组件位置，状态保留
 
 ### Test anchors for verification
 
 **Existing tests to reference**:
+
 - `tests/DefaultTheme.test.tsx:9` — 拖拽行为和 class 断言
 - `tests/ScreenScope.test.tsx:101` — 窗口拖拽保持完整
 - `tests/SystemShellCharacterization.test.tsx:95` — dev root 完整主题组件切换
 
 **Required test patterns for SystemHost.test.tsx**:
+
 - 同系统主题切换: `windows/win98` → `windows/winxp` 保持 `data-window-uuid` 不变
 - 跨系统切换: `windows/win98` → `default/default` 改变 `data-window-uuid` 并加载目标系统 boot layout
 - 持久化数据: 跨系统切换后持久化数据仍可访问
@@ -457,6 +489,7 @@ rerender(
 ### Current Implementation Analysis
 
 **File: `src/dev/themeSwitcher.tsx` (lines 1-37)**
+
 ```
 Current exports:
 - DEV_THEME: { default: 'default', win98: 'win98', winxp: 'winxp' }
@@ -469,6 +502,7 @@ Current exports:
 ```
 
 **File: `src/dev/main.tsx` (lines 1-9)**
+
 ```
 - Imports DevThemeRoot from './themeSwitcher'
 - Renders <DevThemeRoot /> with no props (uses default)
@@ -476,6 +510,7 @@ Current exports:
 ```
 
 **File: `src/index.ts` (lines 1-4)**
+
 ```
 Current exports:
 - export * from './components'
@@ -487,6 +522,7 @@ Current exports:
 ### New Model (Already Implemented)
 
 **File: `src/system/types.ts` (lines 1-21)**
+
 ```
 - SystemTypeId: 'windows' | 'default'
 - ThemeId: 'win98' | 'winxp' | 'default'
@@ -496,6 +532,7 @@ Current exports:
 ```
 
 **File: `src/system/registry.ts` (lines 1-85)**
+
 ```
 - SYSTEM_TYPE: { windows: 'windows', default: 'default' }
 - THEME: { win98: 'win98', winxp: 'winxp', default: 'default' }
@@ -508,6 +545,7 @@ Current exports:
 ```
 
 **File: `src/system/SystemHost.tsx` (lines 1-29)**
+
 ```
 - Props: { systemType: SystemTypeId, theme: ThemeId }
 - Validates pair via assertValidSystemThemeSelection
@@ -517,24 +555,26 @@ Current exports:
 
 ### Migration Mapping
 
-| Current (to remove) | New (to add) | Notes |
-|-------------------|--------------|-------|
-| `DEV_THEME` | Keep `DEV_THEME` as is | Theme IDs unchanged |
-| `DEFAULT_DEV_THEME` | `DEFAULT_DEV_SELECTION` | New type: `{ systemType, theme }` |
-| `DEV_THEME_COMPONENTS` | (remove) | No longer maps to root components |
-| `resolveDevThemeComponent()` | `resolveDevThemeDefinition()` | Returns metadata, not component |
-| `DevThemeRoot` | `DevSystemRoot` | Accepts `{ systemType?, theme? }` |
-| `DevThemeRootProps` | `DevSystemRootProps` | New prop shape |
+| Current (to remove)          | New (to add)                  | Notes                             |
+| ---------------------------- | ----------------------------- | --------------------------------- |
+| `DEV_THEME`                  | Keep `DEV_THEME` as is        | Theme IDs unchanged               |
+| `DEFAULT_DEV_THEME`          | `DEFAULT_DEV_SELECTION`       | New type: `{ systemType, theme }` |
+| `DEV_THEME_COMPONENTS`       | (remove)                      | No longer maps to root components |
+| `resolveDevThemeComponent()` | `resolveDevThemeDefinition()` | Returns metadata, not component   |
+| `DevThemeRoot`               | `DevSystemRoot`               | Accepts `{ systemType?, theme? }` |
+| `DevThemeRootProps`          | `DevSystemRootProps`          | New prop shape                    |
 
 ### Default Selection Behavior
 
 **Current** (src/dev/themeSwitcher.tsx:20-22):
+
 ```ts
 export const DEFAULT_DEV_THEME: DevThemeId = DEV_THEME.default;
 export const ACTIVE_THEME: DevThemeId = DEFAULT_DEV_THEME;
 ```
 
 **New** (from registry.ts:28-33):
+
 ```ts
 export const DEFAULT_SYSTEM_TYPE: SystemTypeId = SYSTEM_TYPE.default;
 export const DEFAULT_THEME_BY_SYSTEM = {
@@ -546,101 +586,115 @@ export const DEFAULT_THEME_BY_SYSTEM = {
 
 ### Concrete File:Line References
 
-| Location | Symbol | Action |
-|----------|--------|--------|
-| src/dev/themeSwitcher.tsx:6-10 | `DEV_THEME` | Keep as-is |
-| src/dev/themeSwitcher.tsx:14-18 | `DEV_THEME_COMPONENTS` | Remove |
-| src/dev/themeSwitcher.tsx:20 | `DEFAULT_DEV_THEME` | Remove |
-| src/dev/themeSwitcher.tsx:22 | `ACTIVE_THEME` | Remove |
-| src/dev/themeSwitcher.tsx:24-26 | `resolveDevThemeComponent()` | Replace with resolver |
-| src/dev/themeSwitcher.tsx:28-37 | `DevThemeRoot` | Replace with `DevSystemRoot` |
-| src/dev/main.tsx:1 | `DevThemeRoot` import | Update to `DevSystemRoot` |
-| src/dev/main.tsx:8 | `<DevThemeRoot />` | Update props |
-| src/index.ts:2-4 | Theme exports | Remove, add system exports |
-| tests/DevThemeSelection.test.tsx | Entire file | Rename to DevSystemSelection.test.tsx |
+| Location                         | Symbol                       | Action                                |
+| -------------------------------- | ---------------------------- | ------------------------------------- |
+| src/dev/themeSwitcher.tsx:6-10   | `DEV_THEME`                  | Keep as-is                            |
+| src/dev/themeSwitcher.tsx:14-18  | `DEV_THEME_COMPONENTS`       | Remove                                |
+| src/dev/themeSwitcher.tsx:20     | `DEFAULT_DEV_THEME`          | Remove                                |
+| src/dev/themeSwitcher.tsx:22     | `ACTIVE_THEME`               | Remove                                |
+| src/dev/themeSwitcher.tsx:24-26  | `resolveDevThemeComponent()` | Replace with resolver                 |
+| src/dev/themeSwitcher.tsx:28-37  | `DevThemeRoot`               | Replace with `DevSystemRoot`          |
+| src/dev/main.tsx:1               | `DevThemeRoot` import        | Update to `DevSystemRoot`             |
+| src/dev/main.tsx:8               | `<DevThemeRoot />`           | Update props                          |
+| src/index.ts:2-4                 | Theme exports                | Remove, add system exports            |
+| tests/DevThemeSelection.test.tsx | Entire file                  | Rename to DevSystemSelection.test.tsx |
 
 ### Test File Migration
 
 **Current**: `tests/DevThemeSelection.test.tsx`
+
 - Tests: resolveDevThemeComponent mappings, DEFAULT_DEV_THEME, DevThemeRoot rendering
 
 **Target**: `tests/DevSystemSelection.test.tsx`
+
 - Tests: DEV_SYSTEM_TYPE, DEV_THEME, DEFAULT_DEV_SELECTION, resolveDevSystemDefinition, resolveDevThemeDefinition, DevSystemRoot rendering
 - Invalid pair rejection: `Invalid theme "winxp" for system type "default"`
 
 ### Runtime Behavior Verification
 
 **Default Selection**:
+
 - Current: `<DevThemeRoot />` → renders DefaultTheme
 - New: `<DevSystemRoot />` → renders SystemHost with { systemType: 'default', theme: 'default' }
 
 **Theme Selection**:
+
 - Current: `<DevThemeRoot activeTheme="win98" />` → renders Win98Theme
 - New: `<DevSystemRoot systemType="windows" theme="win98" />` → renders SystemHost
 
 **Invalid Pair**:
+
 - New: `<DevSystemRoot systemType="default" theme="winxp" />` → throws `Invalid theme "winxp" for system type "default"`
 
 ---
 
-*Task 6 research completed: 2026-03-23*
+_Task 6 research completed: 2026-03-23_
 
 ## 2026-03-23 Task 6: Public Export Surface & Test Migration Investigation
 
 ### Current Export Surface (`src/index.ts:1-4`)
+
 ```typescript
 export * from './components';
-export * from './theme/default';   // Exports DefaultTheme
-export * from './theme/win98';     // Exports Win98Theme
-export * from './theme/winxp';     // Exports WinXpTheme
+export * from './theme/default'; // Exports DefaultTheme
+export * from './theme/win98'; // Exports Win98Theme
+export * from './theme/winxp'; // Exports WinXpTheme
 ```
 
 ### Symbols to Remove from Public API
-| Symbol | Export Location | Type |
-|--------|----------------|------|
+
+| Symbol         | Export Location                  | Type                         |
+| -------------- | -------------------------------- | ---------------------------- |
 | `DefaultTheme` | `src/theme/default/index.tsx:33` | Renderable bridge + metadata |
-| `Win98Theme` | `src/theme/win98/index.tsx:28` | Renderable bridge + metadata |
-| `WinXpTheme` | `src/theme/winxp/index.tsx:28` | Renderable bridge + metadata |
+| `Win98Theme`   | `src/theme/win98/index.tsx:28`   | Renderable bridge + metadata |
+| `WinXpTheme`   | `src/theme/winxp/index.tsx:28`   | Renderable bridge + metadata |
 
 ### Test Files Requiring Rename/Update
-| File | Action Required |
-|------|-----------------|
-| `tests/DevThemeSelection.test.tsx` | Rename to `DevSystemSelection.test.tsx`, update to test systemType+theme |
-| `tests/DefaultTheme.test.tsx` | May need to pivot to SystemHost or remove |
-| `tests/Win98WindowTitle.test.tsx` | May need to pivot to SystemHost or remove |
-| `tests/GlobalRenderer.test.tsx` | Remove theme imports, test composition only |
-| `tests/SystemShellCharacterization.test.tsx` | Remove DevThemeRoot and theme imports |
+
+| File                                         | Action Required                                                          |
+| -------------------------------------------- | ------------------------------------------------------------------------ |
+| `tests/DevThemeSelection.test.tsx`           | Rename to `DevSystemSelection.test.tsx`, update to test systemType+theme |
+| `tests/DefaultTheme.test.tsx`                | May need to pivot to SystemHost or remove                                |
+| `tests/Win98WindowTitle.test.tsx`            | May need to pivot to SystemHost or remove                                |
+| `tests/GlobalRenderer.test.tsx`              | Remove theme imports, test composition only                              |
+| `tests/SystemShellCharacterization.test.tsx` | Remove DevThemeRoot and theme imports                                    |
 
 ### Internal Coupling Map
+
 **themeSwitcher.tsx** (src/dev/themeSwitcher.tsx):
+
 - Line 1-3: Imports DefaultTheme, Win98Theme, WinXpTheme
 - Line 14-18: DEV_THEME_COMPONENTS maps theme IDs to components
 - Line 32-36: DevThemeRoot resolves and renders theme component
 
 **registry.ts** (src/system/registry.ts):
+
 - Line 1-3: Imports themes for metadata projection (internal only)
 - Line 60-64: THEME_DEFINITIONS uses projectThemeDefinition(theme)
 
 ### Highest-Risk Migration Seams (file:line)
+
 1. `src/dev/themeSwitcher.tsx:32-36` — DevThemeRoot replacement
 2. `src/dev/main.tsx:1,8` — DevThemeRoot usage
 3. `tests/DevThemeSelection.test.tsx:3-11` — Import statements
 4. `src/index.ts:2-4` — Theme re-exports to remove
 
 ### New Component Contract
+
 - Name: `DevSystemSelection` (or `DevSystemRoot`)
 - Props: `{ systemType?: SystemTypeId, theme?: ThemeId }`
 - Renders: SystemHost with resolved systemType/theme
 - Location: `src/dev/themeSwitcher.tsx` (replace DevThemeRoot)
 
 ### Verification Anchors
+
 - Default branch test: `tests/DevThemeSelection.test.tsx:30-36`
 - Theme swap test: `tests/SystemShellCharacterization.test.tsx:95-119`
 - Registry resolution: `src/system/registry.ts:78-84`
 
 ---
 
-*Task 6 investigation completed: 2026-03-23*
+_Task 6 investigation completed: 2026-03-23_
 
 ## 2026-03-23 Task 6 implementation learnings
 
@@ -656,11 +710,11 @@ export * from './theme/winxp';     // Exports WinXpTheme
 
 ### Files Importing Root Themes (DefaultTheme/Win98Theme/WinXpTheme)
 
-| File | Imports | Lines | Test Focus |
-|------|---------|-------|------------|
-| `tests/DefaultTheme.test.tsx` | DefaultTheme | 3, 7 | Drag behavior + class assertions |
-| `tests/Win98WindowTitle.test.tsx` | Win98Theme | 4, 8 | Drag behavior + class assertions |
-| `tests/GlobalRenderer.test.tsx` | DefaultTheme, WinXpTheme | 5-6, 10, 16 | Title text rendering |
+| File                                         | Imports                              | Lines                     | Test Focus                          |
+| -------------------------------------------- | ------------------------------------ | ------------------------- | ----------------------------------- |
+| `tests/DefaultTheme.test.tsx`                | DefaultTheme                         | 3, 7                      | Drag behavior + class assertions    |
+| `tests/Win98WindowTitle.test.tsx`            | Win98Theme                           | 4, 8                      | Drag behavior + class assertions    |
+| `tests/GlobalRenderer.test.tsx`              | DefaultTheme, WinXpTheme             | 5-6, 10, 16               | Title text rendering                |
 | `tests/SystemShellCharacterization.test.tsx` | DefaultTheme, Win98Theme, WinXpTheme | 4-6, 33, 39, 45, 140, 145 | Shell composition + theme switching |
 
 ### Detailed Analysis by File
@@ -668,6 +722,7 @@ export * from './theme/winxp';     // Exports WinXpTheme
 #### 1. `tests/DefaultTheme.test.tsx` (lines 1-46)
 
 **What it tests:**
+
 - Renders `<DefaultTheme />` root
 - Asserts base classes: `cm-window-frame`, `cm-default-window-frame`
 - Asserts content classes: `cm-window`, `cm-default-window`
@@ -675,9 +730,10 @@ export * from './theme/winxp';     // Exports WinXpTheme
 - Tests dragging behavior: title bar drag updates frame position (32,28) → (56,51)
 
 **What should become:**
+
 - **Pivot to SystemHost**: Replace `<DefaultTheme />` with `<SystemHost systemType="default" theme="default" />`
 - **Keep behavioral assertions**: Drag behavior is valuable - verify same coordinates (32,28) and drag delta
-- **Adapt class assertions**: 
+- **Adapt class assertions**:
   - `cm-window-frame` → still valid (base class)
   - `cm-default-window-frame` → REMOVE (legacy class, replaced by CSS scoping)
   - `cm-window__title-bar--default` → REMOVE (legacy class)
@@ -687,12 +743,14 @@ export * from './theme/winxp';     // Exports WinXpTheme
 #### 2. `tests/Win98WindowTitle.test.tsx` (lines 1-40)
 
 **What it tests:**
+
 - Renders `<Win98Theme />` root
 - Asserts title text: "Win98 Window"
 - Asserts title class: `cm-window__title-bar--win98`
 - Tests dragging behavior: (24,24) → (39,49)
 
 **What should become:**
+
 - **Pivot to SystemHost**: Replace `<Win98Theme />` with `<SystemHost systemType="windows" theme="win98" />`
 - **Keep behavioral assertions**: Drag behavior - verify coordinates (24,24) and drag delta
 - **Adapt class assertions**:
@@ -702,11 +760,13 @@ export * from './theme/winxp';     // Exports WinXpTheme
 #### 3. `tests/GlobalRenderer.test.tsx` (lines 1-31)
 
 **What it tests:**
+
 - Renders `<DefaultTheme />` and `<WinXpTheme />` roots
 - Asserts title text: "Default Window", "WinXP Window"
 - Tests explicit composition: `<CWindow><CWindowTitle>Custom Window</CWindowTitle>`
 
 **What should become:**
+
 - **Pivot to SystemHost**: Replace theme roots with SystemHost
 - **Keep title text assertions**: "Default Window", "WinXP Window" still valid (boot layout content)
 - **Keep explicit composition test**: Lines 21-30 test direct CWindow/CWindowTitle composition - this is valuable and doesn't depend on themes
@@ -715,6 +775,7 @@ export * from './theme/winxp';     // Exports WinXpTheme
 #### 4. `tests/SystemShellCharacterization.test.tsx` (lines 1-150)
 
 **What it tests:**
+
 - Full shell composition: CScreen → CWindowManager → CWindow
 - Theme-specific body test IDs: `default-window-body`, `win98-window-body`, `winxp-window-body`
 - DevSystemRoot behavior: rerender default → win98 → winxp
@@ -722,10 +783,11 @@ export * from './theme/winxp';     // Exports WinXpTheme
 - Win98/WinXP share same seam structure
 
 **What should become:**
+
 - **Pivot to SystemHost**: Replace all theme roots with SystemHost
 - **Keep shell composition test**: The structure CScreen → CWindowManager → CWindow is stable
 - **Adapt body test IDs**: Still valid - SystemHost renders same boot windows
-- **Rewrite theme switching test**: 
+- **Rewrite theme switching test**:
   - Current: Tests DevSystemRoot with theme-only switching
   - New: Test SystemHost with systemType+theme, verify:
     - Same system, diff theme: window UUID preserved
@@ -735,31 +797,31 @@ export * from './theme/winxp';     // Exports WinXpTheme
 
 ### Mapping: What Stays vs What Must Pivot
 
-| Test Assertion | Current | New Model | Recommendation |
-|---------------|---------|-----------|----------------|
-| Window frame position (x,y) | DefaultTheme: 32,28 / Win98Theme: 24,24 | SystemHost with same params | KEEP - coordinates stable |
-| Drag behavior | fireEvent pointer sequence | Same sequence | KEEP - behavior unchanged |
-| Title text content | "Default Window", "Win98 Window" | Same boot layout | KEEP - content stable |
-| Base class `cm-window-frame` | Present in all themes | Still rendered | KEEP - base class |
-| Base class `cm-window` | Present in all themes | Still rendered | KEEP - base class |
-| Base class `cm-window__title-bar` | Present in all themes | Still rendered | KEEP - base class |
-| Legacy class `cm-default-window-frame` | DefaultTheme only | REMOVED | REMOVE - risky direct-theme test |
-| Legacy class `cm-default-window` | DefaultTheme only | REMOVED | REMOVE - risky direct-theme test |
-| Legacy class `cm-window__title-bar--default` | DefaultTheme only | REMOVED | REMOVE - risky direct-theme test |
-| Legacy class `cm-default-window-title` | DefaultTheme only | REMOVED | REMOVE - risky direct-theme test |
-| Legacy class `cm-window__title-bar--win98` | Win98Theme only | REMOVED | REMOVE - risky direct-theme test |
-| Theme switching preserves window UUID | DevSystemRoot rerender | SystemHost rerender | REWRITE - new lifecycle |
-| Shell composition structure | CScreen → CGrid → ... | Same structure | KEEP - stable contract |
+| Test Assertion                               | Current                                 | New Model                   | Recommendation                   |
+| -------------------------------------------- | --------------------------------------- | --------------------------- | -------------------------------- |
+| Window frame position (x,y)                  | DefaultTheme: 32,28 / Win98Theme: 24,24 | SystemHost with same params | KEEP - coordinates stable        |
+| Drag behavior                                | fireEvent pointer sequence              | Same sequence               | KEEP - behavior unchanged        |
+| Title text content                           | "Default Window", "Win98 Window"        | Same boot layout            | KEEP - content stable            |
+| Base class `cm-window-frame`                 | Present in all themes                   | Still rendered              | KEEP - base class                |
+| Base class `cm-window`                       | Present in all themes                   | Still rendered              | KEEP - base class                |
+| Base class `cm-window__title-bar`            | Present in all themes                   | Still rendered              | KEEP - base class                |
+| Legacy class `cm-default-window-frame`       | DefaultTheme only                       | REMOVED                     | REMOVE - risky direct-theme test |
+| Legacy class `cm-default-window`             | DefaultTheme only                       | REMOVED                     | REMOVE - risky direct-theme test |
+| Legacy class `cm-window__title-bar--default` | DefaultTheme only                       | REMOVED                     | REMOVE - risky direct-theme test |
+| Legacy class `cm-default-window-title`       | DefaultTheme only                       | REMOVED                     | REMOVE - risky direct-theme test |
+| Legacy class `cm-window__title-bar--win98`   | Win98Theme only                         | REMOVED                     | REMOVE - risky direct-theme test |
+| Theme switching preserves window UUID        | DevSystemRoot rerender                  | SystemHost rerender         | REWRITE - new lifecycle          |
+| Shell composition structure                  | CScreen → CGrid → ...                   | Same structure              | KEEP - stable contract           |
 
 ### Narrowest Coherent Implementation Scope for Task 7
 
 **Phase 1: Safe pivots (no behavioral change)**
+
 1. `tests/GlobalRenderer.test.tsx` - Replace theme imports with SystemHost, keep title text + composition tests
 2. `tests/DefaultTheme.test.tsx` - Replace with SystemHost, keep drag + position, remove legacy class assertions
 3. `tests/Win98WindowTitle.test.tsx` - Replace with SystemHost, keep drag + position, remove legacy class assertions
 
-**Phase 2: Complex rewrite**
-4. `tests/SystemShellCharacterization.test.tsx` - Full rewrite for SystemHost + new lifecycle model
+**Phase 2: Complex rewrite** 4. `tests/SystemShellCharacterization.test.tsx` - Full rewrite for SystemHost + new lifecycle model
 
 ### Risky Direct-Theme Tests That Should NOT Survive Unchanged
 
@@ -778,24 +840,24 @@ export * from './theme/winxp';     // Exports WinXpTheme
 
 ### File:Line References for Implementation
 
-| File | Line | Current | Required Action |
-|------|------|---------|-----------------|
-| DefaultTheme.test.tsx | 3 | `import { DefaultTheme }` | → `import { SystemHost }` |
-| DefaultTheme.test.tsx | 7 | `render(<DefaultTheme />)` | → `render(<SystemHost systemType="default" theme="default" />)` |
-| DefaultTheme.test.tsx | 14,16,18-19 | Legacy class assertions | REMOVE |
-| Win98WindowTitle.test.tsx | 4 | `import { Win98Theme }` | → `import { SystemHost }` |
-| Win98WindowTitle.test.tsx | 8 | `render(<Win98Theme />)` | → `render(<SystemHost systemType="windows" theme="win98" />)` |
-| Win98WindowTitle.test.tsx | 14 | Legacy class assertion | REMOVE |
-| GlobalRenderer.test.tsx | 5-6 | Theme imports | → `import { SystemHost }` |
-| GlobalRenderer.test.tsx | 10,16 | Theme root renders | → SystemHost renders |
-| SystemShellCharacterization.test.tsx | 4-6 | Theme imports | → `import { SystemHost }` |
-| SystemShellCharacterization.test.tsx | 33,39,45 | Theme roots in THEME_SHELL_CASES | → SystemHost with systemType/theme |
-| SystemShellCharacterization.test.tsx | 96-127 | DevSystemRoot rerender test | REWRITE for SystemHost |
-| SystemShellCharacterization.test.tsx | 140,145 | Direct theme renders | → SystemHost |
+| File                                 | Line        | Current                          | Required Action                                                 |
+| ------------------------------------ | ----------- | -------------------------------- | --------------------------------------------------------------- |
+| DefaultTheme.test.tsx                | 3           | `import { DefaultTheme }`        | → `import { SystemHost }`                                       |
+| DefaultTheme.test.tsx                | 7           | `render(<DefaultTheme />)`       | → `render(<SystemHost systemType="default" theme="default" />)` |
+| DefaultTheme.test.tsx                | 14,16,18-19 | Legacy class assertions          | REMOVE                                                          |
+| Win98WindowTitle.test.tsx            | 4           | `import { Win98Theme }`          | → `import { SystemHost }`                                       |
+| Win98WindowTitle.test.tsx            | 8           | `render(<Win98Theme />)`         | → `render(<SystemHost systemType="windows" theme="win98" />)`   |
+| Win98WindowTitle.test.tsx            | 14          | Legacy class assertion           | REMOVE                                                          |
+| GlobalRenderer.test.tsx              | 5-6         | Theme imports                    | → `import { SystemHost }`                                       |
+| GlobalRenderer.test.tsx              | 10,16       | Theme root renders               | → SystemHost renders                                            |
+| SystemShellCharacterization.test.tsx | 4-6         | Theme imports                    | → `import { SystemHost }`                                       |
+| SystemShellCharacterization.test.tsx | 33,39,45    | Theme roots in THEME_SHELL_CASES | → SystemHost with systemType/theme                              |
+| SystemShellCharacterization.test.tsx | 96-127      | DevSystemRoot rerender test      | REWRITE for SystemHost                                          |
+| SystemShellCharacterization.test.tsx | 140,145     | Direct theme renders             | → SystemHost                                                    |
 
 ---
 
-*Task 7 investigation completed: 2026-03-23*
+_Task 7 investigation completed: 2026-03-23_
 
 ## 2026-03-23 Task 7 implementation learnings
 
@@ -813,18 +875,16 @@ export * from './theme/winxp';     // Exports WinXpTheme
 **Current state**: No existing test for persistent payload - this is a NEW pattern to implement.
 
 **Anchor locations**:
+
 - `src/system/SystemHost.tsx:21-28` - SystemHost accepts props but doesn't currently accept persistent data
 - The plan (task 7) specifies: "using a deterministic payload like `persistent-note-123`"
 
 **Implementation approach**:
+
 ```tsx
 // New test file: tests/SystemTypeSwitch.test.tsx
 // Pass persistent data as prop to SystemHost
-<SystemHost 
-  systemType="windows" 
-  theme="winxp"
-  persistentData={{ note: 'persistent-note-123' }}
-/>
+<SystemHost systemType="windows" theme="winxp" persistentData={{ note: 'persistent-note-123' }} />
 // After system switch, verify persistentData is still accessible
 ```
 
@@ -833,11 +893,13 @@ export * from './theme/winxp';     // Exports WinXpTheme
 **Pattern**: `data-window-uuid` attribute on `window-content` element
 
 **Source locations**:
+
 - `src/components/Window/Window.tsx:439` - `data-window-uuid={this.uuid}`
 - `src/components/Widget/Widget.tsx:22` - `public readonly uuid = generateUUID()`
 - `src/utils/uuid.ts:17-38` - UUID generation using `crypto.randomUUID()`
 
 **Existing test anchors**:
+
 - `tests/SystemHost.test.tsx:41` - `const initialUuid = initialContent.getAttribute('data-window-uuid');`
 - `tests/SystemHost.test.tsx:77` - `expect(updatedContent.getAttribute('data-window-uuid')).toBe(initialUuid);`
 - `tests/SystemHost.test.tsx:92` - `const windowsUuid = windowsContent.getAttribute('data-window-uuid');`
@@ -852,12 +914,14 @@ export * from './theme/winxp';     // Exports WinXpTheme
 **Pattern**: Frame position assertions via `frame.style.left/top/width/height`
 
 **Existing test anchors**:
+
 - `tests/SystemHost.test.tsx:46-49` - Initial geometry: `expect(frame.style.left).toBe('24px')`, etc.
 - `tests/SystemHost.test.tsx:63-66` - After drag: `expect(frame.style.left).toBe('48px')`, etc.
 - `tests/SystemHost.test.tsx:78-81` - After theme switch: geometry preserved
 - `tests/SystemHost.test.tsx:100-101` - After system switch: geometry resets to target defaults
 
 **Drag helper** (already exists):
+
 - `tests/SystemHost.test.tsx:5-31` - `dragPointer(target, { pointerId, start, end })` function
 - `tests/ScreenScope.test.tsx:9-35` - Same drag helper pattern
 - `tests/DefaultTheme.test.tsx:24-39` - Inline drag simulation
@@ -868,31 +932,34 @@ export * from './theme/winxp';     // Exports WinXpTheme
 
 **Files that need modification**:
 
-| File | Current State | Action Required |
-|------|--------------|-----------------|
-| `tests/DefaultTheme.test.tsx:7` | Renders `<DefaultTheme />` | Pivot to `<SystemHost systemType="default" theme="default" />` |
-| `tests/SystemShellCharacterization.test.tsx:3-6` | Imports `DefaultTheme`, `Win98Theme`, `WinXpTheme` | Remove or pivot to SystemHost |
-| `tests/SystemShellCharacterization.test.tsx:28-46` | Defines `THEME_SHELL_CASES` with old root components | Remove or rewrite for SystemHost |
-| `tests/SystemShellCharacterization.test.tsx:130-149` | Tests old root component structure | May need to remove or rewrite |
+| File                                                 | Current State                                        | Action Required                                                |
+| ---------------------------------------------------- | ---------------------------------------------------- | -------------------------------------------------------------- |
+| `tests/DefaultTheme.test.tsx:7`                      | Renders `<DefaultTheme />`                           | Pivot to `<SystemHost systemType="default" theme="default" />` |
+| `tests/SystemShellCharacterization.test.tsx:3-6`     | Imports `DefaultTheme`, `Win98Theme`, `WinXpTheme`   | Remove or pivot to SystemHost                                  |
+| `tests/SystemShellCharacterization.test.tsx:28-46`   | Defines `THEME_SHELL_CASES` with old root components | Remove or rewrite for SystemHost                               |
+| `tests/SystemShellCharacterization.test.tsx:130-149` | Tests old root component structure                   | May need to remove or rewrite                                  |
 
 ### Minimal File Set for Task 7
 
 **New files to create**:
+
 1. `tests/SystemTypeSwitch.test.tsx` - Persistent data preservation + system reboot
 2. `tests/ThemeSwitchPreservation.test.tsx` - Same-system theme preservation
 
 **Files to modify**:
+
 1. `tests/DefaultTheme.test.tsx` - Pivot from DefaultTheme to SystemHost
 2. `tests/SystemShellCharacterization.test.tsx` - Remove/repoint obsolete root-theme tests
 
 **Reference files (do not modify)**:
+
 - `tests/SystemHost.test.tsx` - Already has comprehensive UUID and geometry tests
 - `tests/ThemeScopeClassNames.test.tsx` - Already covers theme scope class behavior
 - `tests/ScreenScope.test.tsx` - Already covers screen wrapper behavior
 
 ### Hidden Gotchas
 
-1. **Obsolete root-theme tests vs new SystemHost path**: 
+1. **Obsolete root-theme tests vs new SystemHost path**:
    - `tests/SystemShellCharacterization.test.tsx` tests old `DevThemeRoot` behavior which no longer exists after task 6
    - This test file may need complete rewrite or removal, not just repointing
 
@@ -913,41 +980,46 @@ export * from './theme/winxp';     // Exports WinXpTheme
 
 ---
 
-*Task 7 investigation completed: 2026-03-23*
+_Task 7 investigation completed: 2026-03-23_
 
 ## 2026-03-23 Task 8: Playwright Harness Query-Param Investigation
 
 ### Current Architecture
 
 **Entry Points:**
+
 - `playwright-window.html` (root) → loads `src/dev/playwright/windowHarness.tsx`
 - `index.html` (dev) → loads `src/dev/main.tsx`
 
 **Current windowHarness.tsx (lines 1-68):**
+
 - Parses `?fixture=` query param via `getFixtureName()` (lines 6-14)
 - Renders hardcoded CWindow fixtures: `default`, `drag-only`, `min-clamp`, `max-clamp` (lines 16-57)
 - Does NOT use DevSystemRoot or SystemHost
 
 **Current DevSystemRoot (src/dev/themeSwitcher.tsx:58-66):**
+
 - Already accepts `{ systemType?, theme? }` props
 - Resolves definitions via registry
 - Renders `<SystemHost systemType={systemType} theme={theme} />`
 
 ### Files to Modify for Task 8
 
-| File | Lines | Action |
-|------|-------|--------|
-| `src/dev/playwright/windowHarness.tsx` | 1-68 | Replace fixture switch with DevSystemRoot + query param parsing |
-| `tests/ui/window.helpers.ts` | 26-27 | Update `gotoWindowFixture()` to support new query params |
+| File                                   | Lines | Action                                                          |
+| -------------------------------------- | ----- | --------------------------------------------------------------- |
+| `src/dev/playwright/windowHarness.tsx` | 1-68  | Replace fixture switch with DevSystemRoot + query param parsing |
+| `tests/ui/window.helpers.ts`           | 26-27 | Update `gotoWindowFixture()` to support new query params        |
 
 ### Implementation Approach
 
 **Option A: Extend fixture model (NOT recommended)**
+
 - Add new fixture values like `system-windows-win98`
 - Pro: Minimal code change
 - Con: Defeats the purpose of systemType/theme separation
 
 **Option B: Add dedicated system-theme mode (RECOMMENDED)**
+
 - Add new query params: `systemType=windows&theme=win98`
 - Keep backward compatibility with `?fixture=` for existing tests
 - Render DevSystemRoot when systemType/theme present
@@ -984,35 +1056,38 @@ const App = () => {
 
 ### Exact File:Line References
 
-| Location | Current | Required Change |
-|----------|---------|-----------------|
-| `src/dev/playwright/windowHarness.tsx:1` | No imports from themeSwitcher | Add: `import { DevSystemRoot } from '../themeSwitcher';` |
-| `src/dev/playwright/windowHarness.tsx:6-14` | `getFixtureName()` only | Add `getSystemThemeSelection()` before |
-| `src/dev/playwright/windowHarness.tsx:59-62` | `App` renders fixture only | Add conditional: if selection → DevSystemRoot |
-| `tests/ui/window.helpers.ts:26-27` | `gotoWindowFixture(page, fixture)` | Add `gotoSystemTheme(page, systemType, theme)` |
+| Location                                     | Current                            | Required Change                                          |
+| -------------------------------------------- | ---------------------------------- | -------------------------------------------------------- |
+| `src/dev/playwright/windowHarness.tsx:1`     | No imports from themeSwitcher      | Add: `import { DevSystemRoot } from '../themeSwitcher';` |
+| `src/dev/playwright/windowHarness.tsx:6-14`  | `getFixtureName()` only            | Add `getSystemThemeSelection()` before                   |
+| `src/dev/playwright/windowHarness.tsx:59-62` | `App` renders fixture only         | Add conditional: if selection → DevSystemRoot            |
+| `tests/ui/window.helpers.ts:26-27`           | `gotoWindowFixture(page, fixture)` | Add `gotoSystemTheme(page, systemType, theme)`           |
 
 ### QA Scenarios from Task 8
 
-| Scenario | URL | Expected |
-|----------|-----|----------|
-| Load Windows/Win98 | `?systemType=windows&theme=win98` | Windows boot layout with Win98 title bar |
-| Switch to Windows/WinXP | (after load) `?systemType=windows&theme=winxp` | Same window UUID, XP title bar |
-| Switch to Default | `?systemType=default&theme=default` | New window UUID (reboot), Default layout |
-| Legacy fixture | `?fixture=default` | Original CWindow fixture (backward compat) |
+| Scenario                | URL                                            | Expected                                   |
+| ----------------------- | ---------------------------------------------- | ------------------------------------------ |
+| Load Windows/Win98      | `?systemType=windows&theme=win98`              | Windows boot layout with Win98 title bar   |
+| Switch to Windows/WinXP | (after load) `?systemType=windows&theme=winxp` | Same window UUID, XP title bar             |
+| Switch to Default       | `?systemType=default&theme=default`            | New window UUID (reboot), Default layout   |
+| Legacy fixture          | `?fixture=default`                             | Original CWindow fixture (backward compat) |
 
 ### Selector/Gotcha Analysis
 
 **Same-system theme switch (windows/win98 → windows/winxp):**
+
 - `window-frame` / `window-content` / `window-title` selectors still work
 - `data-window-uuid` preserved (key unchanged)
 - Screen scope class changes: `.cm-theme--win98` → `.cm-theme--winxp`
 
 **Cross-system switch (windows/win98 → default/default):**
+
 - `data-window-uuid` CHANGES (key={systemType} forces remount)
 - Test must wait for new window to appear
 - Use `waitForFunction` with UUID check
 
 **Boot content verification:**
+
 - Default system: "Default Window" title, coordinates (32,28)
 - Windows/Win98: "Win98 Window" title, coordinates (24,24)
 - Windows/WinXP: "WinXP Window" title, coordinates (40,32)
@@ -1025,7 +1100,7 @@ const App = () => {
 
 ---
 
-*Task 8 investigation completed: 2026-03-23*
+_Task 8 investigation completed: 2026-03-23_
 
 ## 2026-03-23 Final Wave F4 rerun learning
 
@@ -1042,16 +1117,16 @@ const App = () => {
 
 ### Files Investigated
 
-| File | Purpose | Key Patterns |
-|------|---------|--------------|
-| `tests/ui/window.helpers.ts` | Core helper functions | `gotoWindowFixture()`, `readFrameMetrics()`, `dragLocatorBy()` |
-| `tests/ui/window.smoke.spec.ts` | Baseline fixture test | Uses `data-testid` selectors, metric assertions |
-| `tests/ui/window.move.spec.ts` | Drag behavior test | Uses `dragLocatorBy()`, `readFrameMetrics()` |
-| `tests/ui/window.resize.spec.ts` | Resize matrix test | Uses `data-testid="window-resize-{dir}"`, exact coordinate assertions |
-| `tests/ui/window.resize-guards.spec.ts` | Resize constraints test | Uses same helpers, different fixtures |
-| `playwright.config.ts` | Test configuration | Base URL: `http://127.0.0.1:5673`, chromium only |
-| `src/dev/playwright/windowHarness.tsx` | Test fixture renderer | Reads `?fixture=` query param, renders CWindow |
-| `playwright-window.html` | Test entry point | Loads `windowHarness.tsx` |
+| File                                    | Purpose                 | Key Patterns                                                          |
+| --------------------------------------- | ----------------------- | --------------------------------------------------------------------- |
+| `tests/ui/window.helpers.ts`            | Core helper functions   | `gotoWindowFixture()`, `readFrameMetrics()`, `dragLocatorBy()`        |
+| `tests/ui/window.smoke.spec.ts`         | Baseline fixture test   | Uses `data-testid` selectors, metric assertions                       |
+| `tests/ui/window.move.spec.ts`          | Drag behavior test      | Uses `dragLocatorBy()`, `readFrameMetrics()`                          |
+| `tests/ui/window.resize.spec.ts`        | Resize matrix test      | Uses `data-testid="window-resize-{dir}"`, exact coordinate assertions |
+| `tests/ui/window.resize-guards.spec.ts` | Resize constraints test | Uses same helpers, different fixtures                                 |
+| `playwright.config.ts`                  | Test configuration      | Base URL: `http://127.0.0.1:5673`, chromium only                      |
+| `src/dev/playwright/windowHarness.tsx`  | Test fixture renderer   | Reads `?fixture=` query param, renders CWindow                        |
+| `playwright-window.html`                | Test entry point        | Loads `windowHarness.tsx`                                             |
 
 ### Helper Functions to Reuse (file:line references)
 
@@ -1080,17 +1155,18 @@ const App = () => {
 
 ### Selector Patterns to Reuse
 
-| Selector | Source | Usage |
-|----------|--------|-------|
-| `window-frame` | `window.helpers.ts:10` | Frame element for metrics |
-| `window-title` | `window.helpers.ts:11` | Title bar for drag |
-| `window-content` | `window.helpers.ts:12` | Content area |
+| Selector              | Source                 | Usage                                |
+| --------------------- | ---------------------- | ------------------------------------ |
+| `window-frame`        | `window.helpers.ts:10` | Frame element for metrics            |
+| `window-title`        | `window.helpers.ts:11` | Title bar for drag                   |
+| `window-content`      | `window.helpers.ts:12` | Content area                         |
 | `window-resize-{dir}` | `window.helpers.ts:13` | Resize handles (n/s/e/w/ne/nw/se/sw) |
-| `fixture-error` | `window.helpers.ts:14` | Error display |
+| `fixture-error`       | `window.helpers.ts:14` | Error display                        |
 
 ### Assertion Style to Mirror
 
 **From `window.smoke.spec.ts:10-15`:**
+
 ```typescript
 await expect(readFrameMetrics(page)).resolves.toEqual({
   x: 10,
@@ -1101,6 +1177,7 @@ await expect(readFrameMetrics(page)).resolves.toEqual({
 ```
 
 **From `window.move.spec.ts:12-17`:**
+
 ```typescript
 await expect(readFrameMetrics(page)).resolves.toEqual({
   x: 30,
@@ -1113,6 +1190,7 @@ await expect(readFrameMetrics(page)).resolves.toEqual({
 ### Gap Analysis: New Helper Needed for Query-Param Based Loading
 
 **Current state**: `windowHarness.tsx` only reads `?fixture=` parameter
+
 ```typescript
 // windowHarness.tsx:6-14
 const getFixtureName = (): string => {
@@ -1129,10 +1207,12 @@ const getFixtureName = (): string => {
 **Required for Task 8**: Need to add support for `?systemType=` and `?theme=` query parameters.
 
 **Option 1**: Extend `windowHarness.tsx` to read both fixture and systemType/theme
+
 - Add `getSystemType()` and `getTheme()` functions
 - Pass to DevSystemRoot instead of just fixture
 
 **Option 2**: Create new harness file (e.g., `systemThemeHarness.tsx`)
+
 - Dedicated to systemType/theme testing
 - Reads `?systemType=` and `?theme=` query params
 - Renders DevSystemRoot with those params
@@ -1151,49 +1231,45 @@ test.describe('system-theme-switch', () => {
   test('same-system theme switch preserves window UUID', async ({ page }) => {
     // Navigate to windows/win98
     await gotoSystemThemeFixture(page, 'windows', 'win98');
-    
+
     // Get initial UUID
-    const initialUuid = await page.getByTestId('window-content')
-      .getAttribute('data-window-uuid');
-    
+    const initialUuid = await page.getByTestId('window-content').getAttribute('data-window-uuid');
+
     // Switch to windows/winxp (same system, different theme)
     await gotoSystemThemeFixture(page, 'windows', 'winxp');
-    
+
     // Verify UUID preserved
-    const newUuid = await page.getByTestId('window-content')
-      .getAttribute('data-window-uuid');
+    const newUuid = await page.getByTestId('window-content').getAttribute('data-window-uuid');
     expect(newUuid).toBe(initialUuid);
   });
-  
+
   test('cross-system switch resets window UUID', async ({ page }) => {
     // Navigate to windows/win98
     await gotoSystemThemeFixture(page, 'windows', 'win98');
-    
+
     // Get initial UUID
-    const initialUuid = await page.getByTestId('window-content')
-      .getAttribute('data-window-uuid');
-    
+    const initialUuid = await page.getByTestId('window-content').getAttribute('data-window-uuid');
+
     // Switch to default/default (different system)
     await gotoSystemThemeFixture(page, 'default', 'default');
-    
+
     // Verify UUID reset
-    const newUuid = await page.getByTestId('window-content')
-      .getAttribute('data-window-uuid');
+    const newUuid = await page.getByTestId('window-content').getAttribute('data-window-uuid');
     expect(newUuid).not.toBe(initialUuid);
   });
-  
+
   test('same-system theme switch preserves window geometry', async ({ page }) => {
     await gotoSystemThemeFixture(page, 'windows', 'win98');
-    
+
     // Drag window
     const titleLocator = page.getByTestId('window-title');
     await dragLocatorBy(titleLocator, 20, 40);
-    
+
     const beforeMetrics = await readFrameMetrics(page);
-    
+
     // Switch theme
     await gotoSystemThemeFixture(page, 'windows', 'winxp');
-    
+
     // Verify geometry preserved
     const afterMetrics = await readFrameMetrics(page);
     expect(afterMetrics).toEqual(beforeMetrics);
@@ -1203,26 +1279,27 @@ test.describe('system-theme-switch', () => {
 
 ### File:Line References Summary
 
-| Location | Symbol | Notes |
-|----------|--------|-------|
-| `tests/ui/window.helpers.ts:26` | `gotoWindowFixture` | Base pattern for navigation |
-| `tests/ui/window.helpers.ts:50` | `readFrameMetrics` | Reusable for Task 8 |
-| `tests/ui/window.helpers.ts:70` | `dragLocatorBy` | Reusable for Task 8 |
-| `tests/ui/window.helpers.ts:10-14` | Test ID constants | Stable selectors |
-| `tests/ui/window.smoke.spec.ts:10-15` | Metric assertion style | Mirror this pattern |
-| `src/dev/playwright/windowHarness.tsx:6-14` | Query param reading | Need to extend for systemType/theme |
-| `playwright-window.html:10` | Entry point | May need new HTML or extend |
+| Location                                    | Symbol                 | Notes                               |
+| ------------------------------------------- | ---------------------- | ----------------------------------- |
+| `tests/ui/window.helpers.ts:26`             | `gotoWindowFixture`    | Base pattern for navigation         |
+| `tests/ui/window.helpers.ts:50`             | `readFrameMetrics`     | Reusable for Task 8                 |
+| `tests/ui/window.helpers.ts:70`             | `dragLocatorBy`        | Reusable for Task 8                 |
+| `tests/ui/window.helpers.ts:10-14`          | Test ID constants      | Stable selectors                    |
+| `tests/ui/window.smoke.spec.ts:10-15`       | Metric assertion style | Mirror this pattern                 |
+| `src/dev/playwright/windowHarness.tsx:6-14` | Query param reading    | Need to extend for systemType/theme |
+| `playwright-window.html:10`                 | Entry point            | May need new HTML or extend         |
 
 ### Evidence Files to Capture
 
 Per task 8 requirements, the spec should capture evidence for:
+
 1. Same-system theme preservation (window UUID, geometry)
 2. Cross-system reboot semantics (UUID reset)
 3. Screen scope class updates (`data-system-type`, `data-theme` attributes)
 
 ---
 
-*Task 8 investigation completed: 2026-03-23*
+_Task 8 investigation completed: 2026-03-23_
 
 ## 2026-03-23 Task 8 implementation learnings
 
@@ -1239,30 +1316,36 @@ Per task 8 requirements, the spec should capture evidence for:
 ### Domain 1: Jest/React Testing Library Rerender Semantics
 
 **Source 1: React Testing Library API - `rerender`**
+
 - **URL**: https://testing-library.com/docs/react-testing-library/api/
-- **Key Quote**: 
+- **Key Quote**:
   > "If you'd prefer to update the props of a rendered component in your test, this function can be used to update props of the rendered component."
+  >
   > ```javascript
-  > const {rerender} = render(<NumberDisplay number={1} />)
-  > rerender(<NumberDisplay number={2} />)
+  > const { rerender } = render(<NumberDisplay number={1} />);
+  > rerender(<NumberDisplay number={2} />);
   > ```
 
 **Source 2: DOM Testing Library Queries - Priority**
+
 - **URL**: https://testing-library.com/docs/queries/about
 - **Key Quote**:
   > "getByTestId: The user cannot see (or hear) these, so this is only recommended for cases where you can't match by role or text or it doesn't make sense (e.g. the text is dynamic)."
 - **Applicability**: Repo uses `data-testid="screen-root"`, `data-testid="window-frame"`, `data-testid="window-content"`, `data-testid="window-title"` as stable anchors
 
 **Source 3: React Testing Library Example**
+
 - **URL**: https://testing-library.com/docs/react-testing-library/example-intro
 - **Pattern**: ARRANGE → ACT → ASSERT workflow with `fireEvent` and `screen` queries
 
 ### Domain 2: Playwright UI Regression Patterns
 
 **Source 4: Playwright Actions - Drag and Drop**
+
 - **URL**: https://playwright.dev/docs/input
 - **Key Quote**:
   > "If you want precise control over the drag operation, use lower-level methods like locator.hover(), mouse.down(), mouse.move() and mouse.up."
+  >
   > ```javascript
   > await page.locator('#item-to-be-dragged').hover();
   > await page.mouse.down();
@@ -1272,6 +1355,7 @@ Per task 8 requirements, the spec should capture evidence for:
 - **Applicability**: Repo's `dragLocatorBy()` helper uses similar mouse event sequencing
 
 **Source 5: Playwright Test Assertions**
+
 - **URL**: https://playwright.dev/docs/test-assertions
 - **Key Patterns**:
   1. **Auto-retrying assertions**: `await expect(locator).toHaveText(...)` - waits until condition is met
@@ -1282,42 +1366,47 @@ Per task 8 requirements, the spec should capture evidence for:
 
 ### Mapping: External Docs → Repo Test Patterns
 
-| Repo Test Pattern | External Authority | How It Supports |
-|------------------|-------------------|-----------------|
-| `rerender(<SystemHost theme="winxp" />)` | RTL `rerender` API | Tests same-tree prop updates without DOM rebuild |
-| `screen.getByTestId('window-content')` | RTL `getByTestId` query | Stable selector for window identity |
-| `expect(uuidBefore).toBe(uuidAfter)` | RTL `rerender` preserves tree | Proves same component instance |
-| `dragLocatorBy(titleBar, {dx: 24, dy: 24})` | Playwright mouse events | Simulates real user drag interaction |
-| `await expect(frame).toHaveCSS('left', '48px')` | Playwright `toHaveCSS` | Auto-retry assertion for style verification |
-| `await expect(page).toHaveURL(/theme=winxp/)` | Playwright `toHaveURL` | Verifies navigation state |
+| Repo Test Pattern                               | External Authority            | How It Supports                                  |
+| ----------------------------------------------- | ----------------------------- | ------------------------------------------------ |
+| `rerender(<SystemHost theme="winxp" />)`        | RTL `rerender` API            | Tests same-tree prop updates without DOM rebuild |
+| `screen.getByTestId('window-content')`          | RTL `getByTestId` query       | Stable selector for window identity              |
+| `expect(uuidBefore).toBe(uuidAfter)`            | RTL `rerender` preserves tree | Proves same component instance                   |
+| `dragLocatorBy(titleBar, {dx: 24, dy: 24})`     | Playwright mouse events       | Simulates real user drag interaction             |
+| `await expect(frame).toHaveCSS('left', '48px')` | Playwright `toHaveCSS`        | Auto-retry assertion for style verification      |
+| `await expect(page).toHaveURL(/theme=winxp/)`   | Playwright `toHaveURL`        | Verifies navigation state                        |
 
 ### Verification Strategy Validation
 
 **Same-System Theme Switch (Preservation)**:
+
 - Uses RTL `rerender()` to update props while component tree stays mounted
 - Asserts `data-window-uuid` attribute equality → proves DOM identity preserved
 - Uses Playwright `toHaveCSS` to verify theme class changed on scope wrapper
 
 **Cross-System Switch (Reboot)**:
+
 - Uses RTL `rerender()` with different `key` prop (systemType changes)
 - Asserts `data-window-uuid` inequality → proves component remounted
 - Uses Playwright `toContainText` to verify boot content changed
 
 **Drag/Resize Regression**:
+
 - Uses Playwright mouse events (`hover`, `down`, `move`, `up`) for precise control
 - Uses `readFrameMetrics()` helper to read inline styles
 - Uses Playwright `expect.poll` for geometry stabilization
 
 ---
 
-*External authority research completed: 2026-03-24*
+_External authority research completed: 2026-03-24_
 
 ## 2026-03-24 External Authority: React Official Documentation Validation
 
 ### Keyed Remount Boundaries
+
 **Source**: [React Dev - Preserving and Resetting State](https://react.dev/learn/preserving-and-resetting-state)
 
 **Core Pattern**:
+
 - React preserves component state as long as the same component renders at the same position in the UI tree
 - Changing the component's `key` prop forces React to treat it as a new instance, resetting ALL state
 - Keys are not globally unique; they only specify position within the parent
@@ -1325,25 +1414,30 @@ Per task 8 requirements, the spec should capture evidence for:
 **Key Quote**: "You can force a subtree to reset its state by giving it a different key."
 
 **Implementation for SystemType Switch**:
+
 ```tsx
 // SystemType switch uses key to force remount
 <SystemHost key={systemType} systemType={systemType} theme={theme} />
 ```
 
 ### State Preservation Within Same Position
+
 - Same component at same position preserves state across re-renders
 - Different component types at same position resets state
 - Props changes alone do NOT reset state if component type stays the same
 
 **Implementation for Theme Switch**:
+
 - Theme switch should NOT change component type or key
 - Only change CSS class names on Screen wrapper
 - Window instances (identified by `data-window-uuid`) remain stable
 
 ### State Lifting Above Remount Boundaries
+
 **Source**: [React Dev - Sharing State Between Components](https://react.dev/learn/sharing-state-between-components)
 
 **Pattern**: Lift persistent state above the remount boundary
+
 - Persistent data (file system, user data) stays in parent component
 - Runtime state (open windows, z-order, focus) goes inside keyed subtree
 
@@ -1351,10 +1445,10 @@ Per task 8 requirements, the spec should capture evidence for:
 // Parent holds persistent state
 function App() {
   const [persistentData, setPersistentData] = useState(...);
-  
+
   return (
     // SystemType key forces remount on system change
-    <SystemHost 
+    <SystemHost
       key={systemType}
       systemType={systemType}
       theme={theme}
@@ -1366,11 +1460,11 @@ function App() {
 
 ### Architecture Validation Summary
 
-| Plan Pattern | React Official Source | Quote |
-|-------------|----------------------|-------|
-| `key={systemType}` for reboot | Preserving and Resetting State | "You can force a subtree to reset its state by giving it a different key." |
-| Same-system theme preserves state | Preserving and Resetting State | "React preserves a component's state for as long as it's being rendered at its position" |
-| Persistent data above boundary | Sharing State Between Components | "lift the state up... the parent that keeps the important information" |
+| Plan Pattern                      | React Official Source            | Quote                                                                                    |
+| --------------------------------- | -------------------------------- | ---------------------------------------------------------------------------------------- |
+| `key={systemType}` for reboot     | Preserving and Resetting State   | "You can force a subtree to reset its state by giving it a different key."               |
+| Same-system theme preserves state | Preserving and Resetting State   | "React preserves a component's state for as long as it's being rendered at its position" |
+| Persistent data above boundary    | Sharing State Between Components | "lift the state up... the parent that keeps the important information"                   |
 
 ### Applicability to This Repo
 
@@ -1384,4 +1478,4 @@ The plan's `SystemHost` boundary follows React's recommended patterns exactly:
 
 ---
 
-*External authority research completed: 2026-03-24*
+_External authority research completed: 2026-03-24_

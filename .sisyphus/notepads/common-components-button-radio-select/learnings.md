@@ -2,11 +2,11 @@
 
 ## Sources Identified
 
-| Element | MDN Documentation URL |
-|---------|----------------------|
-| `<button>` | https://developer.mozilla.org/en-US/docs/Web/HTML/Element/button |
+| Element                | MDN Documentation URL                                                 |
+| ---------------------- | --------------------------------------------------------------------- |
+| `<button>`             | https://developer.mozilla.org/en-US/docs/Web/HTML/Element/button      |
 | `<input type="radio">` | https://developer.mozilla.org/en-US/docs/Web/HTML/Element/input/radio |
-| `<select>` | https://developer.mozilla.org/en-US/docs/Web/HTML/Element/select |
+| `<select>`             | https://developer.mozilla.org/en-US/docs/Web/HTML/Element/select      |
 
 ---
 
@@ -15,10 +15,13 @@
 **Constraint**: CButton must default to `type="button"`
 
 **MDN Quote**:
+
 > "The default behavior of the button. Possible values are:
+>
 > - `submit`: The button submits the form data to the server. This is the **default** if the attribute is not specified for buttons associated with a `<form>`"
 
 **MDN Note**:
+
 > "If your buttons are not for submitting form data to the server, be sure to set their `type` attribute to `button`. Otherwise, they will try to submit form data and to load the (nonexistent) response, potentially destroying the current state of the document."
 
 **Implication**: CButton MUST explicitly set `type="button"` to prevent accidental form submission.
@@ -30,13 +33,15 @@
 **Constraint**: CRadioGroup must support controlled and uncontrolled flows with native radio grouping
 
 **MDN Quote**:
+
 > "A radio group is defined by giving each of radio buttons in the group the **same `name` attribute**."
 
 > "Once a radio group is established, selecting any radio button in that group automatically **deselects any currently-selected radio button in the same group**."
 
 > "Only **one radio button** in a given group can be selected at the same time."
 
-**Implication**: 
+**Implication**:
+
 - Native radio grouping is purely by `name` attribute
 - CRadioGroup must expose a `name` prop that gets passed to all child `<input type="radio">` elements
 - Only one selection per group is enforced by the browser, not the component
@@ -48,15 +53,19 @@
 **MDN Quotes**:
 
 **Button**:
+
 > "This Boolean attribute prevents the user from interacting with the button: it **cannot be pressed or focused**."
 
 **Select**:
+
 > "This Boolean attribute indicates that the user **cannot interact with the control**."
 
 **Radio**:
+
 > Supports the `disabled` attribute (common to all `<input>` elements)
 
-**Implication**: 
+**Implication**:
+
 - `disabled` prop must be passed through to native elements
 - Disabled elements cannot be focused (keyboard navigation must skip)
 - Disabled elements do not respond to user interaction events
@@ -68,9 +77,11 @@
 **Constraint**: CSelect must support placeholder-like empty option behavior
 
 **MDN Quote**:
+
 > "A Boolean attribute indicating that **an option with a non-empty string value must be selected**."
 
 **Common Pattern** (from MDN example):
+
 ```html
 <select name="pets" id="pet-select">
   <option value="">--Please choose an option--</option>
@@ -80,6 +91,7 @@
 ```
 
 **Implication**:
+
 - Empty string `value=""` creates a placeholder-like option
 - When `required` is set, form validation requires selection of a non-empty value
 - The first `<option>` (including empty value) is selected by default if no `selected` attribute exists
@@ -88,14 +100,14 @@
 
 ## Summary for Plan Constraints
 
-| Plan Task | Native Semantic Rule | Implementation Note |
-|-----------|---------------------|---------------------|
-| Task 1: CButton | Default type is `submit` when in form | MUST set `type="button"` explicitly |
-| Task 2: CRadioGroup | Grouping by `name` attribute | Pass `name` to all child radios |
-| Task 2: CRadioGroup | Only one selected per group | Browser enforces; component reflects |
-| Task 1-3: All | `disabled` prevents focus/interaction | Pass through to native elements |
-| Task 3: CSelect | Empty `value=""` is placeholder | First option selected by default |
-| Task 3: CSelect | `required` needs non-empty selection | Form validation behavior |
+| Plan Task           | Native Semantic Rule                  | Implementation Note                  |
+| ------------------- | ------------------------------------- | ------------------------------------ |
+| Task 1: CButton     | Default type is `submit` when in form | MUST set `type="button"` explicitly  |
+| Task 2: CRadioGroup | Grouping by `name` attribute          | Pass `name` to all child radios      |
+| Task 2: CRadioGroup | Only one selected per group           | Browser enforces; component reflects |
+| Task 1-3: All       | `disabled` prevents focus/interaction | Pass through to native elements      |
+| Task 3: CSelect     | Empty `value=""` is placeholder       | First option selected by default     |
+| Task 3: CSelect     | `required` needs non-empty selection  | Form validation behavior             |
 
 ---
 
@@ -104,6 +116,7 @@
 ### 5.1 React Testing Library (Jest) - Tasks 1-3
 
 **Official Docs**:
+
 - Query API: https://testing-library.com/docs/queries/byrole
 - User Interaction: https://testing-library.com/docs/user-event/intro
 - jest-dom matchers: https://github.com/testing-library/jest-dom
@@ -137,17 +150,17 @@ expect(handleClick).not.toHaveBeenCalled()
 
 ```typescript
 // ✅ RECOMMENDED: Query by role with checked state
-const checkedRadio = screen.getByRole('radio', { checked: true })
-expect(checkedRadio).toBeChecked()
+const checkedRadio = screen.getByRole('radio', { checked: true });
+expect(checkedRadio).toBeChecked();
 
 // For specific value
-const optionA = screen.getByRole('radio', { name: 'Option A' })
-await userEvent.click(optionA)
-expect(optionA).toBeChecked()
+const optionA = screen.getByRole('radio', { name: 'Option A' });
+await userEvent.click(optionA);
+expect(optionA).toBeChecked();
 
 // Verify other is NOT checked
-const optionB = screen.getByRole('radio', { name: 'Option B' })
-expect(optionB).not.toBeChecked()
+const optionB = screen.getByRole('radio', { name: 'Option B' });
+expect(optionB).not.toBeChecked();
 ```
 
 **Source**: Testing Library ByRole docs - `checked` option filters by `aria-checked` attribute.
@@ -158,17 +171,17 @@ expect(optionB).not.toBeChecked()
 
 ```typescript
 // ✅ RECOMMENDED: Wait for state update
-const button = screen.getByRole('button', { name: 'Toggle' })
-await userEvent.click(button)
+const button = screen.getByRole('button', { name: 'Toggle' });
+await userEvent.click(button);
 
 // Use findBy for auto-waiting
-const newButton = await screen.findByRole('button', { name: 'Updated' })
-expect(newButton).toBeInTheDocument()
+const newButton = await screen.findByRole('button', { name: 'Updated' });
+expect(newButton).toBeInTheDocument();
 
 // Or use waitFor for explicit waiting
 await waitFor(() => {
-  expect(screen.getByRole('button')).toHaveTextContent('Updated')
-})
+  expect(screen.getByRole('button')).toHaveTextContent('Updated');
+});
 ```
 
 **Source**: Testing Library async methods - https://testing-library.com/docs/dom-testing-library/api-async
@@ -179,16 +192,16 @@ await waitFor(() => {
 
 ```typescript
 // ✅ RECOMMENDED: Query select by role, verify selected option
-const select = screen.getByRole('combobox', { name: 'Choose pet' })
-expect(select).toHaveValue('dog')
+const select = screen.getByRole('combobox', { name: 'Choose pet' });
+expect(select).toHaveValue('dog');
 
 // For <select> element specifically
-const selectElement = screen.getByRole('listbox', { name: 'Country' })
-expect(selectElement).toHaveValue('us')
+const selectElement = screen.getByRole('listbox', { name: 'Country' });
+expect(selectElement).toHaveValue('us');
 
 // Verify selected option text
-const selectedOption = screen.getByRole('option', { selected: true })
-expect(selectedOption).toHaveTextContent('United States')
+const selectedOption = screen.getByRole('option', { selected: true });
+expect(selectedOption).toHaveTextContent('United States');
 ```
 
 **Source**: Testing Library ByRole docs - `combobox` is the implicit role for `<select>` elements.
@@ -198,6 +211,7 @@ expect(selectedOption).toHaveTextContent('United States')
 ### 5.2 Playwright - Task 5 & F3 (Smoke Tests)
 
 **Official Docs**:
+
 - Assertions: https://playwright.dev/docs/test-assertions
 - Locators: https://playwright.dev/docs/locators
 
@@ -207,10 +221,10 @@ expect(selectedOption).toHaveTextContent('United States')
 
 ```typescript
 // ✅ RECOMMENDED: Stable test id selector
-await expect(page.getByTestId('submit-button')).toBeVisible()
+await expect(page.getByTestId('submit-button')).toBeVisible();
 
 // With custom test id attribute (if configured)
-await expect(page.getByTestId('directions')).toBeVisible()
+await expect(page.getByTestId('directions')).toBeVisible();
 ```
 
 **Source**: Playwright Locators docs - "getByTestId() will locate elements based on their data-testid attribute"
@@ -221,10 +235,10 @@ await expect(page.getByTestId('directions')).toBeVisible()
 
 ```typescript
 // ✅ RECOMMENDED: Auto-retrying disabled check
-await expect(page.getByRole('button', { name: 'Submit' })).toBeDisabled()
+await expect(page.getByRole('button', { name: 'Submit' })).toBeDisabled();
 
 // Or check enabled state
-await expect(page.getByRole('button', { name: 'Submit' })).toBeEnabled()
+await expect(page.getByRole('button', { name: 'Submit' })).toBeEnabled();
 ```
 
 **Source**: Playwright Assertions docs - `toBeDisabled()` and `toBeEnabled()` are auto-retrying.
@@ -235,10 +249,10 @@ await expect(page.getByRole('button', { name: 'Submit' })).toBeEnabled()
 
 ```typescript
 // ✅ RECOMMENDED: Auto-retrying checked assertion
-await expect(page.getByRole('radio', { name: 'Option A' })).toBeChecked()
+await expect(page.getByRole('radio', { name: 'Option A' })).toBeChecked();
 
 // Verify NOT checked
-await expect(page.getByRole('radio', { name: 'Option B' })).not.toBeChecked()
+await expect(page.getByRole('radio', { name: 'Option B' })).not.toBeChecked();
 ```
 
 **Source**: Playwright Assertions docs - `toBeChecked()` waits until the checkbox is checked.
@@ -249,10 +263,10 @@ await expect(page.getByRole('radio', { name: 'Option B' })).not.toBeChecked()
 
 ```typescript
 // ✅ RECOMMENDED: Assert select value
-await expect(page.getByRole('combobox', { name: 'Country' })).toHaveValue('us')
+await expect(page.getByRole('combobox', { name: 'Country' })).toHaveValue('us');
 
 // For multiple select
-await expect(page.getByRole('listbox', { name: 'Colors' })).toHaveValues(['red', 'blue'])
+await expect(page.getByRole('listbox', { name: 'Colors' })).toHaveValues(['red', 'blue']);
 ```
 
 **Source**: Playwright Assertions docs - `toHaveValue()` asserts input has a value.
@@ -261,15 +275,15 @@ await expect(page.getByRole('listbox', { name: 'Colors' })).toHaveValues(['red',
 
 ### 5.3 Summary: Recommended Assertions
 
-| Test Case | RTL (Jest) | Playwright |
-|-----------|------------|------------|
-| Button visible | `expect(button).toBeVisible()` | `await expect(locator).toBeVisible()` |
-| Button disabled | `expect(button).toBeDisabled()` | `await expect(locator).toBeDisabled()` |
-| Button enabled | `expect(button).toBeEnabled()` | `await expect(locator).toBeEnabled()` |
-| Radio checked | `expect(radio).toBeChecked()` | `await expect(locator).toBeChecked()` |
-| Select value | `expect(select).toHaveValue('x')` | `await expect(locator).toHaveValue('x')` |
-| Test ID visible | `expect(screen.getByTestId('x')).toBeVisible()` | `await expect(page.getByTestId('x')).toBeVisible()` |
-| Click handler NOT called | `expect(handler).not.toHaveBeenCalled()` | N/A (smoke test) |
+| Test Case                | RTL (Jest)                                      | Playwright                                          |
+| ------------------------ | ----------------------------------------------- | --------------------------------------------------- |
+| Button visible           | `expect(button).toBeVisible()`                  | `await expect(locator).toBeVisible()`               |
+| Button disabled          | `expect(button).toBeDisabled()`                 | `await expect(locator).toBeDisabled()`              |
+| Button enabled           | `expect(button).toBeEnabled()`                  | `await expect(locator).toBeEnabled()`               |
+| Radio checked            | `expect(radio).toBeChecked()`                   | `await expect(locator).toBeChecked()`               |
+| Select value             | `expect(select).toHaveValue('x')`               | `await expect(locator).toHaveValue('x')`            |
+| Test ID visible          | `expect(screen.getByTestId('x')).toBeVisible()` | `await expect(page.getByTestId('x')).toBeVisible()` |
+| Click handler NOT called | `expect(handler).not.toHaveBeenCalled()`        | N/A (smoke test)                                    |
 
 ---
 
@@ -282,11 +296,11 @@ await expect(page.getByRole('listbox', { name: 'Colors' })).toHaveValues(['red',
 5. **Disabled elements**: Verify both presence of `disabled` attribute AND non-interactive behavior
 
 **Source URLs**:
+
 - RTL: https://testing-library.com/docs/queries/byrole
 - RTL User Event: https://testing-library.com/docs/user-event/intro
 - Playwright Assertions: https://playwright.dev/docs/test-assertions
 - Playwright Locators: https://playwright.dev/docs/locators
-
 
 ---
 
@@ -294,22 +308,22 @@ await expect(page.getByRole('listbox', { name: 'Colors' })).toHaveValues(['red',
 
 ### Theme Entry Points
 
-| File | Purpose |
-|------|---------|
-| `/Users/zhangxiao/frontend/SysUI/chameleon/src/theme/default/index.tsx` | Theme definition export |
-| `/Users/zhangxiao/frontend/SysUI/chameleon/src/theme/default/styles/index.scss` | Theme CSS styles |
-| `/Users/zhangxiao/frontend/SysUI/chameleon/src/theme/winxp/index.tsx` | WinXP theme variant |
-| `/Users/zhangxiao/frontend/SysUI/chameleon/src/theme/win98/index.tsx` | Win98 theme variant |
+| File                                                                            | Purpose                 |
+| ------------------------------------------------------------------------------- | ----------------------- |
+| `/Users/zhangxiao/frontend/SysUI/chameleon/src/theme/default/index.tsx`         | Theme definition export |
+| `/Users/zhangxiao/frontend/SysUI/chameleon/src/theme/default/styles/index.scss` | Theme CSS styles        |
+| `/Users/zhangxiao/frontend/SysUI/chameleon/src/theme/winxp/index.tsx`           | WinXP theme variant     |
+| `/Users/zhangxiao/frontend/SysUI/chameleon/src/theme/win98/index.tsx`           | Win98 theme variant     |
 
 ### Theme Definition Structure (Line refs: registry.ts:48-64)
 
 ```typescript
 // ThemeDefinition interface (types.ts:5-10)
 interface ThemeDefinition {
-  id: ThemeId;        // 'win98' | 'winxp' | 'default'
-  label: string;      // Display name
-  systemType: SystemTypeId;  // 'windows' | 'default'
-  className: string;  // CSS class prefix: 'cm-theme--default'
+  id: ThemeId; // 'win98' | 'winxp' | 'default'
+  label: string; // Display name
+  systemType: SystemTypeId; // 'windows' | 'default'
+  className: string; // CSS class prefix: 'cm-theme--default'
 }
 ```
 
@@ -341,11 +355,11 @@ const THEME_DEFINITIONS: Record<ThemeId, ThemeDefinition> = {
 
 ### Dev Entry Points
 
-| File | Purpose |
-|------|---------|
-| `/Users/zhangxiao/frontend/SysUI/chameleon/index.html` (line 10) | Dev server entry: loads `src/dev/main.tsx` |
-| `/Users/zhangxiao/frontend/SysUI/chameleon/src/dev/main.tsx` (line 8) | Renders `<DevSystemRoot {...DEFAULT_DEV_SELECTION} />` |
-| `/Users/zhangxiao/frontend/SysUI/chameleon/src/dev/themeSwitcher.tsx` (line 58-66) | DevSystemRoot component |
+| File                                                                               | Purpose                                                |
+| ---------------------------------------------------------------------------------- | ------------------------------------------------------ |
+| `/Users/zhangxiao/frontend/SysUI/chameleon/index.html` (line 10)                   | Dev server entry: loads `src/dev/main.tsx`             |
+| `/Users/zhangxiao/frontend/SysUI/chameleon/src/dev/main.tsx` (line 8)              | Renders `<DevSystemRoot {...DEFAULT_DEV_SELECTION} />` |
+| `/Users/zhangxiao/frontend/SysUI/chameleon/src/dev/themeSwitcher.tsx` (line 58-66) | DevSystemRoot component                                |
 
 ### DevSystemRoot Component (themeSwitcher.tsx:58-66)
 
@@ -378,14 +392,15 @@ export const SystemHost = ({ systemType, theme }: SystemHostProps): ReactElement
 
 ### Harness HTML Files
 
-| File | Purpose |
-|------|---------|
+| File                                                               | Purpose                  |
+| ------------------------------------------------------------------ | ------------------------ |
 | `/Users/zhangxiao/frontend/SysUI/chameleon/playwright-window.html` | Playwright harness entry |
-| `/Users/zhangxiao/frontend/SysUI/chameleon/index.html` | Dev server entry |
+| `/Users/zhangxiao/frontend/SysUI/chameleon/index.html`             | Dev server entry         |
 
 ### Harness Route Parsing (windowHarness.tsx:36-69)
 
 Two routing modes:
+
 1. **Fixture mode**: `?fixture={name}` - renders predefined fixture components
 2. **System-theme mode**: `?systemType={type}&theme={theme}` - renders full DevSystemRoot
 
@@ -419,11 +434,11 @@ default:
 
 ### Test Files
 
-| File | Purpose |
-|------|---------|
-| `/Users/zhangxiao/frontend/SysUI/chameleon/tests/ui/window.smoke.spec.ts` | Smoke tests |
-| `/Users/zhangxiao/frontend/SysUI/chameleon/tests/ui/window.helpers.ts` | Test helpers |
-| `/Users/zhangxiao/frontend/SysUI/chameleon/tests/ui/window.move.spec.ts` | Move behavior tests |
+| File                                                                       | Purpose               |
+| -------------------------------------------------------------------------- | --------------------- |
+| `/Users/zhangxiao/frontend/SysUI/chameleon/tests/ui/window.smoke.spec.ts`  | Smoke tests           |
+| `/Users/zhangxiao/frontend/SysUI/chameleon/tests/ui/window.helpers.ts`     | Test helpers          |
+| `/Users/zhangxiao/frontend/SysUI/chameleon/tests/ui/window.move.spec.ts`   | Move behavior tests   |
 | `/Users/zhangxiao/frontend/SysUI/chameleon/tests/ui/window.resize.spec.ts` | Resize behavior tests |
 
 ### Stable data-testid Values (window.helpers.ts:16-21)
@@ -439,13 +454,13 @@ const FIXTURE_ERROR_TEST_ID = 'fixture-error';
 
 ### Component data-testid Usage
 
-| Component | testid Value | Location |
-|-----------|--------------|----------|
-| CScreen | `screen-root` | Screen.tsx:21 |
-| CWindow frame | `window-frame` | Window.tsx:460 |
-| CWindow content | `window-content` | Window.tsx:435 |
-| CWindow resize handles | `window-resize-{direction}` | Window.tsx:396 |
-| CWindowTitle | `window-title` | WindowTitle.tsx:65 |
+| Component              | testid Value                | Location           |
+| ---------------------- | --------------------------- | ------------------ |
+| CScreen                | `screen-root`               | Screen.tsx:21      |
+| CWindow frame          | `window-frame`              | Window.tsx:460     |
+| CWindow content        | `window-content`            | Window.tsx:435     |
+| CWindow resize handles | `window-resize-{direction}` | Window.tsx:396     |
+| CWindowTitle           | `window-title`              | WindowTitle.tsx:65 |
 
 ### Screen Root Data Attributes (Screen.tsx:21-24)
 
@@ -461,13 +476,13 @@ const FIXTURE_ERROR_TEST_ID = 'fixture-error';
 
 ### Test Helper Functions (window.helpers.ts)
 
-| Function | Purpose |
-|----------|---------|
-| `gotoWindowFixture(page, fixture)` | Navigate to fixture URL and wait |
-| `gotoWindowSelection(page, selection)` | Navigate to system+theme selection |
-| `switchWindowSelection(page, selection)` | Switch theme via URL without reload |
-| `readFrameMetrics(page)` | Read window position/size from inline styles |
-| `dragLocatorBy(locator, dx, dy)` | Simulate mouse drag |
+| Function                                 | Purpose                                      |
+| ---------------------------------------- | -------------------------------------------- |
+| `gotoWindowFixture(page, fixture)`       | Navigate to fixture URL and wait             |
+| `gotoWindowSelection(page, selection)`   | Navigate to system+theme selection           |
+| `switchWindowSelection(page, selection)` | Switch theme via URL without reload          |
+| `readFrameMetrics(page)`                 | Read window position/size from inline styles |
+| `dragLocatorBy(locator, dx, dy)`         | Simulate mouse drag                          |
 
 ### Smoke Test Pattern (window.smoke.spec.ts:18-24)
 
@@ -501,16 +516,16 @@ export const createSystemSessionFixture = (
 
 ## Summary for Task 4-5 Implementation
 
-| Aspect | Pattern | Key Files |
-|--------|---------|-----------|
-| Theme entry | ThemeDefinition with id, label, systemType, className | `src/theme/*/index.tsx` |
-| Theme styles | SCSS with `.cm-system--{type}.cm-theme--{id}` selector | `src/theme/*/styles/index.scss` |
-| Dev preview | DevSystemRoot → SystemHost → ActiveSystemShell | `src/dev/themeSwitcher.tsx`, `SystemHost.tsx` |
-| Harness routing | URL params: `?fixture=X` or `?systemType=X&theme=Y` | `windowHarness.tsx:36-69` |
-| Unknown fixture | Render `<div data-testid="fixture-error">` | `windowHarness.tsx:127-129` |
-| Stable testids | Constants in helpers, used in components | `window.helpers.ts:16-21` |
-| Screen metadata | `data-system-type`, `data-theme` on root | `Screen.tsx:21-24` |
-| Smoke test | Use helpers + expect(page.getByTestId(...)) | `window.smoke.spec.ts` |
+| Aspect          | Pattern                                                | Key Files                                     |
+| --------------- | ------------------------------------------------------ | --------------------------------------------- |
+| Theme entry     | ThemeDefinition with id, label, systemType, className  | `src/theme/*/index.tsx`                       |
+| Theme styles    | SCSS with `.cm-system--{type}.cm-theme--{id}` selector | `src/theme/*/styles/index.scss`               |
+| Dev preview     | DevSystemRoot → SystemHost → ActiveSystemShell         | `src/dev/themeSwitcher.tsx`, `SystemHost.tsx` |
+| Harness routing | URL params: `?fixture=X` or `?systemType=X&theme=Y`    | `windowHarness.tsx:36-69`                     |
+| Unknown fixture | Render `<div data-testid="fixture-error">`             | `windowHarness.tsx:127-129`                   |
+| Stable testids  | Constants in helpers, used in components               | `window.helpers.ts:16-21`                     |
+| Screen metadata | `data-system-type`, `data-theme` on root               | `Screen.tsx:21-24`                            |
+| Smoke test      | Use helpers + expect(page.getByTestId(...))            | `window.smoke.spec.ts`                        |
 
 ---
 
@@ -519,6 +534,7 @@ export const createSystemSessionFixture = (
 ### 6.1 Component Structure Patterns
 
 #### File Organization
+
 ```
 src/components/
 ├── Button/           # New component folder (per plan task 1)
@@ -538,7 +554,9 @@ src/components/
 ```
 
 #### Export Pattern
+
 **File**: `/Users/zhangxiao/frontend/SysUI/chameleon/src/components/index.ts`
+
 ```typescript
 export * from './Widget/Widget';
 export * from './Window/Window';
@@ -556,8 +574,9 @@ export * from './Select/Select';
 ```
 
 **Package entry**: `/Users/zhangxiao/frontend/SysUI/chameleon/src/index.ts`
+
 ```typescript
-export * from './components';  // Re-exports all component exports
+export * from './components'; // Re-exports all component exports
 ```
 
 ---
@@ -565,9 +584,11 @@ export * from './components';  // Re-exports all component exports
 ### 6.2 Component Implementation Patterns
 
 #### Class Component Pattern (CDock reference)
+
 **File**: `/Users/zhangxiao/frontend/SysUI/chameleon/src/components/Dock/Dock.tsx`
 
 Key patterns:
+
 - Extends `CWidget` for layout components (NOT needed for form controls per plan)
 - Props interface includes `'data-testid'?: string`
 - Uses `cm-*` class prefix
@@ -576,7 +597,7 @@ Key patterns:
 ```typescript
 interface CDockBaseProps extends CWidgetProps {
   children?: React.ReactNode;
-  position?: DockPosition;        // Controlled
+  position?: DockPosition; // Controlled
   defaultPosition?: DockPosition; // Uncontrolled
   onPositionChange?: (position: DockPosition) => void;
   // ...
@@ -584,8 +605,8 @@ interface CDockBaseProps extends CWidgetProps {
 }
 
 type CDockHeightProps =
-  | { height: number; defaultHeight?: number; }
-  | { height?: number; defaultHeight: number; };
+  | { height: number; defaultHeight?: number }
+  | { height?: number; defaultHeight: number };
 
 export type CDockProps = CDockBaseProps & CDockHeightProps;
 
@@ -617,7 +638,7 @@ export class CDock extends CWidget {
       {
         className: this.getDockFrameClassName(resolvedPosition),
         style: this.getDockFrameStyle(dockEdgeStyle),
-        testId: this.props['data-testid'] ?? 'dock-frame',  // Fallback testId
+        testId: this.props['data-testid'] ?? 'dock-frame', // Fallback testId
       },
     );
   }
@@ -625,9 +646,11 @@ export class CDock extends CWidget {
 ```
 
 #### Simple Component Pattern (CWindowTitle reference)
+
 **File**: `/Users/zhangxiao/frontend/SysUI/chameleon/src/components/Window/WindowTitle.tsx`
 
 For simpler form controls, use functional component pattern:
+
 ```typescript
 export interface CWindowTitleProps {
   children?: React.ReactNode;
@@ -664,6 +687,7 @@ export class CWindowTitle extends React.Component<CWindowTitleProps> {
 ### 6.3 SCSS Naming Conventions
 
 #### Component-local SCSS
+
 **File**: `/Users/zhangxiao/frontend/SysUI/chameleon/src/components/Dock/index.scss`
 
 ```scss
@@ -683,12 +707,14 @@ export class CWindowTitle extends React.Component<CWindowTitleProps> {
 }
 ```
 
-**Pattern**: 
+**Pattern**:
+
 - Base class: `cm-{component-name}`
 - Modifier class: `cm-{component-name}--{variant}`
 - Element class: `cm-{component-name}__{element}`
 
 #### Theme SCSS (for visual styling)
+
 **Location**: `src/theme/{themeId}/styles/index.scss`
 
 Per plan task 4, visual styles should be in theme files, not component-local SCSS.
@@ -698,6 +724,7 @@ Per plan task 4, visual styles should be in theme files, not component-local SCS
 ### 6.4 data-testid Patterns
 
 #### Component Implementation
+
 **File**: `/Users/zhangxiao/frontend/SysUI/chameleon/src/components/Dock/Dock.tsx:17,136`
 
 ```typescript
@@ -711,6 +738,7 @@ testId: this.props['data-testid'] ?? 'dock-frame',  // Line 136
 ```
 
 #### CWidget Base Class
+
 **File**: `/Users/zhangxiao/frontend/SysUI/chameleon/src/components/Widget/Widget.tsx:41`
 
 ```typescript
@@ -732,6 +760,7 @@ protected renderFrame(
 ```
 
 #### Test Usage
+
 **File**: `/Users/zhangxiao/frontend/SysUI/chameleon/tests/Dock.test.tsx`
 
 ```typescript
@@ -749,6 +778,7 @@ const dock = screen.getByTestId('dock-frame');
 ### 6.5 Controlled/Uncontrolled Pattern
 
 #### State Initialization
+
 **File**: `/Users/zhangxiao/frontend/SysUI/chameleon/src/components/Dock/Dock.tsx:41-47`
 
 ```typescript
@@ -762,6 +792,7 @@ public constructor(props: CDockProps) {
 ```
 
 #### Update Synchronization
+
 **File**: `/Users/zhangxiao/frontend/SysUI/chameleon/src/components/Dock/Dock.tsx:49-56`
 
 ```typescript
@@ -776,6 +807,7 @@ public componentDidUpdate(prevProps: CDockProps): void {
 ```
 
 **Key Pattern**:
+
 - Controlled prop (`position`) takes precedence over internal state
 - Default prop (`defaultPosition`) only used for initial state
 - Changes to default props after mount are ignored (tested in Dock.test.tsx:223-266)
@@ -785,6 +817,7 @@ public componentDidUpdate(prevProps: CDockProps): void {
 ### 6.6 Test Patterns
 
 #### Test File Structure
+
 **File**: `/Users/zhangxiao/frontend/SysUI/chameleon/tests/Dock.test.tsx`
 
 ```typescript
@@ -830,9 +863,9 @@ describe('CDock', () => {
       <CDock data-testid="dock-sync" position="top" height={32} ... />
     );
     // ... verify initial state
-    
+
     rerender(<CDock data-testid="dock-sync" position="left" height={48} ... />);
-    
+
     await waitFor(() => {
       expect(dock).toHaveClass('cm-dock--left');
     });
@@ -844,9 +877,9 @@ describe('CDock', () => {
       <CDock data-testid="dock-default-sync" defaultPosition="bottom" defaultHeight={28} ... />
     );
     // ... verify initial state
-    
+
     rerender(<CDock data-testid="dock-default-sync" defaultPosition="right" defaultHeight={52} ... />);
-    
+
     // Should still be bottom, not right
     expect(dock).toHaveClass('cm-dock--bottom');
     expect(dock).not.toHaveClass('cm-dock--right');
@@ -858,22 +891,22 @@ describe('CDock', () => {
 
 ### 6.7 Reference File Summary
 
-| Purpose | File Path | Key Lines |
-|---------|-----------|-----------|
-| Component export pattern | `/Users/zhangxiao/frontend/SysUI/chameleon/src/components/index.ts` | 1-8 |
-| Package entry re-export | `/Users/zhangxiao/frontend/SysUI/chameleon/src/index.ts` | 3 |
-| Class component pattern | `/Users/zhangxiao/frontend/SysUI/chameleon/src/components/Dock/Dock.tsx` | 37-140 |
-| Props interface with testid | `/Users/zhangxiao/frontend/SysUI/chameleon/src/components/Dock/Dock.tsx` | 7-30 |
-| Controlled/uncontrolled init | `/Users/zhangxiao/frontend/SysUI/chameleon/src/components/Dock/Dock.tsx` | 41-47 |
-| Controlled update sync | `/Users/zhangxiao/frontend/SysUI/chameleon/src/components/Dock/Dock.tsx` | 49-56 |
-| SCSS naming | `/Users/zhangxiao/frontend/SysUI/chameleon/src/components/Dock/index.scss` | 1-14 |
-| Test structure | `/Users/zhangxiao/frontend/SysUI/chameleon/tests/Dock.test.tsx` | 1-370 |
-| Export verification test | `/Users/zhangxiao/frontend/SysUI/chameleon/tests/Dock.test.tsx` | 7-15 |
-| Type checking test | `/Users/zhangxiao/frontend/SysUI/chameleon/tests/Dock.test.tsx` | 17-26 |
-| Controlled rerender test | `/Users/zhangxiao/frontend/SysUI/chameleon/tests/Dock.test.tsx` | 188-221 |
-| Default prop ignored test | `/Users/zhangxiao/frontend/SysUI/chameleon/tests/Dock.test.tsx` | 223-266 |
-| CWidget base class | `/Users/zhangxiao/frontend/SysUI/chameleon/src/components/Widget/Widget.tsx` | 21-53 |
-| Simple component pattern | `/Users/zhangxiao/frontend/SysUI/chameleon/src/components/Window/WindowTitle.tsx` | 17-77 |
+| Purpose                      | File Path                                                                         | Key Lines |
+| ---------------------------- | --------------------------------------------------------------------------------- | --------- |
+| Component export pattern     | `/Users/zhangxiao/frontend/SysUI/chameleon/src/components/index.ts`               | 1-8       |
+| Package entry re-export      | `/Users/zhangxiao/frontend/SysUI/chameleon/src/index.ts`                          | 3         |
+| Class component pattern      | `/Users/zhangxiao/frontend/SysUI/chameleon/src/components/Dock/Dock.tsx`          | 37-140    |
+| Props interface with testid  | `/Users/zhangxiao/frontend/SysUI/chameleon/src/components/Dock/Dock.tsx`          | 7-30      |
+| Controlled/uncontrolled init | `/Users/zhangxiao/frontend/SysUI/chameleon/src/components/Dock/Dock.tsx`          | 41-47     |
+| Controlled update sync       | `/Users/zhangxiao/frontend/SysUI/chameleon/src/components/Dock/Dock.tsx`          | 49-56     |
+| SCSS naming                  | `/Users/zhangxiao/frontend/SysUI/chameleon/src/components/Dock/index.scss`        | 1-14      |
+| Test structure               | `/Users/zhangxiao/frontend/SysUI/chameleon/tests/Dock.test.tsx`                   | 1-370     |
+| Export verification test     | `/Users/zhangxiao/frontend/SysUI/chameleon/tests/Dock.test.tsx`                   | 7-15      |
+| Type checking test           | `/Users/zhangxiao/frontend/SysUI/chameleon/tests/Dock.test.tsx`                   | 17-26     |
+| Controlled rerender test     | `/Users/zhangxiao/frontend/SysUI/chameleon/tests/Dock.test.tsx`                   | 188-221   |
+| Default prop ignored test    | `/Users/zhangxiao/frontend/SysUI/chameleon/tests/Dock.test.tsx`                   | 223-266   |
+| CWidget base class           | `/Users/zhangxiao/frontend/SysUI/chameleon/src/components/Widget/Widget.tsx`      | 21-53     |
+| Simple component pattern     | `/Users/zhangxiao/frontend/SysUI/chameleon/src/components/Window/WindowTitle.tsx` | 17-77     |
 
 ---
 
@@ -957,13 +990,13 @@ describe('CDock', () => {
 
 ### Official Documentation URLs (Verified 2026-03-24)
 
-| Topic | URL | Status |
-|-------|-----|--------|
-| MDN Button | https://developer.mozilla.org/en-US/docs/Web/HTML/Element/button | ✅ Valid |
-| MDN Radio Input | https://developer.mozilla.org/en-US/docs/Web/HTML/Element/input/radio | ✅ Valid |
-| MDN Select | https://developer.mozilla.org/en-US/docs/Web/HTML/Element/select | ✅ Valid |
-| Playwright Assertions | https://playwright.dev/docs/test-assertions | ✅ Valid |
-| Testing Library Queries | https://testing-library.com/docs/queries/byrole | ✅ Valid |
+| Topic                   | URL                                                                   | Status   |
+| ----------------------- | --------------------------------------------------------------------- | -------- |
+| MDN Button              | https://developer.mozilla.org/en-US/docs/Web/HTML/Element/button      | ✅ Valid |
+| MDN Radio Input         | https://developer.mozilla.org/en-US/docs/Web/HTML/Element/input/radio | ✅ Valid |
+| MDN Select              | https://developer.mozilla.org/en-US/docs/Web/HTML/Element/select      | ✅ Valid |
+| Playwright Assertions   | https://playwright.dev/docs/test-assertions                           | ✅ Valid |
+| Testing Library Queries | https://testing-library.com/docs/queries/byrole                       | ✅ Valid |
 
 ---
 
@@ -974,12 +1007,15 @@ describe('CDock', () => {
 **Constraint**: `CButton` must default to `type="button"` to prevent accidental form submission.
 
 **MDN Source** (button#type):
+
 > "submit": The button submits the form data to the server. This is the **default** if the attribute is not specified for buttons associated with a `<form>`.
 
 **MDN Note**:
+
 > "If your buttons are not for submitting form data to the server, be sure to set their `type` attribute to `button`."
 
 **Verification**:
+
 - Jest: `expect(screen.getByRole('button')).toHaveAttribute('type', 'button')`
 - Playwright: `await expect(page.getByRole('button')).toHaveAttribute('type', 'button')`
 
@@ -990,10 +1026,12 @@ describe('CDock', () => {
 **Constraint**: All radios in a group must share the same `name` attribute for browser-enforced mutual exclusion.
 
 **MDN Source** (input/radio):
+
 > "A radio group is defined by giving each of radio buttons in the group the **same `name` attribute**."
 > "Only **one radio button** in a given group can be selected at the same time."
 
 **Verification**:
+
 - Jest: Query all radios with same name, verify only one has `checked` attribute
 - Playwright: `await expect(page.getByRole('radio', { name: 'Apple' })).toBeChecked()`
 
@@ -1004,9 +1042,11 @@ describe('CDock', () => {
 **Constraint**: Disabled elements cannot be focused or respond to user interaction.
 
 **MDN Source** (button#disabled):
+
 > "This Boolean attribute prevents the user from interacting with the button: it **cannot be pressed or focused**."
 
 **Verification**:
+
 - Jest: `expect(button).toBeDisabled()` (from jest-dom)
 - Playwright: `await expect(locator).toBeDisabled()` (auto-retrying)
 
@@ -1017,9 +1057,11 @@ describe('CDock', () => {
 **Constraint**: Empty `value=""` option acts as placeholder; `required` forces non-empty selection.
 
 **MDN Source** (select#required):
+
 > "A Boolean attribute indicating that **an option with a non-empty string value must be selected**."
 
 **Common Pattern**:
+
 ```html
 <select required>
   <option value="">--Please choose an option--</option>
@@ -1028,6 +1070,7 @@ describe('CDock', () => {
 ```
 
 **Verification**:
+
 - Jest: `expect(select).toHaveValue('')`
 - Playwright: `await expect(page.getByRole('combobox')).toHaveValue('medium')`
 
@@ -1035,15 +1078,15 @@ describe('CDock', () => {
 
 ### Playwright Assertion Quick Reference
 
-| Assertion | Usage | Auto-Retry |
-|-----------|-------|------------|
-| `toBeDisabled()` | Verify button/radio/select is disabled | ✅ Yes |
-| `toBeEnabled()` | Verify element is enabled | ✅ Yes |
-| `toBeChecked()` | Verify radio/checkbox is checked | ✅ Yes |
-| `toBeVisible()` | Verify element is visible | ✅ Yes |
-| `toHaveValue('x')` | Verify input/select value equals 'x' | ✅ Yes |
-| `toHaveText('x')` | Verify element text content | ✅ Yes |
-| `getByTestId('x')` | Locate element by data-testid | N/A |
+| Assertion          | Usage                                  | Auto-Retry |
+| ------------------ | -------------------------------------- | ---------- |
+| `toBeDisabled()`   | Verify button/radio/select is disabled | ✅ Yes     |
+| `toBeEnabled()`    | Verify element is enabled              | ✅ Yes     |
+| `toBeChecked()`    | Verify radio/checkbox is checked       | ✅ Yes     |
+| `toBeVisible()`    | Verify element is visible              | ✅ Yes     |
+| `toHaveValue('x')` | Verify input/select value equals 'x'   | ✅ Yes     |
+| `toHaveText('x')`  | Verify element text content            | ✅ Yes     |
+| `getByTestId('x')` | Locate element by data-testid          | N/A        |
 
 **Source**: https://playwright.dev/docs/test-assertions (Auto-retrying assertions table)
 
@@ -1052,40 +1095,42 @@ describe('CDock', () => {
 ### Smoke Test Assertions (Task 5)
 
 Per plan acceptance criteria:
+
 - Default fixture: button visible, radio value = `apple`, select value = `medium`
 - Disabled fixture: button disabled, radio disabled, select disabled
 - Unknown fixture: `data-testid="fixture-error"` visible with "Unknown fixture:" text
 
 **Playwright Code**:
+
 ```typescript
 // Default fixture
-await expect(page.getByTestId('button-demo-primary')).toBeVisible()
-await expect(page.getByRole('radio', { name: 'Apple' })).toBeChecked()
-await expect(page.getByRole('combobox')).toHaveValue('medium')
+await expect(page.getByTestId('button-demo-primary')).toBeVisible();
+await expect(page.getByRole('radio', { name: 'Apple' })).toBeChecked();
+await expect(page.getByRole('combobox')).toHaveValue('medium');
 
 // Disabled fixture
-await expect(page.getByRole('button')).toBeDisabled()
-await expect(page.getByRole('radio', { name: 'Orange' })).toBeDisabled()
-await expect(page.getByRole('combobox')).toBeDisabled()
+await expect(page.getByRole('button')).toBeDisabled();
+await expect(page.getByRole('radio', { name: 'Orange' })).toBeDisabled();
+await expect(page.getByRole('combobox')).toBeDisabled();
 
 // Unknown fixture
-await expect(page.getByTestId('fixture-error')).toBeVisible()
-await expect(page.getByTestId('fixture-error')).toContainText('Unknown fixture:')
+await expect(page.getByTestId('fixture-error')).toBeVisible();
+await expect(page.getByTestId('fixture-error')).toContainText('Unknown fixture:');
 ```
 
 ---
 
 ### Summary: What to Verify
 
-| Plan Task | Key Verification Point | Source |
-|-----------|----------------------|--------|
-| Task 1 | Button default `type="button"` | MDN button#type |
-| Task 1 | Disabled button not clickable | MDN button#disabled |
-| Task 2 | Radio group shares `name` | MDN input/radio |
-| Task 2 | Only one radio checked per group | MDN input/radio |
-| Task 3 | Select renders options | MDN select |
-| Task 3 | Placeholder with `value=""` | MDN select#required |
-| Task 5 | Smoke test assertions | Playwright docs |
+| Plan Task | Key Verification Point           | Source              |
+| --------- | -------------------------------- | ------------------- |
+| Task 1    | Button default `type="button"`   | MDN button#type     |
+| Task 1    | Disabled button not clickable    | MDN button#disabled |
+| Task 2    | Radio group shares `name`        | MDN input/radio     |
+| Task 2    | Only one radio checked per group | MDN input/radio     |
+| Task 3    | Select renders options           | MDN select          |
+| Task 3    | Placeholder with `value=""`      | MDN select#required |
+| Task 5    | Smoke test assertions            | Playwright docs     |
 
 ---
 
@@ -1100,7 +1145,6 @@ await expect(page.getByTestId('fixture-error')).toContainText('Unknown fixture:'
 - README、preview、Playwright harness 与 smoke spec 中的固定值保持与计划一致：radio 为 `apple/orange`，select 为 `small/medium/large`，默认 smoke 状态为 radio=`apple`、select=`medium`。
 - 可用验证证据来自现有记录：notepad 已记录 targeted Jest、Playwright smoke、`yarn lint`、`yarn build`、`npm pack --dry-run` 均已通过；本轮 F4 只做只读 scope 复审，不重新修改实现。
 
-
 ---
 
 ## 17. Current Implementation Status Mapping (Tasks 1-4)
@@ -1110,17 +1154,18 @@ await expect(page.getByTestId('fixture-error')).toContainText('Unknown fixture:'
 
 ### Task 1: CButton Native Wrapper
 
-| Acceptance Criteria | Status | Evidence |
-|---------------------|--------|----------|
-| Component file exists | ✅ COMPLETE | `/Users/zhangxiao/frontend/SysUI/chameleon/src/components/Button/Button.tsx` |
-| SCSS file exists | ✅ COMPLETE | `/Users/zhangxiao/frontend/SysUI/chameleon/src/components/Button/index.scss` |
-| Test file exists | ✅ COMPLETE | `/Users/zhangxiao/frontend/SysUI/chameleon/tests/Button.test.tsx` |
-| Supports children, variant, type, disabled, onClick, className, data-testid | ✅ COMPLETE | Button.tsx lines 7-15 (props interface) |
-| Default type="button" | ✅ COMPLETE | Button.tsx line 20: `type = 'button'` |
-| Variant class applied | ✅ COMPLETE | Button.tsx lines 28-30: `cm-button--${variant}` |
-| Disabled click blocking | ✅ COMPLETE | Button.tsx line 39: `disabled` passed to native button |
+| Acceptance Criteria                                                         | Status      | Evidence                                                                     |
+| --------------------------------------------------------------------------- | ----------- | ---------------------------------------------------------------------------- |
+| Component file exists                                                       | ✅ COMPLETE | `/Users/zhangxiao/frontend/SysUI/chameleon/src/components/Button/Button.tsx` |
+| SCSS file exists                                                            | ✅ COMPLETE | `/Users/zhangxiao/frontend/SysUI/chameleon/src/components/Button/index.scss` |
+| Test file exists                                                            | ✅ COMPLETE | `/Users/zhangxiao/frontend/SysUI/chameleon/tests/Button.test.tsx`            |
+| Supports children, variant, type, disabled, onClick, className, data-testid | ✅ COMPLETE | Button.tsx lines 7-15 (props interface)                                      |
+| Default type="button"                                                       | ✅ COMPLETE | Button.tsx line 20: `type = 'button'`                                        |
+| Variant class applied                                                       | ✅ COMPLETE | Button.tsx lines 28-30: `cm-button--${variant}`                              |
+| Disabled click blocking                                                     | ✅ COMPLETE | Button.tsx line 39: `disabled` passed to native button                       |
 
 **Plan Quote** (Task 1 Acceptance):
+
 > "tests/Button.test.tsx 断言未传 type 时 DOM button.type === 'button'"
 > "tests/Button.test.tsx 断言 disabled 时点击不触发 jest.fn()"
 > "tests/Button.test.tsx 断言 variant="primary" 时具备 cm-button--primary"
@@ -1131,17 +1176,18 @@ await expect(page.getByTestId('fixture-error')).toContainText('Unknown fixture:'
 
 ### Task 2: CRadio and CRadioGroup
 
-| Acceptance Criteria | Status | Evidence |
-|---------------------|--------|----------|
-| Component files exist | ✅ COMPLETE | Radio.tsx, RadioGroup.tsx, index.scss in `/Users/zhangxiao/frontend/SysUI/chameleon/src/components/Radio/` |
-| Test file exists | ✅ COMPLETE | `/Users/zhangxiao/frontend/SysUI/chameleon/tests/Radio.test.tsx` |
-| CRadio uses native `<input type="radio">` + label | ✅ COMPLETE | Radio.tsx lines 43-53: native input inside label |
-| CRadioGroup provides shared name | ✅ COMPLETE | RadioGroup.tsx lines 67-76: context provides name |
-| Supports controlled/uncontrolled | ✅ COMPLETE | RadioGroup.tsx lines 41-65: value vs uncontrolledValue |
-| Name sharing verified | ✅ COMPLETE | Radio.test.tsx lines 26-49 |
-| Disabled state handled | ✅ COMPLETE | Radio.tsx lines 26, 47: isDisabled propagation |
+| Acceptance Criteria                               | Status      | Evidence                                                                                                   |
+| ------------------------------------------------- | ----------- | ---------------------------------------------------------------------------------------------------------- |
+| Component files exist                             | ✅ COMPLETE | Radio.tsx, RadioGroup.tsx, index.scss in `/Users/zhangxiao/frontend/SysUI/chameleon/src/components/Radio/` |
+| Test file exists                                  | ✅ COMPLETE | `/Users/zhangxiao/frontend/SysUI/chameleon/tests/Radio.test.tsx`                                           |
+| CRadio uses native `<input type="radio">` + label | ✅ COMPLETE | Radio.tsx lines 43-53: native input inside label                                                           |
+| CRadioGroup provides shared name                  | ✅ COMPLETE | RadioGroup.tsx lines 67-76: context provides name                                                          |
+| Supports controlled/uncontrolled                  | ✅ COMPLETE | RadioGroup.tsx lines 41-65: value vs uncontrolledValue                                                     |
+| Name sharing verified                             | ✅ COMPLETE | Radio.test.tsx lines 26-49                                                                                 |
+| Disabled state handled                            | ✅ COMPLETE | Radio.tsx lines 26, 47: isDisabled propagation                                                             |
 
 **Plan Quote** (Task 2 Acceptance):
+
 > "tests/Radio.test.tsx 断言 group 下所有 radio 共享相同 name"
 > "tests/Radio.test.tsx 断言非受控模式点击后选中值更新，受控模式点击后若不 rerender 则界面不改变"
 > "tests/Radio.test.tsx 断言禁用 radio 点击后仍保持未选中"
@@ -1152,16 +1198,17 @@ await expect(page.getByTestId('fixture-error')).toContainText('Unknown fixture:'
 
 ### Task 3: CSelect Native Single-Select Wrapper
 
-| Acceptance Criteria | Status | Evidence |
-|---------------------|--------|----------|
-| Component file exists | ✅ COMPLETE | Select.tsx, index.scss in `/Users/zhangxiao/frontend/SysUI/chameleon/src/components/Select/` |
-| Test file exists | ✅ COMPLETE | `/Users/zhangxiao/frontend/SysUI/chameleon/tests/Select.test.tsx` |
-| Uses native `<select>` | ✅ COMPLETE | Select.tsx lines 52-76: native select element |
-| Supports options, value, defaultValue, onChange, name, disabled, required, placeholder | ✅ COMPLETE | Select.tsx lines 10-21 (props interface) |
-| Controlled/uncontrolled mode | ✅ COMPLETE | Select.tsx lines 36-41: isControlled logic |
-| placeholder + required behavior | ✅ COMPLETE | Select.tsx lines 62-66: placeholder option with value="" and disabled |
+| Acceptance Criteria                                                                    | Status      | Evidence                                                                                     |
+| -------------------------------------------------------------------------------------- | ----------- | -------------------------------------------------------------------------------------------- |
+| Component file exists                                                                  | ✅ COMPLETE | Select.tsx, index.scss in `/Users/zhangxiao/frontend/SysUI/chameleon/src/components/Select/` |
+| Test file exists                                                                       | ✅ COMPLETE | `/Users/zhangxiao/frontend/SysUI/chameleon/tests/Select.test.tsx`                            |
+| Uses native `<select>`                                                                 | ✅ COMPLETE | Select.tsx lines 52-76: native select element                                                |
+| Supports options, value, defaultValue, onChange, name, disabled, required, placeholder | ✅ COMPLETE | Select.tsx lines 10-21 (props interface)                                                     |
+| Controlled/uncontrolled mode                                                           | ✅ COMPLETE | Select.tsx lines 36-41: isControlled logic                                                   |
+| placeholder + required behavior                                                        | ✅ COMPLETE | Select.tsx lines 62-66: placeholder option with value="" and disabled                        |
 
 **Plan Quote** (Task 3 Acceptance):
+
 > "tests/Select.test.tsx 断言 options 正确渲染为原生 option 列表"
 > "tests/Select.test.tsx 断言非受控模式用户选择后值更新，受控模式若不 rerender 则值不变"
 > "tests/Select.test.tsx 断言 placeholder + required 时初始值为空且需显式选择真实 option"
@@ -1172,22 +1219,23 @@ await expect(page.getByTestId('fixture-error')).toContainText('Unknown fixture:'
 
 ### Task 4: Integration (Exports, Theme, Dev Preview)
 
-| Acceptance Criteria | Status | Evidence |
-|---------------------|--------|----------|
-| Exports in src/components/index.ts | ✅ COMPLETE | `/Users/zhangxiao/frontend/SysUI/chameleon/src/components/index.ts` lines 9-12 |
-| Exports in src/index.ts | ✅ COMPLETE | `/Users/zhangxiao/frontend/SysUI/chameleon/src/index.ts` line 4 |
-| Theme default styles | ✅ COMPLETE | `/Users/zhangxiao/frontend/SysUI/chameleon/src/theme/default/styles/index.scss` lines 128-274 |
-| Theme win98 styles | ✅ COMPLETE | `/Users/zhangxiao/frontend/SysUI/chameleon/src/theme/win98/styles/index.scss` lines 65-183 |
-| Theme winxp styles | ✅ COMPLETE | `/Users/zhangxiao/frontend/SysUI/chameleon/src/theme/winxp/styles/index.scss` lines 90-222 |
-| Dev preview component | ✅ COMPLETE | `/Users/zhangxiao/frontend/SysUI/chameleon/src/dev/commonControlsPreview.tsx` |
-| Dev preview wired in main.tsx | ✅ COMPLETE | `/Users/zhangxiao/frontend/SysUI/chameleon/src/dev/main.tsx` lines 2, 9-23 |
-| Test ID: button-demo-primary | ✅ COMPLETE | commonControlsPreview.tsx line 31 |
-| Test ID: radio-demo-fruit | ✅ COMPLETE | commonControlsPreview.tsx line 59 |
-| Test ID: select-demo-size | ✅ COMPLETE | commonControlsPreview.tsx line 83 |
-| Radio demo values: apple/orange | ✅ COMPLETE | commonControlsPreview.tsx lines 65-66 |
-| Select demo values: small/medium/large | ✅ COMPLETE | commonControlsPreview.tsx lines 4-8 |
+| Acceptance Criteria                    | Status      | Evidence                                                                                      |
+| -------------------------------------- | ----------- | --------------------------------------------------------------------------------------------- |
+| Exports in src/components/index.ts     | ✅ COMPLETE | `/Users/zhangxiao/frontend/SysUI/chameleon/src/components/index.ts` lines 9-12                |
+| Exports in src/index.ts                | ✅ COMPLETE | `/Users/zhangxiao/frontend/SysUI/chameleon/src/index.ts` line 4                               |
+| Theme default styles                   | ✅ COMPLETE | `/Users/zhangxiao/frontend/SysUI/chameleon/src/theme/default/styles/index.scss` lines 128-274 |
+| Theme win98 styles                     | ✅ COMPLETE | `/Users/zhangxiao/frontend/SysUI/chameleon/src/theme/win98/styles/index.scss` lines 65-183    |
+| Theme winxp styles                     | ✅ COMPLETE | `/Users/zhangxiao/frontend/SysUI/chameleon/src/theme/winxp/styles/index.scss` lines 90-222    |
+| Dev preview component                  | ✅ COMPLETE | `/Users/zhangxiao/frontend/SysUI/chameleon/src/dev/commonControlsPreview.tsx`                 |
+| Dev preview wired in main.tsx          | ✅ COMPLETE | `/Users/zhangxiao/frontend/SysUI/chameleon/src/dev/main.tsx` lines 2, 9-23                    |
+| Test ID: button-demo-primary           | ✅ COMPLETE | commonControlsPreview.tsx line 31                                                             |
+| Test ID: radio-demo-fruit              | ✅ COMPLETE | commonControlsPreview.tsx line 59                                                             |
+| Test ID: select-demo-size              | ✅ COMPLETE | commonControlsPreview.tsx line 83                                                             |
+| Radio demo values: apple/orange        | ✅ COMPLETE | commonControlsPreview.tsx lines 65-66                                                         |
+| Select demo values: small/medium/large | ✅ COMPLETE | commonControlsPreview.tsx lines 4-8                                                           |
 
 **Plan Quote** (Task 4 Acceptance):
+
 > "Dev preview root renders button-demo-primary、radio-demo-fruit、select-demo-size 三个稳定节点"
 > "Radio demo 固定值为 apple / orange，Select demo 固定值为 small / medium / large"
 
@@ -1197,12 +1245,12 @@ await expect(page.getByTestId('fixture-error')).toContainText('Unknown fixture:'
 
 ## Gap Report Summary
 
-| Task | Status | Missing Items |
-|------|--------|---------------|
-| Task 1: CButton | ✅ COMPLETE | None |
-| Task 2: CRadio/CRadioGroup | ✅ COMPLETE | None |
-| Task 3: CSelect | ✅ COMPLETE | None |
-| Task 4: Integration | ✅ COMPLETE | None |
+| Task                       | Status      | Missing Items |
+| -------------------------- | ----------- | ------------- |
+| Task 1: CButton            | ✅ COMPLETE | None          |
+| Task 2: CRadio/CRadioGroup | ✅ COMPLETE | None          |
+| Task 3: CSelect            | ✅ COMPLETE | None          |
+| Task 4: Integration        | ✅ COMPLETE | None          |
 
 **Conclusion**: All plan tasks 1-4 are FULLY IMPLEMENTED in the current codebase. No gaps identified.
 
@@ -1210,11 +1258,11 @@ await expect(page.getByTestId('fixture-error')).toContainText('Unknown fixture:'
 
 ## Additional Artifacts Verified (Not in Tasks 1-4 Scope)
 
-| Artifact | Status | Evidence |
-|----------|--------|----------|
+| Artifact           | Status    | Evidence                                                                                 |
+| ------------------ | --------- | ---------------------------------------------------------------------------------------- |
 | Playwright harness | ✅ EXISTS | `/Users/zhangxiao/frontend/SysUI/chameleon/src/dev/playwright/commonControlsHarness.tsx` |
-| Playwright HTML | ✅ EXISTS | `/Users/zhangxiao/frontend/SysUI/chameleon/playwright-common-controls.html` |
-| Smoke test spec | ✅ EXISTS | `/Users/zhangxiao/frontend/SysUI/chameleon/tests/ui/common-controls.smoke.spec.ts` |
+| Playwright HTML    | ✅ EXISTS | `/Users/zhangxiao/frontend/SysUI/chameleon/playwright-common-controls.html`              |
+| Smoke test spec    | ✅ EXISTS | `/Users/zhangxiao/frontend/SysUI/chameleon/tests/ui/common-controls.smoke.spec.ts`       |
 
 Note: These are Task 5 artifacts, verified for completeness but not required for Tasks 1-4 gap analysis.
 
@@ -1263,80 +1311,91 @@ Note: These are Task 5 artifacts, verified for completeness but not required for
 
 ### Official Documentation URLs
 
-| Topic | URL | Purpose |
-|-------|-----|---------|
-| MDN `<button>` | https://developer.mozilla.org/en-US/docs/Web/HTML/Element/button | Default type behavior, disabled semantics |
+| Topic                      | URL                                                                   | Purpose                                        |
+| -------------------------- | --------------------------------------------------------------------- | ---------------------------------------------- |
+| MDN `<button>`             | https://developer.mozilla.org/en-US/docs/Web/HTML/Element/button      | Default type behavior, disabled semantics      |
 | MDN `<input type="radio">` | https://developer.mozilla.org/en-US/docs/Web/HTML/Element/input/radio | Name grouping, mutual exclusion, checked state |
-| MDN `<select>` | https://developer.mozilla.org/en-US/docs/Web/HTML/Element/select | Placeholder, required, value behavior |
-| Playwright Locators | https://playwright.dev/docs/locators | getByRole, getByTestId, getByLabel |
-| Playwright Assertions | https://playwright.dev/docs/test-assertions | toBeDisabled, toBeChecked, toHaveValue |
+| MDN `<select>`             | https://developer.mozilla.org/en-US/docs/Web/HTML/Element/select      | Placeholder, required, value behavior          |
+| Playwright Locators        | https://playwright.dev/docs/locators                                  | getByRole, getByTestId, getByLabel             |
+| Playwright Assertions      | https://playwright.dev/docs/test-assertions                           | toBeDisabled, toBeChecked, toHaveValue         |
 
 ---
 
 ### Key Behavioral Rules for Atlas to Verify
 
 #### 1. Button Default Type
+
 **Rule**: `<button>` defaults to `type="submit"` when inside a form; must explicitly set `type="button"` to prevent accidental form submission.
 
 **MDN Quote**:
+
 > "If your buttons are not for submitting form data to the server, be sure to set their `type` attribute to `button`. Otherwise, they will try to submit form data and to load the (nonexistent) response, potentially destroying the current state of the document."
 
 **Verification**:
+
 ```typescript
 // Jest
-expect(screen.getByRole('button')).toHaveAttribute('type', 'button')
+expect(screen.getByRole('button')).toHaveAttribute('type', 'button');
 
 // Playwright
-await expect(page.getByRole('button')).toHaveAttribute('type', 'button')
+await expect(page.getByRole('button')).toHaveAttribute('type', 'button');
 ```
 
 ---
 
 #### 2. Radio Name Grouping
+
 **Rule**: Radios share the same `name` attribute form a group; only one can be checked at a time.
 
 **MDN Quote**:
+
 > "A radio group is defined by giving each of radio buttons in the group the same `name` attribute."
 > "Once a radio group is established, selecting any radio button in that group automatically deselects any currently-selected radio button in the same group."
 
 **Verification**:
+
 ```typescript
 // Verify all radios in group share same name
-const radios = screen.getAllByRole('radio')
-radios.forEach(radio => expect(radio).toHaveAttribute('name', 'expected-name'))
+const radios = screen.getAllByRole('radio');
+radios.forEach((radio) => expect(radio).toHaveAttribute('name', 'expected-name'));
 
 // Verify only one checked
-const checked = screen.getByRole('radio', { checked: true })
-expect(checked).toBeChecked()
+const checked = screen.getByRole('radio', { checked: true });
+expect(checked).toBeChecked();
 ```
 
 ---
 
 #### 3. Radio Disabled Behavior
+
 **Rule**: Disabled radio cannot be checked; clicking does not change checked state.
 
 **MDN**: The `disabled` attribute is common to all `<input>` elements.
 
 **Verification**:
+
 ```typescript
 // Jest - disabled radio stays unchecked after click
-const disabledRadio = screen.getByRole('radio', { name: 'Orange', disabled: true })
-await userEvent.click(disabledRadio)
-expect(disabledRadio).not.toBeChecked()
+const disabledRadio = screen.getByRole('radio', { name: 'Orange', disabled: true });
+await userEvent.click(disabledRadio);
+expect(disabledRadio).not.toBeChecked();
 
 // Playwright
-await expect(page.getByRole('radio', { name: 'Orange' })).toBeDisabled()
+await expect(page.getByRole('radio', { name: 'Orange' })).toBeDisabled();
 ```
 
 ---
 
 #### 4. Select Placeholder + Required
+
 **Rule**: Empty `value=""` option acts as placeholder; `required` forces selection of non-empty value.
 
 **MDN Quote**:
+
 > "A Boolean attribute indicating that an option with a non-empty string value must be selected."
 
 **Common Pattern**:
+
 ```html
 <select required>
   <option value="">--Please choose an option--</option>
@@ -1345,61 +1404,65 @@ await expect(page.getByRole('radio', { name: 'Orange' })).toBeDisabled()
 ```
 
 **Verification**:
+
 ```typescript
 // Jest - placeholder shows empty value initially
-const select = screen.getByRole('combobox')
-expect(select).toHaveValue('')
+const select = screen.getByRole('combobox');
+expect(select).toHaveValue('');
 
 // Playwright - verify selected value
-await expect(page.getByRole('combobox')).toHaveValue('medium')
+await expect(page.getByRole('combobox')).toHaveValue('medium');
 ```
 
 ---
 
 #### 5. Disabled Elements Cannot Be Focused
+
 **Rule**: Disabled elements cannot receive focus and do not respond to user interaction.
 
 **MDN Quote** (button):
+
 > "This Boolean attribute prevents the user from interacting with the button: it cannot be pressed or focused."
 
 **Verification**:
+
 ```typescript
 // Jest
-expect(screen.getByRole('button', { disabled: true })).toBeDisabled()
+expect(screen.getByRole('button', { disabled: true })).toBeDisabled();
 
 // Playwright - auto-retrying
-await expect(page.getByRole('button')).toBeDisabled()
+await expect(page.getByRole('button')).toBeDisabled();
 ```
 
 ---
 
 ### Playwright Locator Patterns for Smoke Tests
 
-| Scenario | Locator | Assertion |
-|----------|---------|-----------|
-| Button visible | `page.getByRole('button', { name: 'Submit' })` | `.toBeVisible()` |
-| Button disabled | `page.getByRole('button', { name: 'Submit' })` | `.toBeDisabled()` |
-| Radio checked | `page.getByRole('radio', { name: 'Apple' })` | `.toBeChecked()` |
-| Radio disabled | `page.getByRole('radio', { name: 'Orange' })` | `.toBeDisabled()` |
-| Select value | `page.getByRole('combobox')` | `.toHaveValue('medium')` |
-| Select disabled | `page.getByRole('combobox')` | `.toBeDisabled()` |
-| Test ID | `page.getByTestId('button-demo-primary')` | `.toBeVisible()` |
-| Error state | `page.getByTestId('fixture-error')` | `.toContainText('Unknown fixture:')` |
+| Scenario        | Locator                                        | Assertion                            |
+| --------------- | ---------------------------------------------- | ------------------------------------ |
+| Button visible  | `page.getByRole('button', { name: 'Submit' })` | `.toBeVisible()`                     |
+| Button disabled | `page.getByRole('button', { name: 'Submit' })` | `.toBeDisabled()`                    |
+| Radio checked   | `page.getByRole('radio', { name: 'Apple' })`   | `.toBeChecked()`                     |
+| Radio disabled  | `page.getByRole('radio', { name: 'Orange' })`  | `.toBeDisabled()`                    |
+| Select value    | `page.getByRole('combobox')`                   | `.toHaveValue('medium')`             |
+| Select disabled | `page.getByRole('combobox')`                   | `.toBeDisabled()`                    |
+| Test ID         | `page.getByTestId('button-demo-primary')`      | `.toBeVisible()`                     |
+| Error state     | `page.getByTestId('fixture-error')`            | `.toContainText('Unknown fixture:')` |
 
 ---
 
 ### Summary: What Atlas Should Verify
 
-| Component | Native Semantic | Verification Command |
-|-----------|-----------------|---------------------|
-| CButton | Default `type="button"` | `expect(button).toHaveAttribute('type', 'button')` |
-| CButton | Disabled not focusable | `expect(button).toBeDisabled()` |
-| CRadio | Grouped by `name` | All radios share same `name` attr |
-| CRadio | Only one checked | `expect(radio).toBeChecked()` |
-| CRadio | Disabled not selectable | Click disabled radio → still unchecked |
-| CSelect | Renders native `<option>` | DOM contains `<option>` elements |
-| CSelect | Placeholder with `value=""` | Initial value is empty string |
-| CSelect | Required forces selection | Form validation requires non-empty |
+| Component | Native Semantic             | Verification Command                               |
+| --------- | --------------------------- | -------------------------------------------------- |
+| CButton   | Default `type="button"`     | `expect(button).toHaveAttribute('type', 'button')` |
+| CButton   | Disabled not focusable      | `expect(button).toBeDisabled()`                    |
+| CRadio    | Grouped by `name`           | All radios share same `name` attr                  |
+| CRadio    | Only one checked            | `expect(radio).toBeChecked()`                      |
+| CRadio    | Disabled not selectable     | Click disabled radio → still unchecked             |
+| CSelect   | Renders native `<option>`   | DOM contains `<option>` elements                   |
+| CSelect   | Placeholder with `value=""` | Initial value is empty string                      |
+| CSelect   | Required forces selection   | Form validation requires non-empty                 |
 
 ---
 
@@ -1411,9 +1474,11 @@ await expect(page.getByRole('button')).toBeDisabled()
 ## 19. File-to-Task Matrix for Atlas QA (2026-03-24)
 
 ### Overview
+
 This section provides a comprehensive mapping of all files involved in the `common-components-button-radio-select` change, organized by planned task number (1-6) and final verification wave (F1-F4).
 
 ### Commit Reference
+
 - **Commit**: `394f1c1` - `feat(components): add common controls (button, radio, select)`
 - **Date**: 2026-03-24
 
@@ -1421,13 +1486,14 @@ This section provides a comprehensive mapping of all files involved in the `comm
 
 ### Task 1: Add `CButton` Native Wrapper
 
-| File Path | Purpose | Plan Acceptance Criteria |
-|-----------|---------|-------------------------|
-| `/Users/zhangxiao/frontend/SysUI/chameleon/src/components/Button/Button.tsx` | Component implementation | Supports children, variant, type, disabled, onClick, className, data-testid |
-| `/Users/zhangxiao/frontend/SysUI/chameleon/src/components/Button/index.scss` | Component-local SCSS (structural) | Minimal structure classes only |
-| `/Users/zhangxiao/frontend/SysUI/chameleon/tests/Button.test.tsx` | Jest unit tests | Default type="button", disabled click blocking, variant class |
+| File Path                                                                    | Purpose                           | Plan Acceptance Criteria                                                    |
+| ---------------------------------------------------------------------------- | --------------------------------- | --------------------------------------------------------------------------- |
+| `/Users/zhangxiao/frontend/SysUI/chameleon/src/components/Button/Button.tsx` | Component implementation          | Supports children, variant, type, disabled, onClick, className, data-testid |
+| `/Users/zhangxiao/frontend/SysUI/chameleon/src/components/Button/index.scss` | Component-local SCSS (structural) | Minimal structure classes only                                              |
+| `/Users/zhangxiao/frontend/SysUI/chameleon/tests/Button.test.tsx`            | Jest unit tests                   | Default type="button", disabled click blocking, variant class               |
 
 **Key Implementation Details**:
+
 - Line 20: `type = 'button'` (explicit default)
 - Lines 28-30: `cm-button--${variant}` modifier class
 - Line 39: `disabled` passed to native button
@@ -1436,14 +1502,15 @@ This section provides a comprehensive mapping of all files involved in the `comm
 
 ### Task 2: Add `CRadio` and `CRadioGroup`
 
-| File Path | Purpose | Plan Acceptance Criteria |
-|-----------|---------|-------------------------|
-| `/Users/zhangxiao/frontend/SysUI/chameleon/src/components/Radio/Radio.tsx` | Individual radio component | Native `<input type="radio">` + label |
-| `/Users/zhangxiao/frontend/SysUI/chameleon/src/components/Radio/RadioGroup.tsx` | Radio group container | Shared name, controlled/uncontrolled |
-| `/Users/zhangxiao/frontend/SysUI/chameleon/src/components/Radio/index.scss` | Component-local SCSS | Minimal structure classes |
-| `/Users/zhangxiao/frontend/SysUI/chameleon/tests/Radio.test.tsx` | Jest unit tests | Name sharing, controlled/uncontrolled, disabled |
+| File Path                                                                       | Purpose                    | Plan Acceptance Criteria                        |
+| ------------------------------------------------------------------------------- | -------------------------- | ----------------------------------------------- |
+| `/Users/zhangxiao/frontend/SysUI/chameleon/src/components/Radio/Radio.tsx`      | Individual radio component | Native `<input type="radio">` + label           |
+| `/Users/zhangxiao/frontend/SysUI/chameleon/src/components/Radio/RadioGroup.tsx` | Radio group container      | Shared name, controlled/uncontrolled            |
+| `/Users/zhangxiao/frontend/SysUI/chameleon/src/components/Radio/index.scss`     | Component-local SCSS       | Minimal structure classes                       |
+| `/Users/zhangxiao/frontend/SysUI/chameleon/tests/Radio.test.tsx`                | Jest unit tests            | Name sharing, controlled/uncontrolled, disabled |
 
 **Key Implementation Details**:
+
 - Radio.tsx lines 43-53: native input inside label
 - RadioGroup.tsx lines 67-76: context provides name
 - RadioGroup.tsx lines 41-65: value vs uncontrolledValue pattern
@@ -1452,13 +1519,14 @@ This section provides a comprehensive mapping of all files involved in the `comm
 
 ### Task 3: Add `CSelect` Native Single-Select Wrapper
 
-| File Path | Purpose | Plan Acceptance Criteria |
-|-----------|---------|-------------------------|
-| `/Users/zhangxiao/frontend/SysUI/chameleon/src/components/Select/Select.tsx` | Component implementation | Native `<select>`, options, controlled/uncontrolled |
-| `/Users/zhangxiao/frontend/SysUI/chameleon/src/components/Select/index.scss` | Component-local SCSS | Minimal structure classes |
-| `/Users/zhangxiao/frontend/SysUI/chameleon/tests/Select.test.tsx` | Jest unit tests | Options rendering, controlled/uncontrolled, placeholder+required |
+| File Path                                                                    | Purpose                  | Plan Acceptance Criteria                                         |
+| ---------------------------------------------------------------------------- | ------------------------ | ---------------------------------------------------------------- |
+| `/Users/zhangxiao/frontend/SysUI/chameleon/src/components/Select/Select.tsx` | Component implementation | Native `<select>`, options, controlled/uncontrolled              |
+| `/Users/zhangxiao/frontend/SysUI/chameleon/src/components/Select/index.scss` | Component-local SCSS     | Minimal structure classes                                        |
+| `/Users/zhangxiao/frontend/SysUI/chameleon/tests/Select.test.tsx`            | Jest unit tests          | Options rendering, controlled/uncontrolled, placeholder+required |
 
 **Key Implementation Details**:
+
 - Select.tsx lines 52-76: native select element
 - Select.tsx lines 36-41: isControlled logic
 - Select.tsx lines 62-66: placeholder option with value="" and disabled
@@ -1467,17 +1535,18 @@ This section provides a comprehensive mapping of all files involved in the `comm
 
 ### Task 4: Integrate Exports, Theme-Layer Visuals, and Dev Preview
 
-| File Path | Purpose | Plan Acceptance Criteria |
-|-----------|---------|-------------------------|
-| `/Users/zhangxiao/frontend/SysUI/chameleon/src/components/index.ts` | Central component exports | Lines 9-12: Button, Radio, RadioGroup, Select |
-| `/Users/zhangxiao/frontend/SysUI/chameleon/src/index.ts` | Package entry re-export | Line 4: exports CButton, CRadio, CRadioGroup, CSelect |
-| `/Users/zhangxiao/frontend/SysUI/chameleon/src/theme/default/styles/index.scss` | Default theme visuals | Lines 128-274: button, radio, select styles |
-| `/Users/zhangxiao/frontend/SysUI/chameleon/src/theme/win98/styles/index.scss` | Win98 theme visuals | Lines 65-183: button, radio, select styles |
-| `/Users/zhangxiao/frontend/SysUI/chameleon/src/theme/winxp/styles/index.scss` | WinXP theme visuals | Lines 90-222: button, radio, select styles |
-| `/Users/zhangxiao/frontend/SysUI/chameleon/src/dev/commonControlsPreview.tsx` | Dev preview component | Stable test IDs: button-demo-primary, radio-demo-fruit, select-demo-size |
-| `/Users/zhangxiao/frontend/SysUI/chameleon/src/dev/main.tsx` | Dev entry wiring | Lines 2, 9-23: imports and renders CommonControlsPreview |
+| File Path                                                                       | Purpose                   | Plan Acceptance Criteria                                                 |
+| ------------------------------------------------------------------------------- | ------------------------- | ------------------------------------------------------------------------ |
+| `/Users/zhangxiao/frontend/SysUI/chameleon/src/components/index.ts`             | Central component exports | Lines 9-12: Button, Radio, RadioGroup, Select                            |
+| `/Users/zhangxiao/frontend/SysUI/chameleon/src/index.ts`                        | Package entry re-export   | Line 4: exports CButton, CRadio, CRadioGroup, CSelect                    |
+| `/Users/zhangxiao/frontend/SysUI/chameleon/src/theme/default/styles/index.scss` | Default theme visuals     | Lines 128-274: button, radio, select styles                              |
+| `/Users/zhangxiao/frontend/SysUI/chameleon/src/theme/win98/styles/index.scss`   | Win98 theme visuals       | Lines 65-183: button, radio, select styles                               |
+| `/Users/zhangxiao/frontend/SysUI/chameleon/src/theme/winxp/styles/index.scss`   | WinXP theme visuals       | Lines 90-222: button, radio, select styles                               |
+| `/Users/zhangxiao/frontend/SysUI/chameleon/src/dev/commonControlsPreview.tsx`   | Dev preview component     | Stable test IDs: button-demo-primary, radio-demo-fruit, select-demo-size |
+| `/Users/zhangxiao/frontend/SysUI/chameleon/src/dev/main.tsx`                    | Dev entry wiring          | Lines 2, 9-23: imports and renders CommonControlsPreview                 |
 
 **Stable Test IDs**:
+
 - `button-demo-primary` (line 31 in commonControlsPreview.tsx)
 - `radio-demo-fruit` (line 59 in commonControlsPreview.tsx) - values: apple/orange
 - `select-demo-size` (line 83 in commonControlsPreview.tsx) - values: small/medium/large
@@ -1486,14 +1555,15 @@ This section provides a comprehensive mapping of all files involved in the `comm
 
 ### Task 5: Add Playwright Harness and Smoke Spec
 
-| File Path | Purpose | Plan Acceptance Criteria |
-|-----------|---------|-------------------------|
-| `/Users/zhangxiao/frontend/SysUI/chameleon/playwright-common-controls.html` | Harness HTML entry | Mounts commonControlsHarness.tsx |
-| `/Users/zhangxiao/frontend/SysUI/chameleon/src/dev/playwright/commonControlsHarness.tsx` | Harness component | Supports default/disabled/unknown fixtures |
-| `/Users/zhangxiao/frontend/SysUI/chameleon/tests/ui/common-controls.smoke.spec.ts` | Smoke test spec | Verifies button, radio, select states |
-| `/Users/zhangxiao/frontend/SysUI/chameleon/tests/ui/common-controls.helpers.ts` | Test helpers | Constants for test IDs |
+| File Path                                                                                | Purpose            | Plan Acceptance Criteria                   |
+| ---------------------------------------------------------------------------------------- | ------------------ | ------------------------------------------ |
+| `/Users/zhangxiao/frontend/SysUI/chameleon/playwright-common-controls.html`              | Harness HTML entry | Mounts commonControlsHarness.tsx           |
+| `/Users/zhangxiao/frontend/SysUI/chameleon/src/dev/playwright/commonControlsHarness.tsx` | Harness component  | Supports default/disabled/unknown fixtures |
+| `/Users/zhangxiao/frontend/SysUI/chameleon/tests/ui/common-controls.smoke.spec.ts`       | Smoke test spec    | Verifies button, radio, select states      |
+| `/Users/zhangxiao/frontend/SysUI/chameleon/tests/ui/common-controls.helpers.ts`          | Test helpers       | Constants for test IDs                     |
 
 **Fixture Behavior**:
+
 - `default`: button visible, radio=apple, select=medium
 - `disabled`: button disabled, Orange radio disabled, select disabled
 - `unknown`: renders `data-testid="fixture-error"` with "Unknown fixture: {name}"
@@ -1502,11 +1572,12 @@ This section provides a comprehensive mapping of all files involved in the `comm
 
 ### Task 6: Update README and CI Validation
 
-| File Path | Purpose | Plan Acceptance Criteria |
-|-----------|---------|-------------------------|
+| File Path                                             | Purpose       | Plan Acceptance Criteria                                  |
+| ----------------------------------------------------- | ------------- | --------------------------------------------------------- |
 | `/Users/zhangxiao/frontend/SysUI/chameleon/README.md` | Documentation | Lines 32-56: CButton, CRadioGroup, CSelect usage examples |
 
 **README Examples**:
+
 - CButton: default + primary variant
 - CRadioGroup: name="fruit", values apple/orange
 - CSelect: options small/medium/large with placeholder
@@ -1515,12 +1586,12 @@ This section provides a comprehensive mapping of all files involved in the `comm
 
 ### Final Verification Wave (F1-F4)
 
-| File Path | Purpose |
-|-----------|---------|
+| File Path                                                                            | Purpose                   |
+| ------------------------------------------------------------------------------------ | ------------------------- |
 | `/Users/zhangxiao/frontend/SysUI/chameleon/.sisyphus/evidence/f1-plan-compliance.md` | F1: Plan compliance audit |
-| `/Users/zhangxiao/frontend/SysUI/chameleon/.sisyphus/evidence/f2-code-quality.md` | F2: Code quality review |
-| `/Users/zhangxiao/frontend/SysUI/chameleon/.sisyphus/evidence/f3-ui-qa.md` | F3: Manual QA |
-| `/Users/zhangxiao/frontend/SysUI/chameleon/.sisyphus/evidence/f4-scope-fidelity.md` | F4: Scope fidelity check |
+| `/Users/zhangxiao/frontend/SysUI/chameleon/.sisyphus/evidence/f2-code-quality.md`    | F2: Code quality review   |
+| `/Users/zhangxiao/frontend/SysUI/chameleon/.sisyphus/evidence/f3-ui-qa.md`           | F3: Manual QA             |
+| `/Users/zhangxiao/frontend/SysUI/chameleon/.sisyphus/evidence/f4-scope-fidelity.md`  | F4: Scope fidelity check  |
 
 ---
 
@@ -1575,6 +1646,7 @@ npm pack --dry-run
 ### Summary
 
 All 22 files from commit `394f1c1` have been identified and mapped to their respective plan tasks (1-6) and final verification wave (F1-F4). The implementation follows the planned scope with:
+
 - Native HTML semantics for Button, Radio, Select
 - Controlled/uncontrolled pattern for RadioGroup and Select
 - Theme-layer visual styling (default, win98, winxp)

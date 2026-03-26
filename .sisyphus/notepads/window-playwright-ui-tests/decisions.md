@@ -18,6 +18,7 @@ export default defineConfig({
 ```
 
 **关键点**:
+
 - 使用 `projects` 数组定义单个 Chromium 项目
 - `devices['Desktop Chrome']` 提供标准 Chrome 桌面配置
 - 不需要 Firefox/WebKit 项目，符合成本和稳定性目标
@@ -41,12 +42,14 @@ export default defineConfig({
 ```
 
 **关键点**:
+
 - `command`: 启动开发服务器的 shell 命令
 - `url`: Playwright 等待服务器就绪的健康检查 URL
 - `reuseExistingServer`: 本地开发时复用已有服务器，CI 环境下重新启动
 - `stdout/stderr`: 控制服务器输出日志行为
 
 **CI 注意事项**:
+
 - `reuseExistingServer: !process.env.CI` 确保 CI 环境每次都启动新服务器
 - 需确保 `yarn dev` 绑定的端口与 `url` 一致
 
@@ -71,15 +74,16 @@ export default defineConfig({
 
 **模式选项**:
 
-| 选项 | Trace | Video | Screenshot |
-|------|-------|-------|------------|
-| `'on'` | 每次都记录 | 每次都录制 | 每次都截图 |
-| `'on-first-retry'` | 首次重试时记录 | 首次重试时录制 | - |
-| `'retain-on-failure'` | 失败时保留 | 失败时保留 | - |
-| `'only-on-failure'` | - | - | 仅失败时截图 |
-| `'off'` | 关闭 | 关闭 | 关闭 |
+| 选项                  | Trace          | Video          | Screenshot   |
+| --------------------- | -------------- | -------------- | ------------ |
+| `'on'`                | 每次都记录     | 每次都录制     | 每次都截图   |
+| `'on-first-retry'`    | 首次重试时记录 | 首次重试时录制 | -            |
+| `'retain-on-failure'` | 失败时保留     | 失败时保留     | -            |
+| `'only-on-failure'`   | -              | -              | 仅失败时截图 |
+| `'off'`               | 关闭           | 关闭           | 关闭         |
 
 **推荐策略 (CI)**:
+
 - `trace: 'on-first-retry'` - 首次失败时自动记录 trace，便于调试
 - `video: 'retain-on-failure'` - 失败测试保留视频
 - `screenshot: 'only-on-failure'` - 失败时截图
@@ -97,11 +101,13 @@ export default defineConfig({
 ```
 
 **内置 Reporter**:
+
 - `'list'`: 本地开发，每行显示测试详情
 - `'dot'`: CI 环境，圆点表示结果（简洁）
 - `'html'`: 生成交互式 HTML 报告
 
 **CI + HTML 报告上传**:
+
 ```typescript
 // playwright.config.ts
 export default defineConfig({
@@ -126,24 +132,28 @@ export default defineConfig({
 **来源**: [Playwright 官方文档 - CI](https://playwright.dev/docs/ci), [Steve Fenton Blog](https://stevefenton.co.uk/blog/2025/09/playwright-insteall-github-actions/)
 
 ### 完整安装 (所有浏览器)
+
 ```bash
 npx playwright install --with-deps
 ```
 
 ### Chromium Only (推荐)
+
 ```bash
 npx playwright install chromium --with-deps
 ```
 
 **关键优化**:
+
 - 使用 `chromium` 参数仅安装 Chromium 浏览器
 - 显著减少安装时间和 CI 超时风险
 - 避免安装不需要的 Firefox/WebKit
 
 **完整 CI 步骤**:
+
 ```yaml
 - name: Install dependencies
-  run: npm ci  # 或 yarn
+  run: npm ci # 或 yarn
 
 - name: Install Playwright Browsers
   run: npx playwright install chromium --with-deps
@@ -171,6 +181,7 @@ npx playwright install chromium --with-deps
 ```
 
 **上传内容**:
+
 - `playwright-report/`: HTML 报告
 - `test-results/`: 包含 trace.zip, video.webm, screenshot.png
 
@@ -243,7 +254,7 @@ jobs:
       - run: yarn install
       - run: yarn test
 
-  ui-test:  # <-- 新增 Playwright UI 测试
+  ui-test: # <-- 新增 Playwright UI 测试
     runs-on: ubuntu-latest
     steps:
       - uses: actions/checkout@v4
@@ -264,7 +275,7 @@ jobs:
 
   build:
     runs-on: ubuntu-latest
-    needs: [lint, test, ui-test]  # <-- 依赖 UI 测试
+    needs: [lint, test, ui-test] # <-- 依赖 UI 测试
     steps:
       - uses: actions/checkout@v4
       - uses: actions/setup-node@v4

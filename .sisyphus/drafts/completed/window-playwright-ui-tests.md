@@ -1,37 +1,46 @@
 # Window Playwright UI Tests
 
 ## TL;DR
+
 > **Summary**: 为 `Window` 组件新增基于 Playwright 的浏览器级 UI 自动化能力，并只覆盖窗口拖动与边框缩放相关行为。计划采用独立 deterministic harness、Chromium-only 执行、`tests-after` 策略，并把 UI 自动化接入现有 PR CI 必跑检查。
 > **Deliverables**:
+>
 > - Playwright 依赖、配置、脚本与 Chromium-only 运行约束
 > - 独立的 `Window` 浏览器测试入口与 deterministic harness
 > - `Window` move / resize / resize guardrails 的 Playwright 用例
 > - PR CI 中的 Playwright 执行与失败产物上传
-> **Effort**: Medium
-> **Parallel**: YES - 3 waves
-> **Critical Path**: Task 1 -> Task 2 -> Task 3 -> Task 4/5/6 -> Task 7
+>   **Effort**: Medium
+>   **Parallel**: YES - 3 waves
+>   **Critical Path**: Task 1 -> Task 2 -> Task 3 -> Task 4/5/6 -> Task 7
 
 ## Context
+
 ### Original Request
+
 增加 UI 自动化测试，安装 Playwright 作为自动化测试工具，并写测试用例；本次只覆盖 `Window` 的移动和 Resize Test Case。
 
 ### Interview Summary
+
 - 目标明确：新增 Playwright，不引入其他 E2E 工具。
 - 覆盖范围明确：仅 `Window` move / resize 相关场景，不扩展到其他组件。
 - 测试策略已定：`tests-after`。
 - CI 策略已定：Playwright 进入现有 PR CI 主流程并作为必跑检查。
 
 ### Metis Review (gaps addressed)
+
 - 采用独立 harness，而不是复用日常 dev preview，避免 demo 漂移导致 flaky。
 - 默认只跑 Chromium，控制 CI 成本与稳定性；不在本次引入跨浏览器矩阵。
 - 将 resize 覆盖钉死为 8 个方向句柄 + `resizable={false}` + min/max clamp，避免“只测部分方向”留下实现判断空间。
 - 所有断言使用固定几何初始值、固定拖拽增量、固定命令和固定失败产物路径。
 
 ## Work Objectives
+
 ### Core Objective
+
 为组件库补齐 Playwright 浏览器自动化测试基础设施，并为 `Window` 组件建立真实浏览器下可重复执行的 move / resize 回归测试面。
 
 ### Deliverables
+
 - `package.json` 中的 Playwright 依赖与脚本
 - `playwright.config.ts`
 - 独立浏览器测试入口页（固定 URL）与对应 React harness
@@ -39,6 +48,7 @@
 - `.github/workflows/ci-pr.yml` 中的 Playwright 执行与失败产物上传
 
 ### Definition of Done (verifiable conditions with commands)
+
 - `yarn lint` 通过，包含新建 `tests/ui/**/*.ts` 与 Playwright 配置文件
 - `yarn test` 通过，现有 Jest 契约不回归
 - `yarn test:ui` 通过，Chromium 中所有 `Window` move / resize 场景通过
@@ -46,6 +56,7 @@
 - `yarn test:ui --grep "resize"` 可单独通过缩放用例
 
 ### Must Have
+
 - 基于现有 `data-testid`：`window-frame`、`window-title`、`window-content`、`window-resize-{dir}`
 - 固定测试入口 URL：`/playwright-window.html`
 - 固定测试窗口初始几何：`x=10, y=20, width=240, height=160`
@@ -53,13 +64,16 @@
 - CI 失败时上传 `playwright-report/` 与 `test-results/`
 
 ### Must NOT Have (guardrails, AI slop patterns, scope boundaries)
+
 - 不新增 Storybook、Cypress、visual snapshot、a11y 审计或跨浏览器矩阵
 - 不把范围扩展到 `WindowManager`、z-index、focus、maximize/minimize、keyboard 行为
 - 不因测试引入无证据的 `Window` 内部重构
 - 不新增与现有 `data-testid` 重复的测试专用 DOM hooks，除非现有 hook 无法支撑断言且在任务中明确证明
 
 ## Verification Strategy
+
 > ZERO HUMAN INTERVENTION — all verification is agent-executed.
+
 - Test decision: `tests-after` + Playwright (`@playwright/test`) + Chromium-only
 - QA policy: 每个任务都包含 agent-executed 场景；浏览器场景统一使用 Playwright
 - Evidence:
@@ -72,7 +86,9 @@
   - `.sisyphus/evidence/task-7-playwright-ci.txt`
 
 ## Execution Strategy
+
 ### Parallel Execution Waves
+
 > Target: 5-8 tasks per wave. Shared prerequisites are isolated into Wave 1 to maximize safe parallelism.
 
 Wave 1: Task 1 (tooling/config), Task 2 (deterministic harness), Task 3 (shared Playwright helpers)
@@ -81,23 +97,25 @@ Wave 3: Task 7 (PR CI wiring and failure artifacts)
 
 ### Dependency Matrix (full, all tasks)
 
-| Task | Depends On | Blocks |
-|------|------------|--------|
-| 1 | none | 2, 3, 7 |
-| 2 | 1 | 4, 5, 6 |
-| 3 | 1, 2 | 4, 5, 6 |
-| 4 | 2, 3 | 7 |
-| 5 | 2, 3 | 7 |
-| 6 | 2, 3 | 7 |
-| 7 | 1, 4, 5, 6 | F1-F4 |
+| Task | Depends On | Blocks  |
+| ---- | ---------- | ------- |
+| 1    | none       | 2, 3, 7 |
+| 2    | 1          | 4, 5, 6 |
+| 3    | 1, 2       | 4, 5, 6 |
+| 4    | 2, 3       | 7       |
+| 5    | 2, 3       | 7       |
+| 6    | 2, 3       | 7       |
+| 7    | 1, 4, 5, 6 | F1-F4   |
 
 ### Agent Dispatch Summary (wave → task count → categories)
+
 - Wave 1 -> 3 tasks -> `quick`, `visual-engineering`
 - Wave 2 -> 3 tasks -> `visual-engineering`, `unspecified-low`
 - Wave 3 -> 1 task -> `quick`
 - Final Verification -> 4 tasks -> `oracle`, `unspecified-high`, `deep`, `playwright`
 
 ## TODOs
+
 > Implementation + Test = ONE task. Never separate.
 > EVERY task MUST have: Agent Profile + Parallelization + QA Scenarios.
 
@@ -127,6 +145,7 @@ Wave 3: Task 7 (PR CI wiring and failure artifacts)
   - [x] `npx playwright test --config=playwright.config.ts --list` 可成功列出测试，不报配置错误
 
   **QA Scenarios** (MANDATORY — task incomplete without these):
+
   ```text
   Scenario: Chromium-only config loads
     Tool: Bash
@@ -170,6 +189,7 @@ Wave 3: Task 7 (PR CI wiring and failure artifacts)
   - [x] 未知 `fixture` 参数渲染 `[data-testid="fixture-error"]`，文本明确包含请求的 fixture 名称
 
   **QA Scenarios** (MANDATORY — task incomplete without these):
+
   ```text
   Scenario: Deterministic default fixture renders
     Tool: Playwright
@@ -212,6 +232,7 @@ Wave 3: Task 7 (PR CI wiring and failure artifacts)
   - [x] helper 默认使用 `window-frame`、`window-title`、`window-content`、`window-resize-{dir}` 作为主 selector
 
   **QA Scenarios** (MANDATORY — task incomplete without these):
+
   ```text
   Scenario: Helper reads baseline metrics
     Tool: Playwright
@@ -253,6 +274,7 @@ Wave 3: Task 7 (PR CI wiring and failure artifacts)
   - [x] 所有 move 用例只通过现有 `data-testid` 完成定位
 
   **QA Scenarios** (MANDATORY — task incomplete without these):
+
   ```text
   Scenario: Title bar drag moves window
     Tool: Playwright
@@ -293,6 +315,7 @@ Wave 3: Task 7 (PR CI wiring and failure artifacts)
   - [x] spec 中不出现硬编码重复拖拽实现，统一复用 helper
 
   **QA Scenarios** (MANDATORY — task incomplete without these):
+
   ```text
   Scenario: East and south-east handles expand with anchor preserved
     Tool: Playwright
@@ -334,6 +357,7 @@ Wave 3: Task 7 (PR CI wiring and failure artifacts)
   - [x] `max-clamp` fixture 中最终 frame metrics 精确为 `{50,50,150,110}`
 
   **QA Scenarios** (MANDATORY — task incomplete without these):
+
   ```text
   Scenario: resizable=false disables handles but keeps drag
     Tool: Playwright
@@ -352,10 +376,10 @@ Wave 3: Task 7 (PR CI wiring and failure artifacts)
 
 - [x] 7. Require Playwright Window UI automation in PR CI
 
-  **What to do**: 更新 `.github/workflows/ci-pr.yml`，在现有 `Run unit tests` 之后、`Build` 之前新增 Playwright 安装与执行步骤：`npx playwright install --with-deps chromium`，随后运行 `yarn test:ui`；若 Playwright 步骤失败，上传 `playwright-report/` 与 `test-results/` artifact。保留当前 `lint -> test -> build -> npm pack` 主顺序，只在 unit test 与 build 之间插入 UI 自动化。
-  **Must NOT do**: 不创建新的可选 workflow 来绕开 PR required check；不把 Playwright 放在 `build` 之后；不上传成功运行时的冗余 artifact。
+     **What to do**: 更新 `.github/workflows/ci-pr.yml`，在现有 `Run unit tests` 之后、`Build` 之前新增 Playwright 安装与执行步骤：`npx playwright install --with-deps chromium`，随后运行 `yarn test:ui`；若 Playwright 步骤失败，上传 `playwright-report/` 与 `test-results/` artifact。保留当前 `lint -> test -> build -> npm pack` 主顺序，只在 unit test 与 build 之间插入 UI 自动化。
+     **Must NOT do**: 不创建新的可选 workflow 来绕开 PR required check；不把 Playwright 放在 `build` 之后；不上传成功运行时的冗余 artifact。
 
-  **Recommended Agent Profile**:
+     **Recommended Agent Profile**:
   - Category: `quick` — Reason: workflow 变更聚焦在单文件和固定命令串
   - Skills: [] — 纯 GitHub Actions wiring，不需要额外技能
   - Omitted: [`git-master`] — 当前任务不是 git 历史操作
@@ -374,31 +398,32 @@ Wave 3: Task 7 (PR CI wiring and failure artifacts)
   - [x] 工作流仍保留原有 `lint`、`test`、`build`、`npm pack --dry-run` 步骤
 
   **QA Scenarios** (MANDATORY — task incomplete without these):
+
   ```text
   Scenario: Workflow invokes local-equivalent Playwright command
     Tool: Bash
     Steps: Run `python - <<'PY'
-from pathlib import Path
-text = Path('.github/workflows/ci-pr.yml').read_text()
-assert 'npx playwright install --with-deps chromium' in text
-assert 'yarn test:ui' in text
-assert 'playwright-report/' in text
-assert 'test-results/' in text
-print('workflow-playwright-checks-ok')
-PY`
+  from pathlib import Path
+  text = Path('.github/workflows/ci-pr.yml').read_text()
+  assert 'npx playwright install --with-deps chromium' in text
+  assert 'yarn test:ui' in text
+  assert 'playwright-report/' in text
+  assert 'test-results/' in text
+  print('workflow-playwright-checks-ok')
+  PY`
     Expected: Script exits 0 and prints `workflow-playwright-checks-ok`
     Evidence: .sisyphus/evidence/task-7-playwright-ci.txt
 
   Scenario: Required workflow still preserves existing pipeline stages
     Tool: Bash
     Steps: Run `python - <<'PY'
-from pathlib import Path
-text = Path('.github/workflows/ci-pr.yml').read_text()
-required = ['Run lint', 'Run unit tests', 'Build', 'Verify npm pack (dry-run)']
-for item in required:
+  from pathlib import Path
+  text = Path('.github/workflows/ci-pr.yml').read_text()
+  required = ['Run lint', 'Run unit tests', 'Build', 'Verify npm pack (dry-run)']
+  for item in required:
     assert item in text, item
-print('workflow-stages-preserved')
-PY`
+  print('workflow-stages-preserved')
+  PY`
     Expected: Script exits 0 and prints `workflow-stages-preserved`
     Evidence: .sisyphus/evidence/task-7-playwright-ci-error.txt
   ```
@@ -406,9 +431,11 @@ PY`
   **Commit**: YES | Message: `ci(playwright): require window ui automation` | Files: `.github/workflows/ci-pr.yml`
 
 ## Final Verification Wave (MANDATORY — after ALL implementation tasks)
+
 > 4 review agents run in PARALLEL. ALL must APPROVE. Present consolidated results to user and get explicit "okay" before completing.
 > **Do NOT auto-proceed after verification. Wait for user's explicit approval before marking work complete.**
 > **Never mark F1-F4 as checked before getting user's okay.** Rejection or user feedback -> fix -> re-run -> present again -> wait for okay.
+
 - [x] F1. Plan Compliance Audit — oracle
 
   **What to do**: 调用 `oracle` 对照本计划与最终落地文件，逐项核对任务 1-7 的交付物、范围边界、验收项与 CI 接线是否全部兑现；输出 `PASS` / `FAIL` 以及逐条偏差列表。
@@ -440,26 +467,28 @@ PY`
   - [x] 审计结果确认未引入计划外组件或超范围测试
 
   **QA Scenarios** (MANDATORY — task incomplete without these):
+
   ```text
   Scenario: Deterministic compliance audit checks required deliverables
     Tool: Bash
     Steps: Run `python - <<'PY'
-from pathlib import Path
+  from pathlib import Path
+  ```
 
 required_files = [
-    'package.json',
-    'playwright.config.ts',
-    'playwright-window.html',
-    'src/dev/playwright/windowHarness.tsx',
-    'tests/ui/window.helpers.ts',
-    'tests/ui/window.smoke.spec.ts',
-    'tests/ui/window.move.spec.ts',
-    'tests/ui/window.resize.spec.ts',
-    'tests/ui/window.resize-guards.spec.ts',
-    '.github/workflows/ci-pr.yml',
+'package.json',
+'playwright.config.ts',
+'playwright-window.html',
+'src/dev/playwright/windowHarness.tsx',
+'tests/ui/window.helpers.ts',
+'tests/ui/window.smoke.spec.ts',
+'tests/ui/window.move.spec.ts',
+'tests/ui/window.resize.spec.ts',
+'tests/ui/window.resize-guards.spec.ts',
+'.github/workflows/ci-pr.yml',
 ]
 for file in required_files:
-    assert Path(file).exists(), file
+assert Path(file).exists(), file
 
 pkg = Path('package.json').read_text()
 assert 'test:ui' in pkg
@@ -471,7 +500,7 @@ assert '127.0.0.1:5673' in cfg or '5673' in cfg
 
 workflow = Path('.github/workflows/ci-pr.yml').read_text()
 for needle in ['npx playwright install --with-deps chromium', 'yarn test:ui', 'playwright-report', 'test-results']:
-    assert needle in workflow, needle
+assert needle in workflow, needle
 
 move_spec = Path('tests/ui/window.move.spec.ts').read_text()
 assert 'window-title' in move_spec
@@ -479,20 +508,19 @@ assert 'window-content' in move_spec
 
 resize_spec = Path('tests/ui/window.resize.spec.ts').read_text()
 for direction in ['north', 'south', 'east', 'west', 'north-east', 'north-west', 'south-east', 'south-west']:
-    assert direction in resize_spec or direction.replace('-', '') in resize_spec or direction[:1] in resize_spec
+assert direction in resize_spec or direction.replace('-', '') in resize_spec or direction[:1] in resize_spec
 
 guards = Path('tests/ui/window.resize-guards.spec.ts').read_text()
 assert 'resizable={false}' in guards or 'resizable: false' in guards or 'resizable' in guards
 assert 'min' in guards.lower() or 'max' in guards.lower()
 
 print('PASS: deterministic plan compliance audit')
-PY`
-    Expected: Script exits 0 and prints `PASS: deterministic plan compliance audit`
-    Evidence: .sisyphus/evidence/f1-plan-compliance.txt
+PY`    Expected: Script exits 0 and prints`PASS: deterministic plan compliance audit`
+Evidence: .sisyphus/evidence/f1-plan-compliance.txt
 
-  Scenario: Compliance audit captures plan-critical references
-    Tool: Bash
-    Steps: Run `python - <<'PY'
+Scenario: Compliance audit captures plan-critical references
+Tool: Bash
+Steps: Run `python - <<'PY'
 from pathlib import Path
 plan = Path('.sisyphus/plans/window-playwright-ui-tests.md').read_text()
 for needle in [
@@ -505,73 +533,74 @@ for needle in [
     assert needle in plan, needle
 print('f1-evidence-complete')
 PY`
-    Expected: Script exits 0 and prints `f1-evidence-complete`
-    Evidence: .sisyphus/evidence/f1-plan-compliance-check.txt
-  ```
+Expected: Script exits 0 and prints `f1-evidence-complete`
+Evidence: .sisyphus/evidence/f1-plan-compliance-check.txt
 
-  **Commit**: NO | Message: `n/a` | Files: none
+````
+
+**Commit**: NO | Message: `n/a` | Files: none
 
 - [x] F2. Code Quality Review — unspecified-high
 
-  **What to do**: 由高能力审查代理检查新增 Playwright 配置、helpers、spec 组织、命名、一致性与可维护性，重点发现脆弱 selector、重复断言、非确定性等待、与现有库约定不一致的问题。
-  **Must NOT do**: 不要要求改动与本任务无关的旧代码；不要把样式偏好当成阻塞项。
+**What to do**: 由高能力审查代理检查新增 Playwright 配置、helpers、spec 组织、命名、一致性与可维护性，重点发现脆弱 selector、重复断言、非确定性等待、与现有库约定不一致的问题。
+**Must NOT do**: 不要要求改动与本任务无关的旧代码；不要把样式偏好当成阻塞项。
 
-  **Recommended Agent Profile**:
-  - Category: `unspecified-high` — Reason: 适合做高强度代码质量审查
-  - Skills: `[]` — 审查重点是结构与稳定性，不依赖额外技能
-  - Omitted: `[git-master]` — 此处不是 git 历史分析任务
+**Recommended Agent Profile**:
+- Category: `unspecified-high` — Reason: 适合做高强度代码质量审查
+- Skills: `[]` — 审查重点是结构与稳定性，不依赖额外技能
+- Omitted: `[git-master]` — 此处不是 git 历史分析任务
 
-  **Parallelization**: Can Parallel: YES | Wave Final | Blocks: none | Blocked By: 1, 2, 3, 4, 5, 6, 7
+**Parallelization**: Can Parallel: YES | Wave Final | Blocks: none | Blocked By: 1, 2, 3, 4, 5, 6, 7
 
-  **References** (executor has NO interview context — be exhaustive):
-  - Pattern: `tests/CWindowTitleComposition.test.tsx` — 浏览器级断言应与现有 jsdom 契约保持一致
-  - Pattern: `src/components/Window/Window.tsx` — 现有 `Window` 行为与 selector 来源
-  - Pattern: `src/components/Window/WindowTitle.tsx` — 标题栏拖拽行为来源
-  - Pattern: `src/components/Widget/Widget.tsx` — frame inline style 几何断言来源
-  - Pattern: `tests/ui/window.helpers.ts` — helper 抽象是否避免重复并保持确定性
-  - Pattern: `tests/ui/window.move.spec.ts` — move spec 质量与等待策略
-  - Pattern: `tests/ui/window.resize.spec.ts` — resize matrix 是否系统且不重复
-  - Pattern: `tests/ui/window.resize-guards.spec.ts` — guardrail case 是否聚焦 `resizable={false}` 与 clamp
-  - Pattern: `playwright.config.ts` — reporter、timeout、project 配置是否合理
+**References** (executor has NO interview context — be exhaustive):
+- Pattern: `tests/CWindowTitleComposition.test.tsx` — 浏览器级断言应与现有 jsdom 契约保持一致
+- Pattern: `src/components/Window/Window.tsx` — 现有 `Window` 行为与 selector 来源
+- Pattern: `src/components/Window/WindowTitle.tsx` — 标题栏拖拽行为来源
+- Pattern: `src/components/Widget/Widget.tsx` — frame inline style 几何断言来源
+- Pattern: `tests/ui/window.helpers.ts` — helper 抽象是否避免重复并保持确定性
+- Pattern: `tests/ui/window.move.spec.ts` — move spec 质量与等待策略
+- Pattern: `tests/ui/window.resize.spec.ts` — resize matrix 是否系统且不重复
+- Pattern: `tests/ui/window.resize-guards.spec.ts` — guardrail case 是否聚焦 `resizable={false}` 与 clamp
+- Pattern: `playwright.config.ts` — reporter、timeout、project 配置是否合理
 
-  **Acceptance Criteria** (agent-executable only):
-  - [x] 代码审查结果明确区分阻塞问题与非阻塞建议
-  - [x] 审查结果至少覆盖配置、helpers、spec 结构、等待策略、选择器稳定性五个方面
-  - [x] 若判定通过，结果中明确写出“无阻塞问题”或等效结论
+**Acceptance Criteria** (agent-executable only):
+- [x] 代码审查结果明确区分阻塞问题与非阻塞建议
+- [x] 审查结果至少覆盖配置、helpers、spec 结构、等待策略、选择器稳定性五个方面
+- [x] 若判定通过，结果中明确写出“无阻塞问题”或等效结论
 
-  **QA Scenarios** (MANDATORY — task incomplete without these):
-  ```text
-  Scenario: Quality gates pass across lint, unit, browser, and build checks
-    Tool: Bash
-    Steps: Run `yarn lint && yarn test && yarn test:ui && yarn build`
-    Expected: Command exits 0 without lint/test/build failures
-    Evidence: .sisyphus/evidence/f2-code-quality.txt
+**QA Scenarios** (MANDATORY — task incomplete without these):
+```text
+Scenario: Quality gates pass across lint, unit, browser, and build checks
+  Tool: Bash
+  Steps: Run `yarn lint && yarn test && yarn test:ui && yarn build`
+  Expected: Command exits 0 without lint/test/build failures
+  Evidence: .sisyphus/evidence/f2-code-quality.txt
 
-  Scenario: Playwright additions avoid common flake and debug anti-patterns
-    Tool: Bash
-    Steps: Run `python - <<'PY'
+Scenario: Playwright additions avoid common flake and debug anti-patterns
+  Tool: Bash
+  Steps: Run `python - <<'PY'
 from pathlib import Path
 files = [
-    Path('playwright.config.ts'),
-    Path('tests/ui/window.helpers.ts'),
-    Path('tests/ui/window.smoke.spec.ts'),
-    Path('tests/ui/window.move.spec.ts'),
-    Path('tests/ui/window.resize.spec.ts'),
-    Path('tests/ui/window.resize-guards.spec.ts'),
+  Path('playwright.config.ts'),
+  Path('tests/ui/window.helpers.ts'),
+  Path('tests/ui/window.smoke.spec.ts'),
+  Path('tests/ui/window.move.spec.ts'),
+  Path('tests/ui/window.resize.spec.ts'),
+  Path('tests/ui/window.resize-guards.spec.ts'),
 ]
 for file in files:
-    text = file.read_text()
-    forbidden = ['test.only', 'page.pause(', 'waitForTimeout(', 'setTimeout(']
-    for needle in forbidden:
-        assert needle not in text, f'{file}: {needle}'
+  text = file.read_text()
+  forbidden = ['test.only', 'page.pause(', 'waitForTimeout(', 'setTimeout(']
+  for needle in forbidden:
+      assert needle not in text, f'{file}: {needle}'
 print('f2-evidence-complete')
 PY`
-    Expected: Script exits 0 and prints `f2-evidence-complete`
-    Evidence: .sisyphus/evidence/f2-code-quality-check.txt
+  Expected: Script exits 0 and prints `f2-evidence-complete`
+  Evidence: .sisyphus/evidence/f2-code-quality-check.txt
 
-  Scenario: Browser config remains deterministic and Chromium-only
-    Tool: Bash
-    Steps: Run `python - <<'PY'
+Scenario: Browser config remains deterministic and Chromium-only
+  Tool: Bash
+  Steps: Run `python - <<'PY'
 from pathlib import Path
 text = Path('playwright.config.ts').read_text().lower()
 assert 'chromium' in text
@@ -580,11 +609,11 @@ assert 'webkit' not in text
 assert '5673' in text
 print('f2-evidence-complete')
 PY`
-    Expected: Script exits 0 and prints `f2-evidence-complete`
-    Evidence: .sisyphus/evidence/f2-code-quality-config.txt
-  ```
+  Expected: Script exits 0 and prints `f2-evidence-complete`
+  Evidence: .sisyphus/evidence/f2-code-quality-config.txt
+````
 
-  **Commit**: NO | Message: `n/a` | Files: none
+**Commit**: NO | Message: `n/a` | Files: none
 
 - [x] F3. Real Manual QA — unspecified-high (+ playwright if UI)
 
@@ -614,6 +643,7 @@ PY`
   - [x] 产出至少一份截图或 Playwright report 作为最终验收证据
 
   **QA Scenarios** (MANDATORY — task incomplete without these):
+
   ```text
   Scenario: Browser-level final acceptance passes on Window behaviors
     Tool: Bash
@@ -624,12 +654,12 @@ PY`
   Scenario: Final QA preserves debuggable browser artifacts
     Tool: Bash
     Steps: Run `python - <<'PY'
-from pathlib import Path
-report = Path('playwright-report')
-results = Path('test-results')
-assert report.exists() or results.exists()
-print('f3-artifacts-present')
-PY`
+  from pathlib import Path
+  report = Path('playwright-report')
+  results = Path('test-results')
+  assert report.exists() or results.exists()
+  print('f3-artifacts-present')
+  PY`
     Expected: Script exits 0 and prints `f3-artifacts-present`
     Evidence: .sisyphus/evidence/f3-browser-qa-artifacts.txt
   ```
@@ -662,33 +692,34 @@ PY`
   - [x] 若无超范围项，结果明确写出只覆盖 `Window` move / resize 及其必要 guardrail/CI 配套
 
   **QA Scenarios** (MANDATORY — task incomplete without these):
+
   ```text
   Scenario: Scope audit confirms only Window UI automation artifacts were added
     Tool: Bash
     Steps: Run `python - <<'PY'
-from pathlib import Path
+  from pathlib import Path
+  ```
 
 ui_dir = Path('tests/ui')
 assert ui_dir.exists()
 allowed = {
-    'window.helpers.ts',
-    'window.smoke.spec.ts',
-    'window.move.spec.ts',
-    'window.resize.spec.ts',
-    'window.resize-guards.spec.ts',
+'window.helpers.ts',
+'window.smoke.spec.ts',
+'window.move.spec.ts',
+'window.resize.spec.ts',
+'window.resize-guards.spec.ts',
 }
 present = {p.name for p in ui_dir.iterdir() if p.is_file()}
 assert allowed.issubset(present), present
 unexpected_specs = [name for name in present if name.endswith('.spec.ts') and not name.startswith('window.') and not name.startswith('window-')]
 assert not unexpected_specs, unexpected_specs
 print('scope-window-only-pass')
-PY`
-    Expected: Script exits 0 and prints `scope-window-only-pass`
-    Evidence: .sisyphus/evidence/f4-scope-fidelity.txt
+PY`    Expected: Script exits 0 and prints`scope-window-only-pass`
+Evidence: .sisyphus/evidence/f4-scope-fidelity.txt
 
-  Scenario: Scope evidence explicitly mentions Window-only focus
-    Tool: Bash
-    Steps: Run `python - <<'PY'
+Scenario: Scope evidence explicitly mentions Window-only focus
+Tool: Bash
+Steps: Run `python - <<'PY'
 from pathlib import Path
 pkg = Path('package.json').read_text()
 assert 'test:ui' in pkg
@@ -703,12 +734,12 @@ plan = Path('.sisyphus/plans/window-playwright-ui-tests.md').read_text()
 assert '仅 `Window` move / resize 相关场景，不扩展到其他组件。' in plan
 assert '不把范围扩展到 `WindowManager`、z-index、focus、maximize/minimize、keyboard 行为' in plan
 print('f4-evidence-complete')
-PY`
-    Expected: Script exits 0 and prints `f4-evidence-complete`
-    Evidence: .sisyphus/evidence/f4-scope-fidelity-check.txt
-  ```
+PY`    Expected: Script exits 0 and prints`f4-evidence-complete`
+Evidence: .sisyphus/evidence/f4-scope-fidelity-check.txt
 
-  **Commit**: NO | Message: `n/a` | Files: none
+```
+
+**Commit**: NO | Message: `n/a` | Files: none
 
 ## Commit Strategy
 - `chore(playwright): add browser test tooling`
@@ -723,3 +754,4 @@ PY`
 - 仓库具备稳定的 Playwright 运行入口，且不影响现有 `Jest + Vite` 工作流
 - `Window` 的标题拖动、内容区 no-op、8 方向 resize、`resizable={false}`、min/max clamp 都有浏览器级回归覆盖
 - PR CI 在 Ubuntu runner 上能安装 Chromium、执行 Playwright，并在失败时保留可诊断产物
+```

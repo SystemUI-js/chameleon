@@ -1,38 +1,47 @@
 # Windows SystemType Start Bar Plan
 
 ## TL;DR
+
 > **Summary**: 为 `windows` SystemType 增加一个公开导出的 `CStartBar` 组件，复用 `CDock` 的布局能力但不做类继承；默认集成进 `WindowsSystem`，并补齐 `win98` / `winxp` 主题样式与 Jest / Playwright 验证。
 > **Deliverables**:
+>
 > - 新的 `CStartBar` 公共组件与基础样式
 > - `CDock` 非破坏性共享布局能力抽取
 > - `WindowsSystem` 默认开始栏集成
 > - `win98` / `winxp` 开始栏主题样式
 > - Jest 集成测试与 Playwright UI 验证
-> **Effort**: Medium
-> **Parallel**: NO
-> **Critical Path**: 1 → 2 → 3 → 4 → 5
+>   **Effort**: Medium
+>   **Parallel**: NO
+>   **Critical Path**: 1 → 2 → 3 → 4 → 5
 
 ## Context
+
 ### Original Request
+
 给 Windows 的 SystemType 增加开始栏组件，继承自 Dock 组件，参考 Windows 经典主题的开始栏设计。
 
 ### Interview Summary
+
 - 用户确认视觉覆盖范围为 `win98 + winxp`。
 - 用户确认不做严格 `class extends CDock`，而是复用 Dock 行为。
 - 用户确认 `CStartBar` 需要对外公开导出，同时在 `WindowsSystem` 默认组合。
 - 用户确认测试策略采用“实现后补”，但仍要求完整验证。
 
 ### Metis Review (gaps addressed)
+
 - 将“复用 Dock 行为”锁定为共享底部锚定、厚度、左右 gap、样式清洗逻辑，而不是抽象成通用任务栏体系。
 - 明确不改 `SystemHost` / `registry` 架构，不把需求膨胀为完整任务栏（无开始菜单、托盘、时钟、窗口按钮管理）。
 - 明确 `StartBar` 与 `CDock` 保持兄弟组件关系，通过共享 helper 复用布局计算，避免破坏 `CDock` API。
 - 明确 dev 预览沿用 `SystemHost` 现有接线，仅在现有 Windows 预览中显现开始栏，不新增独立 demo 入口。
 
 ## Work Objectives
+
 ### Core Objective
+
 在不破坏现有 `CDock`、`SystemHost` 与 Windows shell 结构的前提下，新增一个固定底部、公开可复用、视觉符合经典 Windows 风格的 `CStartBar` 组件，并让 `WindowsSystem` 在 `win98` / `winxp` 下默认渲染该组件。
 
 ### Deliverables
+
 - `src/components/StartBar/StartBar.tsx`
 - `src/components/StartBar/index.scss`
 - `src/components/Dock/dockLayout.ts`（共享布局 helper）
@@ -42,6 +51,7 @@
 - 更新后的系统集成测试与新增/更新的 Playwright spec
 
 ### Definition of Done (verifiable conditions with commands)
+
 - `yarn test --runInBand tests/Dock.test.tsx tests/StartBar.test.tsx`
 - `yarn test --runInBand tests/SystemHost.test.tsx tests/SystemShellCharacterization.test.tsx tests/ThemeScopeClassNames.test.tsx`
 - `yarn test:ui --grep "start bar|system/theme switch"`
@@ -49,6 +59,7 @@
 - `yarn build`
 
 ### Must Have
+
 - `CStartBar` 公开导出并遵循现有组件命名约定（`C` 前缀，SCSS 类名前缀 `cm-`）。
 - `CStartBar` 仅支持底部开始栏语义，不暴露 `position` / `defaultPosition` 之类泛 Dock API。
 - `CStartBar` 默认渲染开始按钮与内容区，默认开始按钮文案固定为 `Start`。
@@ -57,6 +68,7 @@
 - 保持 `themeSwitcher` / `DevSystemRoot` 现有入口不变，开始栏通过现有 Windows 预览自然出现。
 
 ### Must NOT Have (guardrails, AI slop patterns, scope boundaries)
+
 - 不新增开始菜单弹层、托盘、时钟、任务按钮、窗口列表或 pin/unpin 行为。
 - 不把 `StartBar` 设计成跨系统通用 shell 框架。
 - 不修改 `SystemTypeId`、`ThemeId`、`SYSTEM_THEME_MATRIX` 的既有契约。
@@ -65,13 +77,17 @@
 - 不做 README / docs 范围扩张，除非实现过程中现有测试或导出要求强制依赖。
 
 ## Verification Strategy
+
 > ZERO HUMAN INTERVENTION — all verification is agent-executed.
+
 - Test decision: tests-after；单元/集成走 Jest（`jest.config.ts:3`），UI 走 Playwright（`playwright.config.ts:3`）
 - QA policy: 每个任务都必须附带 agent 可执行的 happy path + failure/edge case
 - Evidence: `.sisyphus/evidence/task-{N}-{slug}.{ext}`
 
 ## Execution Strategy
+
 ### Parallel Execution Waves
+
 > 该任务核心 seam 高度耦合：`Dock helper` → `StartBar API` → `WindowsSystem` → `theme` → `UI QA`，因此按单线推进最稳妥。
 
 Wave 1: 任务 1（共享 Dock helper）
@@ -81,6 +97,7 @@ Wave 4: 任务 4（主题样式）
 Wave 5: 任务 5（Playwright UI 覆盖）
 
 ### Dependency Matrix (full, all tasks)
+
 - 任务 1 → 阻塞任务 2、3、4
 - 任务 2 → 阻塞任务 3、4、5
 - 任务 3 → 阻塞任务 4、5
@@ -88,6 +105,7 @@ Wave 5: 任务 5（Playwright UI 覆盖）
 - 任务 5 → 无下游实现依赖，直接进入最终验证
 
 ### Agent Dispatch Summary (wave → task count → categories)
+
 - Wave 1 → 1 task → `quick`
 - Wave 2 → 1 task → `visual-engineering`
 - Wave 3 → 1 task → `quick`
@@ -95,6 +113,7 @@ Wave 5: 任务 5（Playwright UI 覆盖）
 - Wave 5 → 1 task → `unspecified-high`
 
 ## TODOs
+
 > Implementation + Test = ONE task. Never separate.
 > EVERY task MUST have: Agent Profile + Parallelization + QA Scenarios.
 
@@ -127,6 +146,7 @@ Wave 5: 任务 5（Playwright UI 覆盖）
   - [ ] `CDock` 源码中不再保留重复的私有布局计算函数实现
 
   **QA Scenarios** (MANDATORY — task incomplete without these):
+
   ```
   Scenario: Dock regression suite stays green after helper extraction
     Tool: Bash
@@ -173,6 +193,7 @@ Wave 5: 任务 5（Playwright UI 覆盖）
   - [ ] `position` 不是 `CStartBar` 的有效 props；类型层面阻止把 StartBar 当通用 Dock 使用
 
   **QA Scenarios** (MANDATORY — task incomplete without these):
+
   ```
   Scenario: StartBar public API and default shell render correctly
     Tool: Bash
@@ -218,6 +239,7 @@ Wave 5: 任务 5（Playwright UI 覆盖）
   - [ ] `SystemHost`、`registry`、`types`、`themeSwitcher` 无不必要改动
 
   **QA Scenarios** (MANDATORY — task incomplete without these):
+
   ```
   Scenario: Windows shells render StartBar while default shell stays clean
     Tool: Bash
@@ -263,6 +285,7 @@ Wave 5: 任务 5（Playwright UI 覆盖）
   - [ ] 同 system theme 切换后开始栏节点继续存在，并跟随 `screen-root` 主题 class 切换皮肤
 
   **QA Scenarios** (MANDATORY — task incomplete without these):
+
   ```
   Scenario: Theme-scoped StartBar classes stay attached through windows theme switches
     Tool: Bash
@@ -308,6 +331,7 @@ Wave 5: 任务 5（Playwright UI 覆盖）
   - [ ] 新 spec 在本地与 CI 命令 `yarn test:ui` 下都可稳定运行
 
   **QA Scenarios** (MANDATORY — task incomplete without these):
+
   ```
   Scenario: StartBar appears in both Windows themes and changes skin on theme switch
     Tool: Bash
@@ -325,9 +349,11 @@ Wave 5: 任务 5（Playwright UI 覆盖）
   **Commit**: YES | Message: `test(startbar): cover shell and ui flows` | Files: `tests/ui/start-bar.spec.ts`, `tests/ui/window.helpers.ts`, `playwright.config.ts` (only if absolutely required)
 
 ## Final Verification Wave (MANDATORY — after ALL implementation tasks)
+
 > 4 review agents run in PARALLEL. ALL must APPROVE. Present consolidated results to user and get explicit "okay" before completing.
 > **Do NOT auto-proceed after verification. Wait for user's explicit approval before marking work complete.**
 > **Never mark F1-F4 as checked before getting user's okay.** Rejection or user feedback -> fix -> re-run -> present again -> wait for okay.
+
 - [x] F1. Plan Compliance Audit — oracle
   - Reviewer: `oracle` 子代理审查
   - Steps: 将 `.sisyphus/plans/systemtype-start-bar.md`、最终变更 diff、测试结果、证据文件路径提交给 `oracle` 审查；要求其逐条比对 1-5 号任务的 Acceptance Criteria 与实际产物。
@@ -347,6 +373,7 @@ Wave 5: 任务 5（Playwright UI 覆盖）
   - Expected: `yarn lint` 退出码为 0；新改动文件中无 `any`、`as any`、遗留 `TODO` / `FIXME`；没有破坏 `CDock` 契约或扩大 StartBar API。
   - Evidence: `.sisyphus/evidence/f2-code-quality.md`
   - QA Scenarios:
+
     ```
     Scenario: Lint and static grep catch type-safety or placeholder issues
       Tool: Bash
@@ -360,12 +387,14 @@ Wave 5: 任务 5（Playwright UI 覆盖）
       Expected: diff 与计划 API 完全一致；未出现 `position` 暴露给 `CStartBar`、未出现任务栏扩展功能
       Evidence: .sisyphus/evidence/f2-code-quality.md
     ```
+
 - [x] F3. Real Manual QA — unspecified-high (+ playwright if UI)
   - Tooling: `Bash`
   - Steps: 先运行 `yarn test --runInBand tests/Dock.test.tsx tests/StartBar.test.tsx tests/SystemHost.test.tsx tests/SystemShellCharacterization.test.tsx tests/ThemeScopeClassNames.test.tsx`、`yarn test:ui --grep "start bar|system/theme switch"`、`yarn lint`、`yarn build`，再把控制台输出与关键证据交给审查 agent 做结果复核。
   - Expected: 所有命令退出码为 0；任一命令失败、UI 断言不稳定、或构建缺失导出即判定失败。
   - Evidence: `.sisyphus/evidence/f3-manual-qa.md`
   - QA Scenarios:
+
     ```
     Scenario: Validation command suite passes cleanly
       Tool: Bash
@@ -379,12 +408,14 @@ Wave 5: 任务 5（Playwright UI 覆盖）
       Expected: 构建产物中存在 `CStartBar` 的公共导出痕迹；若缺失则判定失败
       Evidence: .sisyphus/evidence/f3-manual-qa.md
     ```
+
 - [x] F4. Scope Fidelity Check — deep
   - Tooling: `Bash` + `rg`
   - Steps: 检查最终 diff 与命名搜索，确认未引入开始菜单、托盘、时钟、窗口列表、跨系统抽象，也未修改 `SystemHost.tsx`、`src/system/types.ts`、`src/system/registry.ts` 的既有契约；仅允许计划中列出的文件范围发生变化。
   - Expected: 变更范围仅包含 Dock helper、StartBar 组件、WindowsSystem、`win98` / `winxp` 样式、测试与必要导出；任何额外 shell feature 或架构漂移都视为失败。
   - Evidence: `.sisyphus/evidence/f4-scope-fidelity.md`
   - QA Scenarios:
+
     ```
     Scenario: Scope grep confirms no extra Windows shell features slipped in
       Tool: Bash
@@ -400,6 +431,7 @@ Wave 5: 任务 5（Playwright UI 覆盖）
     ```
 
 ## Commit Strategy
+
 - Commit 1: `refactor(dock): extract shared dock layout helpers`
 - Commit 2: `feat(startbar): add public start bar component`
 - Commit 3: `feat(windows): mount start bar in windows shell`
@@ -407,6 +439,7 @@ Wave 5: 任务 5（Playwright UI 覆盖）
 - Commit 5: `test(startbar): cover shell and ui flows`
 
 ## Success Criteria
+
 - Windows 系统在 `win98` / `winxp` 下都能渲染同一结构的 `CStartBar`。
 - `CStartBar` 作为库入口可直接导入，并且默认提供 `Start` 按钮与内容槽位。
 - 复用的是 Dock 布局能力而不是 Dock 类继承，`CDock` 全量现有测试继续通过。

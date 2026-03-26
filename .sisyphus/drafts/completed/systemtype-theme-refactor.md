@@ -1,18 +1,22 @@
 # Refactor Theme into SystemType + Theme
 
 ## TL;DR
+
 > **Summary**: Replace the current top-level “theme component” model with a two-layer model: `SystemType` owns layout, system-only widgets, and reboot semantics; `Theme` is CSS-only and scoped on the active `Screen`. Migrate `Win98`, `WinXP`, and `Default` into the new architecture with breaking API changes allowed.
 > **Deliverables**:
+>
 > - Explicit `SystemType` / `Theme` contracts and registry
 > - `Windows` and `Default` system modules with system-owned `Screen` composition
 > - CSS-scoped `Win98` / `WinXP` / `Default` themes
 > - Updated dev switcher, exports, Jest tests, and Playwright regression coverage
-> **Effort**: Large
-> **Parallel**: YES - 3 waves
-> **Critical Path**: 1 → 2 → 3 → 4 → 5 → 6 → 7 → 8
+>   **Effort**: Large
+>   **Parallel**: YES - 3 waves
+>   **Critical Path**: 1 → 2 → 3 → 4 → 5 → 6 → 7 → 8
 
 ## Context
+
 ### Original Request
+
 - Split the existing theme concept into `SystemType` and `Theme`.
 - `SystemType` customizes layout and owns system-only components; switching `SystemType` resets open windows like a reboot while preserving shared persistent data such as file system and user data.
 - `Theme` is only color/CSS under a given `SystemType`, applied by changing class names on `Screen`.
@@ -21,22 +25,27 @@
 - Each `SystemType` has its own `Screen` subclass and may have its own `Window` subclass, but shared behavior must remain in the public base types to preserve common features like `WindowManager`.
 
 ### Interview Summary
+
 - Migration scope is `Win98 + WinXP + Default`.
 - Public API changes are allowed; do not keep a compatibility shim for old theme-root components.
 - Use one `Windows` `SystemType`; model `Win98` and `WinXP` as child themes under it.
 - Test strategy is characterization-first for refactor seams, then complete the implementation and run Jest + Playwright regressions.
 
 ### Metis Review (gaps addressed)
+
 - Freeze the ownership boundary before coding: `SystemType` owns composition, layout, unique widgets, and reboot semantics; `Theme` owns CSS scope only.
 - Add an early proof task to confirm `Win98` and `WinXP` can share one `Windows` DOM contract without `if (theme)` behavioral branching.
 - Define the persistence contract explicitly: theme switches preserve runtime window instances and geometry within the same system; system switches destroy runtime windows/z-order/transient UI but keep shared persistent stores.
 - Exclude scope creep: no multi-screen expansion, no new widget framework, no token-system redesign beyond what is required to apply theme classes, and no API compatibility layer.
 
 ## Work Objectives
+
 ### Core Objective
+
 - Rebuild the runtime shell so `SystemType` is the unit of composition/lifecycle and `Theme` is the unit of CSS variation.
 
 ### Deliverables
+
 - Introduce a closed, typed registry describing legal `{ systemType, theme }` pairs.
 - Replace full-tree theme swapping in `src/dev/themeSwitcher.tsx:6` with a host that selects `{ systemType, theme }` and mounts the corresponding system shell.
 - Add `Screen` root scoping hooks so theme classes apply at the screen boundary rather than inside window/title subclasses.
@@ -44,6 +53,7 @@
 - Expand Jest and Playwright coverage around theme-switch preservation and system-switch reboot semantics.
 
 ### Definition of Done (verifiable conditions with commands)
+
 - `yarn test -- --runInBand tests/DevSystemSelection.test.tsx tests/DefaultTheme.test.tsx tests/SystemTypeThemeRegistry.test.tsx tests/ThemeSwitchPreservation.test.tsx tests/SystemTypeSwitch.test.tsx` exits `0`.
 - `yarn test:ui` exits `0`.
 - `yarn lint && yarn build && npm pack --dry-run` exits `0`.
@@ -51,6 +61,7 @@
 - `src/index.ts` exports the new registry/host entry points and no longer exports old `*Theme` root components.
 
 ### Must Have
+
 - `Theme` carries only minimal metadata: `id`, `label`, `systemType`, and `className`.
 - `SystemType` switch uses a remount boundary above `Screen` so runtime-open windows always reset.
 - Same-system theme switch preserves window instances, geometry, focus order, and content state.
@@ -58,6 +69,7 @@
 - `Default` is treated as a standalone `default` `SystemType` with a single `default` theme, so the boundary stays explicit.
 
 ### Must NOT Have (guardrails, AI slop patterns, scope boundaries)
+
 - Must NOT let `Theme` own JSX structure, system widgets, manager lifecycle, or window behavior.
 - Must NOT introduce `if (theme === ...)` logic inside system-level behavior components.
 - Must NOT broaden the work into new systems, multi-monitor support, or a redesign of `WindowManager` semantics beyond what the new boundary strictly requires.
@@ -65,13 +77,17 @@
 - Must NOT depend on manual visual verification; every verification step must be executable.
 
 ## Verification Strategy
+
 > ZERO HUMAN INTERVENTION — all verification is agent-executed.
+
 - Test decision: characterization-first + tests-after completion using Jest and Playwright
 - QA policy: Every task includes agent-executed happy-path and failure/edge scenarios
 - Evidence: `.sisyphus/evidence/task-{N}-{slug}.{ext}`
 
 ## Execution Strategy
+
 ### Parallel Execution Waves
+
 > Target: 5-8 tasks per wave. <3 per wave (except final) = under-splitting.
 > Extract shared dependencies as Wave-1 tasks for max parallelism.
 
@@ -84,6 +100,7 @@ Wave 3: `6` replace dev switcher and public exports; `7` update Jest contract co
 Wave 4: `8` extend Playwright switch regressions and run release gates
 
 ### Dependency Matrix (full, all tasks)
+
 - `1` blocks `4`, `5`, `7`, `8`
 - `2` blocks `4`, `5`, `6`, `7`
 - `3` blocks `4`, `5`, `7`, `8`
@@ -94,12 +111,14 @@ Wave 4: `8` extend Playwright switch regressions and run release gates
 - `8` precedes final verification wave
 
 ### Agent Dispatch Summary (wave → task count → categories)
+
 - Wave 1 → 3 tasks → `deep`, `unspecified-high`, `quick`
 - Wave 2 → 2 tasks → `deep`, `visual-engineering`
 - Wave 3 → 2 tasks → `unspecified-high`, `unspecified-high`
 - Wave 4 → 1 task → `visual-engineering`
 
 ## TODOs
+
 > Implementation + Test = ONE task. Never separate.
 > EVERY task MUST have: Agent Profile + Parallelization + QA Scenarios.
 
@@ -129,6 +148,7 @@ Wave 4: `8` extend Playwright switch regressions and run release gates
   - [ ] `tests/SystemShellCharacterization.test.tsx` asserts `DevThemeRoot` still swaps full roots before the refactor seam is introduced
 
   **QA Scenarios** (MANDATORY — task incomplete without these):
+
   ```
   Scenario: Current root swapping baseline
     Tool: Bash
@@ -153,7 +173,7 @@ Wave 4: `8` extend Playwright switch regressions and run release gates
   - Encode the legal pairs exactly as `{ windows: ['win98', 'winxp'], default: ['default'] }`.
   - Make invalid pair resolution throw a deterministic error string: `Invalid theme "{theme}" for system type "{systemType}"`.
   - Add `tests/SystemTypeThemeRegistry.test.tsx` to cover the valid matrix, defaults, and invalid-pair failure mode.
-  **Must NOT do**: Must NOT create any JSX or runtime shell components in this task; must NOT keep `Theme` as a `React.ComponentType` in the registry.
+    **Must NOT do**: Must NOT create any JSX or runtime shell components in this task; must NOT keep `Theme` as a `React.ComponentType` in the registry.
 
   **Recommended Agent Profile**:
   - Category: `deep` — Reason: This task freezes the architectural contract used by all downstream work
@@ -174,6 +194,7 @@ Wave 4: `8` extend Playwright switch regressions and run release gates
   - [ ] Invalid combinations throw exactly `Invalid theme "{theme}" for system type "{systemType}"`
 
   **QA Scenarios** (MANDATORY — task incomplete without these):
+
   ```
   Scenario: Resolve valid system-theme pairs
     Tool: Bash
@@ -197,7 +218,7 @@ Wave 4: `8` extend Playwright switch regressions and run release gates
   - Keep `CGrid` as the direct layout child so existing screen behavior remains stable.
   - Add `tests/ScreenScope.test.tsx` proving the root wrapper renders once, applies classes/attributes, and does not alter `CWindow` drag/resize semantics.
   - In the same task, define the reboot boundary contract in a shared test helper `tests/helpers/systemSession.fixture.tsx` that separates persistent store state from runtime window session state; do not implement the host yet.
-  **Must NOT do**: Must NOT remount windows on same-system theme changes; must NOT move `WindowManager` logic into `CScreen`; must NOT introduce system-specific JSX here.
+    **Must NOT do**: Must NOT remount windows on same-system theme changes; must NOT move `WindowManager` logic into `CScreen`; must NOT introduce system-specific JSX here.
 
   **Recommended Agent Profile**:
   - Category: `quick` — Reason: Small but foundational change to one shared component plus focused tests
@@ -218,6 +239,7 @@ Wave 4: `8` extend Playwright switch regressions and run release gates
   - [ ] Existing `window-title` drag behavior still moves the frame after the `CScreen` wrapper change
 
   **QA Scenarios** (MANDATORY — task incomplete without these):
+
   ```
   Scenario: Screen root exposes scope hooks
     Tool: Bash
@@ -244,7 +266,7 @@ Wave 4: `8` extend Playwright switch regressions and run release gates
   - Make both system shells accept the active `ThemeDefinition` and append the theme class to the `screen-root` wrapper.
   - Keep persistent shared stores above `SystemHost`; keep runtime-open windows, z-order, and transient desktop UI inside the `systemType`-keyed subtree.
   - Add `tests/SystemHost.test.tsx` proving same-system theme changes keep the same runtime window UUID and geometry while system changes replace the runtime window subtree.
-  **Must NOT do**: Must NOT introduce theme-specific behavior branches inside `WindowsSystem`; must NOT keep `DefaultTheme`/`Win98Theme`/`WinXpTheme` root classes alive as parallel shells.
+    **Must NOT do**: Must NOT introduce theme-specific behavior branches inside `WindowsSystem`; must NOT keep `DefaultTheme`/`Win98Theme`/`WinXpTheme` root classes alive as parallel shells.
 
   **Recommended Agent Profile**:
   - Category: `deep` — Reason: This task creates the new lifecycle boundary and system-owned composition layer
@@ -269,6 +291,7 @@ Wave 4: `8` extend Playwright switch regressions and run release gates
   - [ ] Cross-system selection change (`windows/win98` → `default/default`) changes the boot window `data-window-uuid` and rehydrates the target system’s default boot layout
 
   **QA Scenarios** (MANDATORY — task incomplete without these):
+
   ```
   Scenario: Theme change within Windows preserves runtime window
     Tool: Bash
@@ -294,7 +317,7 @@ Wave 4: `8` extend Playwright switch regressions and run release gates
   - Delete theme-specific `WindowTitle` subclasses unless a concrete structural difference survives; keep `CWindowTitle` as the renderer for both Windows themes.
   - Replace `DefaultWindow` frame/content class overrides with theme-scoped selectors targeting the shared `.cm-window-frame`, `.cm-window`, and `.cm-window__title-bar` classes.
   - Add `tests/ThemeScopeClassNames.test.tsx` asserting the screen root receives the exact theme class and that theme switching changes classes without swapping the window subtree.
-  **Must NOT do**: Must NOT leave JSX roots or boot layouts inside `src/theme/*`; must NOT add theme-specific branching to `CWindow`, `CWindowTitle`, or `CWindowManager`.
+    **Must NOT do**: Must NOT leave JSX roots or boot layouts inside `src/theme/*`; must NOT add theme-specific branching to `CWindow`, `CWindowTitle`, or `CWindowManager`.
 
   **Recommended Agent Profile**:
   - Category: `visual-engineering` — Reason: This is mostly styling architecture and scoped-class migration
@@ -318,6 +341,7 @@ Wave 4: `8` extend Playwright switch regressions and run release gates
   - [ ] Switching `windows/win98` to `windows/winxp` changes only the screen theme class and leaves the boot window UUID unchanged
 
   **QA Scenarios** (MANDATORY — task incomplete without these):
+
   ```
   Scenario: Theme class scopes the active screen
     Tool: Bash
@@ -342,7 +366,7 @@ Wave 4: `8` extend Playwright switch regressions and run release gates
   - Update `src/dev/main.tsx` to supply the default selection through `DevSystemRoot`.
   - Update `src/index.ts` to export `src/system/types`, `src/system/registry`, `src/system/SystemHost`, and the CSS-only theme definitions; remove exports of old `DefaultTheme`, `Win98Theme`, and `WinXpTheme` root components.
   - Rename `tests/DevThemeSelection.test.tsx` to `tests/DevSystemSelection.test.tsx` and update the assertions to the new constants, selection defaults, and invalid-pair behavior.
-  **Must NOT do**: Must NOT keep both `DevThemeRoot` and `DevSystemRoot`; must NOT re-export removed root theme components from `src/index.ts`.
+    **Must NOT do**: Must NOT keep both `DevThemeRoot` and `DevSystemRoot`; must NOT re-export removed root theme components from `src/index.ts`.
 
   **Recommended Agent Profile**:
   - Category: `unspecified-high` — Reason: Cross-cutting public entry-point migration with tests and exports
@@ -363,6 +387,7 @@ Wave 4: `8` extend Playwright switch regressions and run release gates
   - [ ] `src/index.ts` no longer exports `DefaultTheme`, `Win98Theme`, or `WinXpTheme`
 
   **QA Scenarios** (MANDATORY — task incomplete without these):
+
   ```
   Scenario: Default dev selection resolves to default/default
     Tool: Bash
@@ -387,7 +412,7 @@ Wave 4: `8` extend Playwright switch regressions and run release gates
   - Update `tests/DefaultTheme.test.tsx` to stop rendering removed `DefaultTheme` roots and instead render the new `DefaultSystem`/`SystemHost` path while preserving the class and drag assertions that still matter.
   - Remove or rewrite obsolete tests that assert the existence of `DefaultTheme`, `Win98Theme`, or `WinXpTheme` root components.
   - Ensure all new tests use the shared `screen-root`, `window-frame`, `window-title`, and `window-content` selectors rather than implementation-specific component names.
-  **Must NOT do**: Must NOT keep tests coupled to deleted root component class names; must NOT weaken assertions from behavior to snapshot-only checks.
+    **Must NOT do**: Must NOT keep tests coupled to deleted root component class names; must NOT weaken assertions from behavior to snapshot-only checks.
 
   **Recommended Agent Profile**:
   - Category: `unspecified-high` — Reason: High-signal contract testing around state preservation and reboot behavior
@@ -409,6 +434,7 @@ Wave 4: `8` extend Playwright switch regressions and run release gates
   - [ ] Cross-system switch keeps `persistent-note-123` but resets runtime boot window UUID and target-system window coordinates to boot defaults
 
   **QA Scenarios** (MANDATORY — task incomplete without these):
+
   ```
   Scenario: Theme switch preserves runtime and content state
     Tool: Bash
@@ -435,7 +461,7 @@ Wave 4: `8` extend Playwright switch regressions and run release gates
   - Reuse existing helpers from `tests/ui/window.helpers.ts` for frame metrics and add helper(s) only if needed for switch controls.
   - Run the release gate in this exact order: `yarn lint`, `yarn test`, `yarn test:ui`, `yarn build`, `npm pack --dry-run`.
   - Save command outputs and any failing-report artifacts to `.sisyphus/evidence/`.
-  **Must NOT do**: Must NOT replace existing drag/resize specs with switch-only tests; must NOT add manual-only QA steps.
+    **Must NOT do**: Must NOT replace existing drag/resize specs with switch-only tests; must NOT add manual-only QA steps.
 
   **Recommended Agent Profile**:
   - Category: `visual-engineering` — Reason: UI-level switching behavior and Playwright evidence collection
@@ -459,6 +485,7 @@ Wave 4: `8` extend Playwright switch regressions and run release gates
   - [ ] `tests/ui/system-theme-switch.spec.ts` verifies same-system theme switching preserves dragged frame metrics and cross-system switching resets them to target defaults
 
   **QA Scenarios** (MANDATORY — task incomplete without these):
+
   ```
   Scenario: Same-system UI switch preserves dragged window metrics
     Tool: Playwright
@@ -476,9 +503,11 @@ Wave 4: `8` extend Playwright switch regressions and run release gates
   **Commit**: YES | Message: `test(ui): extend switch regression coverage and validate release gates` | Files: `tests/ui/system-theme-switch.spec.ts`, updated fixture entry/tests, `.sisyphus/evidence/*`
 
 ## Final Verification Wave (MANDATORY — after ALL implementation tasks)
+
 > 4 review agents run in PARALLEL. ALL must APPROVE. Present consolidated results to user and get explicit "okay" before completing.
 > **Do NOT auto-proceed after verification. Wait for user's explicit approval before marking work complete.**
 > **Never mark F1-F4 as checked before getting user's okay.** Rejection or user feedback -> fix -> re-run -> present again -> wait for okay.
+
 - [x] F1. Plan Compliance Audit — oracle
 
   **Tool**: `oracle`
@@ -508,6 +537,7 @@ Wave 4: `8` extend Playwright switch regressions and run release gates
   **Evidence**: `.sisyphus/evidence/f4-scope-fidelity.md`
 
 ## Commit Strategy
+
 - `test(shell): freeze current theme composition behavior`
 - `refactor(system): add systemtype and theme registry contracts`
 - `refactor(screen): add screen scope and reboot boundaries`
@@ -517,6 +547,7 @@ Wave 4: `8` extend Playwright switch regressions and run release gates
 - `test(ui): extend switch regression coverage and validate release gates`
 
 ## Success Criteria
+
 - The runtime shell is selected by `{ systemType, theme }`, not by swapping full theme-root components.
 - Within the same `SystemType`, theme switching only changes screen-level classes and leaves runtime windows intact.
 - Across `SystemType` changes, runtime windows remount from the target system’s boot layout while persistent shared data remains available.

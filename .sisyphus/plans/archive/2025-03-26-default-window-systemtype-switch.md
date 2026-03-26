@@ -1,42 +1,52 @@
 # Default Window SystemType Switch
 
 ## TL;DR
+
 > **Summary**: 在默认展示窗口内部新增一个名为“切换系统”的下拉选择器，复用现有 `CSelect` 与系统注册表，使切换动作在同一事件链路中同时更新 `systemType` 与目标系统默认主题。
 > **Deliverables**:
+>
 > - 默认窗口标题区新增可访问的 `切换系统` 下拉控件
 > - dev 选择状态链路支持从默认窗口向上触发 systemType 切换
 > - 切换时基于注册表联动目标系统默认主题
 > - Jest 与 Playwright 覆盖新增交互和既有 remount 语义
-> **Effort**: Short
-> **Parallel**: YES - 2 waves
-> **Critical Path**: 1 → 2 → 3 → 5 → 6
+>   **Effort**: Short
+>   **Parallel**: YES - 2 waves
+>   **Critical Path**: 1 → 2 → 3 → 5 → 6
 
 ## Context
+
 ### Original Request
+
 在默认展示的这个窗口中，增加切换 SystemType 的选项，显示名称为：切换系统。
 
 ### Interview Summary
+
 - 用户确认交互形式为下拉选择，优先复用现有 `CSelect`
 - 用户确认切换 SystemType 时联动到目标系统默认主题
 - 用户确认测试策略为测试后补，不要求 TDD
 
 ### Metis Review (gaps addressed)
+
 - 保持 `systemType` / `theme` 的 source-of-truth 在 dev 选择状态拥有者，不在 `DefaultSystem` 保存局部真状态
 - 默认主题映射必须复用 `src/system/registry.ts:30` 的 `DEFAULT_THEME_BY_SYSTEM`
 - 保持 `src/system/SystemHost.tsx:21` 的系统校验与 `key={systemType}` remount 语义不变
 - 测试必须通过可访问名称 `切换系统` 查询控件，并验证切换后系统、主题与 remount 行为
 
 ## Work Objectives
+
 ### Core Objective
+
 在 `src/system/default/DefaultSystem.tsx:34` 渲染的默认窗口标题区加入一个受控下拉控件，让开发预览在默认系统下可直接切换到其他注册系统，并在同一回调中切换到该系统的默认主题。
 
 ### Deliverables
+
 - `src/system/default/DefaultSystem.tsx` 支持渲染带标签的系统切换控件
 - `src/system/SystemHost.tsx` / `src/dev/themeSwitcher.tsx` 链路支持向下传入当前值与向上传出切换事件
 - `src/system/registry.ts` 暴露的默认主题映射被直接复用为切换逻辑依据
 - `tests/SystemTypeSwitch.test.tsx` 与必要的 UI 测试覆盖切换行为
 
 ### Definition of Done (verifiable conditions with commands)
+
 - `yarn test -- SystemTypeSwitch`
 - `yarn test -- SystemHost`
 - `yarn test:ui tests/ui/default-window-system-switch.spec.ts tests/ui/start-bar.spec.ts`
@@ -44,6 +54,7 @@
 - `yarn build`
 
 ### Must Have
+
 - 在默认窗口中显示可见文本 `切换系统`
 - 下拉选项来源于注册表中的系统定义，而不是硬编码重复列表
 - 切换时同步应用目标系统默认主题，避免产生非法 system/theme 组合
@@ -51,6 +62,7 @@
 - 测试通过 `getByRole('combobox', { name: '切换系统' })` 或等价 Playwright 语义查询验证控件
 
 ### Must NOT Have (guardrails, AI slop patterns, scope boundaries)
+
 - 不新增全局状态、context、store 或通用设置面板
 - 不在 `DefaultSystem` 内用 `useEffect` 同步衍生状态
 - 不重构 `CSelect`、`CWindowTitle`、`RadioGroup` 或其他无关系统 UI
@@ -58,13 +70,17 @@
 - 不重复定义 system→defaultTheme 映射
 
 ## Verification Strategy
+
 > ZERO HUMAN INTERVENTION — all verification is agent-executed.
+
 - Test decision: tests-after + Jest / React Testing Library / Playwright
 - QA policy: Every task has agent-executed scenarios
 - Evidence: `.sisyphus/evidence/task-{N}-{slug}.{ext}`
 
 ## Execution Strategy
+
 ### Parallel Execution Waves
+
 > Target: 5-8 tasks per wave. <3 per wave (except final) = under-splitting.
 > Extract shared dependencies as Wave-1 tasks for max parallelism.
 
@@ -72,6 +88,7 @@ Wave 1: state plumbing + registry/default-theme resolution + default-window titl
 Wave 2: focused Jest coverage + focused Playwright coverage + full validation sweep
 
 ### Dependency Matrix (full, all tasks)
+
 - 1 blocks 2, 3, 5
 - 2 blocks 4, 5
 - 3 blocks 4
@@ -80,11 +97,13 @@ Wave 2: focused Jest coverage + focused Playwright coverage + full validation sw
 - 6 precedes Final Verification Wave
 
 ### Agent Dispatch Summary (wave → task count → categories)
+
 - Wave 1 → 3 tasks → `quick`, `visual-engineering`
 - Wave 2 → 3 tasks → `quick`, `unspecified-low`
 - Final Verification → 4 review tasks → `oracle`, `unspecified-high`, `deep`
 
 ## TODOs
+
 > Implementation + Test = ONE task. Never separate.
 > EVERY task MUST have: Agent Profile + Parallelization + QA Scenarios.
 
@@ -112,6 +131,7 @@ Wave 2: focused Jest coverage + focused Playwright coverage + full validation sw
   - [ ] `yarn test -- SystemTypeSwitch`
 
   **QA Scenarios** (MANDATORY — task incomplete without these):
+
   ```
   Scenario: Shared resolver returns canonical defaults
     Tool: Bash
@@ -153,6 +173,7 @@ Wave 2: focused Jest coverage + focused Playwright coverage + full validation sw
   - [ ] `yarn test -- SystemHost`
 
   **QA Scenarios** (MANDATORY — task incomplete without these):
+
   ```
   Scenario: Host preserves remount semantics after callback plumbing
     Tool: Bash
@@ -194,6 +215,7 @@ Wave 2: focused Jest coverage + focused Playwright coverage + full validation sw
   - [ ] `yarn test:ui --grep "start bar"`
 
   **QA Scenarios** (MANDATORY — task incomplete without these):
+
   ```
   Scenario: URL-backed harness remains in sync after runtime selection changes
     Tool: Playwright
@@ -236,6 +258,7 @@ Wave 2: focused Jest coverage + focused Playwright coverage + full validation sw
   - [ ] `yarn test -- SystemTypeSwitch`
 
   **QA Scenarios** (MANDATORY — task incomplete without these):
+
   ```
   Scenario: Default window exposes accessible switch control
     Tool: Bash
@@ -279,6 +302,7 @@ Wave 2: focused Jest coverage + focused Playwright coverage + full validation sw
   - [ ] `yarn test -- SystemHost`
 
   **QA Scenarios** (MANDATORY — task incomplete without these):
+
   ```
   Scenario: Switching from default window boots windows with canonical theme
     Tool: Bash
@@ -322,6 +346,7 @@ Wave 2: focused Jest coverage + focused Playwright coverage + full validation sw
   - [ ] `yarn build`
 
   **QA Scenarios** (MANDATORY — task incomplete without these):
+
   ```
   Scenario: Real default-window switch flow works end to end
     Tool: Playwright
@@ -339,12 +364,15 @@ Wave 2: focused Jest coverage + focused Playwright coverage + full validation sw
   **Commit**: NO | Message: `n/a` | Files: [`tests/ui/default-window-system-switch.spec.ts`, `tests/ui/start-bar.spec.ts`, `src/dev/playwright/windowHarness.tsx`]
 
 ## Final Verification Wave (MANDATORY — after ALL implementation tasks)
+
 > 4 review agents run in PARALLEL. ALL must APPROVE. Present consolidated results to user and get explicit "okay" before completing.
 > **Do NOT auto-proceed after verification. Wait for user's explicit approval before marking work complete.**
 > **Never mark F1-F4 as checked before getting user's okay.** Rejection or user feedback -> fix -> re-run -> present again -> wait for okay.
+
 - [x] F1. Plan Compliance Audit — oracle
 
   **QA Scenario**:
+
   ```
   Tool: task (oracle)
   Steps: Review implementation diff against `.sisyphus/plans/default-window-systemtype-switch.md`; verify every acceptance criterion and guardrail is satisfied.
@@ -355,6 +383,7 @@ Wave 2: focused Jest coverage + focused Playwright coverage + full validation sw
 - [x] F2. Code Quality Review — unspecified-high
 
   **QA Scenario**:
+
   ```
   Tool: task (unspecified-high)
   Steps: Review touched files for typing quality, unnecessary abstraction, accessibility regressions, and style drift.
@@ -365,6 +394,7 @@ Wave 2: focused Jest coverage + focused Playwright coverage + full validation sw
 - [x] F3. Real Manual QA — unspecified-high (+ playwright if UI)
 
   **QA Scenario**:
+
   ```
   Tool: task (unspecified-high) + Playwright
   Steps: Execute the real UI flow in the preview harness, operate the `切换系统` combobox, and confirm DOM/URL/start-bar outcomes match the plan.
@@ -375,6 +405,7 @@ Wave 2: focused Jest coverage + focused Playwright coverage + full validation sw
 - [x] F4. Scope Fidelity Check — deep
 
   **QA Scenario**:
+
   ```
   Tool: task (deep)
   Steps: Compare changed files and behaviors against the original request and plan scope boundaries.
@@ -383,10 +414,12 @@ Wave 2: focused Jest coverage + focused Playwright coverage + full validation sw
   ```
 
 ## Commit Strategy
+
 - 默认不提交；仅在用户显式要求时，按“测试先行提交 / 功能提交 / UI 测试提交”拆成原子提交
 - 如需提交，优先消息：`test(system): cover default-window switch`, `feat(system): add default-window system switch`, `test(ui): cover default-window system switch`
 
 ## Success Criteria
+
 - 默认系统窗口标题区出现名称为 `切换系统` 的可访问下拉控件
 - 从默认窗口选择 `Windows` 后，`screen-root` 反映 `data-system-type="windows"`，主题自动变为该系统默认主题
 - 通过现有 owner/URL 驱动切回 `Default` 后，`data-theme="default"` 且默认窗口重新挂载

@@ -68,6 +68,7 @@ REJECTED
    - `.sisyphus/plans/common-components-button-radio-select.md`
    - `.sisyphus/plans/systemtype-start-bar.md`
    - `src/components/Screen/Screen.tsx`
+
 # F4 Scope Fidelity Check
 
 - Time (UTC): 2026-03-26T07:33:26Z
@@ -78,12 +79,14 @@ REJECTED
 ## Scope comparison
 
 ### In-scope items (implemented)
+
 - Default window title area contains a switch labeled `切换系统` (`src/system/default/DefaultSystem.tsx`).
 - Selection plumbing exists from default window to owner state (`src/system/default/DefaultSystem.tsx`, `src/system/SystemHost.tsx`, `src/dev/themeSwitcher.tsx`, `src/dev/main.tsx`, `src/dev/playwright/windowHarness.tsx`).
 - System→theme resolution reuses registry default mapping via `DEFAULT_THEME_BY_SYSTEM` (`src/dev/themeSwitcher.tsx`).
 - Test coverage added for switch behavior (`tests/SystemTypeSwitch.test.tsx`, `tests/SystemHost.test.tsx`, `tests/ui/default-window-system-switch.spec.ts`).
 
 ### Blocking scope violations
+
 1. **Unauthorized refactor of unrelated component `CSelect`**
    - Guardrail explicitly forbids refactoring `CSelect`.
    - Change detected: new `id` prop added to shared component API and forwarded to `<select>`.

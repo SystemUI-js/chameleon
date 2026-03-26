@@ -85,7 +85,7 @@
 
 ---
 
-*Task 6 issues documented: 2026-03-23*
+_Task 6 issues documented: 2026-03-23_
 
 ## 2026-03-23 Task 6: Export Surface & Test Migration Risks
 
@@ -95,7 +95,7 @@
 - **Risk**: `src/dev/main.tsx` renders `<DevThemeRoot />` directly. This entry point must be updated to use the new `DevSystemSelection` component.
 - **Risk**: `tests/SystemShellCharacterization.test.tsx` uses `DEV_THEME` and `DevThemeRoot` (lines 3, 96, 103, 114). These usages must be updated to use systemType+theme selection.
 - **Risk**: `src/system/registry.ts` imports theme components for metadata projection (lines 1-3, 60-64). This is internal but creates a dependency that must be preserved while removing public exports.
-- **Migration Path**: 
+- **Migration Path**:
   1. Create `DevSystemSelection` in `src/dev/themeSwitcher.tsx`
   2. Update `src/dev/main.tsx` to use `DevSystemSelection`
   3. Remove theme re-exports from `src/index.ts`
@@ -151,7 +151,7 @@
 
 ---
 
-*Task 7 issues documented: 2026-03-23*
+_Task 7 issues documented: 2026-03-23_
 
 ## 2026-03-23 Task 7 implementation gotcha
 
@@ -167,12 +167,10 @@
 - 活跃源码里已清除 `DefaultTheme` / `Win98Theme` / `WinXpTheme` / `legacyWindow*` / `windowContentClassName` / `windowFrameClassName` 等迁移残留，之前的 F2 blocker 已消失。
 - 当前仅剩非 blocker 噪音：`src/index.ts` 有 import 排序 informational 提示，`tests/SystemShellCharacterization.test.tsx` 里旧测试名称文案尚未同步到新 system/theme 语义。
 
-
 ## 2026-03-23 F1 rerun review note
 
 - 复审确认此前的核心架构 blocker 已修复：Windows boot layout 已 system-owned、theme 文件只剩 metadata、registry 不再消费 bridge、task 1-8 证据文件名已补齐、release gate 证据顺序与 `npm pack --dry-run` 输出均可见。
 - 当前唯一剩余 F1 阻断项是 task 1 合同本身：`tests/SystemShellCharacterization.test.tsx` 现已验证新模型而非计划要求的 pre-refactor `DevThemeRoot` full-root baseline，因此按“every task’s contract”标准仍需判定为 REJECT。
-
 
 ## 2026-03-23 F1 final rerun note
 
@@ -185,6 +183,7 @@
 ### Evidence File Inventory
 
 **Tasks 1-8 (all present, 17 files):**
+
 - task-1-shell-characterization.txt ✓
 - task-1-shell-characterization-proof.txt ✓
 - task-2-system-theme-registry.txt ✓
@@ -204,12 +203,14 @@
 - task-8-release-gates.txt ✓
 
 **Final Wave F1-F4 (all present, 4 files):**
+
 - f1-plan-compliance.md ✓ (VERDICT: APPROVE)
 - f2-code-quality.md ✓ (VERDICT: APPROVE)
 - f3-ui-qa.md ✓ (VERDICT: APPROVE)
 - f4-scope-fidelity.md ✓ (VERDICT: APPROVE)
 
 **Extra evidence files (not in plan QA Scenarios):**
+
 - task-8-manual-dev.log
 - task-7-legacy-cleanup.txt
 - task-7-tsc.txt
@@ -220,6 +221,7 @@
 ### Release Gate Verification (task-8-release-gates.txt)
 
 All 5 required commands executed in exact plan order:
+
 1. `yarn lint` ✓ (exit 0)
 2. `yarn test` ✓ (80 tests passed)
 3. `yarn test:ui` ✓ (17 Playwright tests passed)
@@ -231,11 +233,13 @@ All 5 required commands executed in exact plan order:
 **Filename Matching:** All evidence filenames match exactly what QA Scenarios specified in the plan.
 
 **Content Verification:**
+
 - Task 1: Shows focused test "dev root swaps full theme components" passing
 - Task 2: Shows registry resolution for legal pairs passing
 - Task 8: Shows full release gate sequence with all tests passing
 
 **F1-F4 Final Wave:**
+
 - F1: APPROVE - Plan compliance confirmed, task 1 historical baseline resolved via test-local HistoricalDevThemeRoot
 - F2: APPROVE - No high-severity findings, legacy symbols cleared
 - F3: APPROVE - All UI flows (drag, resize, theme switch, system switch) pass
@@ -249,13 +253,14 @@ All 5 required commands executed in exact plan order:
    - task-8-manual-dev.log (manual dev verification)
    - task-7-legacy-cleanup.txt (legacy cleanup evidence)
    - task-7-tsc.txt (TypeScript compilation check)
-   - task-2-window-harness.* (Playwright harness debug artifacts)
-   
+   - task-2-window-harness.\* (Playwright harness debug artifacts)
+
    These appear to be supplementary evidence collected during implementation but not required by the plan's QA Scenarios.
 
 ### Conclusion
 
 The evidence trail is **complete and consistent** with the plan requirements:
+
 - All 17 task evidence files exist with matching filenames
 - All 4 final wave evidence files exist with APPROVE verdicts
 - Release gates evidence shows all 5 commands executed successfully in order

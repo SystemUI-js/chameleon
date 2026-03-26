@@ -1,36 +1,45 @@
 # Add Common Components: Button, Radio, Select
 
 ## TL;DR
+
 > **Summary**: 为现有 React 组件库新增基础版 `CButton`、`CRadio`、`CRadioGroup`、`CSelect`，并同步补齐统一导出、样式、单测、Playwright 烟测、开发预览和 README 用法。
 > **Deliverables**:
+>
 > - 原生语义包装的基础表单控件
 > - 统一导出与样式目录接入
 > - Jest + Playwright 验证覆盖
 > - `src/dev` 预览示例与 `README.md` 最小文档补充
-> **Effort**: Medium
-> **Parallel**: YES - 3 waves
-> **Critical Path**: 1/2/3 → 4/5 → 6
+>   **Effort**: Medium
+>   **Parallel**: YES - 3 waves
+>   **Critical Path**: 1/2/3 → 4/5 → 6
 
 ## Context
+
 ### Original Request
+
 - 增加一些常用组件：`Button`、`Radio`、`Select`。
 
 ### Interview Summary
+
 - 交付档位：基础版。
 - 范围包含：组件、测试、开发预览、必要文档。
 - 测试策略：测试后补，但每个实现任务内必须同步补齐验证。
 
 ### Metis Review (gaps addressed)
+
 - 明确不强制继承 `CWidget`：`CWidget` 的 `renderFrame()` 带绝对定位，适合窗口/布局组件，不适合表单控件。
 - 锁定 `CSelect` 为原生单选封装，排除 searchable / clearable / 多选 / 自定义弹层。
 - 锁定 `CRadioGroup` 为受控/非受控兼容的原生 radio 语义编排，不引入自定义 ARIA radiogroup 行为。
 - 锁定 `CButton` 默认 `type="button"`，避免表单内误提交。
 
 ## Work Objectives
+
 ### Core Objective
+
 - 在不扰动现有窗口/屏幕组件体系的前提下，为库补齐最常用的基础表单控件，并让它们符合现有命名、导出、样式和验证约定。
 
 ### Deliverables
+
 - `CButton`：基础按钮，支持文本内容、禁用、variant、`type`、`onClick`、`className`、`data-testid`。
 - `CRadio`：单个原生 radio 项。
 - `CRadioGroup`：协调同名 radio 的受控/非受控选择行为。
@@ -38,6 +47,7 @@
 - 对应导出、SCSS 样式、单元测试、开发预览、README 使用说明、Playwright 烟测。
 
 ### Definition of Done (verifiable conditions with commands)
+
 - `yarn test --runInBand tests/Button.test.tsx` 通过。
 - `yarn test --runInBand tests/Radio.test.tsx` 通过。
 - `yarn test --runInBand tests/Select.test.tsx` 通过。
@@ -47,6 +57,7 @@
 - `npm pack --dry-run` 通过。
 
 ### Must Have
+
 - 保持 `C*` 命名、按组件建目录、`cm-*` 类名前缀、统一导出入口。
 - 控件底层使用原生 HTML 元素，不实现自定义 listbox/radiogroup/button 语义。
 - `CRadioGroup` 与 `CSelect` 同时支持受控与非受控模式，但实现时必须明确优先级与同步规则。
@@ -54,19 +65,24 @@
 - 预览入口展示 3 类组件的默认态、禁用态、交互态。
 
 ### Must NOT Have (guardrails, AI slop patterns, scope boundaries)
+
 - 不引入 `any`、Storybook、表单抽象层、搜索/清除/多选 Select、自定义弹层、加载态按钮、验证提示系统。
 - 不重构现有 `Window` / `Dock` / `Screen` 体系。
 - 不为表单控件继承 `CWidget` 仅为了表面一致性。
 - 不新增需要人工主观判断的验收标准。
 
 ## Verification Strategy
+
 > ZERO HUMAN INTERVENTION — all verification is agent-executed.
+
 - Test decision: tests-after + Jest + React Testing Library + Playwright smoke。
 - QA policy: 每个任务都包含 happy path 与 failure/edge case，两者都要产出可落地证据。
 - Evidence: `.sisyphus/evidence/task-{N}-{slug}.{ext}`。
 
 ## Execution Strategy
+
 ### Parallel Execution Waves
+
 > Target: 5-8 tasks per wave. <3 per wave (except final) = under-splitting.
 > Extract shared dependencies as Wave-1 tasks for max parallelism.
 
@@ -75,6 +91,7 @@ Wave 2: 2 个集成任务（主题/导出收口 + 预览/Playwright）
 Wave 3: 1 个最终文档与 CI 对齐任务
 
 ### Dependency Matrix (full, all tasks)
+
 - 1 blocks 4, 5, 6
 - 2 blocks 4, 5, 6
 - 3 blocks 4, 5, 6
@@ -83,11 +100,13 @@ Wave 3: 1 个最终文档与 CI 对齐任务
 - 6 blocks Final Verification Wave
 
 ### Agent Dispatch Summary (wave → task count → categories)
+
 - Wave 1 → 3 tasks → `visual-engineering`, `unspecified-high`, `unspecified-high`
 - Wave 2 → 2 tasks → `visual-engineering`, `unspecified-high`
 - Wave 3 → 1 task → `writing`
 
 ## TODOs
+
 > Implementation + Test = ONE task. Never separate.
 > EVERY task MUST have: Agent Profile + Parallelization + QA Scenarios.
 
@@ -117,6 +136,7 @@ Wave 3: 1 个最终文档与 CI 对齐任务
   - [x] `tests/Button.test.tsx` 断言 `variant="primary"` 时具备 `cm-button--primary`。
 
   **QA Scenarios** (MANDATORY — task incomplete without these):
+
   ```
   Scenario: Button happy path
     Tool: Bash
@@ -158,6 +178,7 @@ Wave 3: 1 个最终文档与 CI 对齐任务
   - [x] `tests/Radio.test.tsx` 断言禁用 radio 点击后仍保持未选中。
 
   **QA Scenarios** (MANDATORY — task incomplete without these):
+
   ```
   Scenario: RadioGroup happy path
     Tool: Bash
@@ -199,6 +220,7 @@ Wave 3: 1 个最终文档与 CI 对齐任务
   - [x] `tests/Select.test.tsx` 断言 `placeholder + required` 时初始值为空且需显式选择真实 option。
 
   **QA Scenarios** (MANDATORY — task incomplete without these):
+
   ```
   Scenario: Select happy path
     Tool: Bash
@@ -244,6 +266,7 @@ Wave 3: 1 个最终文档与 CI 对齐任务
   - [x] 组件局部 SCSS 与主题层 SCSS 同时存在，视觉样式主要位于 `src/theme/*/styles/index.scss`。
 
   **QA Scenarios** (MANDATORY — task incomplete without these):
+
   ```
   Scenario: Dev preview happy path
     Tool: Playwright
@@ -287,6 +310,7 @@ Wave 3: 1 个最终文档与 CI 对齐任务
   - [x] unknown fixture 断言 `getByTestId('fixture-error')` 文本包含 `Unknown fixture:`。
 
   **QA Scenarios** (MANDATORY — task incomplete without these):
+
   ```
   Scenario: Smoke fixture happy path
     Tool: Bash
@@ -331,6 +355,7 @@ Wave 3: 1 个最终文档与 CI 对齐任务
   - [x] `README.md` 中示例组件名、props 名和 demo 值与实际实现一致。
 
   **QA Scenarios** (MANDATORY — task incomplete without these):
+
   ```
   Scenario: Full validation happy path
     Tool: Bash
@@ -348,15 +373,18 @@ Wave 3: 1 个最终文档与 CI 对齐任务
   **Commit**: YES | Message: `docs(components): document common controls and validate` | Files: `README.md`, affected test and source files from tasks 4-5 as needed
 
 ## Final Verification Wave (MANDATORY — after ALL implementation tasks)
+
 > 4 review agents run in PARALLEL. ALL must APPROVE. Present consolidated results to user and get explicit "okay" before completing.
 > **Do NOT auto-proceed after verification. Wait for user's explicit approval before marking work complete.**
 > **Never mark F1-F4 as checked before getting user's okay.** Rejection or user feedback -> fix -> re-run -> present again -> wait for okay.
+
 - [x] F1. Plan Compliance Audit — oracle
 
   **Acceptance Criteria**:
   - [x] Oracle 审核结论为 APPROVE，且未发现与 `.sisyphus/plans/common-components-button-radio-select.md` 相冲突的实现偏移。
 
   **QA Scenario**:
+
   ```
   Scenario: Oracle plan compliance audit
     Tool: task/oracle
@@ -371,6 +399,7 @@ Wave 3: 1 个最终文档与 CI 对齐任务
   - [x] Reviewer finds no blocking typing, accessibility, or maintainability issues in new common-control files.
 
   **QA Scenario**:
+
   ```
   Scenario: Independent code quality review
     Tool: task/unspecified-high
@@ -385,6 +414,7 @@ Wave 3: 1 个最终文档与 CI 对齐任务
   - [x] Review confirms the shipped UI behavior matches the documented demos and smoke scenarios in both default and disabled fixtures.
 
   **QA Scenario**:
+
   ```
   Scenario: Browser-level UI QA replay
     Tool: Bash
@@ -399,6 +429,7 @@ Wave 3: 1 个最终文档与 CI 对齐任务
   - [x] Reviewer confirms no out-of-scope features were added and no planned deliverable is missing.
 
   **QA Scenario**:
+
   ```
   Scenario: Deep scope fidelity review
     Tool: task/deep
@@ -408,10 +439,12 @@ Wave 3: 1 个最终文档与 CI 对齐任务
   ```
 
 ## Commit Strategy
+
 - 推荐按组件切片提交，保证每次提交都处于可 lint / 可测 / 可构建状态。
 - 提交顺序：Button → Radio → Select → 导出/主题/预览 → Playwright 烟测 → 文档与全量校验。
 
 ## Success Criteria
+
 - 包入口与组件直接入口都能导出新增组件。
 - 组件在 README 与 dev 预览中均有最小可运行示例。
 - 单测覆盖导出、语义、受控/非受控、禁用态、关键 className / value 行为。
