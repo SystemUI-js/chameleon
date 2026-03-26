@@ -1,0 +1,23 @@
+yarn run v1.22.19
+warning ../../../package.json: No license field
+$ jest --runInBand tests/StartBar.test.tsx -t 'typing|rejects'
+PASS tests/StartBar.test.tsx
+  CStartBar
+    ✓ rejects position prop at type level (1 ms)
+    ○ skipped exports CStartBar from package entry
+    ○ skipped renders with default height of 30px when neither height nor defaultHeight provided
+    ○ skipped renders start button and content slot with default testids
+    ○ skipped renders children in content slot
+    ○ skipped applies className to root element
+    ○ skipped applies style to root element without overriding dock edges
+    ○ skipped renders with custom startLabel
+    ○ skipped uses default testids when not provided
+    ○ skipped applies gapStart and gapEnd correctly
+    ○ skipped syncs controlled height updates
+
+Test Suites: 1 passed, 1 total
+Tests:       10 skipped, 1 passed, 11 total
+Snapshots:   0 total
+Time:        0.36 s, estimated 1 s
+Ran all test suites matching /tests\/StartBar.test.tsx/i with tests matching "typing|rejects".
+Done in 1.48s.

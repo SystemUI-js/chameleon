@@ -81,6 +81,8 @@ describe('SystemHost', () => {
     expect(updatedFrame.style.height).toBe('220px');
     expect(screen.getByTestId('windows-window-body')).toBeInTheDocument();
     expect(screen.getByTestId('window-title')).toHaveTextContent('Windows Window');
+    expect(screen.getByTestId('windows-start-bar')).toBeInTheDocument();
+    expect(screen.getByTestId('windows-start-bar-button')).toBeInTheDocument();
   });
 
   it('reboots runtime session across system switches', () => {
@@ -117,5 +119,6 @@ describe('SystemHost', () => {
     expect(defaultFrame.style.height).toBe('228px');
     expect(screen.getByTestId('default-window-body')).toBeInTheDocument();
     expect(screen.queryByTestId('windows-window-body')).not.toBeInTheDocument();
+    expect(screen.queryByTestId('windows-start-bar')).not.toBeInTheDocument();
   });
 });

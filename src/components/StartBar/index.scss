@@ -1,0 +1,25 @@
+.cm-start-bar {
+    display: flex;
+    align-items: center;
+    box-sizing: border-box;
+}
+
+.cm-start-bar__button {
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    box-sizing: border-box;
+    min-height: 22px;
+    padding: 0 10px;
+    margin: 2px;
+    font-size: 11px;
+    font-weight: 700;
+    cursor: pointer;
+}
+
+.cm-start-bar__content {
+    display: flex;
+    align-items: center;
+    flex: 1;
+    box-sizing: border-box;
+}

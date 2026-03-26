@@ -39,5 +39,7 @@ describe('Theme scope class names', () => {
     expect(contentAfter.getAttribute('data-window-uuid')).toBe(uuidBefore);
     expect(screen.getByTestId('windows-window-body')).toBeInTheDocument();
     expect(titleAfter).toHaveTextContent('Windows Window');
+    expect(screen.getByTestId('windows-start-bar')).toBeInTheDocument();
+    expect(screen.getByTestId('windows-start-bar-button')).toBeInTheDocument();
   });
 });

@@ -1,29 +1,43 @@
 # F2 Code Quality Review
 
-## Scope Reviewed
-- `src/system/*`, `src/theme/*`, `src/components/Window/Window.tsx`, `src/index.ts`, `src/dev/themeSwitcher.tsx`
-- Key regression tests covering registry contracts, same-system preservation, cross-system reboot, and shared shell seams
-- Legacy symbol search for `DefaultTheme|Win98Theme|WinXpTheme|legacyWindow|windowContentClassName|windowFrameClassName|DevThemeRoot|DEFAULT_DEV_THEME|resolveDevThemeComponent`
+## Verdict
 
-## High-Severity Findings
-- None. Zero unresolved high-severity findings remain in the current repaired workspace.
+REJECTED
 
-## Evidence
-- `src/system/windows/WindowsSystem.tsx:24` now keeps the Windows boot payload in a system-owned `WINDOWS_BOOT_LAYOUT` constant; `themeDefinition` is only forwarded to `WindowsScreen` for scoped metadata/class application at `src/system/windows/WindowsSystem.tsx:44`.
-- `src/theme/default/index.tsx:4`, `src/theme/win98/index.tsx:4`, and `src/theme/winxp/index.tsx:4` now export plain `ThemeDefinition` metadata only; there are no callable root-theme bridge exports left.
-- `src/system/registry.ts:1` now depends on `defaultThemeDefinition`, `win98ThemeDefinition`, and `winXpThemeDefinition` plain metadata objects rather than renderable bridge objects.
-- `src/components/Window/Window.tsx:15` no longer exposes migration-only compatibility props like `windowContentClassName` or `windowFrameClassName`; `CWindowProps` is back to shared runtime concerns only.
-- `src/index.ts:3` exports components plus the new system/theme contracts; it does not re-export old root-theme modules or bridge APIs.
-- `src/system/SystemHost.tsx:28` still keys the active shell only by `systemType`, preserving the intended reboot boundary.
+## Checks Run
 
-## Minor Notes
-- `src/index.ts:1` still has an import-order informational diagnostic from Biome (`organizeImports`), but there are no actual type or runtime errors.
-- `tests/SystemShellCharacterization.test.tsx:93` keeps the old test name string `dev root swaps full theme components`, while the assertions now exercise the repaired `DevSystemRoot` lifecycle. This is naming drift only, not an architectural problem.
+1. `yarn lint`
+2. Search for `\bany\b|as any` in `src/components/StartBar`, `src/components/Dock`, `src/system/windows`, `tests`
+3. Search for `TODO|FIXME` in `src/components/StartBar`, `src/system/windows`, `tests`
+4. Review `src/components/StartBar/StartBar.tsx`
+5. Review `src/components/Dock/Dock.tsx` and extracted `src/components/Dock/dockLayout.ts`
 
-## Validation Performed
-- Re-read the current repaired source surface and affected tests instead of relying on the previous F2 report.
-- Searched active `src/` and `tests/` files for removed root-theme symbols and compatibility leftovers; no matches remained in active code for the blocked symbols.
-- Ran `lsp_diagnostics` on `src/system/windows/WindowsSystem.tsx`, `src/system/default/DefaultSystem.tsx`, `src/system/registry.ts`, `src/theme/*/index.tsx`, `src/components/Window/Window.tsx`, and `src/index.ts`; no real errors were reported.
-- Cross-checked release-gate evidence in `.sisyphus/evidence/task-8-release-gates.txt` showing full lint, Jest, Playwright, and build success on the repaired workspace.
+## Results
 
-VERDICT: APPROVE
+- `yarn lint` passed. ESLint emitted a non-blocking migration warning about `.eslintignore`, but the command completed successfully.
+- No `any` / `as any` matches were found in the required directories.
+- No `TODO` / `FIXME` matches were found in the required directories.
+- `CDockProps` contract is unchanged in `src/components/Dock/Dock.tsx:8` and `src/components/Dock/Dock.tsx:31`.
+- `CDock` default behavior is unchanged: constructor still resolves `position` as `props.position ?? props.defaultPosition ?? 'top'` and `height` as `props.height ?? props.defaultHeight` in `src/components/Dock/Dock.tsx:42`.
+
+## Violations
+
+1. `CStartBar` public API surface is broader than required.
+   - `CStartBarProps` extends `CWidgetProps` at `src/components/StartBar/StartBar.tsx:6`.
+   - `CWidgetProps` includes `x`, `y`, `width`, and `height` via `WidgetLayoutProps` in `src/components/Widget/Widget.tsx:4` and `src/components/Widget/Widget.tsx:11`.
+   - Therefore `CStartBar` currently exposes inherited `x`, `y`, and `width` props in addition to the allowed surface (`children`, `className`, `style`, `height`, `defaultHeight`, `gapStart`, `gapEnd`, `startLabel`, `data-testid`).
+
+## Contract Notes
+
+- `CStartBar` does **not** expose `position` or `defaultPosition`; those props are absent from `src/components/StartBar/StartBar.tsx:6`.
+- The current rejection is solely due to extra inherited layout props on `CStartBar`.
+
+## Evidence References
+
+- `src/components/StartBar/StartBar.tsx:6`
+- `src/components/Widget/Widget.tsx:4`
+- `src/components/Widget/Widget.tsx:11`
+- `src/components/Dock/Dock.tsx:8`
+- `src/components/Dock/Dock.tsx:31`
+- `src/components/Dock/Dock.tsx:42`
+- `src/components/Dock/dockLayout.ts:4`

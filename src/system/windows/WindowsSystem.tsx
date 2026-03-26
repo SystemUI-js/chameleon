@@ -1,4 +1,5 @@
 import React from 'react';
+import { CStartBar } from '@/components/StartBar/StartBar';
 import { CWindow } from '@/components/Window/Window';
 import { CWindowManager } from '@/components/Window/WindowManager';
 import { CWindowTitle } from '@/components/Window/WindowTitle';
@@ -53,6 +54,7 @@ export const WindowsSystem = ({ themeDefinition }: WindowsSystemProps): React.Re
           {createWindowsBootLayoutBody(bootLayout)}
         </CWindow>
       </CWindowManager>
+      <CStartBar data-testid="windows-start-bar" startLabel="Start" />
     </WindowsScreen>
   );
 };

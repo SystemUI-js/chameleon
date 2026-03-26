@@ -1,0 +1,4 @@
+- 2026-03-26: `screen-root` UI 断言要求可见，因此在 `CScreen` 根节点补了最小内联布局样式 `position: relative; width: 100%; min-height: 100vh;`，让绝对定位的窗口/开始栏拥有稳定可见的定位上下文。
+- 2026-03-26: F3 QA 结论按“所有指定命令退出码必须为 0”判定；尽管 lint/build 仍有非阻塞 warning，当前门禁结果仍记录为 `APPROVED`。
+- 2026-03-26: F2 代码质量审查按“继承后的完整公开类型”判定组件 API；`CDock` 仅接受内部实现抽取，`CStartBar` 若需只暴露指定字段，后续应改为显式声明 props 而不是直接继承 `CWidgetProps`。
+- 2026-03-26: 本轮 F1 计划合规审计结论记为 `REJECTED`，阻断项锁定为两类：关键系统文件相对 `main` 仍有计划外变更，以及 Start Bar 主题文件仍混入基础布局声明。

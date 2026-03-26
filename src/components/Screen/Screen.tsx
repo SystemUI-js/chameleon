@@ -22,6 +22,7 @@ export class CScreen extends React.Component<Props> {
         className={className}
         data-system-type={systemType}
         data-theme={theme}
+        style={{ position: 'relative', width: '100%', minHeight: '100vh' }}
       >
         <CGrid grid={[3, 3]} className={screenClassName ? `c-grid ${screenClassName}` : undefined}>
           {children}

@@ -6,6 +6,7 @@ export * from './Screen/Screen';
 export * from './Screen/ScreenManager';
 export * from './Screen/Grid';
 export * from './Dock/Dock';
+export * from './StartBar/StartBar';
 export * from './Button/Button';
 export * from './Radio/Radio';
 export * from './Radio/RadioGroup';

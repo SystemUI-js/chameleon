@@ -173,4 +173,25 @@ describe('system shell characterization', () => {
 
     expect(win98Seam).toEqual(winxpSeam);
   });
+
+  it('windows/win98 renders start bar', () => {
+    render(<SystemHost systemType="windows" theme="win98" />);
+
+    expect(screen.getByTestId('windows-start-bar')).toBeInTheDocument();
+    expect(screen.getByTestId('windows-start-bar-button')).toBeInTheDocument();
+  });
+
+  it('windows/winxp renders start bar', () => {
+    render(<SystemHost systemType="windows" theme="winxp" />);
+
+    expect(screen.getByTestId('windows-start-bar')).toBeInTheDocument();
+    expect(screen.getByTestId('windows-start-bar-button')).toBeInTheDocument();
+  });
+
+  it('default/default does not render start bar', () => {
+    render(<SystemHost systemType="default" theme="default" />);
+
+    expect(screen.queryByTestId('windows-start-bar')).not.toBeInTheDocument();
+    expect(screen.queryByTestId('start-bar')).not.toBeInTheDocument();
+  });
 });

@@ -1,0 +1,3 @@
+- 2026-03-26: F3 手动 QA 中 `yarn lint` 仍会打印 ESLint flat config 的 `.eslintignore` 迁移警告；不影响退出码，但后续可清理到 `eslint.config.js` 的 `ignores`。
+- 2026-03-26: F3 手动 QA 中 `yarn build` 会打印 Sass legacy JS API deprecation warnings；当前不阻塞构建，但依赖升级时应关注。
+- 2026-03-26: F3 产物校验命令 `rg -n "CStartBar" dist/index.d.ts dist/chameleon.es.js` 只在 `dist/chameleon.es.js` 打印命中，`dist/index.d.ts` 未出现在命令输出中。

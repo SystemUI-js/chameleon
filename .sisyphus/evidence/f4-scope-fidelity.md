@@ -1,57 +1,70 @@
-## F4 Scope Fidelity Check
+# F4 Scope Fidelity Check
 
-### Review basis
-- Plan reviewed: `.sisyphus/plans/systemtype-theme-refactor.md` task 1-8 boundaries, final-wave F4 scope goal, and success criteria
-- Re-check focus: previous rejection items plus explicit spill categories `compatibility shims`, `new system types`, `multi-screen support`, `token redesign`
-- Current workspace reviewed with `git status --short`, `git diff --stat`, targeted `Read`, `Grep`, and `lsp_diagnostics`
+## 结论
 
-### Current changed-file scope snapshot
-- Active implementation remains inside planned areas: `src/system/*`, `src/dev/*`, `src/theme/*`, `src/index.ts`, and related Jest/Playwright tests
-- Changed-file summary is consistent with the refactor waves: registry/contracts, system shells, scoped themes, dev host, public exports, and test coverage
-- `.sisyphus/boulder.json` is orchestration metadata only and not counted as product-scope expansion
+REJECTED
 
-### Previous F4 blockers re-checked
-1. Renderable theme bridges in `src/theme/*`
-   - Resolved
-   - `src/theme/default/index.tsx:4`, `src/theme/win98/index.tsx:4`, and `src/theme/winxp/index.tsx:4` now export plain theme metadata objects only
-   - No `DefaultTheme`, `Win98Theme`, `WinXpTheme`, or `*ThemeRoot` symbols remain in active source grep results
+## 1) 计划外 Windows shell 功能关键词检查
 
-2. Registry dependency on bridge objects
-   - Resolved
-   - `src/system/registry.ts:1`-`src/system/registry.ts:3` now import `defaultThemeDefinition`, `win98ThemeDefinition`, and `winXpThemeDefinition`
-   - `src/system/registry.ts:61`-`src/system/registry.ts:63` projects from plain metadata objects, not callable bridge exports
+- 执行命令：
+  - `rg -n "StartMenu|Tray|Clock|TaskList|pin|pinned|menu popover|system tray" src/components/StartBar src/system/windows tests`
+- 实际结果：
+  - 命中 `tests/Dock.test.tsx:17`，文本为 `typing`（包含 `pin` 子串）
+  - 退出码为 `0`
+- 预期结果：
+  - 无匹配，退出码 `1`
+- 判定：
+  - 未满足该步预期。
 
-3. Plan-external API expansion in `src/components/Window/Window.tsx`
-   - Resolved
-   - `src/components/Window/Window.tsx:15`-`src/components/Window/Window.tsx:19` shows `CWindowProps` only carries `children`, `resizable`, and `resizeOptions`
-   - Grep found no remaining `windowContentClassName` or `windowFrameClassName` symbols in `src/`
+## 2) 计划外文件修改检查
 
-4. Legacy class injection props in system shells
-   - Resolved
-   - `src/system/default/DefaultSystem.tsx:19`-`src/system/default/DefaultSystem.tsx:21` now only accepts `themeDefinition`
-   - `src/system/windows/WindowsSystem.tsx:20`-`src/system/windows/WindowsSystem.tsx:22` now only accepts `themeDefinition`
-   - No remaining `legacyWindowFrameClassName`, `legacyWindowContentClassName`, or `legacyWindowTitleClassName` symbols were found in `src/`
+- 核验命令：
+  - `git diff --name-only HEAD`
+- 变更文件：
+  - `.sisyphus/plans/add-cdock.md`
+  - `.sisyphus/plans/common-components-button-radio-select.md`
+  - `.sisyphus/plans/systemtype-start-bar.md`
+  - `src/components/Dock/Dock.tsx`
+  - `src/components/Screen/Screen.tsx`
+  - `src/components/index.ts`
+  - `src/system/windows/WindowsSystem.tsx`
+  - `src/theme/win98/styles/index.scss`
+  - `src/theme/winxp/styles/index.scss`
+  - `tests/SystemHost.test.tsx`
+  - `tests/SystemShellCharacterization.test.tsx`
+  - `tests/ThemeScopeClassNames.test.tsx`
+- 受限文件核验：
+  - `src/system/SystemHost.tsx` 未修改
+  - `src/system/types.ts` 未修改
+  - `src/system/registry.ts` 未修改
 
-### Scope checks passed
-- System scope remains closed to `windows | default` in `src/system/types.ts:1`
-- Theme scope remains closed to `win98 | winxp | default` in `src/system/types.ts:3`
-- Registry legal pairs still match the plan exactly in `src/system/registry.ts:23`
-- Public cutover stays aligned with the plan: `src/index.ts:3`-`src/index.ts:6` exports system contracts/host, and no old root-theme exports remain
-- Dev/runtime entry stays on `{ systemType, theme }` selection in `src/dev/themeSwitcher.tsx:17` and `src/dev/main.tsx:2`
-- Playwright harness expansion remains inside task 8 scope by supporting selection query params in `src/dev/playwright/windowHarness.tsx:13` without adding unrelated platform behavior
+## 3) 允许变更清单一致性检查
 
-### No out-of-plan expansion found
-- No new system types were introduced
-- No multi-screen or multi-monitor implementation was introduced; grep found no active feature code for that expansion
-- No compatibility shim/plumbing from the previous rejection remains in active source files
-- No token redesign was introduced; current theme files are metadata-only and scoped styling remains the implementation mechanism
+- 允许范围（任务给定）内命中：
+  - `src/components/Dock/Dock.tsx`
+  - `src/components/index.ts`
+  - `src/system/windows/WindowsSystem.tsx`
+  - `src/theme/win98/styles/index.scss`
+  - `src/theme/winxp/styles/index.scss`
+  - `tests/SystemHost.test.tsx`
+  - `tests/SystemShellCharacterization.test.tsx`
+  - `tests/ThemeScopeClassNames.test.tsx`
+- 范围外变更：
+  - `.sisyphus/plans/add-cdock.md`
+  - `.sisyphus/plans/common-components-button-radio-select.md`
+  - `.sisyphus/plans/systemtype-start-bar.md`
+  - `src/components/Screen/Screen.tsx`
 
-### Diagnostics spot check
-- `lsp_diagnostics` reported zero errors for `src/theme/default/index.tsx`, `src/system/registry.ts`, and `src/components/Window/Window.tsx`
+## 4) 架构漂移检查
 
-### Assessment
-- The current repaired state matches the intended final architecture: runtime selection is `{ systemType, theme }`, theme files are CSS-scoped metadata, and the scope remains limited to `Windows` plus `Default`
-- Previous rejection reasons are no longer present in current code and should not be carried forward
-- I found no current evidence of silent scope spill beyond the plan
+- 未发现 `SystemHost/types/registry` 契约文件被修改。
+- 但存在范围外文件修改，且关键词检查未满足“无匹配”预期。
 
-VERDICT: APPROVE
+## 范围偏差列表
+
+1. 关键词扫描存在匹配，未达到“无匹配（退出码 1）”预期。
+2. 存在允许清单之外的变更文件：
+   - `.sisyphus/plans/add-cdock.md`
+   - `.sisyphus/plans/common-components-button-radio-select.md`
+   - `.sisyphus/plans/systemtype-start-bar.md`
+   - `src/components/Screen/Screen.tsx`
