@@ -1,0 +1,29 @@
+Task 6 - Real UI coverage + CI-aligned validation evidence
+
+Created file:
+- tests/ui/default-window-system-switch.spec.ts
+
+Command results:
+1) yarn lint
+   - PASS
+
+2) yarn test -- SystemTypeSwitch
+   - PASS (12 passed)
+
+3) yarn test -- SystemHost
+   - PASS (2 passed)
+
+4) yarn test:ui tests/ui/default-window-system-switch.spec.ts tests/ui/start-bar.spec.ts
+   - First run: FAIL (`ERR_CONNECTION_REFUSED` to http://127.0.0.1:5673)
+   - Re-run with explicit `yarn dev` bootstrap: PASS (2 passed)
+
+5) yarn build
+   - PASS (vite build completed)
+
+Verification points covered by new UI spec:
+- Start at default/default selection
+- Switch via title bar dropdown label `切换系统` to `windows`
+- Assert URL includes `systemType=windows` and `theme=win98`
+- Assert `screen-root` has `data-system-type="windows"` and `data-theme="win98"`
+- Assert `windows-start-bar` visible
+- Assert `default-window-body` disappears

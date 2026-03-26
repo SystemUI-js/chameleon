@@ -6,10 +6,10 @@ module.exports = {
   parserOptions: {
     ecmaVersion: 'latest',
     sourceType: 'module',
-    ecmaFeatures: { jsx: true }
+    ecmaFeatures: { jsx: true },
   },
   settings: {
-    react: { version: 'detect' }
+    react: { version: 'detect' },
   },
   plugins: ['@typescript-eslint', 'react', 'react-hooks'],
   extends: [
@@ -18,10 +18,10 @@ module.exports = {
     'plugin:react/recommended',
     'plugin:react-hooks/recommended',
     'plugin:jest/recommended',
-    'plugin:jest/style'
+    'plugin:jest/style',
   ],
   rules: {
-    'react/react-in-jsx-scope': 'off'
+    'react/react-in-jsx-scope': 'off',
   },
-  ignorePatterns: ['dist', 'node_modules']
+  ignorePatterns: ['dist', 'node_modules'],
 };

@@ -1,17 +1,23 @@
 import { fireEvent } from '@testing-library/dom';
 import { render, waitFor } from '@testing-library/react';
 import '@testing-library/jest-dom';
-import { Win98Theme } from '../src/theme/win98';
+import { SystemHost } from '../src/system/SystemHost';
 
 describe('Win98 title composition', () => {
-  it('renders visible win98 title area and supports dragging', async () => {
-    const { getByTestId } = render(<Win98Theme />);
+  it('renders visible title content and supports dragging through SystemHost', async () => {
+    const { getByTestId } = render(<SystemHost systemType="windows" theme="win98" />);
 
+    const root = getByTestId('screen-root');
     const title = getByTestId('window-title');
     const frame = getByTestId('window-frame');
+    const content = getByTestId('window-content');
 
-    expect(title).toHaveTextContent('Win98 Window');
-    expect(title).toHaveClass('cm-window__title-bar--win98');
+    expect(root).toHaveClass('cm-system--windows');
+    expect(root).toHaveClass('cm-theme--win98');
+    expect(title).toHaveClass('cm-window__title-bar');
+    expect(title).toHaveTextContent('Windows Window');
+    expect(content).toContainElement(title);
+    expect(content).toHaveTextContent('Windows content');
     expect(frame.style.left).toBe('24px');
     expect(frame.style.top).toBe('24px');
 

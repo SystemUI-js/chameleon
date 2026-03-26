@@ -1,0 +1,15 @@
+$ yarn test -- --runInBand tests/ThemeSwitchPreservation.test.tsx -t "preserves runtime state within a system"
+yarn run v1.22.19
+warning ../../../package.json: No license field
+warning From Yarn 1.0 onwards, scripts don't require "--" for options to be forwarded. In a future version, any explicit "--" will be forwarded as-is to the scripts.
+$ jest --runInBand tests/ThemeSwitchPreservation.test.tsx -t 'preserves runtime state within a system'
+PASS tests/ThemeSwitchPreservation.test.tsx
+  Theme switch preservation
+    ✓ preserves runtime state within a system (80 ms)
+
+Test Suites: 1 passed, 1 total
+Tests:       1 passed, 1 total
+Snapshots:   0 total
+Time:        0.812 s, estimated 1 s
+Ran all test suites matching /tests\/ThemeSwitchPreservation.test.tsx/i with tests matching "preserves runtime state within a system".
+Done in 2.85s.

@@ -1,0 +1,11 @@
+$ yarn test:ui --grep "reboots to default boot layout on cross-system switch"
+yarn run v1.22.19
+warning ../../../package.json: No license field
+$ playwright test --config=playwright.config.ts --pass-with-no-tests --grep 'reboots to default boot layout on cross-system switch'
+
+Running 1 test using 1 worker
+
+  ✓  1 [chromium] › tests/ui/system-theme-switch.spec.ts:51:3 › system/theme switch › reboots to default boot layout on cross-system switch (955ms)
+
+  1 passed (2.7s)
+Done in 4.48s.

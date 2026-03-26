@@ -1,0 +1,16 @@
+$ yarn test -- --runInBand tests/ThemeScopeClassNames.test.tsx -t "applies the active theme class to screen root"
+yarn run v1.22.19
+warning ../../../package.json: No license field
+warning From Yarn 1.0 onwards, scripts don't require "--" for options to be forwarded. In a future version, any explicit "--" will be forwarded as-is to the scripts.
+$ jest --runInBand tests/ThemeScopeClassNames.test.tsx -t 'applies the active theme class to screen root'
+PASS tests/ThemeScopeClassNames.test.tsx
+  Theme scope class names
+    ✓ applies the active theme class to screen root (73 ms)
+    ○ skipped does not remount runtime windows on same system theme change
+
+Test Suites: 1 passed, 1 total
+Tests:       1 skipped, 1 passed, 2 total
+Snapshots:   0 total
+Time:        0.816 s, estimated 1 s
+Ran all test suites matching /tests\/ThemeScopeClassNames.test.tsx/i with tests matching "applies the active theme class to screen root".
+Done in 2.99s.

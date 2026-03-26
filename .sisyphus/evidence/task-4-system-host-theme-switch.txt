@@ -1,0 +1,16 @@
+$ yarn test -- --runInBand tests/SystemHost.test.tsx -t "preserves runtime window across windows theme switches"
+yarn run v1.22.19
+warning ../../../package.json: No license field
+warning From Yarn 1.0 onwards, scripts don't require "--" for options to be forwarded. In a future version, any explicit "--" will be forwarded as-is to the scripts.
+$ jest --runInBand tests/SystemHost.test.tsx -t 'preserves runtime window across windows theme switches'
+PASS tests/SystemHost.test.tsx
+  SystemHost
+    ✓ preserves runtime window across windows theme switches (33 ms)
+    ○ skipped reboots runtime session across system switches
+
+Test Suites: 1 passed, 1 total
+Tests:       1 skipped, 1 passed, 2 total
+Snapshots:   0 total
+Time:        0.563 s, estimated 1 s
+Ran all test suites matching /tests\/SystemHost.test.tsx/i with tests matching "preserves runtime window across windows theme switches".
+Done in 3.33s.

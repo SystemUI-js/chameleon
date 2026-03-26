@@ -18,7 +18,7 @@
     "symlinkDirs": [],
 
     // Patterns to exclude from copying
-    "exclude": []
+    "exclude": [],
   },
 
   "hooks": {
@@ -28,6 +28,6 @@
 
     // Commands to run before worktree deletion
     // Example: ["docker compose down"]
-    "preDelete": []
-  }
+    "preDelete": [],
+  },
 }

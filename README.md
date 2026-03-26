@@ -22,21 +22,53 @@ Chameleon
 
 发布与使用
 
-- 作为库发布后，以 @sysui/chameleon 安装并在代码中导入组件使用。
+- 作为库发布后，以 `@system-ui-js/chameleon` 安装并在代码中导入组件使用。
+
+```bash
+yarn add @system-ui-js/chameleon
+```
+
+```tsx
+import { CButton, CRadio, CRadioGroup, CSelect } from '@system-ui-js/chameleon';
+
+const sizeOptions = [
+  { label: 'Small', value: 'small' },
+  { label: 'Medium', value: 'medium' },
+  { label: 'Large', value: 'large' },
+] as const;
+
+export function Demo() {
+  return (
+    <>
+      <CButton>Default</CButton>
+      <CButton variant="primary">Primary</CButton>
+
+      <CRadioGroup name="fruit" defaultValue="apple">
+        <CRadio value="apple">Apple</CRadio>
+        <CRadio value="orange">Orange</CRadio>
+      </CRadioGroup>
+
+      <CSelect options={sizeOptions} placeholder="Select a size" />
+    </>
+  );
+}
+```
 
 ## How to create a theme
 
 主题必须完整实现 `Theme` 接口，包含 `tokens` 和 `components`，并且所有字段必填。Theme 会被展平成 CSS 变量，命名规则是 `--cm-{category}-{token}`。
 
 ### 1. Define ThemeId
+
 ```ts
 // src/theme/types.ts
-export type ThemeId = 'win98' | 'winxp' | 'macos' | 'material'
+export type ThemeId = 'win98' | 'winxp' | 'macos' | 'material';
 ```
 
 ### 2. Implement Theme
+
 ```ts
-import { Theme } from './types'
+import { Theme } from './types';
 
 export const winxp: Theme = {
   id: 'winxp',
@@ -56,32 +88,32 @@ export const winxp: Theme = {
       borderDarkest: '#3F3F3A',
       focusRing: '#3D7BD9',
       selectionBg: '#316AC5',
-      selectionText: '#FFFFFF'
+      selectionText: '#FFFFFF',
     },
     typography: {
       fontFamily: "'Tahoma', 'Segoe UI', sans-serif",
       fontSize: '12px',
       lineHeight: '1.2',
-      fontWeight: 400
+      fontWeight: 400,
     },
     spacing: {
       xs: '2px',
       sm: '4px',
       md: '8px',
       lg: '16px',
-      xl: '24px'
+      xl: '24px',
     },
     shadow: {
       insetBevel: 'inset 1px 1px 0 #FFFFFF, inset -1px -1px 0 #A0A0A0',
       outsetBevel: 'inset 1px 1px 0 #FFFFFF, inset -1px -1px 0 #7A7A7A',
-      popup: '2px 2px 4px rgba(0,0,0,0.3)'
+      popup: '2px 2px 4px rgba(0,0,0,0.3)',
     },
     radius: {
       sm: '2px',
       md: '3px',
       lg: '5px',
-      round: '9999px'
-    }
+      round: '9999px',
+    },
   },
   components: {
     button: {
@@ -92,37 +124,40 @@ export const winxp: Theme = {
       borderLight: '#FFFFFF',
       borderDark: '#7A7A7A',
       borderDarker: '#4F4F4F',
-      focusRing: '#3D7BD9'
+      focusRing: '#3D7BD9',
     },
     window: {
       frame: '#ECE9D8',
       titleBarBg: '#316AC5',
       titleBarText: '#FFFFFF',
       titleBarBgInactive: '#7A96DF',
-      titleBarTextInactive: '#E6E6E6'
-    }
-  }
-}
+      titleBarTextInactive: '#E6E6E6',
+    },
+  },
+};
 ```
 
 ### 3. Register theme
+
 ```ts
 // src/theme/ThemeContext.tsx
 const base = {
   win98,
   winxp,
   macos: win98,
-  material: win98
-}
+  material: win98,
+};
 ```
 
 ### 4. Export theme
+
 ```ts
 // src/index.ts
-export * from './theme/winxp'
+export * from './theme/winxp';
 ```
 
 ### 5. Use tokens in CSS
+
 ```css
 border-radius: var(--cm-radius-md);
 ```
@@ -132,12 +167,12 @@ border-radius: var(--cm-radius-md);
 `CWindow` 不会隐式注入标题栏，使用时需要显式组合 `CWindowTitle`。
 
 ```tsx
-import { CWindow, CWindowTitle } from '@system-ui-js/chameleon'
+import { CWindow, CWindowTitle } from '@system-ui-js/chameleon';
 
 <CWindow x={24} y={24} width={320} height={220}>
   <CWindowTitle>My Window</CWindowTitle>
   <div>Window body</div>
-</CWindow>
+</CWindow>;
 ```
 
 拖动 `CWindowTitle` 会移动所属 `CWindow`，内容区域不会触发窗口移动。

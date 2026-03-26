@@ -1,0 +1,19 @@
+yarn test --runInBand tests/Dock.test.tsx tests/StartBar.test.tsx tests/SystemHost.test.tsx tests/SystemShellCharacterization.test.tsx tests/ThemeScopeClassNames.test.tsx
+exit_code=0
+key_output=PASS 5 suites; 35 tests passed; Done in 2.14s.
+
+yarn test:ui --grep "start bar|system/theme switch"
+exit_code=0
+key_output=3 Playwright tests passed on Chromium; Done in 3.71s.
+
+yarn lint
+exit_code=0
+key_output=ESLint completed successfully; warning about deprecated .eslintignore handling.
+
+yarn build
+exit_code=0
+key_output=Vite production build succeeded; dist/chameleon.es.js and dist/chameleon.umd.cjs emitted; Sass legacy JS API deprecation warnings; vite:dts outside emitted notices.
+
+rg -n "CStartBar" dist/index.d.ts dist/chameleon.es.js
+exit_code=0
+key_output=dist/chameleon.es.js:5784:  pg as CStartBar,

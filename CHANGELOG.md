@@ -5,6 +5,11 @@
   - 为不同方向的 resize handle 补充对应 cursor，提升桌面窗口缩放时的交互可预期性
   - 恢复 `cm-window__inner` 包装层，稳定内容区与缩放热区的分层关系
 
+- **Feature:** 在默认窗口标题栏添加系统切换下拉控件
+  - 在 `DefaultSystem` 组件标题栏添加 `切换系统` 下拉选择器
+  - 复用现有 `CSelect` 组件和系统注册表
+  - 切换系统时自动联动目标系统默认主题
+  - 添加完整的 Jest 和 Playwright 测试覆盖
 - **Test:** 升级 `@playwright/test` 到 `^1.58.2`，补充 Playwright 在 CI 环境下的 `forbidOnly`、重试和并发配置，提升 Window UI 测试在持续集成中的稳定性
 - Fix Window 的 Playwright resize 用例方向标签与筛选逻辑，统一为小写方向标识，降低 `--grep` 定向执行时的误匹配风险
 
