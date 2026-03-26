@@ -5,12 +5,13 @@ import {
   resolveThemeDefinition,
   resolveSystemTypeDefinition,
 } from './registry';
-import type { SystemTypeId, ThemeId } from './types';
+import type { SystemThemeSelection, SystemTypeId, ThemeId } from './types';
 import { WindowsSystem } from './windows/WindowsSystem';
 
 export interface SystemHostProps {
   readonly systemType: SystemTypeId;
   readonly theme: ThemeId;
+  readonly onSelectionChange?: (selection: SystemThemeSelection) => void;
 }
 
 const SYSTEM_SHELL_BY_TYPE = {
@@ -18,12 +19,26 @@ const SYSTEM_SHELL_BY_TYPE = {
   default: DefaultSystem,
 } as const;
 
-export const SystemHost = ({ systemType, theme }: SystemHostProps): ReactElement => {
+export const SystemHost = ({
+  systemType,
+  theme,
+  onSelectionChange,
+}: SystemHostProps): ReactElement => {
   assertValidSystemThemeSelection({ systemType, theme });
 
   const systemDefinition = resolveSystemTypeDefinition(systemType);
   const themeDefinition = resolveThemeDefinition({ systemType, theme });
   const ActiveSystemShell = SYSTEM_SHELL_BY_TYPE[systemDefinition.id];
+
+  if (systemDefinition.id === 'default') {
+    return (
+      <ActiveSystemShell
+        key={systemType}
+        themeDefinition={themeDefinition}
+        onSelectionChange={onSelectionChange}
+      />
+    );
+  }
 
   return <ActiveSystemShell key={systemType} themeDefinition={themeDefinition} />;
 };

@@ -15,7 +15,7 @@ describe('Default theme window composition', () => {
     expect(root).toHaveClass('cm-theme--default');
     expect(frame).toHaveClass('cm-window-frame');
     expect(content).toHaveClass('cm-window');
-    expect(title).toHaveClass('cm-window__title-bar');
+    expect(title).toHaveClass('cm-window__title-bar--with-controls');
     expect(content).toContainElement(title);
     expect(content).toHaveTextContent('Default content');
     expect(title).toHaveTextContent('Default Window');

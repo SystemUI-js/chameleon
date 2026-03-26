@@ -32,7 +32,7 @@ export const DEFAULT_THEME_BY_SYSTEM = {
   [SYSTEM_TYPE.default]: THEME.default,
 } as const satisfies Record<SystemTypeId, ThemeId>;
 
-const SYSTEM_TYPE_DEFINITIONS: Record<SystemTypeId, SystemTypeDefinition> = {
+export const SYSTEM_TYPE_DEFINITIONS: Record<SystemTypeId, SystemTypeDefinition> = {
   [SYSTEM_TYPE.windows]: {
     id: SYSTEM_TYPE.windows,
     label: 'Windows',

@@ -68,3 +68,50 @@ REJECTED
    - `.sisyphus/plans/common-components-button-radio-select.md`
    - `.sisyphus/plans/systemtype-start-bar.md`
    - `src/components/Screen/Screen.tsx`
+# F4 Scope Fidelity Check
+
+- Time (UTC): 2026-03-26T07:33:26Z
+- Original request: `在默认展示的这个窗口中，增加切换 SystemType 的选项，显示名称为：切换系统`
+- Plan: `.sisyphus/plans/default-window-systemtype-switch.md`
+- Verdict: **REJECT**
+
+## Scope comparison
+
+### In-scope items (implemented)
+- Default window title area contains a switch labeled `切换系统` (`src/system/default/DefaultSystem.tsx`).
+- Selection plumbing exists from default window to owner state (`src/system/default/DefaultSystem.tsx`, `src/system/SystemHost.tsx`, `src/dev/themeSwitcher.tsx`, `src/dev/main.tsx`, `src/dev/playwright/windowHarness.tsx`).
+- System→theme resolution reuses registry default mapping via `DEFAULT_THEME_BY_SYSTEM` (`src/dev/themeSwitcher.tsx`).
+- Test coverage added for switch behavior (`tests/SystemTypeSwitch.test.tsx`, `tests/SystemHost.test.tsx`, `tests/ui/default-window-system-switch.spec.ts`).
+
+### Blocking scope violations
+1. **Unauthorized refactor of unrelated component `CSelect`**
+   - Guardrail explicitly forbids refactoring `CSelect`.
+   - Change detected: new `id` prop added to shared component API and forwarded to `<select>`.
+   - Evidence: `src/components/Select/Select.tsx` diff adds `id?: string`, destructures `id`, and sets `id={id}`.
+
+2. **Changed files exceed expected scope boundary list**
+   - Expected changes list for this check: `DefaultSystem.tsx`, `themeSwitcher.tsx`, `SystemHost.tsx`, `main.tsx`, `windowHarness.tsx`, tests only.
+   - Additional non-listed changed runtime files:
+     - `src/components/Select/Select.tsx`
+     - `src/system/registry.ts`
+     - `src/theme/default/styles/index.scss`
+   - Even if some are arguably supportive, boundary definition is strict for fidelity review; unauthorized files are scope creep unless explicitly approved.
+
+## Must-do guardrails audit
+
+- Only default window has switch (not windows): **PASS**
+  - No switch string/usage added under windows system files.
+- No new global state/context/store: **PASS**
+  - Only local component state used in preview/harness owners.
+- No `useEffect` for derived state in `DefaultSystem`: **PASS**
+  - `DefaultSystem` uses no `useEffect`.
+- No refactor of `CSelect`, `CWindowTitle`, `RadioGroup`: **FAIL**
+  - `CSelect` API changed.
+- No theme switcher/settings panel added: **PASS**
+  - No new generic settings panel/theme switch UI introduced.
+- No duplicated system→theme mapping: **PASS**
+  - Mapping reused through `DEFAULT_THEME_BY_SYSTEM`.
+
+## Final decision
+
+**REJECT** — scope creep present due to unauthorized shared component refactor (`CSelect`) and boundary overrun in changed runtime files outside the expected file set.

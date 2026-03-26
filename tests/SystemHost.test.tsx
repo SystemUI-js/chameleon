@@ -1,6 +1,7 @@
 import { fireEvent, render, screen } from '@testing-library/react';
 import '@testing-library/jest-dom';
 import { SystemHost } from '../src/system/SystemHost';
+import { assertValidSystemThemeSelection } from '../src/system/registry';
 
 const dragPointer = (
   target: HTMLElement,
@@ -120,5 +121,37 @@ describe('SystemHost', () => {
     expect(screen.getByTestId('default-window-body')).toBeInTheDocument();
     expect(screen.queryByTestId('windows-window-body')).not.toBeInTheDocument();
     expect(screen.queryByTestId('windows-start-bar')).not.toBeInTheDocument();
+  });
+});
+
+describe('assertValidSystemThemeSelection boundary assertions', () => {
+  it('throws for windows system with default theme', () => {
+    expect(() =>
+      assertValidSystemThemeSelection({ systemType: 'windows', theme: 'default' }),
+    ).toThrow('Invalid theme "default" for system type "windows"');
+  });
+
+  it('throws for default system with win98 theme', () => {
+    expect(() =>
+      assertValidSystemThemeSelection({ systemType: 'default', theme: 'win98' }),
+    ).toThrow('Invalid theme "win98" for system type "default"');
+  });
+
+  it('throws for default system with winxp theme', () => {
+    expect(() =>
+      assertValidSystemThemeSelection({ systemType: 'default', theme: 'winxp' }),
+    ).toThrow('Invalid theme "winxp" for system type "default"');
+  });
+
+  it('accepts valid windows+win98 combination', () => {
+    expect(() =>
+      assertValidSystemThemeSelection({ systemType: 'windows', theme: 'win98' }),
+    ).not.toThrow();
+  });
+
+  it('accepts valid default+default combination', () => {
+    expect(() =>
+      assertValidSystemThemeSelection({ systemType: 'default', theme: 'default' }),
+    ).not.toThrow();
   });
 });

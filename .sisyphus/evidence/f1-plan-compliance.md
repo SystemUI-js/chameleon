@@ -86,3 +86,82 @@
 
 ## Final assessment
 当前实现的行为层面基本成立，且 Jest / Playwright 验证均通过；但按计划逐条审计时，仍存在至少两项明确偏差，因此本次 F1 结论只能是 **REJECTED**。
+
+---
+
+# 2026-03-26 F1 Plan Compliance Audit — `default-window-systemtype-switch`
+
+## Verdict
+**REJECT**
+
+## Commands executed
+- `git status --short` ✅ reviewed changed/untracked files
+- `git diff --stat` ✅ reviewed touched scope
+- `git diff` ✅ reviewed implementation details
+- `lsp_diagnostics` on key changed TS/TSX files ⚠️ only `organizeImports` information-level hints; no errors/warnings
+- `yarn test -- SystemTypeSwitch` ✅ passed (`12 passed`)
+- `yarn test -- SystemHost` ✅ passed (`7 passed`)
+- `yarn test:ui tests/ui/default-window-system-switch.spec.ts tests/ui/start-bar.spec.ts` ✅ passed (`2 passed`)
+- `yarn lint` ✅ passed
+- `yarn build` ✅ passed
+
+## Deliverables presence
+- Present: `src/system/default/DefaultSystem.tsx`
+- Present: `src/system/SystemHost.tsx`
+- Present: `src/dev/themeSwitcher.tsx`
+- Present: registry-backed mapping usage in `src/system/registry.ts`
+- Present: `tests/SystemTypeSwitch.test.tsx`
+- Present: `tests/ui/default-window-system-switch.spec.ts`
+
+## Task-by-task audit
+
+### Task 1 — shared resolver
+**PASS**
+- `resolveDevSelectionForSystemType()` exists in `src/dev/themeSwitcher.tsx:44`.
+- The resolver reads `DEFAULT_THEME_BY_SYSTEM` in `src/dev/themeSwitcher.tsx:47`.
+- Canonical outputs are covered in `tests/SystemTypeSwitch.test.tsx:144` and pass.
+
+### Task 2 — callback plumbing through dev root and host
+**PASS**
+- `DevSystemRoot` accepts optional `onSelectionChange` in `src/dev/themeSwitcher.tsx:61` and forwards it at `src/dev/themeSwitcher.tsx:75`.
+- `SystemHost` accepts and forwards the callback only for the default shell in `src/system/SystemHost.tsx:11` and `src/system/SystemHost.tsx:33`.
+- Existing remount semantics remain intact; `yarn test -- SystemHost` passes.
+
+### Task 3 — mutable preview owners and URL sync
+**PASS**
+- Dev preview state owner now lives in `src/dev/main.tsx:27`.
+- Playwright harness writes both `systemType` and `theme` back to URL in `src/dev/playwright/windowHarness.tsx:148`.
+- Real UI flow proves URL sync in `tests/ui/default-window-system-switch.spec.ts:18`.
+
+### Task 4 — labeled switch in default title bar
+**FAIL**
+- Visible label and real combobox exist in `src/system/default/DefaultSystem.tsx:69` and `src/system/default/DefaultSystem.tsx:72`; UI flow can operate them.
+- However the task guardrail explicitly says **do not modify `CSelect` general API**. The implementation adds a new `id` prop in `src/components/Select/Select.tsx:10`, `src/components/Select/Select.tsx:16`, `src/components/Select/Select.tsx:24`, and `src/components/Select/Select.tsx:56`.
+- This is a direct plan violation, so Task 4 cannot be approved even though runtime behavior works.
+
+### Task 5 — prove reset + remount through the switch flow
+**FAIL**
+- The required behavior assertions exist, but they are proven by manual rerendering, not by operating the default-window combobox.
+- Evidence: `tests/SystemTypeSwitch.test.tsx:184` rerenders directly to `{ systemType: 'windows', theme: 'win98' }`, and `tests/SystemTypeSwitch.test.tsx:208` rerenders directly back to `{ systemType: 'default', theme: 'default' }`.
+- The only direct control interaction is `fireEvent.pointerDown(systemSwitch, ...)` at `tests/SystemTypeSwitch.test.tsx:132`, which checks drag safety only and never triggers a selection change.
+- Therefore Task 5 acceptance criterion “通过默认窗口下拉切换到 `windows` 后...” is not satisfied by Jest coverage.
+
+### Task 6 — UI coverage and CI-aligned validation
+**PASS**
+- `tests/ui/default-window-system-switch.spec.ts` performs a real dropdown selection via `page.getByLabel('切换系统')` and `selectOption('windows')` at `tests/ui/default-window-system-switch.spec.ts:9` and `tests/ui/default-window-system-switch.spec.ts:18`.
+- URL assertions for both `systemType=windows` and `theme=win98` exist at `tests/ui/default-window-system-switch.spec.ts:20` and `tests/ui/default-window-system-switch.spec.ts:21`.
+- Focused UI tests, lint, and build all pass in this audit run.
+
+## Guardrail check
+- **Violated:** `不重构 CSelect` / `不修改 CSelect 组件通用 API` — `src/components/Select/Select.tsx:10`.
+- **Respected:** no new global state/context/store.
+- **Respected:** no `useEffect`-based derived state inside `src/system/default/DefaultSystem.tsx`.
+- **Respected:** system→defaultTheme mapping is not duplicated; implementation reuses registry mapping.
+
+## Final assessment
+当前实现的交互、测试和构建大体可运行，但 F1 审计要求是“所有验收标准 + 所有 guardrails 全满足”。当前仍有两个阻断项：
+
+1. `src/components/Select/Select.tsx` 扩展了 `CSelect` 通用 API，违反 Task 4 guardrail。
+2. `tests/SystemTypeSwitch.test.tsx` 没有通过默认窗口下拉真实触发切换链路，Task 5 的核心验收标准未被证明。
+
+因此本次 **F1 结论为 REJECT**。

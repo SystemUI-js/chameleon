@@ -17,6 +17,7 @@ export interface CSelectProps {
   required?: boolean;
   placeholder?: string;
   className?: string;
+  'aria-label'?: string;
   'data-testid'?: string;
 }
 
@@ -30,6 +31,7 @@ export function CSelect({
   required,
   placeholder,
   className,
+  'aria-label': ariaLabel,
   'data-testid': dataTestId,
 }: CSelectProps): React.ReactElement {
   const classNames = ['cm-select'];
@@ -57,6 +59,7 @@ export function CSelect({
       defaultValue={resolvedDefaultValue}
       onChange={handleChange}
       className={classNames.join(' ')}
+      aria-label={ariaLabel}
       data-testid={dataTestId}
     >
       {placeholder ? (

@@ -9,6 +9,7 @@ import {
   type DevSystemTypeId,
   type DevThemeId,
 } from '../themeSwitcher';
+import type { SystemThemeSelection } from '@/system/types';
 
 type HarnessRoute =
   | {
@@ -131,9 +132,41 @@ const renderFixture = (fixture: string): ReactNode => {
 
 const App = () => {
   const route = useHarnessRoute();
+  const [selection, setSelection] = useState<SystemThemeSelection | null>(null);
+
+  useEffect(() => {
+    if (route.kind === 'system-theme') {
+      setSelection({ systemType: route.systemType, theme: route.theme });
+    }
+  }, [route]);
+
+  const handleSelectionChange = (newSelection: SystemThemeSelection) => {
+    if (route.kind !== 'system-theme') {
+      return;
+    }
+
+    const nextUrl = new URL(window.location.href);
+
+    nextUrl.searchParams.delete('fixture');
+    nextUrl.searchParams.set('systemType', newSelection.systemType);
+    nextUrl.searchParams.set('theme', newSelection.theme);
+
+    window.history.replaceState({}, '', nextUrl);
+    window.dispatchEvent(new PopStateEvent('popstate'));
+  };
 
   if (route.kind === 'system-theme') {
-    return <DevSystemRoot systemType={route.systemType} theme={route.theme} />;
+    if (selection === null) {
+      return null;
+    }
+
+    return (
+      <DevSystemRoot
+        systemType={selection.systemType}
+        theme={selection.theme}
+        onSelectionChange={handleSelectionChange}
+      />
+    );
   }
 
   return <>{renderFixture(route.fixture)}</>;

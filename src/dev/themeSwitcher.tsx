@@ -1,5 +1,6 @@
 import { SystemHost } from '@/system/SystemHost';
 import {
+  DEFAULT_THEME_BY_SYSTEM,
   resolveSystemTypeDefinition,
   resolveThemeDefinition,
   SYSTEM_TYPE,
@@ -40,6 +41,13 @@ const resolveDevSelection = ({
   theme,
 });
 
+export function resolveDevSelectionForSystemType(systemType: SystemTypeId): SystemThemeSelection {
+  return {
+    systemType,
+    theme: DEFAULT_THEME_BY_SYSTEM[systemType],
+  };
+}
+
 export function resolveDevSystemDefinition(
   systemType: DevSystemTypeId = DEFAULT_DEV_SELECTION.systemType,
 ): SystemTypeDefinition {
@@ -53,14 +61,16 @@ export function resolveDevThemeDefinition(selection: DevSelectionInput = {}): Th
 interface DevSystemRootProps {
   readonly systemType?: DevSystemTypeId;
   readonly theme?: DevThemeId;
+  readonly onSelectionChange?: (selection: SystemThemeSelection) => void;
 }
 
 export function DevSystemRoot({
   systemType = DEFAULT_DEV_SELECTION.systemType,
   theme = DEFAULT_DEV_SELECTION.theme,
+  onSelectionChange,
 }: DevSystemRootProps): ReactElement {
   resolveDevSystemDefinition(systemType);
   resolveDevThemeDefinition({ systemType, theme });
 
-  return <SystemHost systemType={systemType} theme={theme} />;
+  return <SystemHost systemType={systemType} theme={theme} onSelectionChange={onSelectionChange} />;
 }
