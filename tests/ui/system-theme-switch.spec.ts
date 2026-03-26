@@ -11,7 +11,7 @@ test.describe('system/theme switch', () => {
     await gotoWindowSelection(page, { systemType: 'windows', theme: 'win98' });
 
     const screenRoot = page.getByTestId('screen-root');
-    const titleLocator = page.getByTestId('window-title');
+    const titleLocator = page.getByTestId('window-title-text');
     const contentLocator = page.getByTestId('window-content');
 
     await expect(screenRoot).toHaveClass(/cm-theme--win98/);
@@ -52,7 +52,7 @@ test.describe('system/theme switch', () => {
     await gotoWindowSelection(page, { systemType: 'windows', theme: 'winxp' });
 
     const screenRoot = page.getByTestId('screen-root');
-    const titleLocator = page.getByTestId('window-title');
+    const titleLocator = page.getByTestId('window-title-text');
     const contentLocator = page.getByTestId('window-content');
 
     await expect(screenRoot).toHaveClass(/cm-theme--winxp/);
