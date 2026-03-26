@@ -6,7 +6,6 @@ import './index.scss';
 export type DockPosition = 'top' | 'right' | 'bottom' | 'left';
 
 interface CDockBaseProps extends CWidgetProps {
-  children?: React.ReactNode;
   position?: DockPosition;
   defaultPosition?: DockPosition;
   onPositionChange?: (position: DockPosition) => void;

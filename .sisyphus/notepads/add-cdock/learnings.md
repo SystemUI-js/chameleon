@@ -6,7 +6,7 @@
 - `renderFrame()` currently builds frame style as `left/top/width/height/position` and then spreads `options.style`, so Dock must control merge order deliberately when protecting edge layout from caller overrides.
 - `src/components/Window/Window.tsx` is the main class-component reference: `constructor` initializes state from props with `??`, and `componentDidUpdate()` syncs only controlled props when they change.
 - `tests/Grid.test.tsx` is the clearest style-merge reference: preserve caller visual styles while asserting internal layout styles with `toHaveStyle()`.
-- `src/components/index.ts` is the only component barrel; `src/index.ts` re-exports `./components`, so Dock should enter the public API through the component barrel instead of a separate root export.
+- For Dock to enter the public API, add `export * from './Dock/Dock';` to `src/components/index.ts` (the only component barrel); `src/index.ts` already re-exports `./components` so no separate root export is needed.
 - Official React guidance retrieved by librarian aligns with the plan: initialize once from props/defaults, sync only controlled props in `componentDidUpdate`, and never treat post-mount default prop changes as re-initialization.
 
 ## 2026-03-22 t1 implementation
