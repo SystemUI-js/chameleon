@@ -4,7 +4,7 @@
         color: #ffffff;
     }
 
-    .cm-window > :not(.cm-window__title-bar) {
+    .cm-window__content {
         background: #c0c0c0;
     }
 
@@ -63,27 +63,30 @@
     }
 
     .cm-button {
-        min-height: 24px;
+        min-width: 75px;
+        min-height: 23px;
         padding: 0 12px;
-        border: 2px solid #808080;
-        border-top-color: #ffffff;
-        border-left-color: #ffffff;
+        border: 2px solid;
+        border-color: #ffffff #808080 #808080 #ffffff;
+        border-radius: 0;
         background: #c0c0c0;
-        box-shadow: inset -1px -1px 0 #000000;
+        box-shadow:
+            inset -1px -1px 0 #0a0a0a,
+            inset 1px 1px 0 #dfdfdf;
         color: #000000;
         font-size: 11px;
         cursor: pointer;
     }
 
     .cm-button:hover:not(:disabled) {
-        background: #d6d6d6;
+        background: #d4d4d4;
     }
 
     .cm-button:active:not(:disabled) {
-        border-color: #ffffff;
-        border-top-color: #808080;
-        border-left-color: #808080;
-        box-shadow: inset 1px 1px 0 #000000;
+        border-color: #808080 #ffffff #ffffff #808080;
+        box-shadow:
+            inset 1px 1px 0 #0a0a0a,
+            inset -1px -1px 0 #dfdfdf;
         background: #b3b3b3;
     }
 
@@ -91,7 +94,7 @@
     .cm-radio__input:focus-visible,
     .cm-select:focus-visible {
         outline: 1px dotted #000000;
-        outline-offset: 1px;
+        outline-offset: -3px;
     }
 
     .cm-button--primary {
@@ -100,6 +103,13 @@
 
     .cm-button--ghost {
         background: #d9d9d9;
+        box-shadow:
+            inset -1px -1px 0 #0a0a0a,
+            inset 1px 1px 0 #efefef;
+    }
+
+    .cm-button--ghost:active:not(:disabled) {
+        background: #cccccc;
     }
 
     .cm-button:disabled {
@@ -121,23 +131,31 @@
     }
 
     .cm-radio__input {
-        width: 14px;
-        height: 14px;
+        width: 12px;
+        height: 12px;
         margin: 0;
         appearance: none;
         border: 1px solid #000000;
         border-radius: 999px;
         background: #ffffff;
-        box-shadow: inset 1px 1px 0 #808080;
+        box-shadow:
+            inset 1px 1px 0 #808080,
+            inset -1px -1px 0 #dfdfdf;
         cursor: inherit;
     }
 
     .cm-radio__input:checked {
-        background: radial-gradient(circle at center, #000000 0 28%, #ffffff 29% 100%);
+        background: radial-gradient(circle at center, #000000 0 35%, #ffffff 36% 100%);
+    }
+
+    .cm-radio__input:focus-visible {
+        outline: 1px dotted #000000;
+        outline-offset: 2px;
     }
 
     .cm-radio__input:disabled {
         background: #c0c0c0;
+        box-shadow: inset 1px 1px 0 #808080;
     }
 
     .cm-radio__label {
@@ -146,38 +164,48 @@
     }
 
     .cm-select {
-        min-height: 24px;
-        padding: 0 26px 0 8px;
-        border: 2px solid #808080;
-        border-top-color: #808080;
-        border-left-color: #808080;
-        border-right-color: #ffffff;
-        border-bottom-color: #ffffff;
+        // Win98 field-style: 21px height, inset/sunken border
+        min-height: 21px;
+        padding: 0 16px 0 4px;
+        border: 2px solid;
+        border-color: #808080 #ffffff #ffffff #808080;
+        border-radius: 0;
         appearance: none;
         background-color: #ffffff;
+        // Win98 arrow: pure CSS black down-arrow using gradients
         background-image:
-            linear-gradient(180deg, #ffffff 0%, #f0f0f0 100%),
-            linear-gradient(45deg, transparent 50%, #000000 50%),
-            linear-gradient(135deg, #000000 50%, transparent 50%);
+            linear-gradient(135deg, transparent 50%, #000000 50%),
+            linear-gradient(225deg, transparent 50%, #000000 50%);
         background-position:
-            0 0,
-            calc(100% - 14px) 10px,
-            calc(100% - 9px) 10px;
+            calc(100% - 6px) 50%,
+            calc(100% - 11px) 50%;
         background-size:
-            100% 100%,
             5px 5px,
             5px 5px;
         background-repeat: no-repeat;
         color: #000000;
         font-size: 11px;
+        line-height: 1;
+    }
+
+    .cm-select:focus {
+        // Inner dotted outline for focus (NOT blue bg + white text inversion)
+        outline: 1px dotted #000000;
+        outline-offset: -4px;
     }
 
     .cm-select:disabled {
         background-color: #c0c0c0;
         background-image:
-            linear-gradient(180deg, #d9d9d9 0%, #c0c0c0 100%),
-            linear-gradient(45deg, transparent 50%, #808080 50%),
-            linear-gradient(135deg, #808080 50%, transparent 50%);
+            linear-gradient(135deg, transparent 50%, #808080 50%),
+            linear-gradient(225deg, transparent 50%, #808080 50%);
+        background-position:
+            calc(100% - 6px) 50%,
+            calc(100% - 11px) 50%;
+        background-size:
+            5px 5px,
+            5px 5px;
+        background-repeat: no-repeat;
         color: #808080;
         cursor: not-allowed;
     }
