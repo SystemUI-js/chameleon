@@ -34,9 +34,57 @@ const waitForCommonControlsHarness = async (page: Page): Promise<void> => {
   );
 };
 
+const waitForWin98ThemedControls = async (page: Page): Promise<void> => {
+  await page.waitForFunction(
+    ({ buttonTestId, radioGroupTestId, selectTestId }) => {
+      const button = document.querySelector(`[data-testid="${buttonTestId}"]`);
+      const radioGroup = document.querySelector(`[data-testid="${radioGroupTestId}"]`);
+      const select = document.querySelector(`[data-testid="${selectTestId}"]`);
+
+      return Boolean(
+        button instanceof HTMLButtonElement &&
+          radioGroup instanceof HTMLElement &&
+          radioGroup.querySelector('input[type="radio"]') !== null &&
+          select instanceof HTMLSelectElement,
+      );
+    },
+    {
+      buttonTestId: BUTTON_TEST_ID,
+      radioGroupTestId: RADIO_GROUP_TEST_ID,
+      selectTestId: SELECT_TEST_ID,
+    },
+  );
+};
+
 export const gotoCommonControlsFixture = async (page: Page, fixture: string): Promise<void> => {
   await page.goto(`${PLAYWRIGHT_COMMON_CONTROLS_PATH}?fixture=${encodeURIComponent(fixture)}`);
   await waitForCommonControlsHarness(page);
+};
+
+export type CommonControlsThemeSelection = {
+  systemType: 'windows' | 'default';
+  theme: 'win98' | 'winxp' | 'default';
+};
+
+export const gotoWin98CommonControls = async (page: Page): Promise<void> => {
+  const searchParams = new URLSearchParams({
+    systemType: 'windows',
+    theme: 'win98',
+  });
+
+  await page.goto(`${PLAYWRIGHT_COMMON_CONTROLS_PATH}?${searchParams.toString()}`);
+  await waitForWin98ThemedControls(page);
+};
+
+export const gotoWin98DisabledCommonControls = async (page: Page): Promise<void> => {
+  const searchParams = new URLSearchParams({
+    systemType: 'windows',
+    theme: 'win98',
+    fixture: 'disabled',
+  });
+
+  await page.goto(`${PLAYWRIGHT_COMMON_CONTROLS_PATH}?${searchParams.toString()}`);
+  await waitForWin98ThemedControls(page);
 };
 
 export const readCommonControlsRadioValue = async (page: Page): Promise<string | null> => {
