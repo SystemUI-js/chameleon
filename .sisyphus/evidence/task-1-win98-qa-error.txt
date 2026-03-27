@@ -1,0 +1,27 @@
+# Win98 QA Error Evidence - Task 1
+
+## Date: 2026-03-27
+
+## Summary
+Task 1 required adding Win98 disabled fixture support. Implementation completed successfully.
+
+## Implementation Details
+
+### 1. `src/dev/playwright/commonControlsHarness.tsx`
+- **Change**: Extended `HarnessRoute` type to support `fixture` parameter with system-theme routes
+- **Change**: Added `ThemedDisabledFixtureContainer` component that renders disabled controls with Win98 theme classes (`cm-system--windows cm-theme--win98`)
+- **Change**: Updated `readHarnessRoute` to prioritize `systemType`/`theme` params before `fixture` param
+
+### 2. `tests/ui/common-controls.helpers.ts`
+- **Change**: Added `gotoWin98DisabledCommonControls` helper function
+
+## URL Format
+The new Win98 disabled controls URL: `?systemType=windows&theme=win98&fixture=disabled`
+
+## Test Results
+```
+yarn test:ui --grep "Win98 disabled controls"
+4 passed
+```
+
+## Status: COMPLETE

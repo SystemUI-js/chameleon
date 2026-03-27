@@ -35,3 +35,62 @@
 
 - All required commands exited with code `0`.
 - F3 manual QA gate is `APPROVED`.
+
+---
+
+## 2026-03-27 Win98 Controls QA
+
+- Branch: `feature/windows-styles`
+- Completed At: `2026-03-27T05:21:59Z`
+- Verdict: `APPROVE`
+
+### Playwright Command
+
+1. `yarn test:ui --grep "Win98 controls"`
+   - Exit Code: `0`
+   - Result: `9 passed (4.8s)` on Chromium
+   - Spec: `tests/ui/common-controls.smoke.spec.ts`
+
+### Manual Verification Evidence
+
+- Overview screenshot: `.sisyphus/evidence/f3-win98-controls-overview.png`
+
+#### Button — selector: `[data-testid="button-demo-primary"]`
+
+- Raised bevel: `APPROVED`
+  - Screenshot: `.sisyphus/evidence/f3-button-default-zoom.png`
+  - Computed style: top/left `rgb(255, 255, 255)`, right/bottom `rgb(128, 128, 128)`, background `rgb(192, 192, 192)`
+- Active sunken state: `APPROVED`
+  - Screenshot: `.sisyphus/evidence/f3-button-active-zoom.png`
+  - Computed style: top/left flipped to `rgb(128, 128, 128)`, right/bottom flipped to `rgb(255, 255, 255)`, background `rgb(179, 179, 179)`
+- Focus dotted outline: `APPROVED`
+  - Screenshot: `.sisyphus/evidence/f3-button-focus-zoom.png`
+  - Computed style: `outline: 1px dotted rgb(0, 0, 0)`, `outline-offset: -3px`
+
+#### Radio — selector: `[data-testid="radio-demo-fruit"] input[type="radio"]:first-of-type`
+
+- 12px size: `APPROVED`
+  - Computed box: `12 x 12`
+- Checked dot: `APPROVED`
+  - Screenshot: `.sisyphus/evidence/f3-radio-default-zoom.png`
+  - Computed style: `background-image: radial-gradient(... rgb(0, 0, 0) ... rgb(255, 255, 255) ...)`
+- Focus outline: `APPROVED`
+  - Screenshot: `.sisyphus/evidence/f3-radio-focus-zoom.png`
+  - Computed style: `outline: 1px dotted rgb(0, 0, 0)`, `outline-offset: 2px`
+
+#### Select — selector: `[data-testid="select-demo-size"]`
+
+- Field-style inset border: `APPROVED`
+  - Screenshot: `.sisyphus/evidence/f3-select-default-zoom.png`
+  - Computed style: top/left `rgb(128, 128, 128)`, right/bottom `rgb(255, 255, 255)`
+- Win98 arrow: `APPROVED`
+  - Screenshot: `.sisyphus/evidence/f3-select-default-zoom.png`
+  - Computed style: `background-image` contains two black `linear-gradient(...)` arrows
+- Focus inner dotted outline: `APPROVED`
+  - Screenshot: `.sisyphus/evidence/f3-select-focus-zoom.png`
+  - Computed style: `outline: 1px dotted rgb(0, 0, 0)`, `outline-offset: -4px`
+
+### Notes
+
+- No selector/state failures found during this QA pass.
+- Dev harness emitted a non-blocking `favicon.ico` `404`, unrelated to control rendering or interaction states.

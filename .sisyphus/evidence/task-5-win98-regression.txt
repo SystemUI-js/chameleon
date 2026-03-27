@@ -1,0 +1,83 @@
+# Task 5: Win98 Regression Verification
+
+Verified at: 2026-03-27T05:11:44Z
+
+## Command Results
+
+### 1) Targeted unit tests
+Command:
+`yarn test --runInBand tests/Button.test.tsx tests/Radio.test.tsx tests/Select.test.tsx`
+
+Result:
+- Exit status: 0
+- Suites: 3 passed / 3 total
+- Tests: 17 passed / 17 total
+
+### 2) Win98 UI smoke
+Command:
+`yarn test:ui --grep "Win98 controls"`
+
+Result:
+- Exit status: 0
+- Playwright: 9 passed / 9 total
+- Verified Win98 button bevel, radio dot, select border/arrow coverage remained green
+
+### 3) Lint
+Command:
+`yarn lint`
+
+Result:
+- Exit status: 0
+- ESLint completed successfully
+- Non-blocking output: `ESLintIgnoreWarning` about legacy `.eslintignore`
+
+### 4) Build
+Command:
+`yarn build`
+
+Result:
+- Exit status: 0
+- Vite bundle completed and emitted dist assets
+- Important note: `vite:dts` printed `TS2533: Object is possibly 'null' or 'undefined'` for `src/components/Screen/Grid.tsx:31`
+- Because of that emitted TypeScript error text, the build gate is not clean enough to claim a fully error-free build even though the shell exit code was 0
+
+## Theme Isolation Checks
+
+### WinXP theme remains distinct
+File: `src/theme/winxp/styles/index.scss`
+- Lines 90-141 keep WinXP button styling: rounded pill border radius, blue gradient fills, XP-specific shadows
+- Lines 143-222 keep WinXP radio/select styling: 15px radio, blue checked center, rounded 8px select, XP arrow gradients
+- `grep "win98|Win98" src/theme/{winxp,default}/styles/index.scss` returned no matches
+
+### Default theme remains distinct
+File: `src/theme/default/styles/index.scss`
+- Lines 152-217 keep default button styling: 4px radius, neutral blue-gray gradients, transition-based modern treatment
+- Lines 219-299 keep default radio/select styling: 16px radio, 4px select radius, default arrow gradients
+- No Win98 tokens or labels were found in this stylesheet
+
+## Preview Coverage Checks
+
+File: `src/dev/commonControlsPreview.tsx`
+- Lines 30-50: button preview still renders primary/default/ghost buttons, disabled states, and click counter
+- Lines 57-75: radio preview still renders controlled group plus disabled group
+- Lines 82-90: select preview still renders controlled select plus disabled select
+- Preview composition still matches the smoke paths exercised by Playwright
+
+## Registry Guardrail Check
+
+File: `tests/SystemTypeThemeRegistry.test.tsx`
+- Lines 13-17 still assert `SYSTEM_THEME_MATRIX` equals:
+  - `windows: ['win98', 'winxp']`
+  - `default: ['default']`
+- Lines 23-27 still assert deterministic defaults:
+  - `windows -> win98`
+  - `default -> default`
+- No accidental registry expansion or cross-theme remapping was observed
+
+## Verdict
+
+- Win98 style changes did not contaminate WinXP or default theme styles based on stylesheet inspection and token search
+- Preview and Win98 smoke paths remain available
+- Targeted Button/Radio/Select regression tests passed
+- Lint passed
+- Build returned exit code 0, but emitted a TypeScript declaration-generation error for `src/components/Screen/Grid.tsx:31`; final release gate should treat build as needing follow-up before claiming all checks are fully clean

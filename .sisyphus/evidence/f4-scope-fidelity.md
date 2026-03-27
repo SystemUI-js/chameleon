@@ -118,3 +118,83 @@ REJECTED
 ## Final decision
 
 **REJECT** — scope creep present due to unauthorized shared component refactor (`CSelect`) and boundary overrun in changed runtime files outside the expected file set.
+
+---
+
+## F4 Scope Fidelity Audit (Win98 控制样式专项)
+
+- Time (UTC): 2026-03-27T05:18:18Z
+- Verdict: **REJECT**
+
+### 检查命令与证据
+
+1. `git diff --stat`
+
+```text
+.opencode/package.json                       |   2 +-
+src/dev/playwright/commonControlsHarness.tsx | 112 ++++++++++++++++++-
+src/theme/win98/styles/index.scss            |  92 ++++++++++------
+tests/ui/common-controls.helpers.ts          |  37 +++++++
+tests/ui/common-controls.smoke.spec.ts       | 154 ++++++++++++++++++++++++++-
+5 files changed, 358 insertions(+), 39 deletions(-)
+```
+
+2. `git diff --name-only`
+
+```text
+.opencode/package.json
+src/dev/playwright/commonControlsHarness.tsx
+src/theme/win98/styles/index.scss
+tests/ui/common-controls.helpers.ts
+tests/ui/common-controls.smoke.spec.ts
+```
+
+3. `git diff --name-only -- src/theme/winxp/styles/index.scss src/theme/default/styles/index.scss`
+
+```text
+(no output)
+```
+
+4. `git diff --name-only -- src/components/**/*.tsx`
+
+```text
+(no output)
+```
+
+5. `git diff --name-only -- src/theme`
+
+```text
+src/theme/win98/styles/index.scss
+```
+
+### 逐项判定
+
+1. 改动仅限 Win98 控制样式和 QA 支撑文件：**FAIL**
+   - `src/theme/win98/styles/index.scss`：符合样式范围。
+   - `tests/ui/common-controls.helpers.ts`、`tests/ui/common-controls.smoke.spec.ts`：符合 QA 文件范围。
+   - `src/dev/playwright/commonControlsHarness.tsx`：可归类为 QA harness 支撑。
+   - **`.opencode/package.json`：不属于 Win98 样式或 QA 支撑文件，范围违规。**
+
+2. 没有行为逻辑漂移：**PASS（就产品组件范围）**
+   - 未发现 `src/components/**/*.tsx` 组件实现变更。
+
+3. 没有新主题系统：**PASS**
+   - `src/theme` 目录仅 `win98` 样式文件变化，未新增主题系统文件。
+
+4. 没有无关组件重构：**PASS**
+   - 组件 TSX 文件无改动。
+
+5. WinXP/default 没有回归：**PASS（文件级）**
+   - `src/theme/winxp/styles/index.scss` 与 `src/theme/default/styles/index.scss` 未改动。
+
+### 范围违规项（精确）
+
+- `.opencode/package.json` 被修改（仅换行差异），不在允许范围内。
+
+### 验证补充
+
+- LSP diagnostics（变更 TS 文件）
+  - `src/dev/playwright/commonControlsHarness.tsx`: 1 条 information（imports 未排序），无 error。
+  - `tests/ui/common-controls.helpers.ts`: 无诊断。
+  - `tests/ui/common-controls.smoke.spec.ts`: 无诊断。
+- `yarn build`: 命令完成并产出构建文件（过程中存在既有 TS2533 输出于 `src/components/Screen/Grid.tsx` 的 dts 生成日志）。

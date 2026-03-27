@@ -1,0 +1,108 @@
+# Task 4: Win98 Select Styles Optimization - Evidence
+
+## File Modified
+- `src/theme/win98/styles/index.scss` (.cm-select block, lines 166-206)
+
+## Changes Applied
+
+### 1. Height: 21px (target from 24px)
+- Changed `min-height: 24px` → `min-height: 21px`
+- Win98 field controls use 21px height
+
+### 2. Padding: 4px left (reduced from 8px)
+- Changed `padding: 0 26px 0 8px` → `padding: 0 16px 0 4px`
+- Left padding: 4px (Win98 field standard)
+- Right padding: 16px (accommodates arrow area)
+
+### 3. Field-Style Inset Border (Sunken Effect)
+- Consolidated to shorthand `border: 2px solid` with `border-color`:
+  - `border-color: #808080 #ffffff #ffffff #808080`
+  - Top: #808080 (dark), Right: #ffffff (light)
+  - Bottom: #ffffff (light), Left: #808080 (dark)
+- This creates the proper Win98 sunken/inset border effect
+
+### 4. White Field Face
+- Preserved `background-color: #ffffff`
+- Removed the old gradient overlay `linear-gradient(180deg, #ffffff 0%, #f0f0f0 100%)`
+- Clean white field face
+
+### 5. Win98 Arrow: Pure CSS Using Gradients
+- Changed from old multi-layer gradient approach to cleaner dual-gradient:
+  - Before: 3-layer gradient (face + two arrow triangles)
+  - After: 2-layer gradient (135deg + 225deg black triangles)
+- Arrow positioning: `calc(100% - 6px)` and `calc(100% - 11px)` from right edge
+- Arrow size: 5px x 5px triangles
+- Color: #000000 (pure black, Win98 standard)
+
+### 6. Border Radius: 0
+- Added explicit `border-radius: 0` to prevent any modern rounding
+- Win98 uses sharp corners
+
+### 7. Focus: Inner Dotted Outline (NOT Blue BG + White Text)
+- Added new rule:
+  ```scss
+  .cm-select:focus {
+      outline: 1px dotted #000000;
+      outline-offset: -4px;
+  }
+  ```
+- Clearly specified NOT implementing blue background + white text inversion
+- Inner dotted outline sits inside the border
+
+### 8. Disabled: Win98 Gray Face + Disabled Text
+- `background-color: #c0c0c0` (Win98 gray face)
+- Arrow colors change to #808080 (grayed out)
+- `color: #808080` (disabled text)
+- `cursor: not-allowed`
+
+## Verification
+
+### Unit Tests
+```
+yarn test --runInBand tests/Select.test.tsx
+PASS tests/Select.test.tsx
+  CSelect
+    ✓ exports CSelect from package entry
+    ✓ renders native select options and supported props
+    ✓ uses defaultValue to initialize uncontrolled mode and updates after change
+    ✓ keeps the old value in controlled mode until parent rerenders
+    ✓ passes disabled through to the native select
+    ✓ shows placeholder with empty value and requires a real option selection
+Tests: 6 passed, 6 total
+```
+
+### Playwright UI Tests
+```
+yarn test:ui --grep "Win98 controls"
+PASS 9/9 tests
+  ✓ Win98 controls › applies Win98 theme classes to container
+  ✓ Win98 controls › Button › has raised bevel with light top-left and dark bottom-right borders
+  ✓ Win98 controls › Button › has correct Win98 background color
+  ✓ Win98 controls › Button › has focus dotted outline
+  ✓ Win98 controls › Radio › has correct Win98 radio appearance
+  ✓ Win98 controls › Radio › checked radio shows centered black dot
+  ✓ Win98 controls › Select › has Win98 sunken border style
+  ✓ Win98 controls › Select › has white background
+  ✓ Win98 controls › Select › has dropdown arrow background
+```
+
+## Compliance
+
+- [x] Only modified `.cm-select` block in `src/theme/win98/styles/index.scss`
+- [x] No changes to `Select.tsx` component
+- [x] No new DOM or class names introduced
+- [x] No custom SVG assets or extra wrappers
+- [x] No JS-driven arrow state
+- [x] No WinXP rounded blue arrow styling
+- [x] No modern input styling from default theme
+- [x] Used pure CSS gradients for arrow
+- [x] Explicitly NOT implementing blue bg + white text on focus
+- [x] Target height 21px achieved
+- [x] border-radius: 0 confirmed
+
+## Reference Sources
+- 98.css Win98 dropdown/select specification (jdan.github.io/98.css)
+- Win98 field border style (sunken outer + sunken inner)
+- Microsoft Windows User Experience p. 175 (drop-down list box)
+- WinXP styles AVOIDED: border-radius: 8px, blue gradient arrow舱
+- Default styles AVOIDED: modern rounded corners, blue accents

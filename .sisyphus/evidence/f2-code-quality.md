@@ -82,3 +82,50 @@ REJECT
 - `src/components/Select/Select.tsx:54`
 - `tests/DefaultTheme.test.tsx:18`
 - `tests/ui/default-window-system-switch.spec.ts:9`
+
+---
+
+## Addendum — 2026-03-27 Win98 stylesheet audit
+
+### Scope Reviewed
+
+- `src/theme/win98/styles/index.scss`
+- `src/components/Window/Window.tsx` (for selector-target validation only)
+
+### Verdict
+
+REJECT
+
+### Assessment
+
+1. **CSS 可维护性**
+   - 大部分规则按组件块分组，且统一挂在 `.cm-system--windows.cm-theme--win98` 根作用域下，整体结构是清晰的（`src/theme/win98/styles/index.scss:1`，`src/theme/win98/styles/index.scss:11`，`src/theme/win98/styles/index.scss:65`，`src/theme/win98/styles/index.scss:121`，`src/theme/win98/styles/index.scss:166`，`src/theme/win98/styles/index.scss:214`）。
+   - 但 `.cm-window > :not(.cm-window__title-bar)` 把“窗口正文”语义编码成了 DOM 位置 + 取反选择器，后续维护者很难一眼看出真正的样式承载节点，也不利于组件结构演进（`src/theme/win98/styles/index.scss:7`）。
+
+2. **Selector safety**
+   - **需要修复**：`.cm-window > :not(.cm-window__title-bar)` 过于宽泛且脆弱。
+   - `CWindow` 会把组合后的 children 直接渲染为 `.cm-window` 的直接子节点（`src/components/Window/Window.tsx:434`-`src/components/Window/Window.tsx:440`）。这意味着只要不是标题栏的直接子节点，都会被当成“正文区域”自动吃到背景色；如果未来增加额外的直接子节点（例如状态条、工具条、附加容器），会被误伤。
+   - 这个选择器同时依赖当前 DOM 层级；一旦窗口内容外面多包一层显式容器，现有规则就会失效或命中错误节点。
+
+3. **Cross-theme bleed**
+   - 未发现明显跨主题泄漏。所有规则都嵌套在 `.cm-system--windows.cm-theme--win98` 下，正常情况下不会漂移到 `default` 或 `winxp` 主题（`src/theme/win98/styles/index.scss:1`）。
+   - 当前风险不是“跨主题泄漏”，而是 Win98 主题内部对 `.cm-window` 任意直接子节点的误命中。
+
+4. **Browser-dependent hacks**
+   - 未发现浏览器专属 hack。文件使用的是标准 `appearance: none`、渐变背景、`:focus-visible`/`:focus` 等常规 CSS 能力，没有 vendor-specific hack、星号 hack、下划线 hack 或 UA 定向分支（`src/theme/win98/styles/index.scss:137`，`src/theme/win98/styles/index.scss:173`-`src/theme/win98/styles/index.scss:185`）。
+
+### Must-Fix Issues
+
+1. 将 `.cm-window > :not(.cm-window__title-bar)` 替换为显式内容钩子（例如 `.cm-window__body` / `.cm-window__content`），并在窗口渲染结构中稳定提供该节点；不要再用 `:not(...)` + 直接子代关系表达窗口正文。
+
+### Evidence References
+
+- `src/theme/win98/styles/index.scss:1`
+- `src/theme/win98/styles/index.scss:7`
+- `src/theme/win98/styles/index.scss:11`
+- `src/theme/win98/styles/index.scss:65`
+- `src/theme/win98/styles/index.scss:121`
+- `src/theme/win98/styles/index.scss:166`
+- `src/theme/win98/styles/index.scss:214`
+- `src/components/Window/Window.tsx:434`
+- `src/components/Window/Window.tsx:440`

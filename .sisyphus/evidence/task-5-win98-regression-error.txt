@@ -1,0 +1,26 @@
+# Win98 Regression Error Evidence - Task 5
+
+## Date: 2026-03-27
+
+## Summary
+Win98 disabled controls test suite implemented and verified.
+
+## Tests Added
+- Win98 disabled controls test suite (4 tests)
+  - Applies Win98 theme classes to container
+  - Button is disabled with Win98 styling (grey text)
+  - Radio disabled option is greyed out
+  - Select is disabled with Win98 styling
+
+## Implementation Notes
+- Disabled button uses color change (#808080) rather than sunken bevel
+- Disabled button border remains raised (not sunken) per Win98 spec
+- The harness properly routes to ThemedDisabledFixtureContainer with fixture=disabled parameter
+
+## Test Results
+```
+yarn test:ui --grep "Win98 disabled controls"
+4 passed
+```
+
+## Status: COMPLETE
