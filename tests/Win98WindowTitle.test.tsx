@@ -9,12 +9,14 @@ describe('Win98 title composition', () => {
 
     const root = getByTestId('screen-root');
     const title = getByTestId('window-title');
+    const titleText = getByTestId('window-title-text');
     const frame = getByTestId('window-frame');
     const content = getByTestId('window-content');
 
     expect(root).toHaveClass('cm-system--windows');
     expect(root).toHaveClass('cm-theme--win98');
     expect(title).toHaveClass('cm-window__title-bar');
+    expect(title).toContainElement(titleText);
     expect(title).toHaveTextContent('Windows Window');
     expect(content).toContainElement(title);
     expect(content).toHaveTextContent('Windows content');

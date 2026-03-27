@@ -14,6 +14,16 @@ export interface CWindowTitleProps {
   getWindowPose?: () => Pose;
 }
 
+export interface WindowTitleBarTextProps {
+  children?: React.ReactNode;
+}
+
+export const WindowTitleBarText: React.FC<WindowTitleBarTextProps> = ({ children }) => (
+  <span data-testid="window-title-text" className="cm-window__title-bar__text">
+    {children}
+  </span>
+);
+
 export class CWindowTitle extends React.Component<CWindowTitleProps> {
   protected readonly titleRef = React.createRef<HTMLDivElement>();
   private drag?: Drag;
@@ -59,6 +69,10 @@ export class CWindowTitle extends React.Component<CWindowTitleProps> {
   }
 
   protected renderTitle(content: React.ReactNode, className?: string): React.ReactElement {
+    const shouldWrapTitleText =
+      React.Children.count(content) === 1 &&
+      (typeof content === 'string' || typeof content === 'number');
+
     return (
       <div
         ref={this.titleRef}
@@ -66,7 +80,7 @@ export class CWindowTitle extends React.Component<CWindowTitleProps> {
         className={className ?? 'cm-window__title-bar'}
         style={this.props.style}
       >
-        {content}
+        {shouldWrapTitleText ? <WindowTitleBarText>{content}</WindowTitleBarText> : content}
       </div>
     );
   }

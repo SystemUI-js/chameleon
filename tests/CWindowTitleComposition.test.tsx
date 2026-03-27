@@ -93,7 +93,11 @@ describe('CWindow and CWindowTitle composition', () => {
       </CWindow>,
     );
 
-    expect(getByTestId('window-title')).toHaveTextContent('Composed Title');
+    const title = getByTestId('window-title');
+    const titleText = getByTestId('window-title-text');
+
+    expect(title).toContainElement(titleText);
+    expect(titleText).toHaveTextContent('Composed Title');
   });
 
   it('keeps the outer frame absolute and places resize handles in an inner wrapper', () => {

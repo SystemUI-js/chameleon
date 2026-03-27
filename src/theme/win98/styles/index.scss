@@ -1,7 +1,22 @@
 .cm-system--windows.cm-theme--win98 {
+    font-size: 11px;
+    .cm-window-frame {
+        background: silver;
+        box-shadow: inset -1px -1px #0a0a0a, inset 1px 1px #dfdfdf, inset -2px -2px grey, inset 2px 2px #fff;
+        padding: 3px;
+    }
     .cm-window__title-bar {
-        background: #000080;
-        color: #ffffff;
+        align-items: center;
+        background: linear-gradient(90deg, navy, #1084d0);
+        display: flex;
+        justify-content: space-between;
+        padding: 3px 2px 3px 3px;
+        .cm-window__title-bar__text {
+            color: #fff;
+            font-weight: 700;
+            letter-spacing: 0;
+            margin-right: 24px;
+        }
     }
 
     .cm-window__content {
@@ -66,35 +81,29 @@
         min-width: 75px;
         min-height: 23px;
         padding: 0 12px;
-        border: 2px solid;
-        border-color: #ffffff #808080 #808080 #ffffff;
+        background: silver;
+        border: none;
         border-radius: 0;
-        background: #c0c0c0;
-        box-shadow:
-            inset -1px -1px 0 #0a0a0a,
-            inset 1px 1px 0 #dfdfdf;
-        color: #000000;
-        font-size: 11px;
-        cursor: pointer;
+        box-shadow: inset -1px -1px #0a0a0a, inset 1px 1px #fff, inset -2px -2px grey, inset 2px 2px #dfdfdf;
+        box-sizing: border-box;
+        color: transparent;
+        min-height: 23px;
+        min-width: 75px;
+        padding: 0 12px;
+        text-shadow: 0 0 #222;
     }
 
     .cm-button:hover:not(:disabled) {
-        background: #d4d4d4;
     }
 
     .cm-button:active:not(:disabled) {
-        border-color: #808080 #ffffff #ffffff #808080;
-        box-shadow:
-            inset 1px 1px 0 #0a0a0a,
-            inset -1px -1px 0 #dfdfdf;
-        background: #b3b3b3;
+        box-shadow: inset -1px -1px #fff, inset 1px 1px #0a0a0a, inset -2px -2px #dfdfdf, inset 2px 2px grey;
+        text-shadow: 1px 1px #222;
     }
 
-    .cm-button:focus-visible,
-    .cm-radio__input:focus-visible,
-    .cm-select:focus-visible {
-        outline: 1px dotted #000000;
-        outline-offset: -3px;
+    .cm-button:focus {
+        outline: 1px dotted #000;
+        outline-offset: -4px;
     }
 
     .cm-button--primary {
