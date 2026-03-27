@@ -1,0 +1,32 @@
+yarn run v1.22.19
+warning ../../../package.json: No license field
+$ jest --runInBand tests/CWindowTitleComposition.test.tsx '--testNamePattern=uuid|Composed Title|content area'
+PASS tests/CWindowTitleComposition.test.tsx
+  CWindow and CWindowTitle composition
+    ✓ uses uuid from CWidget and keeps it stable across re-render (16 ms)
+    ✓ does not move window when dragging content area (9 ms)
+    ○ skipped does not implicitly render CWindowTitle when consumer does not compose it
+    ○ skipped renders composed CWindowTitle content explicitly
+    ○ skipped keeps the outer frame absolute and places resize handles in an inner wrapper
+    ○ skipped moves window frame when dragging title bar
+    ○ skipped resizes window from { direction: 'e', delta: [Object], expected: [Object] } handle with anchor-preserving behavior
+    ○ skipped resizes window from { direction: 'w', delta: [Object], expected: [Object] } handle with anchor-preserving behavior
+    ○ skipped resizes window from { direction: 'n', delta: [Object], expected: [Object] } handle with anchor-preserving behavior
+    ○ skipped resizes window from { direction: 's', delta: [Object], expected: [Object] } handle with anchor-preserving behavior
+    ○ skipped resizes window from { direction: 'ne', delta: [Object], expected: [Object] } handle with anchor-preserving behavior
+    ○ skipped resizes window from { direction: 'nw', delta: [Object], expected: [Object] } handle with anchor-preserving behavior
+    ○ skipped resizes window from { direction: 'se', delta: [Object], expected: [Object] } handle with anchor-preserving behavior
+    ○ skipped resizes window from { direction: 'sw', delta: [Object], expected: [Object] } handle with anchor-preserving behavior
+    ○ skipped disables resize when resizable is false but still allows title dragging
+    ○ skipped applies default edgeWidth as 4px when omitted
+    ○ skipped applies custom edgeWidth from resizeOptions
+    ○ skipped clamps min size to default 1px when shrinking past zero
+    ○ skipped clamps max size and keeps anchor for west/north directions
+    ○ skipped keeps title drag behavior independent from resize interactions
+
+Test Suites: 1 passed, 1 total
+Tests:       18 skipped, 2 passed, 20 total
+Snapshots:   0 total
+Time:        0.549 s, estimated 1 s
+Ran all test suites matching /tests\/CWindowTitleComposition.test.tsx/i with tests matching "uuid|Composed Title|content area".
+Done in 2.40s.

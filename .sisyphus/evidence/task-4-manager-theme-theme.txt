@@ -1,0 +1,44 @@
+# Theme Class Stability Audit
+
+## Default Theme Class Names
+
+### Theme Definition
+- File: src/theme/default/index.tsx
+- Theme ID: 'default'
+- Theme Class: 'cm-theme--default'
+- System Type: 'default'
+
+### Component Class Hierarchy
+
+| Component | Base Class | CSS Classes |
+|-----------|------------|-------------|
+| CWindow | CWidget | cm-window-frame, cm-window |
+| CWindowTitle | React.Component | cm-window__title-bar |
+| CWidget | React.Component | widget-frame (via renderFrame) |
+
+### Class Name Stability Verification
+
+1. CWindow.getWindowContentClassName() → 'cm-window' ✓
+2. CWindow.getWindowFrameClassName() → 'cm-window-frame' ✓
+3. CWindow.getWindowInnerClassName() → 'cm-window__inner' ✓
+4. CWindowTitle default class → 'cm-window__title-bar' ✓
+
+### Drag Support Verification
+- DefaultTheme.test.tsx: 'keeps shared window classes and supports dragging'
+- fireEvent.pointerDown/Move/Up on window-title
+- Frame position updates correctly after drag
+- Status: ✓ DRAG FUNCTIONALITY INTACT
+
+### Test Evidence
+```
+Default theme window composition
+  ✓ keeps shared window classes and supports dragging through SystemHost
+    - root: cm-system--default, cm-theme--default
+    - frame: cm-window-frame
+    - content: cm-window
+    - title: cm-window__title-bar--with-controls
+    - drag: frame moves from (32,28) to (56,51)
+```
+
+## Conclusion
+Default theme subclasses maintain base class names with theme-specific CSS classes layered on top. No class renaming detected. Drag functionality preserved.

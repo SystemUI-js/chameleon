@@ -1,0 +1,20 @@
+yarn run v1.22.19
+warning ../../../package.json: No license field
+$ /Users/zhangxiao/frontend/SysUI/chameleon/node_modules/.bin/playwright test tests/ui/window.resize.spec.ts tests/ui/window.resize-guards.spec.ts
+
+Running 11 tests using 2 workers
+
+  ✓   2 [chromium] › tests/ui/window.resize.spec.ts:113:5 › Window drag matrix › drag e (1.0s)
+  ✓   1 [chromium] › tests/ui/window.resize-guards.spec.ts:4:1 › drag-only fixture hides resize handles when resizable={false} and title drag still moves frame exactly (1.4s)
+  ✓   3 [chromium] › tests/ui/window.resize.spec.ts:113:5 › Window drag matrix › drag w (717ms)
+  ✓   5 [chromium] › tests/ui/window.resize.spec.ts:113:5 › Window drag matrix › drag n (509ms)
+  ✓   6 [chromium] › tests/ui/window.resize.spec.ts:113:5 › Window drag matrix › drag s (506ms)
+  ✓   7 [chromium] › tests/ui/window.resize.spec.ts:113:5 › Window drag matrix › drag ne (620ms)
+  ✓   4 [chromium] › tests/ui/window.resize-guards.spec.ts:24:1 › min-clamp fixture clamps east and south shrink to 1px (2.6s)
+  ✓   8 [chromium] › tests/ui/window.resize.spec.ts:113:5 › Window drag matrix › drag nw (675ms)
+  ✓  10 [chromium] › tests/ui/window.resize.spec.ts:113:5 › Window drag matrix › drag se (668ms)
+  ✓  11 [chromium] › tests/ui/window.resize.spec.ts:113:5 › Window drag matrix › drag sw (668ms)
+  ✓   9 [chromium] › tests/ui/window.resize-guards.spec.ts:38:1 › max-clamp fixture clamps east growth and north-west anchor behavior (3.4s)
+
+  11 passed (9.4s)
+Done in 10.68s.

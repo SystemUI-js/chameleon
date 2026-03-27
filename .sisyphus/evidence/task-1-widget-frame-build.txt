@@ -1,0 +1,133 @@
+yarn run v1.22.19
+warning ../../../package.json: No license field
+$ vite build
+vite v5.4.21 building for production...
+transforming...
+DEPRECATION WARNING [legacy-js-api]: The legacy JS API is deprecated and will be removed in Dart Sass 2.0.0.
+
+More info: https://sass-lang.com/d/legacy-js-api
+
+DEPRECATION WARNING [legacy-js-api]: The legacy JS API is deprecated and will be removed in Dart Sass 2.0.0.
+
+More info: https://sass-lang.com/d/legacy-js-api
+
+DEPRECATION WARNING [legacy-js-api]: The legacy JS API is deprecated and will be removed in Dart Sass 2.0.0.
+
+More info: https://sass-lang.com/d/legacy-js-api
+
+DEPRECATION WARNING [legacy-js-api]: The legacy JS API is deprecated and will be removed in Dart Sass 2.0.0.
+
+More info: https://sass-lang.com/d/legacy-js-api
+
+DEPRECATION WARNING [legacy-js-api]: The legacy JS API is deprecated and will be removed in Dart Sass 2.0.0.
+
+More info: https://sass-lang.com/d/legacy-js-api
+
+DEPRECATION WARNING [legacy-js-api]: The legacy JS API is deprecated and will be removed in Dart Sass 2.0.0.
+
+More info: https://sass-lang.com/d/legacy-js-api
+
+DEPRECATION WARNING [legacy-js-api]: The legacy JS API is deprecated and will be removed in Dart Sass 2.0.0.
+
+More info: https://sass-lang.com/d/legacy-js-api
+
+DEPRECATION WARNING [legacy-js-api]: The legacy JS API is deprecated and will be removed in Dart Sass 2.0.0.
+
+More info: https://sass-lang.com/d/legacy-js-api
+
+DEPRECATION WARNING [legacy-js-api]: The legacy JS API is deprecated and will be removed in Dart Sass 2.0.0.
+
+More info: https://sass-lang.com/d/legacy-js-api
+
+DEPRECATION WARNING [legacy-js-api]: The legacy JS API is deprecated and will be removed in Dart Sass 2.0.0.
+
+More info: https://sass-lang.com/d/legacy-js-api
+
+✓ 48 modules transformed.
+rendering chunks...
+
+[vite:dts] Start generate declaration files...
+[96msrc/components/Screen/Grid.tsx[0m:[93m31[0m:[93m9[0m - [91merror[0m[90m TS2533: [0mObject is possibly 'null' or 'undefined'.
+
+[7m31[0m       ? React.Children.map(this.props.children, (child) =>
+[7m  [0m [91m        ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~[0m
+[7m32[0m           React.isValidElement(child) ? child : null,
+[7m  [0m [91m~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~[0m
+[7m33[0m         ).filter((child): child is React.ReactElement => child !== null)
+[7m  [0m [91m~~~~~~~~~[0m
+
+computing gzip size...
+dist/style.css         17.60 kB │ gzip:  2.89 kB
+dist/chameleon.es.js  189.52 kB │ gzip: 48.74 kB
+[vite:dts] Outside emitted: /Users/zhangxiao/frontend/SysUI/chameleon/tests/Button.test.d.ts
+[vite:dts] Outside emitted: /Users/zhangxiao/frontend/SysUI/chameleon/tests/CWindowTitleComposition.test.d.ts
+[vite:dts] Outside emitted: /Users/zhangxiao/frontend/SysUI/chameleon/tests/DefaultTheme.test.d.ts
+[vite:dts] Outside emitted: /Users/zhangxiao/frontend/SysUI/chameleon/tests/DevSystemSelection.test.d.ts
+[vite:dts] Outside emitted: /Users/zhangxiao/frontend/SysUI/chameleon/tests/Dock.test.d.ts
+[vite:dts] Outside emitted: /Users/zhangxiao/frontend/SysUI/chameleon/tests/GlobalRenderer.test.d.ts
+[vite:dts] Outside emitted: /Users/zhangxiao/frontend/SysUI/chameleon/tests/Grid.test.d.ts
+[vite:dts] Outside emitted: /Users/zhangxiao/frontend/SysUI/chameleon/tests/Radio.test.d.ts
+[vite:dts] Outside emitted: /Users/zhangxiao/frontend/SysUI/chameleon/tests/ScreenManager.test.d.ts
+[vite:dts] Outside emitted: /Users/zhangxiao/frontend/SysUI/chameleon/tests/helpers/systemSession.fixture.d.ts
+[vite:dts] Outside emitted: /Users/zhangxiao/frontend/SysUI/chameleon/tests/ScreenScope.test.d.ts
+[vite:dts] Outside emitted: /Users/zhangxiao/frontend/SysUI/chameleon/tests/Select.test.d.ts
+[vite:dts] Outside emitted: /Users/zhangxiao/frontend/SysUI/chameleon/tests/StartBar.test.d.ts
+[vite:dts] Outside emitted: /Users/zhangxiao/frontend/SysUI/chameleon/tests/SystemHost.test.d.ts
+[vite:dts] Outside emitted: /Users/zhangxiao/frontend/SysUI/chameleon/tests/SystemShellCharacterization.test.d.ts
+[vite:dts] Outside emitted: /Users/zhangxiao/frontend/SysUI/chameleon/tests/SystemTypeSwitch.test.d.ts
+[vite:dts] Outside emitted: /Users/zhangxiao/frontend/SysUI/chameleon/tests/SystemTypeThemeRegistry.test.d.ts
+[vite:dts] Outside emitted: /Users/zhangxiao/frontend/SysUI/chameleon/tests/ThemeScopeClassNames.test.d.ts
+[vite:dts] Outside emitted: /Users/zhangxiao/frontend/SysUI/chameleon/tests/ThemeSwitchPreservation.test.d.ts
+[vite:dts] Outside emitted: /Users/zhangxiao/frontend/SysUI/chameleon/tests/Win98WindowTitle.test.d.ts
+[vite:dts] Outside emitted: /Users/zhangxiao/frontend/SysUI/chameleon/tests/WindowManager.test.d.ts
+[vite:dts] Outside emitted: /Users/zhangxiao/frontend/SysUI/chameleon/tests/ui/common-controls.helpers.d.ts
+[vite:dts] Outside emitted: /Users/zhangxiao/frontend/SysUI/chameleon/tests/ui/common-controls.smoke.spec.d.ts
+[vite:dts] Outside emitted: /Users/zhangxiao/frontend/SysUI/chameleon/tests/ui/window.helpers.d.ts
+[vite:dts] Outside emitted: /Users/zhangxiao/frontend/SysUI/chameleon/tests/ui/default-window-system-switch.spec.d.ts
+[vite:dts] Outside emitted: /Users/zhangxiao/frontend/SysUI/chameleon/tests/ui/start-bar.spec.d.ts
+[vite:dts] Outside emitted: /Users/zhangxiao/frontend/SysUI/chameleon/tests/ui/system-theme-switch.spec.d.ts
+[vite:dts] Outside emitted: /Users/zhangxiao/frontend/SysUI/chameleon/tests/ui/window.move.spec.d.ts
+[vite:dts] Outside emitted: /Users/zhangxiao/frontend/SysUI/chameleon/tests/ui/window.resize-guards.spec.d.ts
+[vite:dts] Outside emitted: /Users/zhangxiao/frontend/SysUI/chameleon/tests/ui/window.resize.spec.d.ts
+[vite:dts] Outside emitted: /Users/zhangxiao/frontend/SysUI/chameleon/tests/ui/window.smoke.spec.d.ts
+[vite:dts] Outside emitted: /Users/zhangxiao/frontend/SysUI/chameleon/vite.config.d.ts
+[vite:dts] Outside emitted: /Users/zhangxiao/frontend/SysUI/chameleon/jest.config.d.ts
+[vite:dts] Outside emitted: /Users/zhangxiao/frontend/SysUI/chameleon/tests/Button.test.d.ts.map
+[vite:dts] Outside emitted: /Users/zhangxiao/frontend/SysUI/chameleon/tests/CWindowTitleComposition.test.d.ts.map
+[vite:dts] Outside emitted: /Users/zhangxiao/frontend/SysUI/chameleon/tests/DefaultTheme.test.d.ts.map
+[vite:dts] Outside emitted: /Users/zhangxiao/frontend/SysUI/chameleon/tests/DevSystemSelection.test.d.ts.map
+[vite:dts] Outside emitted: /Users/zhangxiao/frontend/SysUI/chameleon/tests/Dock.test.d.ts.map
+[vite:dts] Outside emitted: /Users/zhangxiao/frontend/SysUI/chameleon/tests/GlobalRenderer.test.d.ts.map
+[vite:dts] Outside emitted: /Users/zhangxiao/frontend/SysUI/chameleon/tests/Grid.test.d.ts.map
+[vite:dts] Outside emitted: /Users/zhangxiao/frontend/SysUI/chameleon/tests/Radio.test.d.ts.map
+[vite:dts] Outside emitted: /Users/zhangxiao/frontend/SysUI/chameleon/tests/ScreenManager.test.d.ts.map
+[vite:dts] Outside emitted: /Users/zhangxiao/frontend/SysUI/chameleon/tests/helpers/systemSession.fixture.d.ts.map
+[vite:dts] Outside emitted: /Users/zhangxiao/frontend/SysUI/chameleon/tests/ScreenScope.test.d.ts.map
+[vite:dts] Outside emitted: /Users/zhangxiao/frontend/SysUI/chameleon/tests/Select.test.d.ts.map
+[vite:dts] Outside emitted: /Users/zhangxiao/frontend/SysUI/chameleon/tests/StartBar.test.d.ts.map
+[vite:dts] Outside emitted: /Users/zhangxiao/frontend/SysUI/chameleon/tests/SystemHost.test.d.ts.map
+[vite:dts] Outside emitted: /Users/zhangxiao/frontend/SysUI/chameleon/tests/SystemShellCharacterization.test.d.ts.map
+[vite:dts] Outside emitted: /Users/zhangxiao/frontend/SysUI/chameleon/tests/SystemTypeSwitch.test.d.ts.map
+[vite:dts] Outside emitted: /Users/zhangxiao/frontend/SysUI/chameleon/tests/SystemTypeThemeRegistry.test.d.ts.map
+[vite:dts] Outside emitted: /Users/zhangxiao/frontend/SysUI/chameleon/tests/ThemeScopeClassNames.test.d.ts.map
+[vite:dts] Outside emitted: /Users/zhangxiao/frontend/SysUI/chameleon/tests/ThemeSwitchPreservation.test.d.ts.map
+[vite:dts] Outside emitted: /Users/zhangxiao/frontend/SysUI/chameleon/tests/Win98WindowTitle.test.d.ts.map
+[vite:dts] Outside emitted: /Users/zhangxiao/frontend/SysUI/chameleon/tests/WindowManager.test.d.ts.map
+[vite:dts] Outside emitted: /Users/zhangxiao/frontend/SysUI/chameleon/tests/ui/common-controls.helpers.d.ts.map
+[vite:dts] Outside emitted: /Users/zhangxiao/frontend/SysUI/chameleon/tests/ui/common-controls.smoke.spec.d.ts.map
+[vite:dts] Outside emitted: /Users/zhangxiao/frontend/SysUI/chameleon/tests/ui/window.helpers.d.ts.map
+[vite:dts] Outside emitted: /Users/zhangxiao/frontend/SysUI/chameleon/tests/ui/default-window-system-switch.spec.d.ts.map
+[vite:dts] Outside emitted: /Users/zhangxiao/frontend/SysUI/chameleon/tests/ui/start-bar.spec.d.ts.map
+[vite:dts] Outside emitted: /Users/zhangxiao/frontend/SysUI/chameleon/tests/ui/system-theme-switch.spec.d.ts.map
+[vite:dts] Outside emitted: /Users/zhangxiao/frontend/SysUI/chameleon/tests/ui/window.move.spec.d.ts.map
+[vite:dts] Outside emitted: /Users/zhangxiao/frontend/SysUI/chameleon/tests/ui/window.resize-guards.spec.d.ts.map
+[vite:dts] Outside emitted: /Users/zhangxiao/frontend/SysUI/chameleon/tests/ui/window.resize.spec.d.ts.map
+[vite:dts] Outside emitted: /Users/zhangxiao/frontend/SysUI/chameleon/tests/ui/window.smoke.spec.d.ts.map
+[vite:dts] Outside emitted: /Users/zhangxiao/frontend/SysUI/chameleon/vite.config.d.ts.map
+[vite:dts] Outside emitted: /Users/zhangxiao/frontend/SysUI/chameleon/jest.config.d.ts.map
+[vite:dts] Declaration files built in 2178ms.
+
+dist/style.css           17.60 kB │ gzip:  2.89 kB
+dist/chameleon.umd.cjs  119.08 kB │ gzip: 42.08 kB
+✓ built in 2.96s
+Done in 4.46s.

@@ -1,0 +1,59 @@
+# Manager & Theme Compatibility Audit
+
+## Date: 2026-03-27
+
+## CWindowManager Compatibility
+
+### Prototype Chain Registration
+- `isManagedConstructor` (src/components/Manager/isManagedConstructor.ts:24) uses:
+  `Object.prototype.isPrototypeOf.call(baseConstructor.prototype, prototype)`
+- This correctly identifies CWidget, CWindow, and ALL subclasses via prototype chain
+- CWindowManager.registerWindowConstructor uses Set for deduplication (line 68)
+
+### Test Verification
+- WindowManager.test.tsx: All 7 tests PASS
+  - Direct CWindow from children: ✓
+  - CWindow subclass from children: ✓
+  - addWindow with valid constructor: ✓
+  - addWindow rejects invalid constructor: ✓
+  - Deduplication between children and addWindow: ✓
+  - Only valid registered windows rendered: ✓
+  - Direct CWidget constructor accepted: ✓
+  - Props update with cached element: ✓
+
+## DOM Marker Preservation
+
+### data-window-uuid
+- Location: src/components/Window/Window.tsx:57
+- Element: `<div data-testid="window-content" data-window-uuid={this.uuid}>`
+- Status: ✓ PRESERVED
+
+### window-frame
+- Location: src/components/Window/Window.tsx:72
+- Element: renderFrame called with testId: 'window-frame'
+- Status: ✓ PRESERVED
+
+### window-title
+- Location: src/components/Window/WindowTitle.tsx:65
+- Element: `<div data-testid="window-title" className="cm-window__title-bar">`
+- Status: ✓ PRESERVED
+
+### window-resize-* (8 directions)
+- Location: src/components/Widget/Widget.tsx:236
+- Pattern: `data-testid={`window-resize-${direction}`}`
+- Directions: n, s, e, w, ne, nw, se, sw
+- Status: ✓ PRESERVED
+
+## Theme Class Naming
+
+### Default Theme Definition
+- Location: src/theme/default/index.tsx
+- Theme ID: 'default'
+- Theme Class: 'cm-theme--default'
+- Status: ✓ NO class renaming detected
+
+### Theme Components
+- CWindow extends CWidget → uses 'cm-window-frame' and 'cm-window' classes
+- CWindowTitle extends React.Component → uses 'cm-window__title-bar' class
+- Theme class layering achieved via CSS, NOT class renaming
+- DefaultTheme.test.tsx: PASS (drag functionality verified)

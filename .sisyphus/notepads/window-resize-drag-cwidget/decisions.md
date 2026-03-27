@@ -1,0 +1,5 @@
+- 选择让 `CWidget` 直接持有规范化的 `x/y/width/height` React state，并通过 `getDragPose()`、`setFrameState()`、`patchFrameState()` 向子类暴露受保护扩展点；`CWindow` 只消费这些能力，不再维护自己的稳态 frame shape。
+- 为兼容已有 `CWidget` 子类，`CWidget` 改成 `CWidget<TProps, TState>` 泛型类，统一把交互 frame state 叠加到子类 state 上，而不是强迫所有子类只能拥有窗口式状态。
+- 继续保留 `CWindowResizeOptions` 作为 `CWindow` 的公开类型定义，不把 resize options 类型重新导出到 `CWidget` 公共接口；基类仅用结构化内部类型消费 `resizable`/`resizeOptions`，以避免这次重构顺带扩张公开 API。
+- `CWindow` 仅通过覆盖 `supportsResize()` 启用基类 resize 引擎，其余 resize refs、Drag 实例、resize start map、句柄渲染全部收敛到 `CWidget`。
+- 标题拖拽组合也采用同样的“基类拥有通用机制、子类只声明匹配规则”策略：`CWidget` 负责 `applyFrameMove()` 与子克隆注入，`CWindow` 只覆盖 `isMoveHandleElement()` 来识别 `CWindowTitle`（含子类）。

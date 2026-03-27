@@ -95,7 +95,7 @@ Wave 5: Task 5 `Playwright contract refresh`
 > Implementation + Test = ONE task. Never separate.
 > EVERY task MUST have: Agent Profile + Parallelization + QA Scenarios.
 
-- [ ] 1. Make `CWidget` the sole owner of interactive frame state
+- [x] 1. Make `CWidget` the sole owner of interactive frame state
 
   **What to do**: Refactor `src/components/Widget/Widget.tsx` so `CWidget` owns normalized `x/y/width/height` state initialized from props, exposes protected frame helpers (`getDragPose`, frame patch/setter, controlled-prop sync), and keeps `renderFrame()` as the single renderer for positioned widget frames. Remove duplicated frame-state ownership from subclasses by making `CWindow` consume these protected helpers instead of its own state shape.
   **Must NOT do**: Do not introduce hooks/context, do not export a new public API from `src/index.ts`, and do not change `widget-frame` / `window-frame` test ids in this step.
@@ -139,7 +139,7 @@ Wave 5: Task 5 `Playwright contract refresh`
 
   **Commit**: NO | Message: `n/a` | Files: none — hold changes for the shared widget refactor commit created after Task 2
 
-- [ ] 2. Move resize engine and handle lifecycle into `CWidget`
+- [x] 2. Move resize engine and handle lifecycle into `CWidget`
 
   **What to do**: Transfer resize option normalization, resize math, handle refs, `Drag` instance setup/cleanup, and handle rendering from `src/components/Window/Window.tsx` into `src/components/Widget/Widget.tsx`. Keep resize semantics generic in the base class, but preserve the existing `window-resize-${dir}` test ids and current edge geometry so browser and unit tests keep the same observable contract.
   **Must NOT do**: Do not rename `resizeOptions`, do not change min/max clamp rules, and do not remove the 8-direction handle matrix.
@@ -186,7 +186,7 @@ Wave 5: Task 5 `Playwright contract refresh`
 
   **Commit**: YES | Message: `refactor(widget): centralize frame ownership and resize lifecycle in cwidget` | Files: `src/components/Widget/Widget.tsx`, `src/components/Window/Window.tsx`, `tests/CWindowTitleComposition.test.tsx`, `tests/WindowManager.test.tsx`, `tests/ui/window.resize.spec.ts`, `tests/ui/window.resize-guards.spec.ts`
 
-- [ ] 3. Delegate title-drag composition from `CWindow` to widget-level helpers
+- [x] 3. Delegate title-drag composition from `CWindow` to widget-level helpers
 
   **What to do**: Rewrite `src/components/Window/Window.tsx` so it stops owning `getDragPose`, `handleWindowMove`, and child-cloning drag wiring directly. Add protected widget-level composition hooks in `CWidget` for “move handle child detection” and “frame move application,” then have `CWindow` opt into those hooks for `CWindowTitle` children. Keep `CWindowTitle` public props compatible, but route the injected callbacks from `CWidget` rather than `CWindow`.
   **Must NOT do**: Do not make `CWindowTitle` implicit, do not allow dragging from content/body, and do not rename `window-title` / `window-content` test ids.
@@ -235,7 +235,7 @@ Wave 5: Task 5 `Playwright contract refresh`
 
   **Commit**: NO | Message: `n/a` | Files: none — hold changes for the shared window delegation commit created after Task 4
 
-- [ ] 4. Preserve manager, theme, and selector compatibility after the base-class move
+- [x] 4. Preserve manager, theme, and selector compatibility after the base-class move
 
   **What to do**: Audit every place that depends on `CWidget`/`CWindow` identity or window DOM markers, then make only the compatibility edits required to keep them stable. This includes keeping `CWindowManager` prototype-chain registration valid, preserving `data-window-uuid` on `window-content`, and keeping default theme subclasses layered on top of `CWindow`/`CWindowTitle` without class-name regressions.
   **Must NOT do**: Do not change how `CWindowManager` deduplicates constructors, do not remove `data-window-uuid`, and do not rename default theme class names.

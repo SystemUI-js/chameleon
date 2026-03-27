@@ -1,6 +1,6 @@
 import type React from 'react';
-import { CWidget, type CWidgetProps } from '../Widget/Widget';
 import { getDockEdgeStyle, getDockFrameClassName, getDockFrameStyle } from '../Dock/dockLayout';
+import { CWidget, type CWidgetProps } from '../Widget/Widget';
 import './index.scss';
 
 type StartBarState = {
@@ -19,18 +19,20 @@ export interface CStartBarProps extends Omit<CWidgetProps, 'x' | 'y' | 'width'> 
   'data-testid'?: string;
 }
 
-export class CStartBar extends CWidget {
+export class CStartBar extends CWidget<CStartBarProps, StartBarState> {
   declare public props: CStartBarProps;
-  public state: StartBarState;
 
   public constructor(props: CStartBarProps) {
     super(props);
     this.state = {
+      ...this.state,
       resolvedHeight: props.height ?? props.defaultHeight,
     };
   }
 
   public componentDidUpdate(prevProps: CStartBarProps): void {
+    super.componentDidUpdate(prevProps);
+
     if (prevProps.height !== this.props.height) {
       this.setState({
         resolvedHeight: this.props.height ?? this.state.resolvedHeight,

@@ -1,0 +1,1 @@
+- 未解决：`yarn build` 的 `vite:dts` 阶段仍报告 `src/components/Screen/Grid.tsx:31` 的 `TS2533 Object is possibly 'null' or 'undefined'`；与本次 `CWidget`/`CWindow` 拖拽委托改动无关，但会影响“构建日志完全无错”的验收口径。

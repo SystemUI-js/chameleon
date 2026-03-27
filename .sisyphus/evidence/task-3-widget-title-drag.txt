@@ -1,0 +1,29 @@
+Task: Delegate title-drag composition from CWindow to widget-level helpers
+Date: 2026-03-27
+
+Code changes
+- `src/components/Widget/Widget.tsx`: added protected move-composition hooks `applyFrameMove()`, `isMoveHandleElement()`, `getMoveHandleProps()`, and `mapComposedChildren()`.
+- `src/components/Window/Window.tsx`: removed window-owned move callback/cloning logic and now opts into widget-level composition by overriding `isMoveHandleElement()` for `CWindowTitle`.
+- `tests/CWindowTitleComposition.test.tsx`: added active-gesture unmount safety coverage for composed title dragging.
+
+Diagnostics
+- `lsp_diagnostics src/components/Widget/Widget.tsx`: clean
+- `lsp_diagnostics src/components/Window/Window.tsx`: clean
+- `lsp_diagnostics tests/CWindowTitleComposition.test.tsx`: clean
+
+Commands
+1) `yarn test --runInBand tests/CWindowTitleComposition.test.tsx --testNamePattern="implicitly render|moves window frame|content area|independent from resize"`
+   Result: PASS
+   Covered assertions:
+   - explicit-only title composition remains intact
+   - title drag still moves frame
+   - content drag remains no-op
+   - drag stays independent from resize
+
+2) `yarn test --runInBand tests/CWindowTitleComposition.test.tsx`
+   Result: PASS (21/21)
+   Additional coverage includes the new case `tears down composed title dragging safely after unmount during an active gesture`.
+
+3) `yarn build`
+   Result: command completed successfully and emitted dist output
+   Note: build log still contains the pre-existing `vite:dts` message `src/components/Screen/Grid.tsx:31 error TS2533: Object is possibly 'null' or 'undefined'`, which was not introduced by this task.

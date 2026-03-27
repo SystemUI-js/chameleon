@@ -1,0 +1,3 @@
+- `yarn build` 仍会在 `vite:dts` 阶段输出 `src/components/Screen/Grid.tsx:31` 的既有 `TS2533 Object is possibly 'null' or 'undefined'`，本次 `CWidget`/`CWindow` 重构未新增该问题，但它仍会污染构建日志。
+- 本次验证里 `yarn build` 依旧成功，但日志仍会打印 `src/components/Screen/Grid.tsx:31` 的既有 `TS2533` 提示；这不是本次 resize 引擎迁移引入的问题。
+- Task 3 验证后该既有 `vite:dts` 提示仍存在：`src/components/Screen/Grid.tsx:31` 在 `yarn build` 日志中继续输出 `TS2533`，因此本次改动虽然未破坏构建产物，但构建日志仍不算完全干净。
