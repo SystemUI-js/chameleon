@@ -1,0 +1,38 @@
+F2 Code Quality Review
+======================
+
+Review scope:
+- src/components/Widget/Widget.tsx
+- src/components/Window/Window.tsx
+- src/components/Window/WindowTitle.tsx
+
+Verdict: APPROVED for the reviewed refactor surface.
+
+Findings:
+1. No duplicated canonical frame ownership exists between CWidget and CWindow.
+   - CWidget owns x/y/width/height in state at src/components/Widget/Widget.tsx:95-100 and keeps prop->state sync in src/components/Widget/Widget.tsx:120-152.
+   - CWindow no longer stores frame state or resize lifecycle; it only enables resize, identifies title drag handles, exposes class-name hooks, and renders window structure at src/components/Window/Window.tsx:20-74.
+
+2. Drag/resize lifecycle cleanup is centralized and present.
+   - CWidget mounts resize drags at src/components/Widget/Widget.tsx:116-118, rebuilds them when resize props change at :145-151, and tears down Drag instances + pointerdown listeners at :154-156 and :411-430.
+   - Resize start snapshots are scoped per direction via maps at :112-115 and :373-405, so stale listeners are explicitly cleared before rebinding.
+   - CWindowTitle disables its Drag instance on unmount at src/components/Window/WindowTitle.tsx:42-44.
+
+3. CWindowTitle drag-handle contract remains compatible.
+   - Public props onWindowMove/getWindowPose still exist at src/components/Window/WindowTitle.tsx:9-15 and are consumed by the Drag bridge at :28-39 and :46-58.
+   - CWidget injects the same contract through getMoveHandleProps/mapComposedChildren at src/components/Widget/Widget.tsx:190-207.
+   - The window-title selector is unchanged at src/components/Window/WindowTitle.tsx:63-70.
+
+4. Selector stability is preserved for resize handles.
+   - CWidget still emits data-testid="window-resize-${dir}" at src/components/Widget/Widget.tsx:232-239 with edgeInset=edgeWidth/2 at :218-229.
+   - Those selectors are still consumed by tests in tests/CWindowTitleComposition.test.tsx, tests/SystemHost.test.tsx, tests/ScreenScope.test.tsx, and tests/ui/window.resize-guards.spec.ts.
+
+5. No unnecessary branchy window-specific logic remains in CWindow.
+   - The remaining branches are the exact-title/subclass title detection guard in src/components/Window/Window.tsx:27-38, which is justified for backward-compatible handle matching.
+   - Resize option normalization, clamping, pose math, and listener lifecycle all live in CWidget, making CWindow materially slimmer.
+
+Actionable defects in reviewed files:
+- None found in CWidget/CWindow/CWindowTitle.
+
+Out-of-scope but relevant gate issue:
+- src/components/Screen/Grid.tsx:31 still emits TS2533 during yarn build; this keeps the build log from being fully clean, but it is not introduced by the reviewed window refactor.

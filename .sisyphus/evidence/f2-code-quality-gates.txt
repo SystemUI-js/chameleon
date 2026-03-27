@@ -1,0 +1,43 @@
+F2 Code Quality Gates
+=====================
+
+Overall gate status: FAIL (logs are not clean), although every requested command exited successfully.
+
+1. Lint
+   Command: yarn lint
+   Exit status: PASS
+   Notes:
+   - ESLint completed successfully.
+   - Log still contains ESLintIgnoreWarning about deprecated .eslintignore usage.
+
+2. LSP diagnostics
+   Files checked:
+   - src/components/Widget/Widget.tsx -> no diagnostics
+   - src/components/Window/Window.tsx -> no diagnostics
+   - src/components/Window/WindowTitle.tsx -> info-only biome organizeImports hint
+   Gate interpretation:
+   - No errors or warnings in reviewed files.
+   - One info-level import-order hint remains in WindowTitle.
+
+3. Targeted Jest
+   Command: yarn test --runInBand tests/CWindowTitleComposition.test.tsx tests/WindowManager.test.tsx tests/DefaultTheme.test.tsx
+   Exit status: PASS
+   Result: 3 suites passed, 30 tests passed.
+
+4. Playwright
+   Command: yarn playwright test tests/ui/window.smoke.spec.ts tests/ui/window.move.spec.ts tests/ui/window.resize.spec.ts tests/ui/window.resize-guards.spec.ts
+   Exit status: PASS
+   Result: 15/15 tests passed.
+
+5. Build
+   Command: yarn build
+   Exit status: PASS
+   Notes:
+   - Bundles emitted successfully.
+   - Log contains repeated Sass legacy-js-api deprecation warnings.
+   - vite:dts still reports src/components/Screen/Grid.tsx:31 -> TS2533 Object is possibly 'null' or 'undefined'.
+
+Conclusion:
+- Functional gates passed: lint, targeted Jest, Playwright, and build all returned success.
+- Clean-log gate failed because warnings/errors are still emitted in command output.
+- The concrete file-path defect affecting a fully clean build log remains src/components/Screen/Grid.tsx:31.

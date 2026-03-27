@@ -1,6 +1,5 @@
 import type React from 'react';
 import { CWidget, type CWidgetProps } from '../Widget/Widget';
-import './index.scss';
 import { CWindowTitle } from './WindowTitle';
 
 export interface CWindowResizeOptions {

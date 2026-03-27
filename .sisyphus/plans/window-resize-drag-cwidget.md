@@ -281,7 +281,7 @@ Wave 5: Task 5 `Playwright contract refresh`
 
   **Commit**: YES | Message: `refactor(window): delegate drag resize to cwidget and preserve compatibility` | Files: `src/components/Widget/Widget.tsx`, `src/components/Window/Window.tsx`, `src/components/Window/WindowTitle.tsx`, `src/components/Window/WindowManager.tsx`, `src/components/Manager/isManagedConstructor.ts`, `src/theme/default/index.tsx`, `tests/CWindowTitleComposition.test.tsx`, `tests/WindowManager.test.tsx`, `tests/DefaultTheme.test.tsx`, `tests/ui/window.move.spec.ts`, `tests/ui/window.smoke.spec.ts`
 
-- [ ] 5. Refresh Playwright contract coverage for the finalized widget abstraction
+- [x] 5. Refresh Playwright contract coverage for the finalized widget abstraction
 
   **What to do**: Update `tests/ui/window.helpers.ts` and the window UI specs only where needed to reflect the finalized drag/resize contract after the base-class move. Preserve existing selectors by default; only adjust helper internals or fixture expectations if the refactor changes render timing or frame ownership timing. The goal is browser-level proof that no drag/resize regression escaped the unit suite.
   **Must NOT do**: Do not weaken assertions, do not replace exact metric assertions with loose ranges, and do not add manual verification steps.

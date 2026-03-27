@@ -3,3 +3,5 @@
 - 继续保留 `CWindowResizeOptions` 作为 `CWindow` 的公开类型定义，不把 resize options 类型重新导出到 `CWidget` 公共接口；基类仅用结构化内部类型消费 `resizable`/`resizeOptions`，以避免这次重构顺带扩张公开 API。
 - `CWindow` 仅通过覆盖 `supportsResize()` 启用基类 resize 引擎，其余 resize refs、Drag 实例、resize start map、句柄渲染全部收敛到 `CWidget`。
 - 标题拖拽组合也采用同样的“基类拥有通用机制、子类只声明匹配规则”策略：`CWidget` 负责 `applyFrameMove()` 与子克隆注入，`CWindow` 只覆盖 `isMoveHandleElement()` 来识别 `CWindowTitle`（含子类）。
+- F1 审计决策：证据合规采用“严格文件名 + 对应场景命令”双匹配规则；只要计划要求的证据文件缺失，即判定阻断，不做等价放行。
+- F4 审计决策：即使 hooks/context、依赖与 selector 均合规，只要 refactor commit 触及计划未声明模块（本次为 Dock/StartBar），仍按“范围偏离”处理并升级为 blocker，等待明确范围批准。

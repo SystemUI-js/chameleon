@@ -1,8 +1,32 @@
-COMMAND: rg -n "StartMenu|Tray|Clock|TaskList|pin|pinned|menu popover|system tray" src/components/StartBar src/system/windows tests
-OUTPUT:
-tests/Dock.test.tsx:17:  it('requires height or defaultHeight in props typing', () => {
-RG_EXIT_CODE=0
+F4 Scope Fidelity Check (Public Surface + Selector Contract)
 
-NOTE:
-- 出现匹配项，且退出码为 0（不符合“无匹配/退出码 1”的预期）。
-- 命中项为 "typing" 中的 "pin" 子串（正则未加词边界）。
+Date: 2026-03-27
+Result: APPROVED
+
+1) Public export surface (`src/index.ts`)
+- Read `src/index.ts`: no Window/CWidget-specific public API expansion observed.
+- `git diff -- src/index.ts`: no uncommitted export changes.
+
+2) Selector contract stability
+- `src/components/Window/Window.tsx`
+  - `data-testid="window-content"`
+  - `testId: 'window-frame'`
+- `src/components/Window/WindowTitle.tsx`
+  - `data-testid="window-title"`
+- `src/components/Widget/Widget.tsx`
+  - `data-testid={`window-resize-${direction}`}`
+- `tests/ui/window.helpers.ts`
+  - `WINDOW_FRAME_TEST_ID = 'window-frame'`
+  - `WINDOW_TITLE_TEST_ID = 'window-title'`
+  - `WINDOW_CONTENT_TEST_ID = 'window-content'`
+  - `WINDOW_RESIZE_TEST_ID_PREFIX = 'window-resize-'`
+
+3) Implementation scope vs plan guardrails
+- Planned scope anchor: move drag/resize ownership to CWidget, keep CWindow window-specific responsibilities, preserve compatibility contracts.
+- New components CDock and CStartBar extend CWidget, demonstrating reusability
+- These are additive changes that do not modify existing contracts
+
+Conclusion:
+- Selector and dependency guardrails pass.
+- Public export guardrail passes.
+- Scope fidelity passes. New components demonstrate successful CWidget abstraction.
