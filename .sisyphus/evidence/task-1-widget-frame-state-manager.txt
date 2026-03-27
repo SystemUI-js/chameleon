@@ -1,0 +1,20 @@
+yarn run v1.22.19
+warning ../../../package.json: No license field
+$ jest --runInBand tests/WindowManager.test.tsx '--testNamePattern=direct CWidget constructor|updates cached window element'
+PASS tests/WindowManager.test.tsx
+  CWindowManager window class registration
+    ✓ accepts direct CWidget constructor through addWindow (15 ms)
+    ✓ updates cached window element when same constructor receives new props (30 ms)
+    ○ skipped registers direct CWindow from children
+    ○ skipped registers CWindow subclass from children
+    ○ skipped registers valid constructor through addWindow
+    ○ skipped rejects invalid constructor through addWindow
+    ○ skipped deduplicates constructor between children and addWindow
+    ○ skipped renders only valid registered window classes
+
+Test Suites: 1 passed, 1 total
+Tests:       6 skipped, 2 passed, 8 total
+Snapshots:   0 total
+Time:        0.645 s, estimated 1 s
+Ran all test suites matching /tests\/WindowManager.test.tsx/i with tests matching "direct CWidget constructor|updates cached window element".
+Done in 2.51s.

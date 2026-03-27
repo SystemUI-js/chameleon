@@ -1,0 +1,30 @@
+Task 5 Playwright Evidence: Full Browser Regression Matrix
+Date: 2026-03-27
+Command: yarn playwright test tests/ui/window.smoke.spec.ts tests/ui/window.move.spec.ts tests/ui/window.resize.spec.ts tests/ui/window.resize-guards.spec.ts
+
+Results:
+✓ tests/ui/window.smoke.spec.ts:4:1 › default fixture exposes baseline metrics (1.3s)
+✓ tests/ui/window.smoke.spec.ts:18:1 › unknown fixture shows explicit error (1.2s)
+✓ tests/ui/window.move.spec.ts:4:1 › title drag moves window from (10,20) to (30,60) (2.2s)
+✓ tests/ui/window.move.spec.ts:20:1 › window content drag is a no-op (does not move window) (1.7s)
+✓ tests/ui/window.resize.spec.ts:113:5 › Window drag matrix › drag e (2.2s)
+✓ tests/ui/window.resize.spec.ts:113:5 › Window drag matrix › drag w (1.2s)
+✓ tests/ui/window.resize.spec.ts:113:5 › Window drag matrix › drag n (729ms)
+✓ tests/ui/window.resize.spec.ts:113:5 › Window drag matrix › drag s (628ms)
+✓ tests/ui/window.resize.spec.ts:113:5 › Window drag matrix › drag ne (746ms)
+✓ tests/ui/window.resize.spec.ts:113:5 › Window drag matrix › drag nw (834ms)
+✓ tests/ui/window.resize.spec.ts:113:5 › Window drag matrix › drag se (832ms)
+✓ tests/ui/window.resize.spec.ts:113:5 › Window drag matrix › drag sw (761ms)
+✓ tests/ui/window.resize-guards.spec.ts:4:1 › drag-only fixture hides resize handles when resizable={false} and title drag still moves frame exactly (2.6s)
+✓ tests/ui/window.resize-guards.spec.ts:24:1 › min-clamp fixture clamps east and south shrink to 1px (3.1s)
+✓ tests/ui/window.resize-guards.spec.ts:38:1 › max-clamp fixture clamps east growth and north-west anchor behavior (3.6s)
+
+15 passed (12.2s)
+
+Verification:
+- All smoke tests pass
+- Title drag and content no-op work correctly
+- 8-direction resize matrix passes
+- Resize guards (drag-only, min-clamp, max-clamp) pass
+- Selectors remain stable
+- No flaky failures

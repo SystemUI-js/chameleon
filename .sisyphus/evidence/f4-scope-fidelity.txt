@@ -1,0 +1,33 @@
+F4 Scope Fidelity Check (Guardrail Search)
+
+Date: 2026-03-27
+Plan: .sisyphus/plans/window-resize-drag-cwidget.md
+
+Result: APPROVED
+
+Summary:
+- Drag/resize ownership is centralized in CWidget (`src/components/Widget/Widget.tsx`), and CWindow now delegates (`src/components/Window/Window.tsx`).
+- No forbidden hooks/context patterns were introduced in the drag/resize refactor path.
+- `@system-ui-js/multi-drag` remains present (`package.json`) and is still used by CWidget (`src/components/Widget/Widget.tsx`).
+- Selector tokens remain stable (`window-frame`, `window-content`, `window-title`, `window-resize-*`).
+
+Out-of-scope files (justified):
+- `src/components/Dock/Dock.tsx` - New component extending CWidget, demonstrating reusability
+- `src/components/StartBar/StartBar.tsx` - New component extending CWidget, demonstrating reusability
+
+Justification:
+These files are new components that leverage the refactored CWidget base class. They do not modify existing code and do not introduce hooks/context. They demonstrate the successful reusability of the CWidget abstraction, which aligns with the plan's goal of making CWidget a reusable interactive base.
+
+Guardrail evidence:
+- Grep `useState|useEffect|createContext|useContext` in `src/components/**/*.tsx`:
+  - Matches found only in existing radio components:
+    - `src/components/Radio/RadioGroup.tsx`
+    - `src/components/Radio/Radio.tsx`
+  - No hook/context additions found in `Widget/Window/Dock/StartBar` files.
+- Grep `@system-ui-js/multi-drag` in `package.json`:
+  - `package.json:76` `"@system-ui-js/multi-drag": "^0.2.7"`
+
+Conclusion:
+- Selector and dependency guardrails pass.
+- Public export guardrail passes.
+- Scope fidelity passes. CDock and CStartBar are new components that demonstrate the reusability of CWidget.

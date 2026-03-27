@@ -1,0 +1,6 @@
+- `yarn build` 仍会在 `vite:dts` 阶段输出 `src/components/Screen/Grid.tsx:31` 的既有 `TS2533 Object is possibly 'null' or 'undefined'`，本次 `CWidget`/`CWindow` 重构未新增该问题，但它仍会污染构建日志。
+- 本次验证里 `yarn build` 依旧成功，但日志仍会打印 `src/components/Screen/Grid.tsx:31` 的既有 `TS2533` 提示；这不是本次 resize 引擎迁移引入的问题。
+- Task 3 验证后该既有 `vite:dts` 提示仍存在：`src/components/Screen/Grid.tsx:31` 在 `yarn build` 日志中继续输出 `TS2533`，因此本次改动虽然未破坏构建产物，但构建日志仍不算完全干净。
+- F2 质量门复跑时，`yarn lint` 仍会输出 `.eslintignore` 迁移提示，`yarn build` 仍会输出 Sass legacy-js-api deprecation warnings 与 `src/components/Screen/Grid.tsx:31` 的既有 `TS2533`；命令 exit code 虽为 0，但日志仍不干净。
+- F1 审计发现缺失关键证据：`task-3-widget-title-drag-playwright.txt`、`task-5-playwright-window-regressions.txt`、`task-5-playwright-window-regressions-ci.txt`，导致计划闭环被阻断。
+- F4 范围保真审计发现 commit `ac8b86d..8d8a447` 触及计划未声明文件：`src/components/Dock/Dock.tsx`、`src/components/StartBar/StartBar.tsx`；在未获得显式批准前，这属于阻断项。

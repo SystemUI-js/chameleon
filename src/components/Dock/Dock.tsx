@@ -34,19 +34,21 @@ type DockState = {
   resolvedHeight?: number;
 };
 
-export class CDock extends CWidget {
+export class CDock extends CWidget<CDockProps, DockState> {
   declare public props: CDockProps;
-  public state: DockState;
 
   public constructor(props: CDockProps) {
     super(props);
     this.state = {
+      ...this.state,
       resolvedPosition: props.position ?? props.defaultPosition ?? 'top',
       resolvedHeight: props.height ?? props.defaultHeight,
     };
   }
 
   public componentDidUpdate(prevProps: CDockProps): void {
+    super.componentDidUpdate(prevProps);
+
     if (prevProps.position !== this.props.position || prevProps.height !== this.props.height) {
       this.setState({
         resolvedPosition: this.props.position ?? this.state.resolvedPosition,

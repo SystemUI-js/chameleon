@@ -364,4 +364,37 @@ describe('CWindow and CWindowTitle composition', () => {
     expect(metrics.width).toBe(200);
     expect(metrics.height).toBe(120);
   });
+
+  it('tears down composed title dragging safely after unmount during an active gesture', () => {
+    const { getByTestId, unmount } = render(
+      <CWindow x={20} y={30} width={200} height={120}>
+        <CWindowTitle>Unmount safe</CWindowTitle>
+      </CWindow>,
+    );
+
+    const title = getByTestId('window-title');
+
+    fireEvent.pointerDown(title, {
+      pointerId: 17,
+      button: 0,
+      clientX: 80,
+      clientY: 45,
+    });
+
+    expect(() => {
+      unmount();
+
+      fireEvent.pointerMove(document, {
+        pointerId: 17,
+        clientX: 120,
+        clientY: 75,
+      });
+
+      fireEvent.pointerUp(document, {
+        pointerId: 17,
+        clientX: 120,
+        clientY: 75,
+      });
+    }).not.toThrow();
+  });
 });

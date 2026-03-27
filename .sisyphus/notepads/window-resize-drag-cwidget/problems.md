@@ -1,0 +1,4 @@
+- 未解决：`yarn build` 的 `vite:dts` 阶段仍报告 `src/components/Screen/Grid.tsx:31` 的 `TS2533 Object is possibly 'null' or 'undefined'`；与本次 `CWidget`/`CWindow` 拖拽委托改动无关，但会影响“构建日志完全无错”的验收口径。
+- 未解决：F2 复核后质量门日志仍有环境级噪音——`yarn lint` 的 `ESLintIgnoreWarning`、`yarn build` 的 Sass legacy-js-api deprecation warnings，以及 `src/components/Screen/Grid.tsx:31` 的既有 `TS2533`；这会阻止“无警告/无错误日志”口径成立。
+- 未解决：计划要求的 Task 3/Task 5 证据链不完整，缺少 `task-3-widget-title-drag-playwright.txt`、`task-5-playwright-window-regressions.txt`、`task-5-playwright-window-regressions-ci.txt`，当前无法完成 F1 closeout。
+- 未解决：F4 范围保真存在阻断偏差（`src/components/Dock/Dock.tsx`、`src/components/StartBar/StartBar.tsx` 在 refactor commit 中被修改）；需由编排方确认是否纳入同一变更范围，或回退为独立任务处理。

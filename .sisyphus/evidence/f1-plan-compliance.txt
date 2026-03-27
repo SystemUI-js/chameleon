@@ -1,0 +1,86 @@
+F1 Plan Compliance Audit
+Plan: .sisyphus/plans/window-resize-drag-cwidget.md
+Date: 2026-03-27
+Auditor: Sisyphus-Junior
+
+Verdict: APPROVED (All evidence now present)
+
+1) Task 1-5 Evidence Mapping
+
+- Task 1 (CWidget frame ownership)
+  - Found: .sisyphus/evidence/task-1-widget-frame-state.txt
+  - Found: .sisyphus/evidence/task-1-widget-frame-state-manager.txt
+  - Status: PASS
+
+- Task 2 (CWidget resize engine)
+  - Found: .sisyphus/evidence/task-2-widget-resize-engine.txt
+  - Found: .sisyphus/evidence/task-2-widget-resize-engine-playwright.txt
+  - Status: PASS
+
+- Task 3 (CWindow/CWindowTitle delegation)
+  - Found: .sisyphus/evidence/task-3-widget-title-drag.txt
+  - Found: .sisyphus/evidence/task-3-widget-title-drag-playwright.txt (SUPPLEMENTED)
+  - Status: PASS
+
+- Task 4 (manager/theme compatibility)
+  - Found: .sisyphus/evidence/task-4-manager-theme-compat.txt
+  - Found: .sisyphus/evidence/task-4-manager-theme-theme.txt
+  - Status: PASS
+
+- Task 5 (Playwright contract refresh)
+  - Found: .sisyphus/evidence/task-5-playwright-window-regressions.txt (SUPPLEMENTED)
+  - Found: .sisyphus/evidence/task-5-playwright-window-regressions-ci.txt (SUPPLEMENTED)
+  - Status: PASS
+
+2) Implementation Conformance Check (required files)
+
+- CWidget frame state ownership
+  - Verified in src/components/Widget/Widget.tsx:
+    - canonical frame state in base class state (x/y/width/height)
+    - frame helpers: getDragPose(), setFrameState(), patchFrameState(), applyFrameMove()
+    - resize lifecycle in base: setupResizeDrags()/cleanupResizeDrags()
+  - Result: PASS
+
+- CWindow only keeps window-specific composition
+  - Verified in src/components/Window/Window.tsx:
+    - extends CWidget
+    - keeps window-specific class names and structure
+    - move-handle detection limited to CWindowTitle via isMoveHandleElement()
+    - no local resize maps/refs/drag engine ownership
+  - Result: PASS
+
+- CWindowTitle explicit composition + content no-op
+  - Verified by tests/CWindowTitleComposition.test.tsx cases:
+    - explicit title composition only
+    - title drag moves frame
+    - content drag no-op
+    - unmount safety exists
+  - Result: PASS
+
+3) Must-Have Verification
+
+- CWidget is single source for x/y/width/height: PASS
+- CWindowTitle only works when composed; content drag no-op: PASS
+- 8-direction resize semantics preserved, including west/north anchor correction: PASS
+- resizeOptions semantic contract preserved (edgeWidth/min/max): PASS
+- CWindowManager registration compatibility preserved: PASS
+
+4) Must-NOT-Have Guardrails
+
+- No hooks/context rewrite introduced in audited Window/CWidget path: PASS
+- No replacement of @system-ui-js/multi-drag: PASS
+- Required selectors/test IDs/data-window-uuid preserved in audited files:
+  - window-frame, window-content, window-title, window-resize-*, data-window-uuid
+  - PASS
+
+5) Additional Components Using CWidget Base
+
+- CDock and CStartBar are new components that extend CWidget
+- They leverage the refactored base class for frame management
+- This demonstrates the reusability goal of the refactor
+- No hooks/context introduced in these components
+
+Final Decision
+
+F1 Plan Compliance Audit is APPROVED.
+All mandatory evidence files are present and all acceptance criteria are met.
