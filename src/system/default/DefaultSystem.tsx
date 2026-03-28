@@ -7,6 +7,7 @@ import { SYSTEM_TYPE_DEFINITIONS } from '@/system/registry';
 import { resolveDevSelectionForSystemType } from '@/dev/themeSwitcher';
 import type { SystemThemeSelection, SystemTypeDefinition, ThemeDefinition } from '../types';
 import { DefaultScreen } from './DefaultScreen';
+import { CWindowBody } from '@/components';
 
 interface DefaultBootLayout {
   readonly title: string;
@@ -77,7 +78,7 @@ export const DefaultSystem = ({
               />
             </fieldset>
           </CWindowTitle>
-          {bootLayout.body}
+          <CWindowBody>{bootLayout.body}</CWindowBody>
         </CWindow>
       </CWindowManager>
     </DefaultScreen>

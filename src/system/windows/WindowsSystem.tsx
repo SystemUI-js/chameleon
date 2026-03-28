@@ -5,6 +5,7 @@ import { CWindowManager } from '@/components/Window/WindowManager';
 import { CWindowTitle } from '@/components/Window/WindowTitle';
 import type { ThemeDefinition } from '../types';
 import { WindowsScreen } from './WindowsScreen';
+import { CWindowBody } from '@/components';
 
 interface WindowBootLayout {
   readonly title: string;
@@ -51,7 +52,7 @@ export const WindowsSystem = ({ themeDefinition }: WindowsSystemProps): React.Re
           height={bootLayout.frame.height}
         >
           <CWindowTitle>{bootLayout.title}</CWindowTitle>
-          {createWindowsBootLayoutBody(bootLayout)}
+          <CWindowBody>{createWindowsBootLayoutBody(bootLayout)}</CWindowBody>
         </CWindow>
       </CWindowManager>
       <CStartBar data-testid="windows-start-bar" startLabel="Start" />

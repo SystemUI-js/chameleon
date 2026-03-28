@@ -1,5 +1,7 @@
 .cm-system--windows.cm-theme--win98 {
     font-size: 11px;
+    -webkit-font-smoothing: none;
+    font-family: "Pixelated MS Sans Serif", Arial;
     .cm-window-frame {
         background: silver;
         box-shadow: inset -1px -1px #0a0a0a, inset 1px 1px #dfdfdf, inset -2px -2px grey, inset 2px 2px #fff;
@@ -21,6 +23,10 @@
 
     .cm-window__content {
         background: #c0c0c0;
+    }
+
+    .cm-window__body {
+        margin: 8px;
     }
 
     .cm-common-controls-preview {
