@@ -1,6 +1,8 @@
 Chameleon
 
-一个使用 TypeScript + Vite + React 构建的 React 组件库脚手架，集成了 ESLint、Prettier 与 Jest。
+一个使用 TypeScript + Vite + React 构建的 React 组件库，集成 ESLint、Prettier 与 Jest。
+
+**Chameleon 是一个纯组件库，提供可主题化的 UI 组件。** 主题以 CSS 变量形式应用，不依赖系统导向 API。
 
 快速开始
 
@@ -10,15 +12,20 @@ Chameleon
 - 运行测试：yarn test
 - 构建组件库：yarn build（产物输出到 dist/）
 
-目录结构（部分）
+目录结构
 
-- src/components/Button.tsx：示例组件
-- src/index.ts：库入口导出
-- tests/Button.test.tsx：示例单测
-- index.html + src/dev/main.tsx：Vite 预览入口
-- vite.config.ts / tsconfig.json / jest.config.ts / jest.setup.ts：相关配置
-- .eslintrc.cjs / .prettierrc.json：代码规范
-- CHANGELOG.md：版本记录
+```
+./
+├── src/
+│   ├── components/    # 组件源码
+│   ├── types/         # 类型声明
+│   ├── theme/          # 主题定义与 CSS 变量
+│   ├── dev/            # Vite 开发预览入口
+│   └── index.ts        # 库导出入口
+├── tests/             # 测试文件
+├── dist/               # 构建产物 (自动生成)
+└── .github/workflows/  # CI/CD
+```
 
 发布与使用
 
@@ -54,9 +61,9 @@ export function Demo() {
 }
 ```
 
-## How to create a theme
+## Theming
 
-主题必须完整实现 `Theme` 接口，包含 `tokens` 和 `components`，并且所有字段必填。Theme 会被展平成 CSS 变量，命名规则是 `--cm-{category}-{token}`。
+Chameleon 使用 CSS 变量实现主题化。主题定义包含 `tokens`（设计令牌）和 `components`（组件样式），所有主题字段必填。
 
 ### 1. Define ThemeId
 
@@ -137,32 +144,22 @@ export const winxp: Theme = {
 };
 ```
 
-### 3. Register theme
-
-```ts
-// src/theme/ThemeContext.tsx
-const base = {
-  win98,
-  winxp,
-  macos: win98,
-  material: win98,
-};
-```
-
-### 4. Export theme
+### 3. Export theme
 
 ```ts
 // src/index.ts
 export * from './theme/winxp';
 ```
 
-### 5. Use tokens in CSS
+### 4. Use tokens in CSS
 
 ```css
 border-radius: var(--cm-radius-md);
 ```
 
-## Window composition
+## Window Component
+
+`CWindow` 是一个可拖拽、可缩放的独立窗口组件，不依赖任何系统管理器。
 
 `CWindow` 不会隐式注入标题栏，使用时需要显式组合 `CWindowTitle`。
 

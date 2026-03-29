@@ -1,10 +1,14 @@
-.cm-system--windows.cm-theme--win98 {
+.cm-theme--win98 {
     font-size: 11px;
     -webkit-font-smoothing: none;
-    font-family: "Pixelated MS Sans Serif", Arial;
+    font-family: 'Pixelated MS Sans Serif', Arial;
     .cm-window-frame {
         background: silver;
-        box-shadow: inset -1px -1px #0a0a0a, inset 1px 1px #dfdfdf, inset -2px -2px grey, inset 2px 2px #fff;
+        box-shadow:
+            inset -1px -1px #0a0a0a,
+            inset 1px 1px #dfdfdf,
+            inset -2px -2px grey,
+            inset 2px 2px #fff;
         padding: 3px;
     }
     .cm-window__title-bar {
@@ -90,7 +94,11 @@
         background: silver;
         border: none;
         border-radius: 0;
-        box-shadow: inset -1px -1px #0a0a0a, inset 1px 1px #fff, inset -2px -2px grey, inset 2px 2px #dfdfdf;
+        box-shadow:
+            inset -1px -1px #0a0a0a,
+            inset 1px 1px #fff,
+            inset -2px -2px grey,
+            inset 2px 2px #dfdfdf;
         box-sizing: border-box;
         color: transparent;
         min-height: 23px;
@@ -103,7 +111,11 @@
     }
 
     .cm-button:active:not(:disabled) {
-        box-shadow: inset -1px -1px #fff, inset 1px 1px #0a0a0a, inset -2px -2px #dfdfdf, inset 2px 2px grey;
+        box-shadow:
+            inset -1px -1px #fff,
+            inset 1px 1px #0a0a0a,
+            inset -2px -2px #dfdfdf,
+            inset 2px 2px grey;
         text-shadow: 1px 1px #222;
     }
 

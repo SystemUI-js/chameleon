@@ -1,34 +1,16 @@
-import { useEffect, useState, type ReactNode } from 'react';
+import type { ReactNode } from 'react';
 import { createRoot } from 'react-dom/client';
 import { CWindow } from '@/components/Window/Window';
 import { CWindowTitle } from '@/components/Window/WindowTitle';
-import {
-  DEV_SYSTEM_TYPE,
-  DEV_THEME,
-  DevSystemRoot,
-  type DevSystemTypeId,
-  type DevThemeId,
-} from '../themeSwitcher';
-import type { SystemThemeSelection } from '@/system/types';
+import { DEV_THEME, DevThemeRoot, type DevThemeId } from '../themeSwitcher';
 
-type HarnessRoute =
-  | {
-      kind: 'fixture';
-      fixture: string;
-    }
-  | {
-      kind: 'system-theme';
-      systemType: DevSystemTypeId;
-      theme: DevThemeId;
-    };
+type HarnessRoute = {
+  theme: DevThemeId;
+  fixture: string;
+};
 
 const DEFAULT_FIXTURE = 'default';
-const DEV_SYSTEM_TYPE_IDS = Object.values(DEV_SYSTEM_TYPE);
 const DEV_THEME_IDS = Object.values(DEV_THEME);
-
-const isDevSystemTypeId = (value: string | null): value is DevSystemTypeId => {
-  return value !== null && DEV_SYSTEM_TYPE_IDS.includes(value as DevSystemTypeId);
-};
 
 const isDevThemeId = (value: string | null): value is DevThemeId => {
   return value !== null && DEV_THEME_IDS.includes(value as DevThemeId);
@@ -38,53 +20,18 @@ const readHarnessRoute = (): HarnessRoute => {
   try {
     const url = new URL(window.location.href);
     const fixture = url.searchParams.get('fixture');
-
-    if (fixture !== null) {
-      return {
-        kind: 'fixture',
-        fixture,
-      };
-    }
-
-    const systemType = url.searchParams.get('systemType');
     const theme = url.searchParams.get('theme');
 
-    if (isDevSystemTypeId(systemType) && isDevThemeId(theme)) {
-      return {
-        kind: 'system-theme',
-        systemType,
-        theme,
-      };
-    }
+    return {
+      theme: isDevThemeId(theme) ? theme : DEV_THEME.default,
+      fixture: fixture ?? DEFAULT_FIXTURE,
+    };
   } catch {
     return {
-      kind: 'fixture',
+      theme: DEV_THEME.default,
       fixture: DEFAULT_FIXTURE,
     };
   }
-
-  return {
-    kind: 'fixture',
-    fixture: DEFAULT_FIXTURE,
-  };
-};
-
-const useHarnessRoute = (): HarnessRoute => {
-  const [route, setRoute] = useState<HarnessRoute>(() => readHarnessRoute());
-
-  useEffect(() => {
-    const updateRoute = () => {
-      setRoute(readHarnessRoute());
-    };
-
-    window.addEventListener('popstate', updateRoute);
-
-    return () => {
-      window.removeEventListener('popstate', updateRoute);
-    };
-  }, []);
-
-  return route;
 };
 
 const renderFixture = (fixture: string): ReactNode => {
@@ -131,45 +78,9 @@ const renderFixture = (fixture: string): ReactNode => {
 };
 
 const App = () => {
-  const route = useHarnessRoute();
-  const [selection, setSelection] = useState<SystemThemeSelection | null>(null);
+  const route = readHarnessRoute();
 
-  useEffect(() => {
-    if (route.kind === 'system-theme') {
-      setSelection({ systemType: route.systemType, theme: route.theme });
-    }
-  }, [route]);
-
-  const handleSelectionChange = (newSelection: SystemThemeSelection) => {
-    if (route.kind !== 'system-theme') {
-      return;
-    }
-
-    const nextUrl = new URL(window.location.href);
-
-    nextUrl.searchParams.delete('fixture');
-    nextUrl.searchParams.set('systemType', newSelection.systemType);
-    nextUrl.searchParams.set('theme', newSelection.theme);
-
-    window.history.replaceState({}, '', nextUrl);
-    window.dispatchEvent(new PopStateEvent('popstate'));
-  };
-
-  if (route.kind === 'system-theme') {
-    if (selection === null) {
-      return null;
-    }
-
-    return (
-      <DevSystemRoot
-        systemType={selection.systemType}
-        theme={selection.theme}
-        onSelectionChange={handleSelectionChange}
-      />
-    );
-  }
-
-  return <>{renderFixture(route.fixture)}</>;
+  return <DevThemeRoot theme={route.theme}>{renderFixture(route.fixture)}</DevThemeRoot>;
 };
 
 const container = document.getElementById('root');

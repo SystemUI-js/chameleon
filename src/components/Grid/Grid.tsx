@@ -2,15 +2,15 @@ import React from 'react';
 import './index.scss';
 
 interface Props {
-  grid: [number, number]; // [rows, columns]
+  grid: [number, number];
   className?: string;
   style?: React.CSSProperties;
   children?: React.ReactNode;
   initGridSize?: {
     rows: string[];
     columns: string[];
-  }; // 每行每列的初始大小，格式为 ["100px", "1fr", "2fr"]，长度应等于行数或列数
-  onSizeChange?: (rows: string[], columns: string[]) => void; // position: [row, column], size: [width, height]
+  };
+  onSizeChange?: (rows: string[], columns: string[]) => void;
 }
 
 interface State {
@@ -26,11 +26,12 @@ export class CGrid extends React.Component<Props, State> {
       columnSizes: this.props.initGridSize?.columns || [],
     };
   }
+
   render() {
     const children = this.props.children
-      ? React.Children.map(this.props.children, (child) =>
-          React.isValidElement(child) ? child : null,
-        ).filter((child): child is React.ReactElement => child !== null)
+      ? React.Children.toArray(this.props.children).filter((child): child is React.ReactElement =>
+          React.isValidElement(child),
+        )
       : null;
 
     return (
@@ -46,6 +47,7 @@ export class CGrid extends React.Component<Props, State> {
       </div>
     );
   }
+
   setGridSize(rows: string[], columns: string[]) {
     this.setState({
       rowSizes: rows,
@@ -59,7 +61,7 @@ export class CGrid extends React.Component<Props, State> {
 
 interface GridItemProps {
   parentGrid: Props['grid'];
-  grid: [number, number, number, number]; // [startRow, endRow, startColumn, endColumn]
+  grid: [number, number, number, number];
   style?: React.CSSProperties;
   className?: string;
   children?: React.ReactNode;

@@ -13,25 +13,26 @@ React 18 + TypeScript 组件库，使用 Vite 构建为 UMD/ES 模块，集成 J
 ```
 ./
 ├── src/
-│   ├── components/    # 组件源码 (Button.tsx)
-│   ├── types/         # 类型声明 (SCSS modules)
-│   ├── dev/           # Vite 开发预览入口
-│   └── index.ts       # 库导出入口
-├── tests/             # 测试文件
-├── dist/              # 构建产物 (自动生成)
-├── docs/              # 文档
-└── .github/workflows/ # CI/CD
+│   ├── components/    # 组件源码
+│   ├── types/          # 类型声明
+│   ├── theme/          # 主题定义与 CSS 变量
+│   ├── dev/            # Vite 开发预览入口
+│   └── index.ts        # 库导出入口
+├── tests/              # 测试文件
+├── dist/               # 构建产物 (自动生成)
+└── .github/workflows/  # CI/CD
 ```
 
 ## WHERE TO LOOK
 
-| Task          | Location             | Notes                    |
-| ------------- | -------------------- | ------------------------ |
-| Add component | `src/components/`    | 遵循 Button.tsx 模式     |
-| Add types     | `src/types/`         | SCSS module declarations |
-| Write tests   | `tests/`             | Button.test.tsx 参考     |
-| CI config     | `.github/workflows/` | PR checks, publish       |
-| Library entry | `src/index.ts`       | 组件导出                 |
+| Task           | Location             | Notes                         |
+| -------------- | -------------------- | ----------------------------- |
+| Add component  | `src/components/`    | 遵循现有组件模式              |
+| Add theme      | `src/theme/`          | 主题定义与 CSS 变量导出       |
+| Add types      | `src/types/`         | SCSS module declarations      |
+| Write tests    | `tests/`             | 参考现有测试结构              |
+| CI config      | `.github/workflows/` | PR checks, publish            |
+| Library entry  | `src/index.ts`        | 组件与主题导出                |
 
 ## CONVENTIONS
 

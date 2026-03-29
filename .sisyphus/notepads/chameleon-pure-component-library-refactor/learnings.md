@@ -1,0 +1,4 @@
+- 2026-03-29: Playwright common-controls/window harness 已统一为纯 `theme + fixture` URL 约定；默认场景也通过 `DevThemeRoot` 挂载，避免 fixture 再走无主题分支。
+- 2026-03-29: `tests/ui/common-controls.helpers.ts` 与 `tests/ui/window.helpers.ts` 现仅暴露 theme-only 选择参数，不再保留任何 system/screen 切换语义；`yarn test:ui` 已在纯主题夹具下通过。
+- 2026-03-29: 文档更新完成 - README.md 重写为纯组件库描述，移除了 ThemeContext 注册示例；AGENTS.md 更新结构指引指向 src/theme/ 目录；CHANGELOG.md 添加了破坏性 API 重置的 [UnReleased] 条目。
+- 2026-03-29: 依赖清理完成 - 移除未使用的 eventemitter3（仅在 package.json/yarn.lock 中存在）；删除遗留的 WindowManager.tsx（引用已删除的 Manager/isManagedConstructor）；@system-ui-js/multi-drag 保留（WindowTitle.tsx 仍在使用）；完整验证通过：yarn lint && yarn test -- --runInBand && yarn test:ui && yarn build。

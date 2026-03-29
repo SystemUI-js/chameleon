@@ -1,6 +1,6 @@
 import { render } from '@testing-library/react';
 import '@testing-library/jest-dom';
-import { CGrid, CGridItem } from '../src/components/Screen/Grid';
+import { CGrid, CGridItem } from '../src/components/Grid/Grid';
 
 describe('CGridItem style merge', () => {
   it('preserves caller style while applying grid placement styles', () => {
