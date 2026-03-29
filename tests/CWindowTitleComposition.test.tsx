@@ -165,6 +165,39 @@ describe('CWindow and CWindowTitle composition', () => {
     expect(frame.style.top).toBe('25px');
   });
 
+  it('tears down an active title drag safely on unmount', () => {
+    const { getByTestId, unmount } = render(
+      <CWindow x={15} y={25} width={240} height={160}>
+        <CWindowTitle>Unmount safety</CWindowTitle>
+      </CWindow>,
+    );
+
+    const title = getByTestId('window-title');
+
+    fireEvent.pointerDown(title, {
+      pointerId: 17,
+      button: 0,
+      clientX: 40,
+      clientY: 40,
+    });
+
+    unmount();
+
+    expect(() => {
+      fireEvent.pointerMove(document, {
+        pointerId: 17,
+        clientX: 75,
+        clientY: 95,
+      });
+
+      fireEvent.pointerUp(document, {
+        pointerId: 17,
+        clientX: 75,
+        clientY: 95,
+      });
+    }).not.toThrow();
+  });
+
   it.each([
     { direction: 'e', delta: { x: 20, y: 0 }, expected: { x: 10, y: 20, width: 260, height: 160 } },
     {

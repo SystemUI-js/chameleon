@@ -1,0 +1,9 @@
+yarn test --runInBand tests/CWindowTitleComposition.test.tsx --testNamePattern="uuid|Composed Title|content area"
+
+PASS tests/CWindowTitleComposition.test.tsx
+- uses uuid from CWidget and keeps it stable across re-render
+- does not move window when dragging content area
+
+Summary:
+- Test Suites: 1 passed, 1 total
+- Tests: 2 passed, 18 skipped, 20 total

@@ -1,0 +1,76 @@
+F1 Plan Compliance Audit — window-resize-drag-cwidget
+Date: 2026-03-28
+
+Audit Scope (reviewed)
+- Plan: .sisyphus/plans/window-resize-drag-cwidget.md (full read)
+- Implementation:
+  - src/components/Widget/Widget.tsx
+  - src/components/Window/Window.tsx
+  - src/components/Window/WindowTitle.tsx
+  - src/components/Window/WindowManager.tsx
+  - src/theme/default/index.tsx
+- Tests reviewed:
+  - tests/CWindowTitleComposition.test.tsx
+  - tests/WindowManager.test.tsx
+  - tests/DefaultTheme.test.tsx
+  - tests/ui/window.helpers.ts
+  - tests/ui/window.smoke.spec.ts
+  - tests/ui/window.move.spec.ts
+  - tests/ui/window.resize.spec.ts
+  - tests/ui/window.resize-guards.spec.ts
+  - plus repository test inventory (all 28 test/spec files under tests/ were read)
+
+Evidence files verified (required by task)
+- .sisyphus/evidence/task-1-widget-frame-state.txt ✅
+- .sisyphus/evidence/task-1-widget-frame-state-manager.txt ✅
+- .sisyphus/evidence/task-2-widget-resize-engine.txt ✅
+- .sisyphus/evidence/task-2-widget-resize-engine-playwright.txt ✅
+- .sisyphus/evidence/task-3-window-title-composition.txt ✅
+- .sisyphus/evidence/task-5-widget-abstraction-playwright.txt ✅
+
+Task 1-5 acceptance mapping
+1) Task 1 — CWidget frame ownership ✅
+   - CWidget owns canonical frame state via WidgetFrameState + constructor init + getFrameState/syncControlledFrameProps.
+   - CWindow render reads frame from base getFrameState(); no duplicate canonical frame state in CWindow.
+   - uuid stability and composed behavior covered by tests/CWindowTitleComposition.test.tsx.
+
+2) Task 2 — resize engine moved to CWidget ✅
+   - Resize options normalization, clamp, 8-direction geometry, Drag lifecycle, refs/maps are in Widget.tsx.
+   - CWindow retains only resize test-id override (window-resize-${dir}) and renders base handles.
+   - Unit and Playwright resize evidence files exist and show pass.
+
+3) Task 3 — title drag composition delegation ✅
+   - Widget-level composition hooks used: isFrameMoveHandleElement/getFrameMoveHandleProps/mapComposedChildren.
+   - CWindowTitle props onWindowMove/getWindowPose remain compatible.
+   - Content-area drag no-op + title drag + unmount teardown are covered in tests/CWindowTitleComposition.test.tsx.
+
+4) Task 4 — manager/theme compatibility ✅
+   - CWindowManager still uses isManagedConstructor(candidate, CWidget) and accepts CWidget/CWindow/subclasses.
+   - window-content keeps data-window-uuid; selector contracts preserved (window-frame/window-content/window-title/window-resize-*).
+   - Default theme contract validated by tests/DefaultTheme.test.tsx (base class names + themed title class + drag behavior).
+
+5) Task 5 — Playwright contract coverage ✅
+   - Window smoke/move/resize/guard specs present with exact metric assertions.
+   - Required suite command passes: playwright window spec set (15/15).
+
+Verification commands executed
+1) yarn test --runInBand
+   - Result: PASS (20 suites, 128 tests)
+
+2) yarn playwright test
+   - Result: FAIL (43 passed, 2 failed)
+   - Failing cases:
+     - tests/ui/common-controls.smoke.spec.ts :: Win98 Button border color expectation mismatch
+     - tests/ui/common-controls.smoke.spec.ts :: focus outline offset expected -3/-2/-1 but got -4px
+
+3) yarn playwright test tests/ui/window.smoke.spec.ts tests/ui/window.move.spec.ts tests/ui/window.resize.spec.ts tests/ui/window.resize-guards.spec.ts
+   - Result: PASS (15/15)
+
+4) yarn build
+   - Result: PASS (dist emitted)
+   - Note: vite:dts reports pre-existing TS2533 in src/components/Screen/Grid.tsx:31 during declaration generation output.
+
+F1 audit conclusion
+- Plan compliance for Tasks 1-5 deliverables: PASS.
+- Repository-wide “all Playwright tests pass” gate: BLOCKED by 2 existing failures in common-controls.smoke.spec.ts (outside window drag/resize scope).
+- No code changes were made during this audit.

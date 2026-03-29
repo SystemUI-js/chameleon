@@ -1,10 +1,8 @@
-import React from 'react';
 import { Drag, type Pose } from '@system-ui-js/multi-drag';
+import React from 'react';
+import type { WidgetFrameMovePosition } from '../Widget/Widget';
 
-export type WindowPosition = {
-  x: number;
-  y: number;
-};
+export type WindowPosition = WidgetFrameMovePosition;
 
 export interface CWindowTitleProps {
   children?: React.ReactNode;
@@ -27,8 +25,10 @@ export const WindowTitleBarText: React.FC<WindowTitleBarTextProps> = ({ children
 export class CWindowTitle extends React.Component<CWindowTitleProps> {
   protected readonly titleRef = React.createRef<HTMLDivElement>();
   private drag?: Drag;
+  private isDragActive = false;
 
   public componentDidMount(): void {
+    this.isDragActive = true;
     const element = this.titleRef.current;
 
     if (!element) {
@@ -38,19 +38,30 @@ export class CWindowTitle extends React.Component<CWindowTitleProps> {
     this.drag = new Drag(element, {
       getPose: () => this.getEffectivePose(element),
       setPose: (_element, pose) => {
-        const { position } = pose;
-
-        if (!position) {
-          return;
-        }
-
-        this.props.onWindowMove?.({ x: position.x, y: position.y });
+        this.handleDragPose(pose);
       },
     });
   }
 
   public componentWillUnmount(): void {
-    this.drag?.setDisabled();
+    this.isDragActive = false;
+    const activeDrag = this.drag;
+    activeDrag?.setDisabled();
+    this.drag = undefined;
+  }
+
+  private handleDragPose(pose: Partial<Pose>): void {
+    if (!this.isDragActive) {
+      return;
+    }
+
+    const { position } = pose;
+
+    if (!position) {
+      return;
+    }
+
+    this.props.onWindowMove?.({ x: position.x, y: position.y });
   }
 
   protected getEffectivePose(element: HTMLElement): Pose {

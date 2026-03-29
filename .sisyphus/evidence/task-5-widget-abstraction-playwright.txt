@@ -1,0 +1,24 @@
+yarn run v1.22.19
+warning ../../../package.json: No license field
+$ /Users/zhangxiao/frontend/SysUI/chameleon/node_modules/.bin/playwright test tests/ui/window.smoke.spec.ts tests/ui/window.move.spec.ts tests/ui/window.resize.spec.ts tests/ui/window.resize-guards.spec.ts
+
+Running 15 tests using 4 workers
+
+  ✓   4 [chromium] › tests/ui/window.smoke.spec.ts:4:1 › default fixture exposes baseline metrics (623ms)
+  ✓   5 [chromium] › tests/ui/window.smoke.spec.ts:18:1 › unknown fixture shows explicit error (327ms)
+  ✓   3 [chromium] › tests/ui/window.resize.spec.ts:113:5 › Window drag matrix › drag e (1.0s)
+  ✓   1 [chromium] › tests/ui/window.move.spec.ts:4:1 › title drag moves window from (10,20) to (30,60) (1.3s)
+  ✓   2 [chromium] › tests/ui/window.resize-guards.spec.ts:4:1 › drag-only fixture hides resize handles when resizable={false} and title drag still moves frame exactly (1.4s)
+  ✓   6 [chromium] › tests/ui/window.resize.spec.ts:113:5 › Window drag matrix › drag w (635ms)
+  ✓   9 [chromium] › tests/ui/window.resize.spec.ts:113:5 › Window drag matrix › drag n (424ms)
+  ✓   7 [chromium] › tests/ui/window.move.spec.ts:20:1 › window content drag is a no-op (does not move window) (1.0s)
+  ✓  10 [chromium] › tests/ui/window.resize.spec.ts:113:5 › Window drag matrix › drag s (478ms)
+  ✓  11 [chromium] › tests/ui/window.resize.spec.ts:113:5 › Window drag matrix › drag ne (602ms)
+  ✓  12 [chromium] › tests/ui/window.resize.spec.ts:113:5 › Window drag matrix › drag nw (593ms)
+  ✓   8 [chromium] › tests/ui/window.resize-guards.spec.ts:24:1 › min-clamp fixture clamps east and south shrink to 1px (2.6s)
+  ✓  13 [chromium] › tests/ui/window.resize.spec.ts:113:5 › Window drag matrix › drag se (604ms)
+  ✓  15 [chromium] › tests/ui/window.resize.spec.ts:113:5 › Window drag matrix › drag sw (624ms)
+  ✓  14 [chromium] › tests/ui/window.resize-guards.spec.ts:38:1 › max-clamp fixture clamps east growth and north-west anchor behavior (3.4s)
+
+  15 passed (9.1s)
+Done in 10.19s.

@@ -1,0 +1,29 @@
+F2 Code Quality Review
+
+Verdict: PASS
+
+Reviewed Files
+- src/components/Widget/Widget.tsx
+- src/components/Window/Window.tsx
+- src/components/Window/WindowTitle.tsx
+
+Ownership Review
+- CWidget owns frame state centrally in constructor via getInitialFrameState() and keeps x/y/width/height in local state (Widget.tsx:109-112, 133-140).
+- CWidget is also the sole owner of controlled-frame sync, move patch application, resize geometry, and resize Drag lifecycle (Widget.tsx:118-130, 155-188, 288-420).
+- CWindow does not declare its own state, does not mirror x/y/width/height, and only reads getFrameState() for rendering plus delegates handle identification/render contracts (Window.tsx:13-47, 49-81).
+- CWindowTitle does not own frame state; it only translates Drag pose into onWindowMove callbacks and can optionally read getWindowPose from the owner (WindowTitle.tsx:38-79).
+
+Lifecycle / Cleanup Review
+- CWidget tears down all resize Drag instances, clears resize start snapshots, removes pointerdown listeners, and clears handler maps on unmount or re-setup (Widget.tsx:346-420).
+- CWindowTitle disables Drag and drops the instance in componentWillUnmount(), guarded by isDragActive to avoid stale updates after unmount (WindowTitle.tsx:46-65).
+
+Anti-pattern Review
+- TODO: none
+- FIXME: none
+- as any: none
+- @ts-ignore: none
+
+Conclusion
+- No duplicated frame ownership exists between CWidget and CWindow.
+- Window movement stays composition-based through injected title props, while resize remains fully centralized in CWidget.
+- Cleanup paths are present for both resize and title-drag lifecycles.
