@@ -167,3 +167,39 @@
     font-size: 12px;
     color: var(--cm-color-text-muted, #666);
 }
+
+// Code disclosure
+.cm-catalog__code-toggle {
+    margin-top: 16px;
+    padding: 6px 12px;
+    font-size: 13px;
+    border: 1px solid var(--cm-color-border, #ccc);
+    border-radius: 4px;
+    background: var(--cm-color-surface, #fff);
+    color: var(--cm-color-text, #000);
+    cursor: pointer;
+
+    &:hover {
+        background: var(--cm-color-surface-raised, #f5f5f5);
+    }
+
+    &:focus {
+        outline: 2px solid var(--cm-color-border, #ccc);
+        outline-offset: 2px;
+    }
+}
+
+.cm-catalog__code-region {
+    margin-top: 8px;
+}
+
+.cm-catalog__code-block {
+    background: var(--cm-color-surface-raised, #f5f5f5);
+    border: 1px solid var(--cm-color-border-light, #eee);
+    border-radius: 4px;
+    padding: 12px;
+    font-family: monospace;
+    font-size: 12px;
+    overflow-x: auto;
+    margin: 0;
+}

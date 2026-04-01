@@ -14,6 +14,7 @@ import {
   type CSelectOption,
 } from '@/components';
 import { DEV_THEME, DevThemeRoot, type DevThemeId } from './themeSwitcher';
+import { ShowcaseCodeDisclosure } from './ShowcaseCodeDisclosure';
 import './styles/catalog.scss';
 
 const SIZE_OPTIONS: readonly CSelectOption[] = [
@@ -33,13 +34,20 @@ interface ShowcaseSectionProps {
   readonly title: string;
   readonly testId: string;
   readonly children: React.ReactNode;
+  readonly code?: string;
 }
 
-function ShowcaseSection({ title, testId, children }: ShowcaseSectionProps): React.ReactElement {
+function ShowcaseSection({
+  title,
+  testId,
+  children,
+  code,
+}: ShowcaseSectionProps): React.ReactElement {
   return (
     <section data-testid={testId} className="cm-catalog__section">
       <h2 className="cm-catalog__section-title">{title}</h2>
       <div className="cm-catalog__section-content">{children}</div>
+      {code !== undefined && <ShowcaseCodeDisclosure sectionId={testId} code={code} />}
     </section>
   );
 }
@@ -71,11 +79,25 @@ function ThemeSwitcher({
   );
 }
 
+const BUTTON_SNIPPET = `
+const [buttonClicks, setButtonClicks] = useState(0);
+
+return (
+  <>
+    <CButton variant="primary" onClick={() => setButtonClicks((c) => c + 1)}>Primary action</CButton>
+    <CButton>Default action</CButton>
+    <CButton variant="ghost">Ghost action</CButton>
+
+    <p>Primary button clicks: {buttonClicks}</p>
+  </>
+);
+`.trim();
+
 function ButtonShowcase(): React.ReactElement {
   const [buttonClicks, setButtonClicks] = React.useState(0);
 
   return (
-    <ShowcaseSection title="Button" testId="catalog-section-button">
+    <ShowcaseSection title="Button" testId="catalog-section-button" code={BUTTON_SNIPPET}>
       <div className="cm-catalog__stack">
         <div className="cm-catalog__row">
           <CButton
@@ -100,11 +122,26 @@ function ButtonShowcase(): React.ReactElement {
   );
 }
 
+const RADIOGROUP_SNIPPET = `
+const [selectedFruit, setSelectedFruit] = useState('apple');
+
+return (
+  <>
+    <CRadioGroup aria-label="Favorite fruit" name="fruit" value={selectedFruit} onChange={setSelectedFruit}>
+      <CRadio value="apple">Apple</CRadio>
+      <CRadio value="orange">Orange</CRadio>
+    </CRadioGroup>
+
+    <p>Selected fruit: {selectedFruit}</p>
+  </>
+);
+`.trim();
+
 function RadioGroupShowcase(): React.ReactElement {
   const [selectedFruit, setSelectedFruit] = React.useState('apple');
 
   return (
-    <ShowcaseSection title="RadioGroup" testId="catalog-section-radio">
+    <ShowcaseSection title="RadioGroup" testId="catalog-section-radio" code={RADIOGROUP_SNIPPET}>
       <div className="cm-catalog__stack">
         <CRadioGroup
           aria-label="Favorite fruit"
@@ -130,11 +167,23 @@ function RadioGroupShowcase(): React.ReactElement {
   );
 }
 
+const SELECT_SNIPPET = `
+const [selectedSize, setSelectedSize] = useState('medium');
+
+return (
+  <>
+    <CSelect name="size" value={selectedSize} options={sizeOptions} onChange={setSelectedSize} />
+
+    <p>Selected size: {selectedSize}</p>
+  </>
+);
+`.trim();
+
 function SelectShowcase(): React.ReactElement {
   const [selectedSize, setSelectedSize] = React.useState('medium');
 
   return (
-    <ShowcaseSection title="Select" testId="catalog-section-select">
+    <ShowcaseSection title="Select" testId="catalog-section-select" code={SELECT_SNIPPET}>
       <div className="cm-catalog__stack">
         <CSelect
           data-testid="select-demo-size"
@@ -150,9 +199,17 @@ function SelectShowcase(): React.ReactElement {
   );
 }
 
+const WINDOW_SNIPPET = `<CWindow x={24} y={24} width={320} height={200}>
+  <CWindowTitle>Sample Window</CWindowTitle>
+  <CWindowBody>
+    <p>Window content goes here.</p>
+    <p>Try dragging the title bar.</p>
+  </CWindowBody>
+</CWindow>`.trim();
+
 function WindowShowcase(): React.ReactElement {
   return (
-    <ShowcaseSection title="Window" testId="catalog-section-window">
+    <ShowcaseSection title="Window" testId="catalog-section-window" code={WINDOW_SNIPPET}>
       <div className="cm-catalog__stage cm-catalog__stage--relative">
         <CWindow x={24} y={24} width={320} height={200}>
           <CWindowTitle>Sample Window</CWindowTitle>
@@ -166,9 +223,13 @@ function WindowShowcase(): React.ReactElement {
   );
 }
 
+const DOCK_SNIPPET = `<CDock position="top" height={48} className="cm-catalog__dock">
+  <div className="cm-catalog__dock-content">Dock content area</div>
+</CDock>`.trim();
+
 function DockShowcase(): React.ReactElement {
   return (
-    <ShowcaseSection title="Dock" testId="catalog-section-dock">
+    <ShowcaseSection title="Dock" testId="catalog-section-dock" code={DOCK_SNIPPET}>
       <div className="cm-catalog__stage cm-catalog__stage--relative">
         <CDock position="top" height={48} className="cm-catalog__dock">
           <div className="cm-catalog__dock-content">Dock content area</div>
@@ -179,9 +240,14 @@ function DockShowcase(): React.ReactElement {
   );
 }
 
+const STARTBAR_SNIPPET =
+  `<CStartBar data-testid="catalog-start-bar" height={32} className="cm-catalog__start-bar">
+  <span>Application shortcuts</span>
+</CStartBar>`.trim();
+
 function StartBarShowcase(): React.ReactElement {
   return (
-    <ShowcaseSection title="StartBar" testId="catalog-section-start-bar">
+    <ShowcaseSection title="StartBar" testId="catalog-section-start-bar" code={STARTBAR_SNIPPET}>
       <div className="cm-catalog__stage cm-catalog__stage--relative">
         <div className="cm-catalog__start-bar-spacer" />
         <CStartBar data-testid="catalog-start-bar" height={32} className="cm-catalog__start-bar">
@@ -192,11 +258,36 @@ function StartBarShowcase(): React.ReactElement {
   );
 }
 
+const GRID_SNIPPET = `<CGrid
+  className="cm-catalog__grid"
+  grid={GRID}
+  initGridSize={{ rows: ['1fr', '1fr', '1fr'], columns: GRID_COLUMNS }}
+>
+  <CGridItem parentGrid={GRID} grid={[1, 2, 1, 2]} className="cm-catalog__grid-item">
+    Item 1
+  </CGridItem>
+  <CGridItem parentGrid={GRID} grid={[1, 2, 2, 3]} className="cm-catalog__grid-item">
+    Item 2
+  </CGridItem>
+  <CGridItem parentGrid={GRID} grid={[1, 2, 3, 4]} className="cm-catalog__grid-item">
+    Item 3
+  </CGridItem>
+  <CGridItem parentGrid={GRID} grid={[2, 3, 1, 2]} className="cm-catalog__grid-item">
+    Item 4
+  </CGridItem>
+  <CGridItem parentGrid={GRID} grid={[2, 3, 2, 4]} className="cm-catalog__grid-item">
+    Item 5
+  </CGridItem>
+  <CGridItem parentGrid={GRID} grid={[3, 4, 1, 4]} className="cm-catalog__grid-item">
+    Item 6
+  </CGridItem>
+</CGrid>`.trim();
+
 function GridShowcase(): React.ReactElement {
   const GRID: [number, number] = [3, 3];
 
   return (
-    <ShowcaseSection title="Grid" testId="catalog-section-grid">
+    <ShowcaseSection title="Grid" testId="catalog-section-grid" code={GRID_SNIPPET}>
       <CGrid
         className="cm-catalog__grid"
         grid={GRID}
