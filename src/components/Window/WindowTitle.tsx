@@ -1,5 +1,6 @@
 import { Drag, type Pose } from '@system-ui-js/multi-drag';
 import React from 'react';
+import { mergeClasses, ResolvedThemeClassName } from '../Theme';
 import type { WidgetFrameMovePosition } from '../Widget/Widget';
 
 export type WindowPosition = WidgetFrameMovePosition;
@@ -7,6 +8,7 @@ export type WindowPosition = WidgetFrameMovePosition;
 export interface CWindowTitleProps {
   children?: React.ReactNode;
   className?: string;
+  theme?: string;
   style?: React.CSSProperties;
   onWindowMove?: (position: WindowPosition) => void;
   getWindowPose?: () => Pose;
@@ -85,14 +87,18 @@ export class CWindowTitle extends React.Component<CWindowTitleProps> {
       (typeof content === 'string' || typeof content === 'number');
 
     return (
-      <div
-        ref={this.titleRef}
-        data-testid="window-title"
-        className={className ?? 'cm-window__title-bar'}
-        style={this.props.style}
-      >
-        {shouldWrapTitleText ? <WindowTitleBarText>{content}</WindowTitleBarText> : content}
-      </div>
+      <ResolvedThemeClassName theme={this.props.theme}>
+        {(theme) => (
+          <div
+            ref={this.titleRef}
+            data-testid="window-title"
+            className={mergeClasses(['cm-window__title-bar'], theme, className)}
+            style={this.props.style}
+          >
+            {shouldWrapTitleText ? <WindowTitleBarText>{content}</WindowTitleBarText> : content}
+          </div>
+        )}
+      </ResolvedThemeClassName>
     );
   }
 

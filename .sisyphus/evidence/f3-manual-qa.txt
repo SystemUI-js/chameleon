@@ -1,0 +1,93 @@
+F3 Real Manual QA Report
+Generated: 2026-03-29T16:05:49.794164+00:00
+Project: @sysui/chameleon
+Branch: current working branch not inspected
+
+Verdict: APPROVE
+
+Summary
+- `yarn test -- --runInBand` passed: 8/8 suites, 65/65 tests.
+- First `yarn test:ui` run failed because Playwright hit `net::ERR_CONNECTION_REFUSED` on `http://127.0.0.1:5673`; no app server was reachable during that run.
+- Manual QA then started `yarn dev --host 127.0.0.1`, confirmed `http://127.0.0.1:5673` responded `HTTP/1.1 200 OK`, and re-ran `yarn test:ui` successfully: 39/39 passed.
+- `yarn build` succeeded and emitted `dist/chameleon.es.js`, `dist/chameleon.umd.cjs`, `dist/style.css`, `dist/index.d.ts`, plus `components/`, `dev/`, `theme/`, `utils/` directories.
+- Demo page at `http://127.0.0.1:5673` rendered normally in captured screenshot `/tmp/chameleon-f3-demo.png`: visible sections included Button, Window, RadioGroup, Dock, Select, page title `Component Catalog`, and no obvious blank/error state.
+
+Command Results
+
+1. `yarn test -- --runInBand`
+   - Result: PASS
+   - Key output:
+     - `Test Suites: 8 passed, 8 total`
+     - `Tests: 65 passed, 65 total`
+
+2. `yarn test:ui` (initial run)
+   - Result: FAIL
+   - Key output:
+     - `Running 39 tests using 4 workers`
+     - All cases failed with `Error: page.goto: net::ERR_CONNECTION_REFUSED at http://127.0.0.1:5673/...`
+   - QA note: failure was environmental/server-availability related, not a component assertion mismatch.
+
+3. `yarn dev --host 127.0.0.1`
+   - Result: PASS
+   - Key output:
+     - `VITE v5.4.21 ready in 622 ms`
+     - `Local: http://127.0.0.1:5673/`
+
+4. `curl -I http://127.0.0.1:5673`
+   - Result: PASS
+   - Key output:
+     - `HTTP/1.1 200 OK`
+
+5. `yarn test:ui` (re-run with reachable dev server)
+   - Result: PASS
+   - Key output:
+     - `39 passed (8.8s)`
+
+6. `yarn build`
+   - Result: PASS
+   - Key output:
+     - `dist/style.css 16.30 kB`
+     - `dist/chameleon.es.js 181.51 kB`
+     - `dist/chameleon.umd.cjs 113.39 kB`
+     - `✓ built in 1.98s`
+
+Artifacts Verified
+- `dist/chameleon.es.js`
+- `dist/chameleon.umd.cjs`
+- `dist/style.css`
+- `dist/index.d.ts`
+- `dist/components/`
+- `dist/dev/`
+- `dist/theme/`
+- `dist/utils/`
+
+Manual Demo Verification
+- Root dev page HTML served `Chameleon Dev` and mounted `/src/dev/main.tsx`.
+- Screenshot inspection confirmed the catalog UI rendered and exposed interactive sections without obvious runtime error overlay.
+
+Final Decision
+- APPROVE
+- Rationale: all required quality gates passed after bringing up the expected dev server for Playwright/manual demo validation; build artifacts are present; demo page renders correctly.
+
+---
+
+F3 Manual QA Re-Run
+Generated: 2026-04-01T13:52:28.664444+00:00
+Project: @sysui/chameleon
+Branch: feature/windows-styles
+
+Verdict: APPROVE
+
+Checks
+- `curl -i http://127.0.0.1:5673/` returned `HTTP/1.1 200 OK`; dev preview was already reachable and served `Chameleon Dev`.
+- Read-path verification confirmed dev theme switching is driven by `src/dev/themeSwitcher.tsx`, UI smoke coverage lives in `tests/ui/common-controls.smoke.spec.ts`, and Playwright base URL is `http://127.0.0.1:5673` with `reuseExistingServer: true` in `playwright.config.ts`.
+- Real browser automation against the live dev preview verified `default / win98 / winxp` switching injects `cm-theme--default`, `cm-theme--win98`, `cm-theme--winxp` respectively.
+- `CButton` visibly changed per theme: default kept 4px radius, Win98 switched to `rgb(192, 192, 192)` + 0px radius + classic inset shadow, WinXP switched to pill radius `999px` with XP-style shadow.
+- `CStartBar` and window container stayed visible under all three themes; `catalog-start-bar`/`window-frame` carried matching theme classes, and the sample window still dragged successfully (`deltaX=80`, `deltaY=40`).
+- Basic interactions succeeded in the live page: primary button click counter incremented to 1, radio changed to Orange, select changed to Large.
+- Captured browser console/page events contained only Vite connect logs and the standard React DevTools info message; no pageerror or obvious runtime error was observed.
+- `yarn test:ui` passed cleanly: `39 passed (8.4s)`.
+
+Final Decision
+- APPROVE
+- Rationale: live dev preview, theme switching chain, visible theme application on button/start bar/window, basic interaction, and Playwright UI suite all passed without observable runtime errors.

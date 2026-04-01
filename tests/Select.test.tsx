@@ -1,6 +1,6 @@
 import { fireEvent, render, screen } from '@testing-library/react';
 import '@testing-library/jest-dom';
-import { CSelect as PackageEntryCSelect } from '../src';
+import { CSelect as PackageEntryCSelect, Theme } from '../src';
 import { CSelect, type CSelectOption, type CSelectProps } from '../src/components/Select/Select';
 
 const OPTIONS: readonly CSelectOption[] = [
@@ -101,5 +101,65 @@ describe('CSelect', () => {
     fireEvent.change(select, { target: { value: 'apple' } });
 
     expect(select).toHaveValue('apple');
+  });
+
+  describe('theme prop', () => {
+    it('applies theme class from explicit theme prop', () => {
+      render(<CSelect options={OPTIONS} value="apple" theme="cm-theme--win98" />);
+
+      const select = screen.getByRole('combobox');
+
+      expect(select).toHaveClass('cm-select');
+      expect(select).toHaveClass('cm-theme--win98');
+    });
+
+    it('applies theme class from Theme provider when no explicit prop', () => {
+      render(
+        <Theme name="win98">
+          <CSelect data-testid="provider-themed" options={OPTIONS} value="apple" />
+        </Theme>,
+      );
+
+      const select = screen.getByTestId('provider-themed');
+
+      expect(select).toHaveClass('cm-select');
+      expect(select).toHaveClass('cm-theme--win98');
+    });
+
+    it('explicit theme prop overrides Theme provider', () => {
+      render(
+        <Theme name="win98">
+          <CSelect
+            theme="cm-theme--winxp"
+            data-testid="override-themed"
+            options={OPTIONS}
+            value="apple"
+          />
+        </Theme>,
+      );
+
+      const select = screen.getByTestId('override-themed');
+
+      expect(select).toHaveClass('cm-select');
+      expect(select).toHaveClass('cm-theme--winxp');
+      expect(select).not.toHaveClass('cm-theme--win98');
+    });
+
+    it('merges className with theme following correct order: base → theme → className', () => {
+      render(
+        <CSelect
+          options={OPTIONS}
+          value="apple"
+          className="custom-class"
+          theme="cm-theme--win98"
+        />,
+      );
+
+      const select = screen.getByRole('combobox');
+
+      expect(select).toHaveClass('cm-select');
+      expect(select).toHaveClass('cm-theme--win98');
+      expect(select).toHaveClass('custom-class');
+    });
   });
 });

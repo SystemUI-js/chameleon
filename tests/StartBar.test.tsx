@@ -1,6 +1,6 @@
 import { render, screen } from '@testing-library/react';
 import '@testing-library/jest-dom';
-import { CStartBar as PackageEntryCStartBar } from '../src';
+import { CStartBar as PackageEntryCStartBar, Theme } from '../src';
 import { CStartBar, type CStartBarProps } from '../src/components/StartBar/StartBar';
 
 describe('CStartBar', () => {
@@ -79,6 +79,32 @@ describe('CStartBar', () => {
 
     expect(startBar).toHaveClass('cm-start-bar');
     expect(startBar).toHaveClass('custom-startbar');
+  });
+
+  it('inherits theme class from provider', () => {
+    render(
+      <Theme name="cm-theme--win98">
+        <CStartBar data-testid="startbar-themed" defaultHeight={24} />
+      </Theme>,
+    );
+
+    expect(screen.getByTestId('startbar-themed')).toHaveClass('cm-theme--win98');
+  });
+
+  it('prefers explicit theme over provider theme', () => {
+    render(
+      <Theme name="cm-theme--win98">
+        <CStartBar
+          data-testid="startbar-themed-override"
+          defaultHeight={24}
+          theme="cm-theme--winxp"
+        />
+      </Theme>,
+    );
+
+    const startBar = screen.getByTestId('startbar-themed-override');
+    expect(startBar).toHaveClass('cm-theme--winxp');
+    expect(startBar).not.toHaveClass('cm-theme--win98');
   });
 
   it('applies style to root element without overriding dock edges', () => {

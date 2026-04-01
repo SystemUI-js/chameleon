@@ -1,5 +1,6 @@
 .cm-theme--default {
-    .cm-window-frame {
+    .cm-window-frame,
+    .cm-window-frame.cm-theme--default {
         box-sizing: border-box;
         padding: 2px;
         border: 1px solid #7d7d7d;
@@ -10,7 +11,8 @@
             inset -1px -1px 0 rgba(0, 0, 0, 0.12);
     }
 
-    .cm-window {
+    .cm-window,
+    .cm-window.cm-theme--default {
         box-sizing: border-box;
         display: flex;
         flex-direction: column;
@@ -22,7 +24,8 @@
         color: #1f1f1f;
     }
 
-    .cm-window__title-bar {
+    .cm-window__title-bar,
+    .cm-window__title-bar.cm-theme--default {
         flex-shrink: 0;
         padding: 7px 10px;
         border-bottom: 1px solid rgba(16, 24, 40, 0.22);
@@ -40,7 +43,8 @@
         cursor: grabbing;
     }
 
-    .cm-window__title-bar--with-controls {
+    .cm-window__title-bar--with-controls,
+    .cm-window__title-bar--with-controls.cm-theme--default {
         display: flex;
         align-items: center;
         gap: 10px;
@@ -70,7 +74,8 @@
         background: linear-gradient(180deg, #ffffff 0%, #f3f3f3 100%);
     }
 
-    .cm-common-controls-preview {
+    .cm-common-controls-preview,
+    .cm-common-controls-preview.cm-theme--default {
         display: flex;
         flex-direction: column;
         gap: 16px;
@@ -149,7 +154,8 @@
         gap: 10px;
     }
 
-    .cm-button {
+    .cm-button,
+    .cm-button.cm-theme--default {
         min-height: 32px;
         padding: 0 14px;
         border: 1px solid #7f91a7;
@@ -187,7 +193,8 @@
         outline-offset: 2px;
     }
 
-    .cm-button--primary {
+    .cm-button--primary,
+    .cm-button--primary.cm-theme--default {
         border-color: #3d6bbd;
         background: linear-gradient(180deg, #7ea9f1 0%, #4474c7 100%);
         color: #ffffff;
@@ -199,7 +206,8 @@
         background: linear-gradient(180deg, #91b6f5 0%, #4c7dd2 100%);
     }
 
-    .cm-button--ghost {
+    .cm-button--ghost,
+    .cm-button--ghost.cm-theme--default {
         background: linear-gradient(
             180deg,
             rgba(255, 255, 255, 0.66) 0%,
@@ -216,7 +224,8 @@
         cursor: not-allowed;
     }
 
-    .cm-radio {
+    .cm-radio,
+    .cm-radio.cm-theme--default {
         display: inline-flex;
         align-items: center;
         gap: 8px;
@@ -224,7 +233,8 @@
         cursor: pointer;
     }
 
-    .cm-radio--disabled {
+    .cm-radio--disabled,
+    .cm-radio--disabled.cm-theme--default {
         color: #7d8ea3;
         cursor: not-allowed;
     }
@@ -261,7 +271,8 @@
         line-height: 1.3;
     }
 
-    .cm-select {
+    .cm-select,
+    .cm-select.cm-theme--default {
         min-height: 34px;
         padding: 0 32px 0 10px;
         border: 1px solid #7f91a7;

@@ -93,7 +93,7 @@ yarn preview          # 预览构建产物
 - 路径别名: `@/` → `src/`
 - React 版本: 18.2.0 || 19.0.0
 - 构建产物: `dist/chameleon.es.js` (ESM), `dist/chameleon.umd.cjs` (UMD)
-- CI: PR 必须通过 lint → test → build → npm pack dry-run
+- CI: PR 必须通过 lint → test → test:ui → build
 
 ## Recent Changes
 

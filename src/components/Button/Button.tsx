@@ -1,4 +1,6 @@
 import type React from 'react';
+import { mergeClasses } from '../Theme/mergeClasses';
+import { useTheme } from '../Theme/useTheme';
 import './index.scss';
 
 export type CButtonVariant = 'default' | 'primary' | 'ghost';
@@ -11,7 +13,15 @@ export interface CButtonProps {
   disabled?: boolean;
   onClick?: React.MouseEventHandler<HTMLButtonElement>;
   className?: string;
+  theme?: string;
   'data-testid'?: string;
+}
+
+function resolveThemeClass(theme: string | undefined): string | undefined {
+  if (theme === undefined) {
+    return undefined;
+  }
+  return theme.startsWith('cm-theme--') ? theme : `cm-theme--${theme}`;
 }
 
 export function CButton({
@@ -21,16 +31,14 @@ export function CButton({
   disabled,
   onClick,
   className,
+  theme,
   'data-testid': dataTestId,
 }: CButtonProps): React.ReactElement {
-  const classNames = ['cm-button'];
+  const resolvedTheme = resolveThemeClass(useTheme(theme));
+  const baseClasses = ['cm-button'];
 
   if (variant !== 'default') {
-    classNames.push(`cm-button--${variant}`);
-  }
-
-  if (className) {
-    classNames.push(className);
+    baseClasses.push(`cm-button--${variant}`);
   }
 
   return (
@@ -38,7 +46,7 @@ export function CButton({
       type={type}
       disabled={disabled}
       onClick={onClick}
-      className={classNames.join(' ')}
+      className={mergeClasses(baseClasses, resolvedTheme, className)}
       data-testid={dataTestId}
     >
       {children}

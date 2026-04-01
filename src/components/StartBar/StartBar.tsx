@@ -1,6 +1,6 @@
 import type React from 'react';
-import { CWidget, type CWidgetProps } from '../Widget/Widget';
 import { getDockEdgeStyle, getDockFrameClassName, getDockFrameStyle } from '../Dock/dockLayout';
+import { CWidget, type CWidgetProps } from '../Widget/Widget';
 import './index.scss';
 
 type StartBarState = {
@@ -10,6 +10,7 @@ type StartBarState = {
 export interface CStartBarProps extends Omit<CWidgetProps, 'x' | 'y' | 'width'> {
   children?: React.ReactNode;
   className?: string;
+  theme?: string;
   style?: React.CSSProperties;
   height?: number;
   defaultHeight?: number;
@@ -49,7 +50,10 @@ export class CStartBar extends CWidget {
     const dockEdgeStyle = getDockEdgeStyle('bottom', gapStart, gapEnd, effectiveHeight);
 
     const baseClassName = getDockFrameClassName('bottom', this.props.className);
-    const frameClassName = baseClassName.replace('cm-dock', 'cm-start-bar');
+    const frameClassName = this.mergeThemeClassName(
+      baseClassName.replace('cm-dock', 'cm-start-bar'),
+      this.props.theme,
+    );
 
     const frameStyle = getDockFrameStyle(dockEdgeStyle, this.props.style);
 

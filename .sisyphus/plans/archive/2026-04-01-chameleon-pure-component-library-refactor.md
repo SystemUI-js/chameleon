@@ -360,7 +360,7 @@ Wave 2: docs/changelog + dependency cleanup + end-to-end verification alignment 
 
   **Commit**: YES | Message: `test(ui): rewrite harnesses for pure theme fixtures` | Files: `playwright-*.html`, `src/dev/playwright/**/*`, `tests/ui/**/*`
 
-- [ ] 6. Rewrite Jest coverage around standalone components and breaking API removal
+- [x] 6. Rewrite Jest coverage around standalone components and breaking API removal
 
   **What to do**:
   - Delete shell/manager-focused tests: `WindowManager.test.tsx`, `ScreenManager.test.tsx`, `ScreenScope.test.tsx`, `SystemShellCharacterization.test.tsx`, `SystemHost.test.tsx`, `SystemTypeSwitch.test.tsx`, `SystemTypeThemeRegistry.test.tsx`, `DevSystemSelection.test.tsx`, `ThemeSwitchPreservation.test.tsx`, plus any helper fixtures that only support those models.
@@ -409,7 +409,7 @@ Wave 2: docs/changelog + dependency cleanup + end-to-end verification alignment 
 
   **Commit**: YES | Message: `test(unit): replace shell coverage with component tests` | Files: `tests/**/*`, related fixtures/helpers
 
-- [ ] 7. Update docs and project knowledge to match the new component-library definition
+- [x] 7. Update docs and project knowledge to match the new component-library definition
 
   **What to do**:
   - Rewrite `README.md` to describe Chameleon as a pure component library with themeable component demos, not a desktop-shell library.
@@ -457,7 +457,7 @@ Wave 2: docs/changelog + dependency cleanup + end-to-end verification alignment 
 
   **Commit**: YES | Message: `docs: redefine chameleon as pure component library` | Files: `README.md`, `AGENTS.md`, `CHANGELOG.md`
 
-- [ ] 8. Clean dependencies, CI expectations, and release verification around the new model
+- [x] 8. Clean dependencies, CI expectations, and release verification around the new model
 
   **What to do**:
   - Remove unused dependencies left behind by manager/shell deletion, especially `eventemitter3` if no remaining source imports it.
@@ -509,10 +509,10 @@ Wave 2: docs/changelog + dependency cleanup + end-to-end verification alignment 
 > 4 review agents run in PARALLEL. ALL must APPROVE. Present consolidated results to user and get explicit "okay" before completing.
 > **Do NOT auto-proceed after verification. Wait for user's explicit approval before marking work complete.**
 > **Never mark F1-F4 as checked before getting user's okay.** Rejection or user feedback -> fix -> re-run -> present again -> wait for okay.
-- [ ] F1. Plan Compliance Audit — oracle
-- [ ] F2. Code Quality Review — unspecified-high
-- [ ] F3. Real Manual QA — unspecified-high (+ playwright if UI)
-- [ ] F4. Scope Fidelity Check — deep
+- [x] F1. Plan Compliance Audit — oracle
+- [x] F2. Code Quality Review — unspecified-high
+- [x] F3. Real Manual QA — unspecified-high (+ playwright if UI)
+- [x] F4. Scope Fidelity Check — deep
 
 ## Commit Strategy
 - Commit 1: API/theme contract reset (`refactor(api): ...`, `refactor(theme): ...`)

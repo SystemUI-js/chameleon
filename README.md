@@ -63,99 +63,39 @@ export function Demo() {
 
 ## Theming
 
-Chameleon 使用 CSS 变量实现主题化。主题定义包含 `tokens`（设计令牌）和 `components`（组件样式），所有主题字段必填。
+Chameleon 通过 `Theme` 组件和组件的 `theme` prop 提供主题化能力。
 
-### 1. Define ThemeId
+### Theme 组件
 
-```ts
-// src/theme/types.ts
-export type ThemeId = 'win98' | 'winxp' | 'macos' | 'material';
+从包入口导入 `Theme`，使用 `name` 属性指定主题（接受完整 className）：
+
+```tsx
+import { Theme } from '@system-ui-js/chameleon';
+
+<Theme name="cm-theme--win98">
+  <CButton>Themed Button</CButton>
+</Theme>
 ```
 
-### 2. Implement Theme
+`Theme` 组件会提供主题 Context，并渲染一个带对应 className 的 wrapper DOM。
 
-```ts
-import { Theme } from './types';
+### 组件 theme prop
 
-export const winxp: Theme = {
-  id: 'winxp',
-  name: 'Windows XP',
-  tokens: {
-    color: {
-      surface: '#ECE9D8',
-      surfaceRaised: '#F5F3E5',
-      text: '#1E1E1E',
-      textMuted: '#6B6B6B',
-      textInvert: '#FFFFFF',
-      border: '#8B8B7A',
-      borderStrong: '#4F4F4F',
-      borderLight: '#FFFFFF',
-      borderLightest: '#FFFFFF',
-      borderDark: '#6F6F5F',
-      borderDarkest: '#3F3F3A',
-      focusRing: '#3D7BD9',
-      selectionBg: '#316AC5',
-      selectionText: '#FFFFFF',
-    },
-    typography: {
-      fontFamily: "'Tahoma', 'Segoe UI', sans-serif",
-      fontSize: '12px',
-      lineHeight: '1.2',
-      fontWeight: 400,
-    },
-    spacing: {
-      xs: '2px',
-      sm: '4px',
-      md: '8px',
-      lg: '16px',
-      xl: '24px',
-    },
-    shadow: {
-      insetBevel: 'inset 1px 1px 0 #FFFFFF, inset -1px -1px 0 #A0A0A0',
-      outsetBevel: 'inset 1px 1px 0 #FFFFFF, inset -1px -1px 0 #7A7A7A',
-      popup: '2px 2px 4px rgba(0,0,0,0.3)',
-    },
-    radius: {
-      sm: '2px',
-      md: '3px',
-      lg: '5px',
-      round: '9999px',
-    },
-  },
-  components: {
-    button: {
-      face: '#ECE9D8',
-      faceHover: '#F3F0E1',
-      faceActive: '#DAD6C9',
-      text: '#1E1E1E',
-      borderLight: '#FFFFFF',
-      borderDark: '#7A7A7A',
-      borderDarker: '#4F4F4F',
-      focusRing: '#3D7BD9',
-    },
-    window: {
-      frame: '#ECE9D8',
-      titleBarBg: '#316AC5',
-      titleBarText: '#FFFFFF',
-      titleBarBgInactive: '#7A96DF',
-      titleBarTextInactive: '#E6E6E6',
-    },
-  },
-};
+组件支持 `theme?: string` prop，接受完整 className：
+
+```tsx
+import { CButton } from '@system-ui-js/chameleon';
+
+<CButton theme="cm-theme--win98">Win98 Button</CButton>
 ```
 
-### 3. Export theme
+### 主题定义
 
-```ts
-// src/index.ts
-export * from './theme/winxp';
-```
+库默认导出三套主题定义：
 
-### 4. Use tokens in CSS
-
-```css
-border-radius: var(--cm-radius-md);
-```
+- `defaultThemeDefinition` → `className: 'cm-theme--default'`
+- `win98ThemeDefinition` → `className: 'cm-theme--win98'`
+- `winXpThemeDefinition` → `className: 'cm-theme--winxp'`
 
 ## Window Component
 

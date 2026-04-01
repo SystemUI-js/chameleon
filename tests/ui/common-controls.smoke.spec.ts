@@ -37,7 +37,7 @@ test.describe('Win98 controls', () => {
   });
 
   test('applies Win98 theme classes to container', async ({ page }) => {
-    const container = page.locator('.cm-theme--win98');
+    const container = page.locator('.cm-theme--win98').first();
 
     await expect(container).toBeVisible();
   });
@@ -280,7 +280,7 @@ test.describe('Win98 disabled controls', () => {
   });
 
   test('applies Win98 theme classes to container', async ({ page }) => {
-    const container = page.locator('.cm-theme--win98');
+    const container = page.locator('.cm-theme--win98').first();
 
     await expect(container).toBeVisible();
   });

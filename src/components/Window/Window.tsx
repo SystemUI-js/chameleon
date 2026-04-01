@@ -8,6 +8,7 @@ export type CWindowResizeOptions = CWidgetResizeOptions;
 
 export interface CWindowProps extends CWidgetProps {
   children?: React.ReactNode;
+  theme?: string;
 }
 
 export class CWindow extends CWidget {
@@ -27,11 +28,11 @@ export class CWindow extends CWidget {
   }
 
   protected getWindowContentClassName(): string {
-    return 'cm-window';
+    return this.mergeThemeClassName('cm-window', this.props.theme) ?? 'cm-window';
   }
 
   protected getWindowFrameClassName(): string {
-    return 'cm-window-frame';
+    return this.mergeThemeClassName('cm-window-frame', this.props.theme) ?? 'cm-window-frame';
   }
 
   protected getWindowInnerClassName(): string {
@@ -76,6 +77,7 @@ export class CWindow extends CWidget {
       },
       {
         className: this.getWindowFrameClassName(),
+        theme: this.props.theme,
         testId: 'window-frame',
       },
     );

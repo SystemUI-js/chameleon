@@ -1,0 +1,15 @@
+- Theme 基础设施沿用现有数组拼接 class 的模式，但通过 `mergeClasses` 统一处理 `baseClasses -> theme -> className` 顺序，并在最终字符串输出前用 `Set` 去重。
+- Theme provider 只通过 context 传递规范化后的非空字符串；空白 `name` 会被解析为 `undefined`，避免隐式注入默认主题类。
+- CWidget 通过 `static contextType = ThemeContext` 暴露 `getTheme()` 与 `mergeThemeClassName()` 后，派生类可以在不改动拖拽/resize 状态机的前提下统一接入 `theme?: string`。
+- CWindow 将 theme 同时挂到 `window-frame` 与 `window-content`，可以稳定覆盖 frame 视觉与 title/body 后代选择器；Dock/StartBar 复用基类 helper 时可保持 data-testid 与布局逻辑不变。
+- 类组件接入 theme 时可通过 `ResolvedThemeClassName` 这类函数组件 helper 先解析 provider/prop 的最终 theme，再把结果传回类组件方法中与基类名合并，避免在类方法内直接调用 hook。
+- `CGrid` / `CGridItem` 的根类名前缀已统一为 `cm-grid` / `cm-grid-item`，测试需同时断言 theme class 与组件基类名并存，避免显式 theme 覆盖时丢失 base class。
+- 函数组件接入 theme 时，`useTheme(theme)` 返回 theme NAME（非 class），需通过 `resolveThemeClass` helper 将 theme name 转换为 class：`theme.startsWith('cm-theme--') ? theme : `cm-theme--${theme}``
+- `CRadio` 作为 inline 组件，label 本身不需要 theme class，但需要调用 `useTheme(theme)` 以支持显式 prop 与 provider 继承
+- `mergeClasses(base, resolvedTheme, className)` 中 `resolvedTheme` 应为完整的 class（如 `cm-theme--win98`），而非 bare theme name
+- 现有 `Theme.test.tsx` 期望 `useTheme` 返回 theme NAME（如 `"win98"`），这与函数组件需要 class 的需求冲突；通过在函数组件层做转换来解决
+- `CRadio` 若要纳入“全公开组件 theme 矩阵”，需要把解析后的 theme class 落到 `.cm-radio` 根节点，否则只能间接验证 context 不报错，无法对继承/覆盖做稳定断言。
+- dev/test 场景中的 Theme 使用应优先走 barrel 或 package entry（如 `@/components`、`../src`），避免继续保留 `Theme/Theme` 这类叶子导入路径作为正式示例。
+- Playwright 的 `yarn test:ui` 依赖 5673 端口可用；若该端口已被占用，当前配置会直接失败而不会复用已有服务。
+- Final QA wave复验通过：`yarn lint`、`yarn test --runInBand`、`yarn test:ui`、`yarn build`、`npm pack --dry-run` 全部成功，当前实现可通过完整发布前质量门。
+- 手动启动 `yarn dev --host 127.0.0.1 --port 5673` 后，切换 `default / win98 / winxp` 会把对应 `cm-theme--*` class 注入到 `CButton` 与 `CStartBar`，说明 dev preview 的 Theme provider 链路正常工作。

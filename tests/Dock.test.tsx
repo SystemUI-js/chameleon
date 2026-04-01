@@ -1,6 +1,6 @@
 import { render, screen, waitFor } from '@testing-library/react';
 import '@testing-library/jest-dom';
-import { CDock as PackageEntryCDock } from '../src';
+import { CDock as PackageEntryCDock, Theme } from '../src';
 import { CDock, type CDockProps } from '../src/components/Dock/Dock';
 
 describe('CDock', () => {
@@ -86,6 +86,28 @@ describe('CDock', () => {
     expect(dock).toHaveClass('cm-dock--left');
     expect(dock).toHaveClass('dock-shell');
     expect(dock).not.toHaveClass('cm-dock--top');
+  });
+
+  it('inherits theme class from provider', () => {
+    render(
+      <Theme name="cm-theme--win98">
+        <CDock data-testid="dock-themed" defaultHeight={24} />
+      </Theme>,
+    );
+
+    expect(screen.getByTestId('dock-themed')).toHaveClass('cm-theme--win98');
+  });
+
+  it('prefers explicit theme over provider theme', () => {
+    render(
+      <Theme name="cm-theme--win98">
+        <CDock data-testid="dock-themed-override" defaultHeight={24} theme="cm-theme--winxp" />
+      </Theme>,
+    );
+
+    const dock = screen.getByTestId('dock-themed-override');
+    expect(dock).toHaveClass('cm-theme--winxp');
+    expect(dock).not.toHaveClass('cm-theme--win98');
   });
 
   it('maps top and bottom docking styles', () => {

@@ -1,4 +1,6 @@
 import React from 'react';
+import { mergeClasses } from '../Theme/mergeClasses';
+import { useTheme } from '../Theme/useTheme';
 import './index.scss';
 
 export interface CRadioGroupProps {
@@ -10,6 +12,7 @@ export interface CRadioGroupProps {
   required?: boolean;
   children?: React.ReactNode;
   className?: string;
+  theme?: string;
   'data-testid'?: string;
 }
 
@@ -23,6 +26,13 @@ export interface RadioGroupContextValue {
 
 export const RadioGroupContext = React.createContext<RadioGroupContextValue | null>(null);
 
+function resolveThemeClass(theme: string | undefined): string | undefined {
+  if (theme === undefined) {
+    return undefined;
+  }
+  return theme.startsWith('cm-theme--') ? theme : `cm-theme--${theme}`;
+}
+
 export function CRadioGroup({
   name,
   value,
@@ -32,8 +42,10 @@ export function CRadioGroup({
   required = false,
   children,
   className,
+  theme,
   'data-testid': dataTestId,
 }: CRadioGroupProps): React.ReactElement {
+  const resolvedTheme = resolveThemeClass(useTheme(theme));
   const [uncontrolledValue, setUncontrolledValue] = React.useState(defaultValue);
 
   React.useEffect(() => {
@@ -71,15 +83,11 @@ export function CRadioGroup({
     [disabled, handleRadioChange, name, required, selectedValue],
   );
 
-  const classNames = ['cm-radio-group'];
-
-  if (className) {
-    classNames.push(className);
-  }
+  const baseClasses = ['cm-radio-group'];
 
   return (
     <RadioGroupContext.Provider value={contextValue}>
-      <div className={classNames.join(' ')} data-testid={dataTestId}>
+      <div className={mergeClasses(baseClasses, resolvedTheme, className)} data-testid={dataTestId}>
         {children}
       </div>
     </RadioGroupContext.Provider>

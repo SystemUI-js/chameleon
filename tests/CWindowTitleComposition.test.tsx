@@ -2,7 +2,9 @@ import { fireEvent } from '@testing-library/dom';
 import { render } from '@testing-library/react';
 import '@testing-library/jest-dom';
 import React from 'react';
+import { Theme } from '../src';
 import { CWindow } from '../src/components/Window/Window';
+import { CWindowBody } from '../src/components/Window/WindowBody';
 import { CWindowTitle } from '../src/components/Window/WindowTitle';
 
 const setRect = (
@@ -100,6 +102,53 @@ describe('CWindow and CWindowTitle composition', () => {
     expect(titleText).toHaveTextContent('Composed Title');
   });
 
+  it('renders composed CWindowBody explicitly without changing caller styles', () => {
+    const { getByTestId } = render(
+      <CWindow>
+        <CWindowTitle>Body host</CWindowTitle>
+        <CWindowBody className="window-body-custom" style={{ padding: 12 }}>
+          body content
+        </CWindowBody>
+      </CWindow>,
+    );
+
+    const body = getByTestId('window-body');
+
+    expect(body).toHaveClass('window-body-custom');
+    expect(body).toHaveStyle({ padding: '12px' });
+    expect(body).toHaveTextContent('body content');
+  });
+
+  it('inherits theme for title and body while keeping base classes', () => {
+    const { getByTestId } = render(
+      <Theme name="cm-theme--retro">
+        <CWindow>
+          <CWindowTitle>Theme Title</CWindowTitle>
+          <CWindowBody>Theme Body</CWindowBody>
+        </CWindow>
+      </Theme>,
+    );
+
+    expect(getByTestId('window-title')).toHaveClass('cm-window__title-bar', 'cm-theme--retro');
+    expect(getByTestId('window-body')).toHaveClass('cm-window__body', 'cm-theme--retro');
+  });
+
+  it('prefers explicit theme over provider theme for title and body', () => {
+    const { getByTestId } = render(
+      <Theme name="cm-theme--retro">
+        <CWindow>
+          <CWindowTitle theme="cm-theme--xp">Theme Title</CWindowTitle>
+          <CWindowBody theme="cm-theme--classic">Theme Body</CWindowBody>
+        </CWindow>
+      </Theme>,
+    );
+
+    expect(getByTestId('window-title')).toHaveClass('cm-window__title-bar', 'cm-theme--xp');
+    expect(getByTestId('window-title')).not.toHaveClass('cm-theme--retro');
+    expect(getByTestId('window-body')).toHaveClass('cm-window__body', 'cm-theme--classic');
+    expect(getByTestId('window-body')).not.toHaveClass('cm-theme--retro');
+  });
+
   it('keeps the outer frame absolute and places resize handles in an inner wrapper', () => {
     const { getByTestId } = render(
       <CWindow x={10} y={20} width={240} height={160}>
@@ -121,10 +170,45 @@ describe('CWindow and CWindowTitle composition', () => {
     expect(content).not.toContainElement(eastHandle);
   });
 
+  it('inherits theme from provider on frame and content roots', () => {
+    const { getByTestId } = render(
+      <Theme name="cm-theme--win98">
+        <CWindow>
+          <CWindowTitle>Themed</CWindowTitle>
+          <div data-testid="window-body">body</div>
+        </CWindow>
+      </Theme>,
+    );
+
+    const frame = getByTestId('window-frame');
+    const content = getByTestId('window-content');
+
+    expect(frame).toHaveClass('cm-theme--win98');
+    expect(content).toHaveClass('cm-theme--win98');
+  });
+
+  it('prefers explicit window theme over provider theme', () => {
+    const { getByTestId } = render(
+      <Theme name="cm-theme--win98">
+        <CWindow theme="cm-theme--winxp">
+          <CWindowTitle>Override</CWindowTitle>
+        </CWindow>
+      </Theme>,
+    );
+
+    const frame = getByTestId('window-frame');
+    const content = getByTestId('window-content');
+
+    expect(frame).toHaveClass('cm-theme--winxp');
+    expect(content).toHaveClass('cm-theme--winxp');
+    expect(frame).not.toHaveClass('cm-theme--win98');
+    expect(content).not.toHaveClass('cm-theme--win98');
+  });
+
   it('moves window frame when dragging title bar', () => {
     const { getByTestId } = render(
       <CWindow x={10} y={20} width={240} height={160}>
-        <CWindowTitle>Draggable</CWindowTitle>
+        <CWindowTitle theme="cm-theme--xp">Draggable</CWindowTitle>
         <div data-testid="window-body">body</div>
       </CWindow>,
     );
@@ -142,6 +226,7 @@ describe('CWindow and CWindowTitle composition', () => {
 
     expect(frame.style.left).toBe('30px');
     expect(frame.style.top).toBe('60px');
+    expect(title).toHaveClass('cm-window__title-bar', 'cm-theme--xp');
   });
 
   it('does not move window when dragging content area', () => {

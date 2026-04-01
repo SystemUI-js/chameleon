@@ -1,21 +1,31 @@
 import React from 'react';
+import { mergeClasses, ResolvedThemeClassName } from '../Theme';
 
 export interface CWindowBodyProps {
   children?: React.ReactNode;
   className?: string;
+  theme?: string;
   style?: React.CSSProperties;
 }
 
 export class CWindowBody extends React.Component<CWindowBodyProps> {
-  protected getClassName(): string {
-    return this.props.className ?? 'cm-window__body';
+  protected getClassName(theme?: string): string {
+    return mergeClasses(['cm-window__body'], theme, this.props.className);
   }
 
   public render(): React.ReactElement {
     return (
-      <div data-testid="window-body" className={this.getClassName()} style={this.props.style}>
-        {this.props.children}
-      </div>
+      <ResolvedThemeClassName theme={this.props.theme}>
+        {(theme) => (
+          <div
+            data-testid="window-body"
+            className={this.getClassName(theme)}
+            style={this.props.style}
+          >
+            {this.props.children}
+          </div>
+        )}
+      </ResolvedThemeClassName>
     );
   }
 }

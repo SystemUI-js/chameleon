@@ -1,9 +1,11 @@
 import React from 'react';
+import { mergeClasses, ResolvedThemeClassName } from '../Theme';
 import './index.scss';
 
 interface Props {
   grid: [number, number];
   className?: string;
+  theme?: string;
   style?: React.CSSProperties;
   children?: React.ReactNode;
   initGridSize?: {
@@ -35,16 +37,20 @@ export class CGrid extends React.Component<Props, State> {
       : null;
 
     return (
-      <div
-        className={this.props.className || 'c-grid'}
-        style={{
-          ...this.props.style,
-          gridTemplateRows: this.state.rowSizes.join(' '),
-          gridTemplateColumns: this.state.columnSizes.join(' '),
-        }}
-      >
-        {children}
-      </div>
+      <ResolvedThemeClassName theme={this.props.theme}>
+        {(theme) => (
+          <div
+            className={mergeClasses(['cm-grid'], theme, this.props.className)}
+            style={{
+              ...this.props.style,
+              gridTemplateRows: this.state.rowSizes.join(' '),
+              gridTemplateColumns: this.state.columnSizes.join(' '),
+            }}
+          >
+            {children}
+          </div>
+        )}
+      </ResolvedThemeClassName>
     );
   }
 
@@ -64,6 +70,7 @@ interface GridItemProps {
   grid: [number, number, number, number];
   style?: React.CSSProperties;
   className?: string;
+  theme?: string;
   children?: React.ReactNode;
   setGridSize?: (rows: string[], columns: string[]) => void;
 }
@@ -71,18 +78,22 @@ interface GridItemProps {
 export class CGridItem extends React.Component<GridItemProps> {
   render() {
     return (
-      <div
-        className={this.props.className || 'c-grid-item'}
-        style={{
-          ...this.props.style,
-          gridRowStart: this.props.grid[0],
-          gridRowEnd: this.props.grid[1],
-          gridColumnStart: this.props.grid[2],
-          gridColumnEnd: this.props.grid[3],
-        }}
-      >
-        {this.props.children}
-      </div>
+      <ResolvedThemeClassName theme={this.props.theme}>
+        {(theme) => (
+          <div
+            className={mergeClasses(['cm-grid-item'], theme, this.props.className)}
+            style={{
+              ...this.props.style,
+              gridRowStart: this.props.grid[0],
+              gridRowEnd: this.props.grid[1],
+              gridColumnStart: this.props.grid[2],
+              gridColumnEnd: this.props.grid[3],
+            }}
+          >
+            {this.props.children}
+          </div>
+        )}
+      </ResolvedThemeClassName>
     );
   }
 }

@@ -1,0 +1,46 @@
+F1 Plan Compliance Audit — chameleon-pure-component-library-refactor
+Date: 2026-03-30T02:45:00Z
+
+Audit Scope
+- Plan: .sisyphus/plans/chameleon-pure-component-library-refactor.md
+- Code/docs: README.md, AGENTS.md, src/dev/ComponentCatalog.tsx, src/theme/types.ts, tests/CWindowTitleComposition.test.tsx, tests/ThemeExports.test.ts
+- Evidence: .sisyphus/evidence/task-6-*.txt, task-7-*.txt, task-8-*.txt
+- Commands:
+  - grep -R "SystemHost|WindowManager|ScreenManager|SYSTEM_TYPE|resolveThemeDefinition" src tests README.md AGENTS.md
+  - grep -R "cm-system--" src
+  - yarn lint && yarn test -- --runInBand && yarn test:ui && yarn build
+  - lsp_diagnostics(src/dev/ComponentCatalog.tsx)
+
+Re-check of previous rejection points
+1) README theme contract stale
+- RESOLVED
+- README 已与 `src/theme/types.ts` 对齐为 `ThemeId + ThemeDefinition{id,label,className}`，移除旧 `Theme tokens/components` 示例。
+
+2) Catalog section test-id contract missing
+- RESOLVED
+- `src/dev/ComponentCatalog.tsx` 已包含：
+  - catalog-section-button
+  - catalog-section-radio
+  - catalog-section-select
+  - catalog-section-window
+  - catalog-section-dock
+  - catalog-section-start-bar
+  - catalog-section-grid
+
+3) Docs verification chain mismatch (AGENTS)
+- RESOLVED
+- `AGENTS.md` 已更新 CI 链路为 `lint -> test -> test:ui -> build`。
+
+4) Release-gate viability
+- PASS
+- 本地复跑通过：lint / Jest(8 suites, 65 tests) / Playwright(39 passed) / build。
+
+5) Removed shell semantics
+- PASS
+- 关键遗留关键词在 src/tests/README/AGENTS 中无匹配；`cm-system--` 在 src 中无匹配。
+
+Notes
+- Final Verification 规则要求“未获用户明确 okay 前，不勾选 F1-F4”。当前保持未勾选，符合计划约束。
+- 计划文件中任务 6/7/8 的勾选属于实施任务状态记录，不构成新增功能范围漂移。
+
+Overall verdict: APPROVE

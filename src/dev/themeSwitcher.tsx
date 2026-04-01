@@ -1,8 +1,9 @@
+import type { ReactElement, ReactNode } from 'react';
+import { Theme } from '@/components';
 import { defaultThemeDefinition } from '@/theme/default';
 import type { ThemeDefinition, ThemeId } from '@/theme/types';
 import { win98ThemeDefinition } from '@/theme/win98';
 import { winXpThemeDefinition } from '@/theme/winxp';
-import type { ReactElement, ReactNode } from 'react';
 
 export const DEV_THEME = {
   default: 'default',
@@ -40,8 +41,8 @@ export function DevThemeRoot({
   const themeDefinition = resolveDevThemeDefinition(theme);
 
   return (
-    <div data-testid="theme-root" className={themeDefinition.className}>
-      {children}
-    </div>
+    <Theme name={themeDefinition.className}>
+      <div data-testid="theme-root">{children}</div>
+    </Theme>
   );
 }

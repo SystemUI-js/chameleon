@@ -1,5 +1,6 @@
 .cm-theme--winxp {
-    .cm-window__title-bar {
+    .cm-window__title-bar,
+    .cm-window__title-bar.cm-theme--winxp {
         background: #316ac5;
         color: #ffffff;
     }
@@ -8,7 +9,8 @@
         background: linear-gradient(180deg, #f8fbff 0%, #e7eefb 100%);
     }
 
-    .cm-common-controls-preview {
+    .cm-common-controls-preview,
+    .cm-common-controls-preview.cm-theme--winxp {
         display: flex;
         flex-direction: column;
         gap: 14px;
@@ -87,7 +89,8 @@
         gap: 10px;
     }
 
-    .cm-button {
+    .cm-button,
+    .cm-button.cm-theme--winxp {
         min-height: 28px;
         padding: 0 14px;
         border: 1px solid #245dbe;
@@ -118,7 +121,8 @@
         outline-offset: 2px;
     }
 
-    .cm-button--primary {
+    .cm-button--primary,
+    .cm-button--primary.cm-theme--winxp {
         border-color: #1e4f9f;
         background: linear-gradient(180deg, #6ea6f9 0%, #3778dc 48%, #2d65bd 49%, #5d95ea 100%);
         color: #ffffff;
@@ -129,7 +133,8 @@
         background: linear-gradient(180deg, #80b2fb 0%, #4686e7 48%, #3471cc 49%, #6aa0ef 100%);
     }
 
-    .cm-button--ghost {
+    .cm-button--ghost,
+    .cm-button--ghost.cm-theme--winxp {
         background: linear-gradient(180deg, #ffffff 0%, #ebf3ff 100%);
     }
 
@@ -140,14 +145,16 @@
         cursor: not-allowed;
     }
 
-    .cm-radio {
+    .cm-radio,
+    .cm-radio.cm-theme--winxp {
         display: inline-flex;
         align-items: center;
         gap: 7px;
         cursor: pointer;
     }
 
-    .cm-radio--disabled {
+    .cm-radio--disabled,
+    .cm-radio--disabled.cm-theme--winxp {
         color: #92a6c6;
         cursor: not-allowed;
     }
@@ -185,7 +192,8 @@
         line-height: 1.25;
     }
 
-    .cm-select {
+    .cm-select,
+    .cm-select.cm-theme--winxp {
         min-height: 30px;
         padding: 0 32px 0 10px;
         border: 1px solid #4d79bb;
@@ -222,12 +230,14 @@
     }
 
     // Start Bar - Windows XP Style
-    .cm-start-bar {
+    .cm-start-bar,
+    .cm-start-bar.cm-theme--winxp {
         background: linear-gradient(180deg, #316ac5 0%, #245595 100%);
         border-top: 1px solid #5a94e4;
     }
 
-    .cm-start-bar__button {
+    .cm-start-bar__button,
+    .cm-start-bar__button.cm-theme--winxp {
         border: 1px solid #1e4f9f;
         border-radius: 999px;
         background: linear-gradient(180deg, #5cb85c 0%, #449d44 50%, #398439 100%);

@@ -1,6 +1,7 @@
 import { Drag, type Pose } from '@system-ui-js/multi-drag';
 import React from 'react';
 import { generateUUID } from '@/utils/uuid';
+import { mergeClasses, ThemeContext, type ThemeContextValue } from '../Theme';
 
 export interface WidgetLayoutProps {
   x?: number;
@@ -19,6 +20,7 @@ export interface CWidgetResizeOptions {
 
 export interface CWidgetProps extends WidgetLayoutProps {
   children?: React.ReactNode;
+  theme?: string;
   resizable?: boolean;
   resizeOptions?: CWidgetResizeOptions;
 }
@@ -77,6 +79,7 @@ type WidgetComponentState = Record<string, unknown>;
 
 type WidgetFrameOptions = {
   className?: string;
+  theme?: string;
   testId?: string;
   style?: React.CSSProperties;
 };
@@ -87,6 +90,9 @@ type WidgetFrameMoveHandleProps = {
 };
 
 export class CWidget extends React.Component<CWidgetProps, WidgetComponentState> {
+  public static readonly contextType = ThemeContext;
+  declare public context: ThemeContextValue;
+
   public readonly uuid = generateUUID();
   private readonly resizeHandleRefs: Record<ResizeDirection, React.RefObject<HTMLDivElement>> = {
     n: React.createRef<HTMLDivElement>(),
@@ -227,6 +233,32 @@ export class CWidget extends React.Component<CWidgetProps, WidgetComponentState>
 
   protected getResizeHandleClassName(_direction: ResizeDirection): string | undefined {
     return undefined;
+  }
+
+  protected normalizeTheme(theme: string | undefined): string | undefined {
+    if (theme === undefined) {
+      return undefined;
+    }
+
+    const normalizedTheme = theme.trim();
+
+    return normalizedTheme.length > 0 ? normalizedTheme : undefined;
+  }
+
+  protected getTheme(theme?: string): string | undefined {
+    const explicitTheme = this.normalizeTheme(theme ?? this.props.theme);
+
+    if (explicitTheme !== undefined) {
+      return explicitTheme;
+    }
+
+    return this.normalizeTheme(this.context.theme);
+  }
+
+  protected mergeThemeClassName(className?: string, theme?: string): string | undefined {
+    const mergedClassName = mergeClasses([], this.getTheme(theme), className);
+
+    return mergedClassName.length > 0 ? mergedClassName : undefined;
   }
 
   protected getNormalizedResizeOptions(): Required<
@@ -491,7 +523,7 @@ export class CWidget extends React.Component<CWidgetProps, WidgetComponentState>
     return (
       <div
         data-testid={options?.testId ?? 'widget-frame'}
-        className={options?.className}
+        className={this.mergeThemeClassName(options?.className, options?.theme)}
         style={frameStyle}
       >
         {content}

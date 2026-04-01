@@ -1,0 +1,9 @@
+Command: grep -R "WindowManager\|SystemHost\|ScreenManager\|SystemTypeSwitch" tests --include='*.test.tsx' --include='*.test.ts'
+Result: No matches found in tests/*.test.ts and tests/*.test.tsx.
+
+Coverage notes:
+- tests/ThemeExports.test.ts verifies pure theme exports from package entry.
+- tests/CWindowTitleComposition.test.tsx verifies CWindow, CWindowTitle, CWindowBody, drag, and resize behavior.
+- tests/Grid.test.tsx verifies CGrid/CGridItem relocation behavior.
+- tests/Dock.test.tsx verifies CDock rendering and package-entry exposure.
+- tests/StartBar.test.tsx verifies CStartBar rendering and structure.

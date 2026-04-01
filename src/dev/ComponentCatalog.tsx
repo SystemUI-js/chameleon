@@ -31,12 +31,13 @@ interface ComponentCatalogProps {
 
 interface ShowcaseSectionProps {
   readonly title: string;
+  readonly testId: string;
   readonly children: React.ReactNode;
 }
 
-function ShowcaseSection({ title, children }: ShowcaseSectionProps): React.ReactElement {
+function ShowcaseSection({ title, testId, children }: ShowcaseSectionProps): React.ReactElement {
   return (
-    <section className="cm-catalog__section">
+    <section data-testid={testId} className="cm-catalog__section">
       <h2 className="cm-catalog__section-title">{title}</h2>
       <div className="cm-catalog__section-content">{children}</div>
     </section>
@@ -74,7 +75,7 @@ function ButtonShowcase(): React.ReactElement {
   const [buttonClicks, setButtonClicks] = React.useState(0);
 
   return (
-    <ShowcaseSection title="Button">
+    <ShowcaseSection title="Button" testId="catalog-section-button">
       <div className="cm-catalog__stack">
         <div className="cm-catalog__row">
           <CButton
@@ -103,7 +104,7 @@ function RadioGroupShowcase(): React.ReactElement {
   const [selectedFruit, setSelectedFruit] = React.useState('apple');
 
   return (
-    <ShowcaseSection title="RadioGroup">
+    <ShowcaseSection title="RadioGroup" testId="catalog-section-radio">
       <div className="cm-catalog__stack">
         <CRadioGroup
           aria-label="Favorite fruit"
@@ -133,7 +134,7 @@ function SelectShowcase(): React.ReactElement {
   const [selectedSize, setSelectedSize] = React.useState('medium');
 
   return (
-    <ShowcaseSection title="Select">
+    <ShowcaseSection title="Select" testId="catalog-section-select">
       <div className="cm-catalog__stack">
         <CSelect
           data-testid="select-demo-size"
@@ -151,7 +152,7 @@ function SelectShowcase(): React.ReactElement {
 
 function WindowShowcase(): React.ReactElement {
   return (
-    <ShowcaseSection title="Window">
+    <ShowcaseSection title="Window" testId="catalog-section-window">
       <div className="cm-catalog__stage cm-catalog__stage--relative">
         <CWindow x={24} y={24} width={320} height={200}>
           <CWindowTitle>Sample Window</CWindowTitle>
@@ -167,7 +168,7 @@ function WindowShowcase(): React.ReactElement {
 
 function DockShowcase(): React.ReactElement {
   return (
-    <ShowcaseSection title="Dock">
+    <ShowcaseSection title="Dock" testId="catalog-section-dock">
       <div className="cm-catalog__stage cm-catalog__stage--relative">
         <CDock position="top" height={48} className="cm-catalog__dock">
           <div className="cm-catalog__dock-content">Dock content area</div>
@@ -180,7 +181,7 @@ function DockShowcase(): React.ReactElement {
 
 function StartBarShowcase(): React.ReactElement {
   return (
-    <ShowcaseSection title="StartBar">
+    <ShowcaseSection title="StartBar" testId="catalog-section-start-bar">
       <div className="cm-catalog__stage cm-catalog__stage--relative">
         <div className="cm-catalog__start-bar-spacer" />
         <CStartBar data-testid="catalog-start-bar" height={32} className="cm-catalog__start-bar">
@@ -195,7 +196,7 @@ function GridShowcase(): React.ReactElement {
   const GRID: [number, number] = [3, 3];
 
   return (
-    <ShowcaseSection title="Grid">
+    <ShowcaseSection title="Grid" testId="catalog-section-grid">
       <CGrid
         className="cm-catalog__grid"
         grid={GRID}
