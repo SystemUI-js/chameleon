@@ -32,17 +32,20 @@ export function resolveDevThemeDefinition(
 interface DevThemeRootProps {
   readonly theme?: DevThemeId;
   readonly children?: ReactNode;
+  readonly testId?: string | null;
 }
 
 export function DevThemeRoot({
   theme = DEFAULT_DEV_SELECTION.theme,
   children,
+  testId,
 }: DevThemeRootProps): ReactElement {
   const themeDefinition = resolveDevThemeDefinition(theme);
+  const rootTestId = testId === undefined ? 'theme-root' : testId;
 
   return (
     <Theme name={themeDefinition.className}>
-      <div data-testid="theme-root">{children}</div>
+      <div data-testid={rootTestId}>{children}</div>
     </Theme>
   );
 }

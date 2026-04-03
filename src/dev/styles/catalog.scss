@@ -47,16 +47,13 @@
 
 // Main content
 .cm-catalog__main {
+    display: flex;
+    flex-direction: column;
+    gap: 32px;
     width: 100%;
 }
 
-.cm-catalog__grid {
-    display: grid;
-    grid-template-columns: repeat(auto-fit, minmax(400px, 1fr));
-    gap: 32px;
-}
-
-.cm-catalog__column {
+.cm-catalog__showcase-list {
     display: flex;
     flex-direction: column;
     gap: 32px;

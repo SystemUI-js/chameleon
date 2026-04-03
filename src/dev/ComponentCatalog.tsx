@@ -365,29 +365,27 @@ export function ComponentCatalog({
 }: ComponentCatalogProps): React.ReactElement {
   return (
     <div data-testid="component-catalog" className="cm-catalog">
-      <DevThemeRoot theme={theme}>
+      <DevThemeRoot theme={theme} testId={null}>
         <header className="cm-catalog__header">
           <h1 className="cm-catalog__title">Component Catalog</h1>
           <ThemeSwitcher theme={theme} onThemeChange={onThemeChange} />
         </header>
-
-        <main className="cm-catalog__main">
-          <div className="cm-catalog__grid">
-            <div className="cm-catalog__column">
-              <ButtonShowcase />
-              <RadioGroupShowcase />
-              <SelectShowcase />
-            </div>
-            <div className="cm-catalog__column">
-              <WindowShowcase />
-              <DockShowcase />
-              <StartBarShowcase />
-              <GridShowcase />
-            </div>
-          </div>
-        </main>
       </DevThemeRoot>
-      <ThemeShowcase />
+
+      <main className="cm-catalog__main">
+        <ThemeShowcase />
+        <DevThemeRoot theme={theme}>
+          <div className="cm-catalog__showcase-list">
+            <ButtonShowcase />
+            <RadioGroupShowcase />
+            <SelectShowcase />
+            <WindowShowcase />
+            <DockShowcase />
+            <StartBarShowcase />
+            <GridShowcase />
+          </div>
+        </DevThemeRoot>
+      </main>
     </div>
   );
 }

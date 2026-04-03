@@ -8,7 +8,19 @@ describe('ComponentCatalog', () => {
     render(<ComponentCatalog theme={DEV_THEME.default} onThemeChange={() => {}} />);
 
     expect(screen.getByTestId('component-catalog')).toBeInTheDocument();
+    expect(screen.getAllByTestId('theme-root')).toHaveLength(1);
     expect(screen.getByTestId('theme-root')).toBeInTheDocument();
+  });
+
+  it('renders Theme section before Button section', () => {
+    render(<ComponentCatalog theme={DEV_THEME.default} onThemeChange={() => {}} />);
+
+    const themeSection = screen.getByTestId('catalog-section-theme');
+    const buttonSection = screen.getByTestId('catalog-section-button');
+
+    expect(
+      themeSection.compareDocumentPosition(buttonSection) & Node.DOCUMENT_POSITION_FOLLOWING,
+    ).toBeTruthy();
   });
 
   it('Button section exposes a Show code button', () => {
@@ -197,6 +209,7 @@ describe('ComponentCatalog', () => {
   describe('Theme showcase isolation boundary', () => {
     it('theme-root exists', () => {
       render(<ComponentCatalog theme={DEV_THEME.default} onThemeChange={() => {}} />);
+      expect(screen.getAllByTestId('theme-root')).toHaveLength(1);
       expect(screen.getByTestId('theme-root')).toBeInTheDocument();
     });
 
