@@ -38,6 +38,70 @@ describe('ComponentCatalog', () => {
     expect(showCodeButton).toHaveAttribute('aria-expanded', 'false');
   });
 
+  it('Theme section exposes a Show code button', () => {
+    render(<ComponentCatalog theme={DEV_THEME.default} onThemeChange={() => {}} />);
+
+    const themeSection = screen.getByTestId('catalog-section-theme');
+    const showCodeButton = within(themeSection).getByRole('button', { name: 'Show code' });
+    expect(showCodeButton).toBeInTheDocument();
+    expect(showCodeButton).toHaveAttribute('aria-expanded', 'false');
+  });
+
+  it('expanding Theme section reveals Theme-related snippet text', () => {
+    render(<ComponentCatalog theme={DEV_THEME.default} onThemeChange={() => {}} />);
+
+    const themeSection = screen.getByTestId('catalog-section-theme');
+    const showCodeButton = within(themeSection).getByRole('button', { name: 'Show code' });
+
+    act(() => {
+      showCodeButton.click();
+    });
+
+    expect(showCodeButton).toHaveAttribute('aria-expanded', 'true');
+    const codeElement = within(themeSection).getByText(/Theme name=/);
+    expect(codeElement).toBeInTheDocument();
+  });
+
+  it('expanding Theme section does not auto-expand Button or Window sections', () => {
+    render(<ComponentCatalog theme={DEV_THEME.default} onThemeChange={() => {}} />);
+
+    const themeSection = screen.getByTestId('catalog-section-theme');
+    const buttonSection = screen.getByTestId('catalog-section-button');
+    const windowSection = screen.getByTestId('catalog-section-window');
+
+    const themeShowCode = within(themeSection).getByRole('button', { name: 'Show code' });
+    const buttonShowCode = within(buttonSection).getByRole('button', { name: 'Show code' });
+    const windowShowCode = within(windowSection).getByRole('button', { name: 'Show code' });
+
+    expect(themeShowCode).toHaveAttribute('aria-expanded', 'false');
+    expect(buttonShowCode).toHaveAttribute('aria-expanded', 'false');
+    expect(windowShowCode).toHaveAttribute('aria-expanded', 'false');
+
+    act(() => {
+      themeShowCode.click();
+    });
+
+    expect(themeShowCode).toHaveAttribute('aria-expanded', 'true');
+    expect(buttonShowCode).toHaveAttribute('aria-expanded', 'false');
+    expect(windowShowCode).toHaveAttribute('aria-expanded', 'false');
+
+    const themeCodeRegion = themeSection.querySelector(
+      '#catalog-section-theme-code-region',
+    ) as HTMLElement;
+    const buttonCodeRegion = buttonSection.querySelector(
+      '#catalog-section-button-code-region',
+    ) as HTMLElement;
+    const windowCodeRegion = windowSection.querySelector(
+      '#catalog-section-window-code-region',
+    ) as HTMLElement;
+    expect(themeCodeRegion).toBeInTheDocument();
+    expect(buttonCodeRegion).toBeInTheDocument();
+    expect(windowCodeRegion).toBeInTheDocument();
+    expect(themeCodeRegion.hidden).toBe(false);
+    expect(buttonCodeRegion.hidden).toBe(true);
+    expect(windowCodeRegion.hidden).toBe(true);
+  });
+
   it('expanding Button does not auto-expand RadioGroup or Select', () => {
     render(<ComponentCatalog theme={DEV_THEME.default} onThemeChange={() => {}} />);
 

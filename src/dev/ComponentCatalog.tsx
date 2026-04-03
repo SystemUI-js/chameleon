@@ -7,6 +7,7 @@ import {
   CWindow,
   CWindowTitle,
   CWindowBody,
+  Theme,
   CDock,
   CStartBar,
   CGrid,
@@ -117,6 +118,59 @@ function ButtonShowcase(): React.ReactElement {
           </CButton>
         </div>
         <p className="cm-catalog__value">Primary button clicks: {buttonClicks}</p>
+      </div>
+    </ShowcaseSection>
+  );
+}
+
+const THEME_SNIPPET = `
+// Theme wrapper applies theme to entire subtree
+<Theme name="cm-theme--win98">
+  <CButton>Themed button</CButton>
+</Theme>
+
+// Nearest nested provider wins
+<Theme name="cm-theme--win98">
+  <Theme name="cm-theme--winxp">
+    <CButton>Inner theme wins</CButton>
+  </Theme>
+</Theme>
+
+// Explicit theme prop overrides provider
+<Theme name="cm-theme--win98">
+  <CButton theme="cm-theme--default">Explicit prop wins</CButton>
+</Theme>
+`.trim();
+
+function ThemeShowcase(): React.ReactElement {
+  return (
+    <ShowcaseSection title="Theme" testId="catalog-section-theme" code={THEME_SNIPPET}>
+      <div>
+        <p>
+          <strong>Theme wrapper:</strong> Wrap any subtree with <code>&lt;Theme&gt;</code> and set
+          the <code>name</code> prop to a theme class like <code>cm-theme--win98</code>.
+        </p>
+        <p>
+          <strong>Nested providers:</strong> When multiple Theme wrappers are nested, the nearest
+          (innermost) provider wins.
+        </p>
+        <p>
+          <strong>Explicit prop:</strong> A component&apos;s own <code>theme</code> prop takes
+          precedence over any Theme provider in its ancestor chain.
+        </p>
+        <div aria-hidden="true">
+          <Theme name="cm-theme--win98">
+            <CButton>Wrapper applies theme</CButton>
+          </Theme>
+          <Theme name="cm-theme--win98">
+            <Theme name="cm-theme--winxp">
+              <CButton>Inner wins</CButton>
+            </Theme>
+          </Theme>
+          <Theme name="cm-theme--win98">
+            <CButton theme="cm-theme--default">Prop overrides</CButton>
+          </Theme>
+        </div>
       </div>
     </ShowcaseSection>
   );
@@ -332,6 +386,7 @@ export function ComponentCatalog({
           <div className="cm-catalog__grid">
             <div className="cm-catalog__column">
               <ButtonShowcase />
+              <ThemeShowcase />
               <RadioGroupShowcase />
               <SelectShowcase />
             </div>

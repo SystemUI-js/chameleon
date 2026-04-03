@@ -1,0 +1,27 @@
+Scope rationale for Theme code disclosure Playwright coverage
+============================================================
+Date: 2026-04-02
+
+Decision: MODIFY spec - Theme section was NOT covered
+
+Rationale:
+- Existing spec (component-catalog-code.spec.ts) only covered Button showcase code toggle
+- Theme showcase was implemented in Task 2 but had no E2E coverage
+- Theme section uses identical ShowcaseCodeDisclosure pattern as Button
+- Coverage gap: no Playwright test verified Theme code region toggle behavior
+
+Scope of changes (minimal):
+- Added ONE new test: 'Show/Hide code toggles code region visibility in Theme showcase'
+- Follows exact same structure as Button test (lines 3-32 pattern)
+- Uses identical assertions: initial hidden → click → visible with representative text → click → hidden
+
+What was NOT added (scope guardrails):
+- NO Window drag/resize tests
+- NO visual snapshots
+- NO theme switching behavior
+- NO unrelated UI flows
+
+Selector stability:
+- Theme section testId: 'catalog-section-theme' (defined in ComponentCatalog.tsx:145)
+- Code region ID: 'catalog-section-theme-code-region' (derived from sectionId per ShowcaseCodeDisclosure)
+- Button selectors unchanged
