@@ -44,16 +44,68 @@ describe('Theme', () => {
     expect(screen.getByTestId('theme-probe')).toHaveAttribute('data-theme', 'default');
   });
 
-  it('uses the nearest nested provider theme', () => {
-    render(
-      <Theme name="win98">
-        <Theme name="winxp">
-          <ThemeProbe />
-        </Theme>
-      </Theme>,
-    );
+  describe('nested Theme rejection', () => {
+    it('rejects directly nested Theme', () => {
+      expect(() =>
+        render(
+          <Theme name="win98">
+            <Theme name="winxp">
+              <ThemeProbe />
+            </Theme>
+          </Theme>,
+        ),
+      ).toThrow('Nested Theme is not supported');
+    });
 
-    expect(screen.getByTestId('theme-probe')).toHaveAttribute('data-theme', 'winxp');
+    it('rejects nested Theme with different names', () => {
+      expect(() =>
+        render(
+          <Theme name="theme-a">
+            <Theme name="theme-b">
+              <ThemeProbe />
+            </Theme>
+          </Theme>,
+        ),
+      ).toThrow('Nested Theme is not supported');
+    });
+
+    it('rejects nested Theme with the same name', () => {
+      expect(() =>
+        render(
+          <Theme name="win98">
+            <Theme name="win98">
+              <ThemeProbe />
+            </Theme>
+          </Theme>,
+        ),
+      ).toThrow('Nested Theme is not supported');
+    });
+
+    it('rejects three-level deep nested Theme', () => {
+      expect(() =>
+        render(
+          <Theme name="level1">
+            <Theme name="level2">
+              <Theme name="level3">
+                <ThemeProbe />
+              </Theme>
+            </Theme>
+          </Theme>,
+        ),
+      ).toThrow('Nested Theme is not supported');
+    });
+
+    it('rejects nested Theme even when outer provider has blank name', () => {
+      expect(() =>
+        render(
+          <Theme name="   ">
+            <Theme name="win98">
+              <ThemeProbe />
+            </Theme>
+          </Theme>,
+        ),
+      ).toThrow('Nested Theme is not supported');
+    });
   });
 
   it('does not inject a theme for empty provider values', () => {
@@ -64,6 +116,16 @@ describe('Theme', () => {
     );
 
     expect(screen.getByTestId('theme-probe')).not.toHaveAttribute('data-theme');
+  });
+
+  it('blank outer provider still counts as a provider node for nesting boundary', () => {
+    render(
+      <Theme name="   ">
+        <ThemeProbe theme="explicit-override" />
+      </Theme>,
+    );
+
+    expect(screen.getByTestId('theme-probe')).toHaveAttribute('data-theme', 'explicit-override');
   });
 
   it('returns undefined when no explicit theme or provider exists', () => {

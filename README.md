@@ -79,6 +79,8 @@ import { Theme } from '@system-ui-js/chameleon';
 
 `Theme` 组件会提供主题 Context，并渲染一个带对应 className 的 wrapper DOM。
 
+`Theme` 不支持嵌套。若只需为单个组件覆盖主题，使用该组件的 `theme` prop。
+
 ### 组件 theme prop
 
 组件支持 `theme?: string` prop，接受完整 className：

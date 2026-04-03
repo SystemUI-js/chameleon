@@ -129,16 +129,9 @@ const THEME_SNIPPET = `
   <CButton>Themed button</CButton>
 </Theme>
 
-// Nearest nested provider wins
+// Explicit theme prop overrides Theme provider
 <Theme name="cm-theme--win98">
-  <Theme name="cm-theme--winxp">
-    <CButton>Inner theme wins</CButton>
-  </Theme>
-</Theme>
-
-// Explicit theme prop overrides provider
-<Theme name="cm-theme--win98">
-  <CButton theme="cm-theme--default">Explicit prop wins</CButton>
+  <CButton theme="cm-theme--default">Explicit prop overrides</CButton>
 </Theme>
 `.trim();
 
@@ -151,8 +144,9 @@ function ThemeShowcase(): React.ReactElement {
           the <code>name</code> prop to a theme class like <code>cm-theme--win98</code>.
         </p>
         <p>
-          <strong>Nested providers:</strong> When multiple Theme wrappers are nested, the nearest
-          (innermost) provider wins.
+          <strong>Nested Theme:</strong> Nesting <code>&lt;Theme&gt;</code> inside another{' '}
+          <code>&lt;Theme&gt;</code> is not supported. Use a component&apos;s <code>theme</code>{' '}
+          prop to override the provider theme for that specific component.
         </p>
         <p>
           <strong>Explicit prop:</strong> A component&apos;s own <code>theme</code> prop takes
@@ -161,11 +155,6 @@ function ThemeShowcase(): React.ReactElement {
         <div aria-hidden="true">
           <Theme name="cm-theme--win98">
             <CButton>Wrapper applies theme</CButton>
-          </Theme>
-          <Theme name="cm-theme--win98">
-            <Theme name="cm-theme--winxp">
-              <CButton>Inner wins</CButton>
-            </Theme>
           </Theme>
           <Theme name="cm-theme--win98">
             <CButton theme="cm-theme--default">Prop overrides</CButton>
@@ -375,8 +364,8 @@ export function ComponentCatalog({
   onThemeChange,
 }: ComponentCatalogProps): React.ReactElement {
   return (
-    <DevThemeRoot theme={theme}>
-      <div data-testid="component-catalog" className="cm-catalog">
+    <div data-testid="component-catalog" className="cm-catalog">
+      <DevThemeRoot theme={theme}>
         <header className="cm-catalog__header">
           <h1 className="cm-catalog__title">Component Catalog</h1>
           <ThemeSwitcher theme={theme} onThemeChange={onThemeChange} />
@@ -386,7 +375,6 @@ export function ComponentCatalog({
           <div className="cm-catalog__grid">
             <div className="cm-catalog__column">
               <ButtonShowcase />
-              <ThemeShowcase />
               <RadioGroupShowcase />
               <SelectShowcase />
             </div>
@@ -398,7 +386,8 @@ export function ComponentCatalog({
             </div>
           </div>
         </main>
-      </div>
-    </DevThemeRoot>
+      </DevThemeRoot>
+      <ThemeShowcase />
+    </div>
   );
 }

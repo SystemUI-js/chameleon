@@ -193,4 +193,33 @@ describe('ComponentCatalog', () => {
     const codeElement = within(gridSection).getByText(/CGrid/);
     expect(codeElement).toBeInTheDocument();
   });
+
+  describe('Theme showcase isolation boundary', () => {
+    it('theme-root exists', () => {
+      render(<ComponentCatalog theme={DEV_THEME.default} onThemeChange={() => {}} />);
+      expect(screen.getByTestId('theme-root')).toBeInTheDocument();
+    });
+
+    it('catalog-section-theme is NOT inside theme-root (isolation boundary)', () => {
+      render(<ComponentCatalog theme={DEV_THEME.default} onThemeChange={() => {}} />);
+
+      const themeRoot = screen.getByTestId('theme-root');
+      const themeSection = screen.getByTestId('catalog-section-theme');
+
+      expect(themeRoot).toBeInTheDocument();
+      expect(themeSection).toBeInTheDocument();
+      expect(themeRoot).not.toContainElement(themeSection);
+    });
+
+    it('catalog-section-button IS still inside theme-root (reference baseline)', () => {
+      render(<ComponentCatalog theme={DEV_THEME.default} onThemeChange={() => {}} />);
+
+      const themeRoot = screen.getByTestId('theme-root');
+      const buttonSection = screen.getByTestId('catalog-section-button');
+
+      expect(themeRoot).toBeInTheDocument();
+      expect(buttonSection).toBeInTheDocument();
+      expect(themeRoot).toContainElement(buttonSection);
+    });
+  });
 });

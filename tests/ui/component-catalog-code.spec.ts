@@ -53,6 +53,10 @@ test('Show/Hide code toggles code region visibility in Theme showcase', async ({
   await expect(themeCodeRegion).toBeVisible();
   await expect(themeCodeRegion).toContainText('cm-theme--win98');
 
+  // Verify code region does NOT contain nesting hint text
+  await expect(themeCodeRegion).not.toContainText('Inner wins');
+  await expect(themeCodeRegion).not.toContainText('nearest nested provider wins');
+
   // Click "Hide code" button
   const hideCodeButton = themeSection.getByRole('button', { name: 'Hide code' });
   await hideCodeButton.click();

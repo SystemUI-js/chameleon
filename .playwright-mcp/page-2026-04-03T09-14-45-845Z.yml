@@ -1,0 +1,116 @@
+- generic [ref=e3]:
+  - generic [ref=e5]:
+    - banner [ref=e6]:
+      - heading "Component Catalog" [level=1] [ref=e7]
+      - generic [ref=e9]:
+        - text: Theme
+        - combobox "Theme" [ref=e10]:
+          - option "default" [selected]
+          - option "win98"
+          - option "winxp"
+    - main [ref=e11]:
+      - generic [ref=e12]:
+        - generic [ref=e13]:
+          - generic [ref=e14]:
+            - heading "Button" [level=2] [ref=e15]
+            - generic [ref=e17]:
+              - generic [ref=e18]:
+                - button "Primary action" [ref=e19] [cursor=pointer]
+                - button "Default action" [ref=e20] [cursor=pointer]
+                - button "Ghost action" [ref=e21] [cursor=pointer]
+              - generic [ref=e22]:
+                - button "Disabled default" [disabled] [ref=e23]
+                - button "Disabled primary" [disabled] [ref=e24]
+              - paragraph [ref=e25]: "Primary button clicks: 0"
+            - button "Show code" [ref=e27] [cursor=pointer]
+          - generic [ref=e28]:
+            - heading "RadioGroup" [level=2] [ref=e29]
+            - generic [ref=e31]:
+              - generic [ref=e33]:
+                - generic [ref=e34] [cursor=pointer]:
+                  - radio "Apple" [checked] [ref=e35]
+                  - generic [ref=e36]: Apple
+                - generic [ref=e37] [cursor=pointer]:
+                  - radio "Orange" [ref=e38]
+                  - generic [ref=e39]: Orange
+              - generic [ref=e41]:
+                - generic [ref=e42]:
+                  - radio "Apple disabled" [checked] [disabled] [ref=e43]
+                  - generic [ref=e44]: Apple disabled
+                - generic [ref=e45]:
+                  - radio "Orange disabled" [disabled] [ref=e46]
+                  - generic [ref=e47]: Orange disabled
+              - paragraph [ref=e48]: "Selected fruit: apple"
+            - button "Show code" [ref=e50] [cursor=pointer]
+          - generic [ref=e51]:
+            - heading "Select" [level=2] [ref=e52]
+            - generic [ref=e54]:
+              - combobox [ref=e55]:
+                - option "Small"
+                - option "Medium" [selected]
+                - option "Large"
+              - combobox [disabled] [ref=e56]:
+                - option "Small"
+                - option "Medium"
+                - option "Large" [selected]
+              - paragraph [ref=e57]: "Selected size: medium"
+            - button "Show code" [ref=e59] [cursor=pointer]
+        - generic [ref=e60]:
+          - generic [ref=e61]:
+            - heading "Window" [level=2] [ref=e62]
+            - generic [ref=e67]:
+              - generic [ref=e68]: Sample Window
+              - generic [ref=e69]:
+                - paragraph [ref=e70]: Window content goes here.
+                - paragraph [ref=e71]: Try dragging the title bar.
+            - button "Show code" [ref=e81] [cursor=pointer]
+          - generic [ref=e82]:
+            - heading "Dock" [level=2] [ref=e83]
+            - generic [ref=e87]: Dock content area
+            - button "Show code" [ref=e90] [cursor=pointer]
+          - generic [ref=e91]:
+            - heading "StartBar" [level=2] [ref=e92]
+            - generic [ref=e96]:
+              - button "Start" [ref=e97] [cursor=pointer]
+              - generic [ref=e99]: Application shortcuts
+            - button "Show code" [ref=e101] [cursor=pointer]
+          - generic [ref=e102]:
+            - heading "Grid" [level=2] [ref=e103]
+            - generic [ref=e105]:
+              - generic [ref=e106]: Item 1
+              - generic [ref=e107]: Item 2
+              - generic [ref=e108]: Item 3
+              - generic [ref=e109]: Item 4
+              - generic [ref=e110]: Item 5
+              - generic [ref=e111]: Item 6
+            - button "Show code" [ref=e113] [cursor=pointer]
+  - generic [ref=e114]:
+    - heading "Theme" [level=2] [ref=e115]
+    - generic [ref=e117]:
+      - paragraph [ref=e118]:
+        - strong [ref=e119]: "Theme wrapper:"
+        - text: Wrap any subtree with
+        - code [ref=e120]: <Theme>
+        - text: and set the
+        - code [ref=e121]: name
+        - text: prop to a theme class like
+        - code [ref=e122]: cm-theme--win98
+        - text: .
+      - paragraph [ref=e123]:
+        - strong [ref=e124]: "Nested Theme:"
+        - text: Nesting
+        - code [ref=e125]: <Theme>
+        - text: inside another
+        - code [ref=e126]: <Theme>
+        - text: is not supported. Use a component's
+        - code [ref=e127]: theme
+        - text: prop to override the provider theme for that specific component.
+      - paragraph [ref=e128]:
+        - strong [ref=e129]: "Explicit prop:"
+        - text: A component's own
+        - code [ref=e130]: theme
+        - text: prop takes precedence over any Theme provider in its ancestor chain.
+      - generic [ref=e131]:
+        - button [ref=e133]: Wrapper applies theme
+        - button [ref=e135]: Prop overrides
+    - button "Show code" [ref=e137] [cursor=pointer]

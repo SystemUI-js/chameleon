@@ -2,6 +2,7 @@ import React from 'react';
 
 export interface ThemeContextValue {
   theme: string | undefined;
+  hasThemeProvider: boolean;
 }
 
 export interface ThemeProps {
@@ -9,7 +10,10 @@ export interface ThemeProps {
   children?: React.ReactNode;
 }
 
-export const ThemeContext = React.createContext<ThemeContextValue>({ theme: undefined });
+export const ThemeContext = React.createContext<ThemeContextValue>({
+  theme: undefined,
+  hasThemeProvider: false,
+});
 
 function normalizeTheme(theme: string | undefined): string | undefined {
   if (theme === undefined) {
@@ -22,8 +26,14 @@ function normalizeTheme(theme: string | undefined): string | undefined {
 }
 
 export function Theme({ name, children }: ThemeProps): React.ReactElement {
+  const parentContext = React.useContext(ThemeContext);
+
+  if (parentContext.hasThemeProvider) {
+    throw new Error('Nested Theme is not supported');
+  }
+
   const contextValue = React.useMemo<ThemeContextValue>(
-    () => ({ theme: normalizeTheme(name) }),
+    () => ({ theme: normalizeTheme(name), hasThemeProvider: true }),
     [name],
   );
 
