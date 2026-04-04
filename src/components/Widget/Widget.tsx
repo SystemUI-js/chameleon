@@ -22,12 +22,32 @@ export interface CWidgetProps extends WidgetLayoutProps {
   children?: React.ReactNode;
   theme?: string;
   resizable?: boolean;
+  moveBehavior?: WidgetInteractionBehavior;
+  resizeBehavior?: WidgetInteractionBehavior;
   resizeOptions?: CWidgetResizeOptions;
 }
 
 export type WidgetFrameState = Required<WidgetLayoutProps>;
 
 export type WidgetFramePatch = Partial<WidgetFrameState>;
+
+export type WidgetInteractionBehavior = 'live' | 'outline';
+
+export type WidgetPreviewSource = 'move' | 'resize';
+
+export type WidgetPreviewRect = {
+  x: WidgetFrameState['x'];
+  y: WidgetFrameState['y'];
+  width: WidgetFrameState['width'];
+  height: WidgetFrameState['height'];
+};
+
+export interface WidgetPreviewState {
+  active: boolean;
+  behavior: WidgetInteractionBehavior;
+  source: WidgetPreviewSource | null;
+  rect: WidgetPreviewRect | null;
+}
 
 export type WidgetFrameMovePosition = {
   x: number;
@@ -75,8 +95,6 @@ export const getResizeCursor = (direction: ResizeDirection): React.CSSProperties
   }
 };
 
-type WidgetComponentState = Record<string, unknown>;
-
 type WidgetFrameOptions = {
   className?: string;
   theme?: string;
@@ -86,8 +104,15 @@ type WidgetFrameOptions = {
 
 type WidgetFrameMoveHandleProps = {
   onWindowMove: (position: WidgetFrameMovePosition) => void;
+  onWindowMovePreview: (position: WidgetFrameMovePosition) => void;
+  onWindowMovePreviewClear: () => void;
   getWindowPose: () => Pose;
+  moveBehavior: WidgetInteractionBehavior;
 };
+
+type WidgetComponentState = Partial<WidgetFrameState> & {
+  preview?: WidgetPreviewState;
+} & Record<string, unknown>;
 
 export class CWidget extends React.Component<CWidgetProps, WidgetComponentState> {
   public static readonly contextType = ThemeContext;
@@ -107,14 +132,17 @@ export class CWidget extends React.Component<CWidgetProps, WidgetComponentState>
 
   private readonly resizeDragInstances = new Map<ResizeDirection, Drag>();
   private readonly resizeStartByDirection = new Map<ResizeDirection, ResizeStart>();
+  private readonly pendingResizeRectByDirection = new Map<ResizeDirection, WidgetFrameState>();
+  private readonly cancelledResizeDirections = new Set<ResizeDirection>();
   private readonly resizePointerDownHandlers = new Map<
     ResizeDirection,
     (event: PointerEvent) => void
   >();
+  private readonly resizePointerCancelHandlers = new Map<ResizeDirection, () => void>();
 
   public constructor(props: CWidgetProps) {
     super(props);
-    this.state = CWidget.getInitialFrameState(props);
+    this.state = CWidget.getInitialState(props);
   }
 
   public componentDidMount(): void {
@@ -145,6 +173,28 @@ export class CWidget extends React.Component<CWidgetProps, WidgetComponentState>
     };
   }
 
+  protected static getDefaultInteractionBehavior(
+    behavior?: WidgetInteractionBehavior,
+  ): WidgetInteractionBehavior {
+    return behavior === 'outline' ? 'outline' : 'live';
+  }
+
+  protected static getInitialPreviewState(_props: CWidgetProps): WidgetPreviewState {
+    return {
+      active: false,
+      behavior: 'live',
+      source: null,
+      rect: null,
+    };
+  }
+
+  protected static getInitialState(props: CWidgetProps): WidgetComponentState {
+    return {
+      ...CWidget.getInitialFrameState(props),
+      preview: CWidget.getInitialPreviewState(props),
+    };
+  }
+
   protected getDragPose = () => {
     const frame = this.getFrameState();
 
@@ -160,7 +210,6 @@ export class CWidget extends React.Component<CWidgetProps, WidgetComponentState>
 
   protected handleFrameMove = (framePatch: WidgetFramePatch): void => {
     this.setState((prevState) => ({
-      ...(prevState as WidgetFrameState),
       ...prevState,
       ...framePatch,
     }));
@@ -178,6 +227,26 @@ export class CWidget extends React.Component<CWidgetProps, WidgetComponentState>
     this.applyFrameMove(this.getFrameMovePatch(position));
   };
 
+  protected applyFrameMovePreviewPosition = (position: WidgetFrameMovePosition): void => {
+    const frame = this.getFrameState();
+
+    this.setPreviewRect(
+      {
+        ...frame,
+        ...this.getFrameMovePatch(position),
+      },
+      {
+        source: 'move',
+        behavior: this.getMoveBehavior(),
+        active: true,
+      },
+    );
+  };
+
+  protected clearFrameMovePreview = (): void => {
+    this.clearPreviewState();
+  };
+
   protected syncControlledFrameProps(prevProps: Readonly<WidgetLayoutProps>): void {
     if (
       prevProps.x !== this.props.x ||
@@ -186,17 +255,166 @@ export class CWidget extends React.Component<CWidgetProps, WidgetComponentState>
       prevProps.height !== this.props.height
     ) {
       this.setState((prevState) => ({
-        ...(prevState as WidgetFrameState),
-        x: this.props.x ?? (prevState as WidgetFrameState).x,
-        y: this.props.y ?? (prevState as WidgetFrameState).y,
-        width: this.props.width ?? (prevState as WidgetFrameState).width,
-        height: this.props.height ?? (prevState as WidgetFrameState).height,
+        ...prevState,
+        x: this.props.x ?? prevState.x,
+        y: this.props.y ?? prevState.y,
+        width: this.props.width ?? prevState.width,
+        height: this.props.height ?? prevState.height,
       }));
     }
   }
 
   protected getFrameState(): WidgetFrameState {
-    return this.state as WidgetFrameState;
+    const { x, y, width, height } = this.state;
+
+    return {
+      x: typeof x === 'number' ? x : 0,
+      y: typeof y === 'number' ? y : 0,
+      width: typeof width === 'number' ? width : 0,
+      height: typeof height === 'number' ? height : 0,
+    };
+  }
+
+  protected getMoveBehavior(): WidgetInteractionBehavior {
+    return CWidget.getDefaultInteractionBehavior(this.props.moveBehavior);
+  }
+
+  protected getResizeBehavior(): WidgetInteractionBehavior {
+    return CWidget.getDefaultInteractionBehavior(this.props.resizeBehavior);
+  }
+
+  protected getPreviewState(): WidgetPreviewState {
+    return this.state.preview ?? CWidget.getInitialPreviewState(this.props);
+  }
+
+  protected getPreviewBehavior(source: WidgetPreviewSource): WidgetInteractionBehavior {
+    return source === 'resize' ? this.getResizeBehavior() : this.getMoveBehavior();
+  }
+
+  protected setPreviewState(preview: WidgetPreviewState): void {
+    this.setState((prevState) => ({
+      ...prevState,
+      preview,
+    }));
+  }
+
+  protected setPreviewRect(
+    rect: WidgetPreviewRect | null,
+    options?: {
+      source?: WidgetPreviewSource | null;
+      behavior?: WidgetInteractionBehavior;
+      active?: boolean;
+    },
+  ): void {
+    this.setState((prevState) => ({
+      ...prevState,
+      preview: {
+        ...(prevState.preview ?? CWidget.getInitialPreviewState(this.props)),
+        rect,
+        source: options?.source ?? prevState.preview?.source ?? null,
+        behavior:
+          options?.behavior ??
+          (options?.source
+            ? this.getPreviewBehavior(options.source)
+            : (prevState.preview?.behavior ?? 'live')),
+        active: options?.active ?? rect !== null,
+      },
+    }));
+  }
+
+  protected clearPreviewState(): void {
+    this.setPreviewState({
+      active: false,
+      behavior: 'live',
+      source: null,
+      rect: null,
+    });
+  }
+
+  protected areFrameStatesEqual(left: WidgetFrameState, right: WidgetFrameState): boolean {
+    return (
+      left.x === right.x &&
+      left.y === right.y &&
+      left.width === right.width &&
+      left.height === right.height
+    );
+  }
+
+  protected clearResizePreview(): void {
+    if (this.getPreviewState().source === 'resize') {
+      this.clearPreviewState();
+    }
+  }
+
+  protected handleResizePose(direction: ResizeDirection, pose: Partial<Pose>): void {
+    if (!pose.position) {
+      return;
+    }
+
+    const resizeStart = this.resizeStartByDirection.get(direction);
+
+    if (!resizeStart) {
+      return;
+    }
+
+    const deltaX = pose.position.x - resizeStart.posePosition.x;
+    const deltaY = pose.position.y - resizeStart.posePosition.y;
+    const nextRect = this.getResizedRect(resizeStart.rect, direction, deltaX, deltaY);
+
+    if (this.getResizeBehavior() === 'outline') {
+      if (this.areFrameStatesEqual(nextRect, resizeStart.rect)) {
+        this.pendingResizeRectByDirection.delete(direction);
+        this.clearResizePreview();
+        return;
+      }
+
+      this.pendingResizeRectByDirection.set(direction, nextRect);
+      this.setPreviewRect(nextRect, {
+        source: 'resize',
+        behavior: 'outline',
+        active: true,
+      });
+      return;
+    }
+
+    this.setState(nextRect);
+  }
+
+  protected handleResizeEnd(direction: ResizeDirection, pose: Partial<Pose>): void {
+    const resizeStart = this.resizeStartByDirection.get(direction);
+    const pendingRect = this.pendingResizeRectByDirection.get(direction);
+    const isCancelled = this.cancelledResizeDirections.has(direction);
+
+    this.pendingResizeRectByDirection.delete(direction);
+    this.cancelledResizeDirections.delete(direction);
+
+    if (this.getResizeBehavior() !== 'outline') {
+      return;
+    }
+
+    if (isCancelled) {
+      this.clearResizePreview();
+      return;
+    }
+
+    let nextRect = pendingRect;
+
+    if (pose.position && resizeStart) {
+      const deltaX = pose.position.x - resizeStart.posePosition.x;
+      const deltaY = pose.position.y - resizeStart.posePosition.y;
+      nextRect = this.getResizedRect(resizeStart.rect, direction, deltaX, deltaY);
+    }
+
+    const shouldCommit =
+      resizeStart !== undefined &&
+      nextRect !== undefined &&
+      !this.areFrameStatesEqual(nextRect, resizeStart.rect);
+
+    if (shouldCommit && nextRect) {
+      this.setState(nextRect);
+    }
+
+    this.clearResizePreview();
   }
 
   protected isFrameMoveHandleElement(_type: unknown): boolean {
@@ -206,7 +424,10 @@ export class CWidget extends React.Component<CWidgetProps, WidgetComponentState>
   protected getFrameMoveHandleProps(): WidgetFrameMoveHandleProps {
     return {
       onWindowMove: this.applyFrameMovePosition,
+      onWindowMovePreview: this.applyFrameMovePreviewPosition,
+      onWindowMovePreviewClear: this.clearFrameMovePreview,
       getWindowPose: this.getDragPose,
+      moveBehavior: this.getMoveBehavior(),
     };
   }
 
@@ -399,31 +620,32 @@ export class CWidget extends React.Component<CWidgetProps, WidgetComponentState>
             y: frame.y,
           },
         });
+
+        this.cancelledResizeDirections.delete(direction);
+        this.pendingResizeRectByDirection.delete(direction);
+        this.clearResizePreview();
+      };
+
+      const onPointerCancel = () => {
+        this.cancelledResizeDirections.add(direction);
+        this.pendingResizeRectByDirection.delete(direction);
+        this.clearResizePreview();
       };
 
       this.resizePointerDownHandlers.set(direction, onPointerDown);
+      this.resizePointerCancelHandlers.set(direction, onPointerCancel);
       handle.addEventListener('pointerdown', onPointerDown);
+      handle.addEventListener('pointercancel', onPointerCancel);
 
       this.resizeDragInstances.set(
         direction,
         new Drag(handle, {
           getPose: this.getDragPose,
           setPose: (_element, pose) => {
-            if (!pose.position) {
-              return;
-            }
-
-            const resizeStart = this.resizeStartByDirection.get(direction);
-
-            if (!resizeStart) {
-              return;
-            }
-
-            const deltaX = pose.position.x - resizeStart.posePosition.x;
-            const deltaY = pose.position.y - resizeStart.posePosition.y;
-            const nextRect = this.getResizedRect(resizeStart.rect, direction, deltaX, deltaY);
-
-            this.setState(nextRect);
+            this.handleResizePose(direction, pose);
+          },
+          setPoseOnEnd: (_element, pose) => {
+            this.handleResizeEnd(direction, pose);
           },
         }),
       );
@@ -436,19 +658,28 @@ export class CWidget extends React.Component<CWidgetProps, WidgetComponentState>
     });
     this.resizeDragInstances.clear();
     this.resizeStartByDirection.clear();
+    this.pendingResizeRectByDirection.clear();
+    this.cancelledResizeDirections.clear();
+    this.clearResizePreview();
 
     RESIZE_DIRECTIONS.forEach((direction) => {
       const handle = this.resizeHandleRefs[direction].current;
       const pointerDownHandler = this.resizePointerDownHandlers.get(direction);
+      const pointerCancelHandler = this.resizePointerCancelHandlers.get(direction);
 
-      if (!handle || !pointerDownHandler) {
-        return;
+      if (handle) {
+        if (pointerDownHandler) {
+          handle.removeEventListener('pointerdown', pointerDownHandler);
+        }
+
+        if (pointerCancelHandler) {
+          handle.removeEventListener('pointercancel', pointerCancelHandler);
+        }
       }
-
-      handle.removeEventListener('pointerdown', pointerDownHandler);
     });
 
     this.resizePointerDownHandlers.clear();
+    this.resizePointerCancelHandlers.clear();
   }
 
   protected getResizeRegionStyle(
@@ -520,14 +751,42 @@ export class CWidget extends React.Component<CWidgetProps, WidgetComponentState>
       ...options?.style,
     };
 
+    const preview = this.renderPreviewFrame(options);
+
+    return (
+      <>
+        {preview}
+        <div
+          data-testid={options?.testId ?? 'widget-frame'}
+          className={this.mergeThemeClassName(options?.className, options?.theme)}
+          style={frameStyle}
+        >
+          {content}
+        </div>
+      </>
+    );
+  }
+
+  protected renderPreviewFrame(options?: WidgetFrameOptions): React.ReactNode {
+    const preview = this.getPreviewState();
+
+    if (!preview.active || !preview.rect || preview.behavior !== 'outline') {
+      return null;
+    }
+
     return (
       <div
-        data-testid={options?.testId ?? 'widget-frame'}
+        aria-hidden="true"
+        data-testid="window-preview-frame"
         className={this.mergeThemeClassName(options?.className, options?.theme)}
-        style={frameStyle}
-      >
-        {content}
-      </div>
+        style={{
+          left: preview.rect.x,
+          top: preview.rect.y,
+          width: preview.rect.width,
+          height: preview.rect.height,
+          position: 'absolute',
+        }}
+      />
     );
   }
 

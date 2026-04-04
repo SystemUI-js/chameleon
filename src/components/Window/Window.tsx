@@ -1,14 +1,22 @@
 import type React from 'react';
-import type { CWidgetProps, CWidgetResizeOptions, ResizeDirection } from '../Widget/Widget';
+import type {
+  CWidgetProps,
+  CWidgetResizeOptions,
+  ResizeDirection,
+  WidgetInteractionBehavior,
+} from '../Widget/Widget';
 import { CWidget } from '../Widget/Widget';
 import { CWindowTitle } from './WindowTitle';
 import './index.scss';
 
 export type CWindowResizeOptions = CWidgetResizeOptions;
+export type CWindowInteractionBehavior = WidgetInteractionBehavior;
 
 export interface CWindowProps extends CWidgetProps {
   children?: React.ReactNode;
   theme?: string;
+  moveBehavior?: CWindowInteractionBehavior;
+  resizeBehavior?: CWindowInteractionBehavior;
 }
 
 export class CWindow extends CWidget {
@@ -33,6 +41,36 @@ export class CWindow extends CWidget {
 
   protected getWindowFrameClassName(): string {
     return this.mergeThemeClassName('cm-window-frame', this.props.theme) ?? 'cm-window-frame';
+  }
+
+  protected getWindowPreviewFrameClassName(): string {
+    return (
+      this.mergeThemeClassName('cm-window-preview-frame', this.props.theme) ??
+      'cm-window-preview-frame'
+    );
+  }
+
+  protected renderPreviewFrame(): React.ReactNode {
+    const preview = this.getPreviewState();
+
+    if (!preview.active || !preview.rect || preview.behavior !== 'outline') {
+      return null;
+    }
+
+    return (
+      <div
+        aria-hidden="true"
+        data-testid="window-preview-frame"
+        className={this.getWindowPreviewFrameClassName()}
+        style={{
+          left: preview.rect.x,
+          top: preview.rect.y,
+          width: preview.rect.width,
+          height: preview.rect.height,
+          position: 'absolute',
+        }}
+      />
+    );
   }
 
   protected getWindowInnerClassName(): string {

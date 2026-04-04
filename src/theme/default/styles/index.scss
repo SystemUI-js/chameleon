@@ -11,6 +11,14 @@
             inset -1px -1px 0 rgba(0, 0, 0, 0.12);
     }
 
+    .cm-window-preview-frame,
+    .cm-window-preview-frame.cm-theme--default {
+        border: 2px dashed #5f7fab;
+        background: transparent;
+        pointer-events: none;
+        box-sizing: border-box;
+    }
+
     .cm-window,
     .cm-window.cm-theme--default {
         box-sizing: border-box;

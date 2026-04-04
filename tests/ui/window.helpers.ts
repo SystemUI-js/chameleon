@@ -1,4 +1,4 @@
-import type { Locator, Page } from '@playwright/test';
+import { expect, type Locator, type Page } from '@playwright/test';
 import type { DevThemeId } from '@/dev/themeSwitcher';
 
 export type FrameMetrics = {
@@ -8,8 +8,17 @@ export type FrameMetrics = {
   height: number;
 };
 
+export type DragSession = {
+  page: Page;
+  startX: number;
+  startY: number;
+  currentX: number;
+  currentY: number;
+};
+
 const PLAYWRIGHT_WINDOW_PATH = '/playwright-window.html';
 const WINDOW_FRAME_TEST_ID = 'window-frame';
+const WINDOW_PREVIEW_FRAME_TEST_ID = 'window-preview-frame';
 const WINDOW_TITLE_TEST_ID = 'window-title';
 const WINDOW_CONTENT_TEST_ID = 'window-content';
 const WINDOW_RESIZE_TEST_ID_PREFIX = 'window-resize-';
@@ -99,7 +108,7 @@ export const readFrameMetrics = async (page: Page): Promise<FrameMetrics> => {
   };
 };
 
-export const dragLocatorBy = async (locator: Locator, dx: number, dy: number): Promise<void> => {
+export const startLocatorDrag = async (locator: Locator): Promise<DragSession> => {
   await locator.scrollIntoViewIfNeeded();
 
   const box = await locator.boundingBox();
@@ -111,12 +120,68 @@ export const dragLocatorBy = async (locator: Locator, dx: number, dy: number): P
   const page = locator.page();
   const startX = box.x + box.width / 2;
   const startY = box.y + box.height / 2;
-  const endX = startX + dx;
-  const endY = startY + dy;
-  const steps = Math.max(Math.abs(dx), Math.abs(dy), 4);
 
   await page.mouse.move(startX, startY);
   await page.mouse.down();
-  await page.mouse.move(endX, endY, { steps });
-  await page.mouse.up();
+
+  return {
+    page,
+    startX,
+    startY,
+    currentX: startX,
+    currentY: startY,
+  };
+};
+
+export const moveDragBy = async (session: DragSession, dx: number, dy: number): Promise<void> => {
+  const endX = session.currentX + dx;
+  const endY = session.currentY + dy;
+  const steps = Math.max(Math.abs(dx), Math.abs(dy), 4);
+
+  await session.page.mouse.move(endX, endY, { steps });
+
+  session.currentX = endX;
+  session.currentY = endY;
+};
+
+export const finishDrag = async (session: DragSession): Promise<void> => {
+  await session.page.mouse.up();
+};
+
+export const dragLocatorBy = async (locator: Locator, dx: number, dy: number): Promise<void> => {
+  const session = await startLocatorDrag(locator);
+  await moveDragBy(session, dx, dy);
+  await finishDrag(session);
+};
+
+export const readPreviewMetrics = async (page: Page): Promise<FrameMetrics | null> => {
+  const previewLocator = page.getByTestId(WINDOW_PREVIEW_FRAME_TEST_ID);
+  const count = await previewLocator.count();
+
+  if (count === 0) {
+    return null;
+  }
+
+  const inlineStyle = await previewLocator.evaluate((element) => {
+    const frame = element as HTMLElement;
+
+    return {
+      left: frame.style.left,
+      top: frame.style.top,
+      width: frame.style.width,
+      height: frame.style.height,
+    };
+  });
+
+  return {
+    x: parsePixelValue(inlineStyle.left, 'left'),
+    y: parsePixelValue(inlineStyle.top, 'top'),
+    width: parsePixelValue(inlineStyle.width, 'width'),
+    height: parsePixelValue(inlineStyle.height, 'height'),
+  };
+};
+
+export const expectNoPreviewFrame = async (page: Page): Promise<void> => {
+  const previewLocator = page.getByTestId(WINDOW_PREVIEW_FRAME_TEST_ID);
+  await expect(previewLocator).toHaveCount(0);
 };

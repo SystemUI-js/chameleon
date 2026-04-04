@@ -45,13 +45,13 @@ const renderFixture = (fixture: string): ReactNode => {
       );
     case 'drag-only':
       return (
-        <CWindow x={12} y={24} width={200} height={120} resizable={false}>
+        <CWindow x={12} y={24} width={200} height={120} resizable={false} resizeBehavior="outline">
           <CWindowTitle>Drag only</CWindowTitle>
         </CWindow>
       );
     case 'min-clamp':
       return (
-        <CWindow x={30} y={30} width={40} height={30}>
+        <CWindow x={30} y={30} width={40} height={30} resizeBehavior="outline">
           <CWindowTitle>Clamp min</CWindowTitle>
         </CWindow>
       );
@@ -68,8 +68,37 @@ const renderFixture = (fixture: string): ReactNode => {
             maxContentWidth: 150,
             maxContentHeight: 110,
           }}
+          resizeBehavior="outline"
         >
           <CWindowTitle>Clamp max</CWindowTitle>
+        </CWindow>
+      );
+    case 'outline-move':
+      return (
+        <CWindow x={10} y={20} width={240} height={160} moveBehavior="outline">
+          <CWindowTitle>Outline Move</CWindowTitle>
+          <div>Outline move content</div>
+        </CWindow>
+      );
+    case 'outline-resize':
+      return (
+        <CWindow x={10} y={20} width={240} height={160} resizeBehavior="outline">
+          <CWindowTitle>Outline Resize</CWindowTitle>
+          <div>Outline resize content</div>
+        </CWindow>
+      );
+    case 'outline-both':
+      return (
+        <CWindow
+          x={10}
+          y={20}
+          width={240}
+          height={160}
+          moveBehavior="outline"
+          resizeBehavior="outline"
+        >
+          <CWindowTitle>Outline Both</CWindowTitle>
+          <div>Outline move + resize content</div>
         </CWindow>
       );
     default:
