@@ -281,4 +281,59 @@
     .cm-start-bar__content {
         color: #000000;
     }
+
+    // Menu - Win98 Theme
+    .cm-menu__popup {
+        border: 2px solid;
+        border-color: #808080 #ffffff #ffffff #808080;
+        background: silver;
+        box-shadow:
+            inset -1px -1px 0 #0a0a0a,
+            inset 1px 1px 0 #dfdfdf,
+            inset -2px -2px grey,
+            inset 2px 2px #fff;
+    }
+
+    .cm-menu__list {
+        padding: 2px 0;
+    }
+
+    .cm-menu__item-button {
+        padding: 4px 20px;
+        border: none;
+        border-radius: 0;
+        background: transparent;
+        color: #000000;
+        font-size: 11px;
+        font-family: 'MS Sans Serif', 'Tahoma', sans-serif;
+        text-align: left;
+    }
+
+    .cm-menu__item-button:hover:not(:disabled) {
+        background: navy;
+        color: #ffffff;
+    }
+
+    .cm-menu__item-button:hover:not(:disabled)::selection {
+        background: navy;
+        color: #ffffff;
+    }
+
+    .cm-menu__item-button--disabled {
+        color: #808080;
+        text-shadow: 1px 1px 0 #ffffff;
+        cursor: not-allowed;
+    }
+
+    .cm-menu__caret {
+        margin-left: 8px;
+    }
+
+    .cm-menu__submenu {
+        box-shadow:
+            inset -1px -1px 0 #0a0a0a,
+            inset 1px 1px 0 #dfdfdf,
+            inset -2px -2px grey,
+            inset 2px 2px #fff;
+    }
 }

@@ -1,6 +1,7 @@
 import React from 'react';
 import {
   CButton,
+  CMenu,
   CRadio,
   CRadioGroup,
   CSelect,
@@ -13,6 +14,7 @@ import {
   CGrid,
   CGridItem,
   type CSelectOption,
+  type MenuListItem,
   WidgetInteractionBehavior,
 } from '@/components';
 import { DEV_THEME, DevThemeRoot, type DevThemeId } from './themeSwitcher';
@@ -366,6 +368,59 @@ function GridShowcase(): React.ReactElement {
   );
 }
 
+const SAMPLE_MENU_LIST: readonly MenuListItem[] = [
+  { id: 'file', key: 'file', title: 'File' },
+  { id: 'edit', key: 'edit', title: 'Edit' },
+  { id: 'view', key: 'view', title: 'View' },
+];
+
+const MENU_SNIPPET = `
+const [selectedItem, setSelectedItem] = useState<MenuListItem | null>(null);
+
+return (
+  <>
+    <CMenu
+      data-testid="menu-demo"
+      trigger="click"
+      menuList={SAMPLE_MENU_LIST}
+      onSelect={setSelectedItem}
+    >
+      <CButton data-testid="menu-demo-trigger">Menu</CButton>
+    </CMenu>
+
+    <p>Selected: {selectedItem?.title ?? 'none'}</p>
+  </>
+);
+`.trim();
+
+function MenuShowcase(): React.ReactElement {
+  const [selectedItem, setSelectedItem] = React.useState<MenuListItem | null>(null);
+
+  return (
+    <ShowcaseSection title="Menu" testId="catalog-section-menu" code={MENU_SNIPPET}>
+      <div className="cm-catalog__stack">
+        <CMenu
+          data-testid="menu-demo"
+          trigger="click"
+          menuList={SAMPLE_MENU_LIST}
+          onSelect={setSelectedItem}
+        >
+          <CButton data-testid="menu-demo-trigger">Click Menu</CButton>
+        </CMenu>
+        <CMenu
+          data-testid="menu-demo-hover"
+          trigger="hover"
+          menuList={SAMPLE_MENU_LIST}
+          onSelect={setSelectedItem}
+        >
+          <CButton data-testid="menu-demo-trigger-hover">Hover Menu</CButton>
+        </CMenu>
+        <p className="cm-catalog__value">Selected: {selectedItem?.title ?? 'none'}</p>
+      </div>
+    </ShowcaseSection>
+  );
+}
+
 export function ComponentCatalog({
   theme,
   onThemeChange,
@@ -386,6 +441,7 @@ export function ComponentCatalog({
             <ButtonShowcase />
             <RadioGroupShowcase />
             <SelectShowcase />
+            <MenuShowcase />
             <WindowShowcase />
             <DockShowcase />
             <StartBarShowcase />
