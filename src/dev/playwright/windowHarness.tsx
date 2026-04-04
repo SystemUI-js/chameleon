@@ -2,6 +2,7 @@ import type { ReactNode } from 'react';
 import { createRoot } from 'react-dom/client';
 import { CWindow } from '@/components/Window/Window';
 import { CWindowTitle } from '@/components/Window/WindowTitle';
+import { WidgetInteractionBehavior } from '@/components/Widget/Widget';
 import { DEV_THEME, DevThemeRoot, type DevThemeId } from '../themeSwitcher';
 
 type HarnessRoute = {
@@ -45,13 +46,26 @@ const renderFixture = (fixture: string): ReactNode => {
       );
     case 'drag-only':
       return (
-        <CWindow x={12} y={24} width={200} height={120} resizable={false} resizeBehavior="outline">
+        <CWindow
+          x={12}
+          y={24}
+          width={200}
+          height={120}
+          resizable={false}
+          resizeBehavior={WidgetInteractionBehavior.Outline}
+        >
           <CWindowTitle>Drag only</CWindowTitle>
         </CWindow>
       );
     case 'min-clamp':
       return (
-        <CWindow x={30} y={30} width={40} height={30} resizeBehavior="outline">
+        <CWindow
+          x={30}
+          y={30}
+          width={40}
+          height={30}
+          resizeBehavior={WidgetInteractionBehavior.Outline}
+        >
           <CWindowTitle>Clamp min</CWindowTitle>
         </CWindow>
       );
@@ -68,21 +82,33 @@ const renderFixture = (fixture: string): ReactNode => {
             maxContentWidth: 150,
             maxContentHeight: 110,
           }}
-          resizeBehavior="outline"
+          resizeBehavior={WidgetInteractionBehavior.Outline}
         >
           <CWindowTitle>Clamp max</CWindowTitle>
         </CWindow>
       );
     case 'outline-move':
       return (
-        <CWindow x={10} y={20} width={240} height={160} moveBehavior="outline">
+        <CWindow
+          x={10}
+          y={20}
+          width={240}
+          height={160}
+          moveBehavior={WidgetInteractionBehavior.Outline}
+        >
           <CWindowTitle>Outline Move</CWindowTitle>
           <div>Outline move content</div>
         </CWindow>
       );
     case 'outline-resize':
       return (
-        <CWindow x={10} y={20} width={240} height={160} resizeBehavior="outline">
+        <CWindow
+          x={10}
+          y={20}
+          width={240}
+          height={160}
+          resizeBehavior={WidgetInteractionBehavior.Outline}
+        >
           <CWindowTitle>Outline Resize</CWindowTitle>
           <div>Outline resize content</div>
         </CWindow>
@@ -94,8 +120,8 @@ const renderFixture = (fixture: string): ReactNode => {
           y={20}
           width={240}
           height={160}
-          moveBehavior="outline"
-          resizeBehavior="outline"
+          moveBehavior={WidgetInteractionBehavior.Outline}
+          resizeBehavior={WidgetInteractionBehavior.Outline}
         >
           <CWindowTitle>Outline Both</CWindowTitle>
           <div>Outline move + resize content</div>

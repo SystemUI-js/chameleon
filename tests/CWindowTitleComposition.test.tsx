@@ -6,7 +6,11 @@ import { Theme } from '../src';
 import { CWindow } from '../src/components/Window/Window';
 import { CWindowBody } from '../src/components/Window/WindowBody';
 import { CWindowTitle } from '../src/components/Window/WindowTitle';
-import type { WidgetPreviewRect } from '../src/components/Widget/Widget';
+import {
+  WidgetInteractionBehavior,
+  WidgetPreviewSource,
+  type WidgetPreviewRect,
+} from '../src/components/Widget/Widget';
 
 const setRect = (
   element: HTMLElement,
@@ -65,6 +69,16 @@ const getFrameMetrics = (
   width: Number.parseFloat(frame.style.width),
   height: Number.parseFloat(frame.style.height),
 });
+
+class PreviewTestWindow extends CWindow {
+  public setPreview(rect: WidgetPreviewRect) {
+    this.setPreviewRect(rect, {
+      source: WidgetPreviewSource.Move,
+      behavior: WidgetInteractionBehavior.Outline,
+      active: true,
+    });
+  }
+}
 
 describe('CWindow and CWindowTitle composition', () => {
   it('keeps default live behavior and does not render preview frame when behavior props are omitted', () => {
@@ -256,7 +270,7 @@ describe('CWindow and CWindowTitle composition', () => {
   });
 
   it('threads moveBehavior into composed window titles and keeps live move behavior unchanged', () => {
-    const receivedMoveBehaviors: Array<string | undefined> = [];
+    const receivedMoveBehaviors: Array<WidgetInteractionBehavior | undefined> = [];
 
     class InspectableWindowTitle extends CWindowTitle {
       public override render(): React.ReactElement {
@@ -271,8 +285,8 @@ describe('CWindow and CWindowTitle composition', () => {
         y={20}
         width={240}
         height={160}
-        moveBehavior="outline"
-        resizeBehavior="outline"
+        moveBehavior={WidgetInteractionBehavior.Outline}
+        resizeBehavior={WidgetInteractionBehavior.Outline}
       >
         <InspectableWindowTitle>Threaded behavior</InspectableWindowTitle>
       </CWindow>,
@@ -280,7 +294,7 @@ describe('CWindow and CWindowTitle composition', () => {
 
     const frame = getByTestId('window-frame');
 
-    expect(receivedMoveBehaviors).toContain('outline');
+    expect(receivedMoveBehaviors).toContain(WidgetInteractionBehavior.Outline);
     expect(queryByTestId('window-preview-frame')).not.toBeInTheDocument();
 
     dragPointer(getByTestId('window-title'), {
@@ -299,7 +313,13 @@ describe('CWindow and CWindowTitle composition', () => {
 
   it('keeps real frame fixed and renders preview only during outline title drag until release', () => {
     const { getByTestId, queryByTestId } = render(
-      <CWindow x={10} y={20} width={240} height={160} moveBehavior="outline">
+      <CWindow
+        x={10}
+        y={20}
+        width={240}
+        height={160}
+        moveBehavior={WidgetInteractionBehavior.Outline}
+      >
         <CWindowTitle>Outline drag</CWindowTitle>
       </CWindow>,
     );
@@ -353,7 +373,13 @@ describe('CWindow and CWindowTitle composition', () => {
 
   it('does not commit or render preview on zero-delta outline release', () => {
     const { getByTestId, queryByTestId } = render(
-      <CWindow x={10} y={20} width={240} height={160} moveBehavior="outline">
+      <CWindow
+        x={10}
+        y={20}
+        width={240}
+        height={160}
+        moveBehavior={WidgetInteractionBehavior.Outline}
+      >
         <CWindowTitle>Zero delta</CWindowTitle>
       </CWindow>,
     );
@@ -385,7 +411,13 @@ describe('CWindow and CWindowTitle composition', () => {
 
   it('clears outline move preview and suppresses commit on pointer cancel', () => {
     const { getByTestId, queryByTestId } = render(
-      <CWindow x={10} y={20} width={240} height={160} moveBehavior="outline">
+      <CWindow
+        x={10}
+        y={20}
+        width={240}
+        height={160}
+        moveBehavior={WidgetInteractionBehavior.Outline}
+      >
         <CWindowTitle>Cancelled outline move</CWindowTitle>
       </CWindow>,
     );
@@ -444,7 +476,7 @@ describe('CWindow and CWindowTitle composition', () => {
 
   it('does not move window when dragging content area even when outline move is enabled', () => {
     const { getByTestId, queryByTestId } = render(
-      <CWindow x={15} y={25} moveBehavior="outline">
+      <CWindow x={15} y={25} moveBehavior={WidgetInteractionBehavior.Outline}>
         <CWindowTitle>Title</CWindowTitle>
         <div data-testid="window-body">body</div>
       </CWindow>,
@@ -466,7 +498,13 @@ describe('CWindow and CWindowTitle composition', () => {
 
   it('tears down an active outline title drag safely on unmount without leaking preview', () => {
     const { getByTestId, queryByTestId, unmount } = render(
-      <CWindow x={15} y={25} width={240} height={160} moveBehavior="outline">
+      <CWindow
+        x={15}
+        y={25}
+        width={240}
+        height={160}
+        moveBehavior={WidgetInteractionBehavior.Outline}
+      >
         <CWindowTitle>Unmount safety</CWindowTitle>
       </CWindow>,
     );
@@ -565,7 +603,13 @@ describe('CWindow and CWindowTitle composition', () => {
 
   it('keeps committed frame stable and renders resize preview only until outline resize release', () => {
     const { getByTestId, queryByTestId } = render(
-      <CWindow x={10} y={20} width={240} height={160} resizeBehavior="outline">
+      <CWindow
+        x={10}
+        y={20}
+        width={240}
+        height={160}
+        resizeBehavior={WidgetInteractionBehavior.Outline}
+      >
         <CWindowTitle>Outline resize</CWindowTitle>
       </CWindow>,
     );
@@ -622,7 +666,7 @@ describe('CWindow and CWindowTitle composition', () => {
         y={40}
         width={40}
         height={30}
-        resizeBehavior="outline"
+        resizeBehavior={WidgetInteractionBehavior.Outline}
         resizeOptions={{
           minContentWidth: 20,
           minContentHeight: 10,
@@ -681,7 +725,13 @@ describe('CWindow and CWindowTitle composition', () => {
 
   it('does not commit or render resize preview on zero-delta outline resize release', () => {
     const { getByTestId, queryByTestId } = render(
-      <CWindow x={10} y={20} width={240} height={160} resizeBehavior="outline">
+      <CWindow
+        x={10}
+        y={20}
+        width={240}
+        height={160}
+        resizeBehavior={WidgetInteractionBehavior.Outline}
+      >
         <CWindowTitle>Zero delta resize</CWindowTitle>
       </CWindow>,
     );
@@ -713,7 +763,13 @@ describe('CWindow and CWindowTitle composition', () => {
 
   it('clears outline resize preview and suppresses commit on pointer cancel', () => {
     const { getByTestId, queryByTestId } = render(
-      <CWindow x={10} y={20} width={240} height={160} resizeBehavior="outline">
+      <CWindow
+        x={10}
+        y={20}
+        width={240}
+        height={160}
+        resizeBehavior={WidgetInteractionBehavior.Outline}
+      >
         <CWindowTitle>Cancelled outline resize</CWindowTitle>
       </CWindow>,
     );
@@ -772,7 +828,14 @@ describe('CWindow and CWindowTitle composition', () => {
 
   it('disables resize when resizable is false and never creates a resize preview', () => {
     const { getByTestId, queryByTestId } = render(
-      <CWindow x={12} y={24} width={200} height={120} resizable={false} resizeBehavior="outline">
+      <CWindow
+        x={12}
+        y={24}
+        width={200}
+        height={120}
+        resizable={false}
+        resizeBehavior={WidgetInteractionBehavior.Outline}
+      >
         <CWindowTitle>Drag only</CWindowTitle>
       </CWindow>,
     );
@@ -917,7 +980,13 @@ describe('CWindow and CWindowTitle composition', () => {
 
   it('tears down an active outline resize safely on unmount without leaking preview', () => {
     const { getByTestId, queryByTestId, unmount } = render(
-      <CWindow x={15} y={25} width={240} height={160} resizeBehavior="outline">
+      <CWindow
+        x={15}
+        y={25}
+        width={240}
+        height={160}
+        resizeBehavior={WidgetInteractionBehavior.Outline}
+      >
         <CWindowTitle>Resize unmount safety</CWindowTitle>
       </CWindow>,
     );
@@ -959,17 +1028,11 @@ describe('CWindow and CWindowTitle composition', () => {
   });
 
   it('renders preview frame when preview is active with outline behavior while real frame remains', () => {
-    class TestWindow extends CWindow {
-      public setPreview(rect: WidgetPreviewRect) {
-        this.setPreviewRect(rect, { source: 'move', behavior: 'outline', active: true });
-      }
-    }
-
-    const windowRef = React.createRef<TestWindow>();
+    const windowRef = React.createRef<PreviewTestWindow>();
     const { queryByTestId } = render(
-      <TestWindow ref={windowRef} x={10} y={20} width={240} height={160}>
+      <PreviewTestWindow ref={windowRef} x={10} y={20} width={240} height={160}>
         <CWindowTitle>Preview test</CWindowTitle>
-      </TestWindow>,
+      </PreviewTestWindow>,
     );
 
     expect(queryByTestId('window-preview-frame')).not.toBeInTheDocument();
@@ -986,7 +1049,10 @@ describe('CWindow and CWindowTitle composition', () => {
       top: '60px',
       width: '280px',
       height: '180px',
+      zIndex: '2',
+      pointerEvents: 'none',
     });
+    expect(previewFrame?.previousElementSibling).toHaveAttribute('data-testid', 'window-frame');
   });
 
   it('does not render preview frame in default live mode even after drag interaction', () => {
@@ -1014,17 +1080,11 @@ describe('CWindow and CWindowTitle composition', () => {
   });
 
   it('preview frame has dedicated className for theme styling', () => {
-    class TestWindow extends CWindow {
-      public setPreview(rect: WidgetPreviewRect) {
-        this.setPreviewRect(rect, { source: 'move', behavior: 'outline', active: true });
-      }
-    }
-
-    const windowRef = React.createRef<TestWindow>();
+    const windowRef = React.createRef<PreviewTestWindow>();
     render(
-      <TestWindow ref={windowRef} x={10} y={20} width={240} height={160}>
+      <PreviewTestWindow ref={windowRef} x={10} y={20} width={240} height={160}>
         <CWindowTitle>Styled preview</CWindowTitle>
-      </TestWindow>,
+      </PreviewTestWindow>,
     );
 
     act(() => {

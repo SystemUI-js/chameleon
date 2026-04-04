@@ -13,6 +13,7 @@ import {
   CGrid,
   CGridItem,
   type CSelectOption,
+  WidgetInteractionBehavior,
 } from '@/components';
 import { DEV_THEME, DevThemeRoot, type DevThemeId } from './themeSwitcher';
 import { ShowcaseCodeDisclosure } from './ShowcaseCodeDisclosure';
@@ -254,7 +255,13 @@ function WindowShowcase(): React.ReactElement {
   return (
     <ShowcaseSection title="Window" testId="catalog-section-window" code={WINDOW_SNIPPET}>
       <div className="cm-catalog__stage cm-catalog__stage--relative">
-        <CWindow x={24} y={24} width={320} height={200}>
+        <CWindow
+          x={24}
+          y={24}
+          width={300}
+          height={140}
+          resizeBehavior={WidgetInteractionBehavior.Outline}
+        >
           <CWindowTitle>Sample Window</CWindowTitle>
           <CWindowBody>
             <p>Window content goes here.</p>

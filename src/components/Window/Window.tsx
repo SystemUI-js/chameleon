@@ -1,10 +1,6 @@
 import type React from 'react';
-import type {
-  CWidgetProps,
-  CWidgetResizeOptions,
-  ResizeDirection,
-  WidgetInteractionBehavior,
-} from '../Widget/Widget';
+import { WidgetInteractionBehavior, type WidgetPreviewRect } from '../Widget/Widget';
+import type { CWidgetProps, CWidgetResizeOptions, ResizeDirection } from '../Widget/Widget';
 import { CWidget } from '../Widget/Widget';
 import { CWindowTitle } from './WindowTitle';
 import './index.scss';
@@ -53,7 +49,11 @@ export class CWindow extends CWidget {
   protected renderPreviewFrame(): React.ReactNode {
     const preview = this.getPreviewState();
 
-    if (!preview.active || !preview.rect || preview.behavior !== 'outline') {
+    if (
+      !preview.active ||
+      !preview.rect ||
+      preview.behavior !== WidgetInteractionBehavior.Outline
+    ) {
       return null;
     }
 
@@ -62,15 +62,13 @@ export class CWindow extends CWidget {
         aria-hidden="true"
         data-testid="window-preview-frame"
         className={this.getWindowPreviewFrameClassName()}
-        style={{
-          left: preview.rect.x,
-          top: preview.rect.y,
-          width: preview.rect.width,
-          height: preview.rect.height,
-          position: 'absolute',
-        }}
+        style={this.getPreviewFrameStyle(preview.rect)}
       />
     );
+  }
+
+  protected getPreviewFrameStyle(rect: WidgetPreviewRect): React.CSSProperties {
+    return super.getPreviewFrameStyle(rect);
   }
 
   protected getWindowInnerClassName(): string {
@@ -83,6 +81,16 @@ export class CWindow extends CWidget {
 
   protected isFrameMoveHandleElement(type: unknown): boolean {
     return this.isWindowTitleElement(type);
+  }
+
+  protected getFrameMoveHandleProps(): Record<string, unknown> {
+    return {
+      onWindowMove: this.applyFrameMovePosition,
+      onWindowMovePreview: this.applyFrameMovePreviewPosition,
+      onWindowMovePreviewClear: this.clearFrameMovePreview,
+      getWindowPose: this.getDragPose,
+      moveBehavior: this.getMoveBehavior(),
+    };
   }
 
   public render() {

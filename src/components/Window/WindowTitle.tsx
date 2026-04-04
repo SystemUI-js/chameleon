@@ -1,7 +1,7 @@
 import { Drag, type Pose } from '@system-ui-js/multi-drag';
 import React from 'react';
 import { mergeClasses, ResolvedThemeClassName } from '../Theme';
-import type { WidgetFrameMovePosition, WidgetInteractionBehavior } from '../Widget/Widget';
+import { WidgetInteractionBehavior, type WidgetFrameMovePosition } from '../Widget/Widget';
 
 export type WindowPosition = WidgetFrameMovePosition;
 
@@ -55,7 +55,7 @@ export class CWindowTitle extends React.Component<CWindowTitleProps> {
   }
 
   public componentWillUnmount(): void {
-    if (this.getMoveBehavior() === 'outline') {
+    if (this.getMoveBehavior() === WidgetInteractionBehavior.Outline) {
       this.props.onWindowMovePreviewClear?.();
     }
 
@@ -67,7 +67,9 @@ export class CWindowTitle extends React.Component<CWindowTitleProps> {
   }
 
   private getMoveBehavior(): WidgetInteractionBehavior {
-    return this.props.moveBehavior === 'outline' ? 'outline' : 'live';
+    return this.props.moveBehavior === WidgetInteractionBehavior.Outline
+      ? WidgetInteractionBehavior.Outline
+      : WidgetInteractionBehavior.Live;
   }
 
   private resetDragState(): void {
@@ -76,7 +78,7 @@ export class CWindowTitle extends React.Component<CWindowTitleProps> {
   }
 
   private cancelOutlineDrag(): void {
-    if (this.getMoveBehavior() === 'outline') {
+    if (this.getMoveBehavior() === WidgetInteractionBehavior.Outline) {
       this.outlineDragCancelled = true;
       this.props.onWindowMovePreviewClear?.();
     }
@@ -101,7 +103,7 @@ export class CWindowTitle extends React.Component<CWindowTitleProps> {
     this.pendingOutlinePosition = undefined;
     this.outlineDragCancelled = false;
 
-    if (this.getMoveBehavior() === 'outline') {
+    if (this.getMoveBehavior() === WidgetInteractionBehavior.Outline) {
       this.props.onWindowMovePreviewClear?.();
     }
   };
@@ -121,7 +123,7 @@ export class CWindowTitle extends React.Component<CWindowTitleProps> {
       return;
     }
 
-    if (this.getMoveBehavior() === 'outline') {
+    if (this.getMoveBehavior() === WidgetInteractionBehavior.Outline) {
       this.pendingOutlinePosition = { x: position.x, y: position.y };
       this.props.onWindowMovePreview?.(this.pendingOutlinePosition);
       return;
@@ -135,7 +137,7 @@ export class CWindowTitle extends React.Component<CWindowTitleProps> {
       return;
     }
 
-    if (this.getMoveBehavior() !== 'outline') {
+    if (this.getMoveBehavior() !== WidgetInteractionBehavior.Outline) {
       this.outlineDragCancelled = false;
       this.resetDragState();
       return;

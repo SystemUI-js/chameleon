@@ -31,9 +31,15 @@ export type WidgetFrameState = Required<WidgetLayoutProps>;
 
 export type WidgetFramePatch = Partial<WidgetFrameState>;
 
-export type WidgetInteractionBehavior = 'live' | 'outline';
+export enum WidgetInteractionBehavior {
+  Live = 'live',
+  Outline = 'outline',
+}
 
-export type WidgetPreviewSource = 'move' | 'resize';
+export enum WidgetPreviewSource {
+  Move = 'move',
+  Resize = 'resize',
+}
 
 export type WidgetPreviewRect = {
   x: WidgetFrameState['x'];
@@ -103,10 +109,10 @@ type WidgetFrameOptions = {
 };
 
 type WidgetFrameMoveHandleProps = {
-  onWindowMove: (position: WidgetFrameMovePosition) => void;
-  onWindowMovePreview: (position: WidgetFrameMovePosition) => void;
-  onWindowMovePreviewClear: () => void;
-  getWindowPose: () => Pose;
+  onWidgetMove: (position: WidgetFrameMovePosition) => void;
+  onWidgetMovePreview: (position: WidgetFrameMovePosition) => void;
+  onWidgetMovePreviewClear: () => void;
+  getWidgetPose: () => Pose;
   moveBehavior: WidgetInteractionBehavior;
 };
 
@@ -176,13 +182,15 @@ export class CWidget extends React.Component<CWidgetProps, WidgetComponentState>
   protected static getDefaultInteractionBehavior(
     behavior?: WidgetInteractionBehavior,
   ): WidgetInteractionBehavior {
-    return behavior === 'outline' ? 'outline' : 'live';
+    return behavior === WidgetInteractionBehavior.Outline
+      ? WidgetInteractionBehavior.Outline
+      : WidgetInteractionBehavior.Live;
   }
 
   protected static getInitialPreviewState(_props: CWidgetProps): WidgetPreviewState {
     return {
       active: false,
-      behavior: 'live',
+      behavior: WidgetInteractionBehavior.Live,
       source: null,
       rect: null,
     };
@@ -236,7 +244,7 @@ export class CWidget extends React.Component<CWidgetProps, WidgetComponentState>
         ...this.getFrameMovePatch(position),
       },
       {
-        source: 'move',
+        source: WidgetPreviewSource.Move,
         behavior: this.getMoveBehavior(),
         active: true,
       },
@@ -288,7 +296,9 @@ export class CWidget extends React.Component<CWidgetProps, WidgetComponentState>
   }
 
   protected getPreviewBehavior(source: WidgetPreviewSource): WidgetInteractionBehavior {
-    return source === 'resize' ? this.getResizeBehavior() : this.getMoveBehavior();
+    return source === WidgetPreviewSource.Resize
+      ? this.getResizeBehavior()
+      : this.getMoveBehavior();
   }
 
   protected setPreviewState(preview: WidgetPreviewState): void {
@@ -316,7 +326,7 @@ export class CWidget extends React.Component<CWidgetProps, WidgetComponentState>
           options?.behavior ??
           (options?.source
             ? this.getPreviewBehavior(options.source)
-            : (prevState.preview?.behavior ?? 'live')),
+            : (prevState.preview?.behavior ?? WidgetInteractionBehavior.Live)),
         active: options?.active ?? rect !== null,
       },
     }));
@@ -325,7 +335,7 @@ export class CWidget extends React.Component<CWidgetProps, WidgetComponentState>
   protected clearPreviewState(): void {
     this.setPreviewState({
       active: false,
-      behavior: 'live',
+      behavior: WidgetInteractionBehavior.Live,
       source: null,
       rect: null,
     });
@@ -341,7 +351,7 @@ export class CWidget extends React.Component<CWidgetProps, WidgetComponentState>
   }
 
   protected clearResizePreview(): void {
-    if (this.getPreviewState().source === 'resize') {
+    if (this.getPreviewState().source === WidgetPreviewSource.Resize) {
       this.clearPreviewState();
     }
   }
@@ -361,7 +371,7 @@ export class CWidget extends React.Component<CWidgetProps, WidgetComponentState>
     const deltaY = pose.position.y - resizeStart.posePosition.y;
     const nextRect = this.getResizedRect(resizeStart.rect, direction, deltaX, deltaY);
 
-    if (this.getResizeBehavior() === 'outline') {
+    if (this.getResizeBehavior() === WidgetInteractionBehavior.Outline) {
       if (this.areFrameStatesEqual(nextRect, resizeStart.rect)) {
         this.pendingResizeRectByDirection.delete(direction);
         this.clearResizePreview();
@@ -370,8 +380,8 @@ export class CWidget extends React.Component<CWidgetProps, WidgetComponentState>
 
       this.pendingResizeRectByDirection.set(direction, nextRect);
       this.setPreviewRect(nextRect, {
-        source: 'resize',
-        behavior: 'outline',
+        source: WidgetPreviewSource.Resize,
+        behavior: WidgetInteractionBehavior.Outline,
         active: true,
       });
       return;
@@ -388,7 +398,7 @@ export class CWidget extends React.Component<CWidgetProps, WidgetComponentState>
     this.pendingResizeRectByDirection.delete(direction);
     this.cancelledResizeDirections.delete(direction);
 
-    if (this.getResizeBehavior() !== 'outline') {
+    if (this.getResizeBehavior() !== WidgetInteractionBehavior.Outline) {
       return;
     }
 
@@ -421,14 +431,18 @@ export class CWidget extends React.Component<CWidgetProps, WidgetComponentState>
     return false;
   }
 
-  protected getFrameMoveHandleProps(): WidgetFrameMoveHandleProps {
+  protected getWidgetFrameMoveHandleProps(): WidgetFrameMoveHandleProps {
     return {
-      onWindowMove: this.applyFrameMovePosition,
-      onWindowMovePreview: this.applyFrameMovePreviewPosition,
-      onWindowMovePreviewClear: this.clearFrameMovePreview,
-      getWindowPose: this.getDragPose,
+      onWidgetMove: this.applyFrameMovePosition,
+      onWidgetMovePreview: this.applyFrameMovePreviewPosition,
+      onWidgetMovePreviewClear: this.clearFrameMovePreview,
+      getWidgetPose: this.getDragPose,
       moveBehavior: this.getMoveBehavior(),
     };
+  }
+
+  protected getFrameMoveHandleProps(): Record<string, unknown> {
+    return this.getWidgetFrameMoveHandleProps();
   }
 
   protected mapComposedChildren(children: React.ReactNode = this.props.children): React.ReactNode {
@@ -755,7 +769,6 @@ export class CWidget extends React.Component<CWidgetProps, WidgetComponentState>
 
     return (
       <>
-        {preview}
         <div
           data-testid={options?.testId ?? 'widget-frame'}
           className={this.mergeThemeClassName(options?.className, options?.theme)}
@@ -763,14 +776,31 @@ export class CWidget extends React.Component<CWidgetProps, WidgetComponentState>
         >
           {content}
         </div>
+        {preview}
       </>
     );
+  }
+
+  protected getPreviewFrameStyle(rect: WidgetPreviewRect): React.CSSProperties {
+    return {
+      left: rect.x,
+      top: rect.y,
+      width: rect.width,
+      height: rect.height,
+      position: 'absolute',
+      zIndex: 2,
+      pointerEvents: 'none',
+    };
   }
 
   protected renderPreviewFrame(options?: WidgetFrameOptions): React.ReactNode {
     const preview = this.getPreviewState();
 
-    if (!preview.active || !preview.rect || preview.behavior !== 'outline') {
+    if (
+      !preview.active ||
+      !preview.rect ||
+      preview.behavior !== WidgetInteractionBehavior.Outline
+    ) {
       return null;
     }
 
@@ -779,13 +809,7 @@ export class CWidget extends React.Component<CWidgetProps, WidgetComponentState>
         aria-hidden="true"
         data-testid="window-preview-frame"
         className={this.mergeThemeClassName(options?.className, options?.theme)}
-        style={{
-          left: preview.rect.x,
-          top: preview.rect.y,
-          width: preview.rect.width,
-          height: preview.rect.height,
-          position: 'absolute',
-        }}
+        style={this.getPreviewFrameStyle(preview.rect)}
       />
     );
   }
