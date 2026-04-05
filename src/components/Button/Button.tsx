@@ -12,6 +12,7 @@ export interface CButtonProps {
   type?: CButtonType;
   disabled?: boolean;
   onClick?: React.MouseEventHandler<HTMLButtonElement>;
+  onPointerEnter?: React.PointerEventHandler<HTMLButtonElement>;
   className?: string;
   theme?: string;
   'data-testid'?: string;
@@ -30,6 +31,7 @@ export function CButton({
   type = 'button',
   disabled,
   onClick,
+  onPointerEnter,
   className,
   theme,
   'data-testid': dataTestId,
@@ -46,6 +48,7 @@ export function CButton({
       type={type}
       disabled={disabled}
       onClick={onClick}
+      onPointerEnter={onPointerEnter}
       className={mergeClasses(baseClasses, resolvedTheme, className)}
       data-testid={dataTestId}
     >
