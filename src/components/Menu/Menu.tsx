@@ -209,7 +209,7 @@ export function CMenu({
                 {isParent && <span className="cm-menu__caret">▸</span>}
               </button>
               {isParent && isBranchOpen ? (
-                <div className="cm-menu__submenu">
+                <div className="cm-menu__popup cm-menu__submenu">
                   {renderItems(item.children ?? [], depth + 1, effectiveTrigger)}
                 </div>
               ) : null}
