@@ -1,0 +1,27 @@
+.cm-icon {
+    display: inline-flex;
+    align-items: center;
+    justify-content: center;
+    position: relative;
+
+    &--active {
+        // active modifier styles
+    }
+
+    &__content {
+        display: inline-flex;
+        align-items: center;
+        justify-content: center;
+    }
+
+    &__title {
+        // title region styles
+    }
+}
+
+.cm-icon-container {
+    display: flex;
+    align-items: center;
+    position: relative;
+    min-height: 1px;
+}

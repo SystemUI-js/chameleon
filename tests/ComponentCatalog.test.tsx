@@ -235,4 +235,34 @@ describe('ComponentCatalog', () => {
       expect(themeRoot).toContainElement(buttonSection);
     });
   });
+
+  describe('Icon showcase section', () => {
+    it('renders icon showcase section with stable test ids and coordinate status', () => {
+      render(<ComponentCatalog theme={DEV_THEME.default} onThemeChange={() => {}} />);
+
+      const iconSection = screen.getByTestId('catalog-section-icon');
+      expect(iconSection).toBeInTheDocument();
+
+      const iconContainer = within(iconSection).getByTestId('icon-container');
+      expect(iconContainer).toBeInTheDocument();
+
+      const iconItem0 = within(iconSection).getByTestId('icon-item-0');
+      const iconItem1 = within(iconSection).getByTestId('icon-item-1');
+      expect(iconItem0).toBeInTheDocument();
+      expect(iconItem1).toBeInTheDocument();
+
+      const coordsDisplay = within(iconSection).getByTestId('icon-coords-display');
+      expect(coordsDisplay).toBeInTheDocument();
+
+      const refreshButton = within(iconSection).getByTestId('icon-coords-refresh');
+      expect(refreshButton).toBeInTheDocument();
+
+      const activeLabel = within(iconSection).getByText('Active:');
+      const openLabel = within(iconSection).getByText('Open:');
+      const contextLabel = within(iconSection).getByText('Context:');
+      expect(activeLabel).toBeInTheDocument();
+      expect(openLabel).toBeInTheDocument();
+      expect(contextLabel).toBeInTheDocument();
+    });
+  });
 });
