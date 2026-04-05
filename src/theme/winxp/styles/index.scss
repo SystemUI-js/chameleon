@@ -145,6 +145,64 @@
         cursor: not-allowed;
     }
 
+    .cm-button--grouped {
+        position: relative;
+    }
+
+    .cm-button--grouped:hover:not(:disabled),
+    .cm-button--grouped:focus-visible {
+        z-index: 1;
+    }
+
+    .cm-button--group-horizontal.cm-button--group-first {
+        border-top-right-radius: 0;
+        border-bottom-right-radius: 0;
+    }
+
+    .cm-button--group-horizontal.cm-button--group-middle {
+        margin-left: -1px;
+        border-radius: 0;
+    }
+
+    .cm-button--group-horizontal.cm-button--group-last {
+        margin-left: -1px;
+        border-top-left-radius: 0;
+        border-bottom-left-radius: 0;
+    }
+
+    .cm-button--group-vertical.cm-button--group-first {
+        border-bottom-right-radius: 0;
+        border-bottom-left-radius: 0;
+    }
+
+    .cm-button--group-vertical.cm-button--group-middle {
+        margin-top: -1px;
+        border-radius: 0;
+    }
+
+    .cm-button--group-vertical.cm-button--group-last {
+        margin-top: -1px;
+        border-top-left-radius: 0;
+        border-top-right-radius: 0;
+    }
+
+    .cm-button-separator,
+    .cm-button-separator.cm-theme--winxp {
+        background: linear-gradient(180deg, #4d79bb 0%, #d7e6fb 100%);
+        box-shadow: 1px 0 0 rgba(255, 255, 255, 0.7);
+    }
+
+    .cm-button-separator--vertical,
+    .cm-button-separator--vertical.cm-theme--winxp {
+        margin: 0 8px;
+    }
+
+    .cm-button-separator--horizontal,
+    .cm-button-separator--horizontal.cm-theme--winxp {
+        margin: 8px 0;
+        box-shadow: 0 1px 0 rgba(255, 255, 255, 0.7);
+    }
+
     .cm-radio,
     .cm-radio.cm-theme--winxp {
         display: inline-flex;

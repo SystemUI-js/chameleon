@@ -1,6 +1,8 @@
 import React from 'react';
 import {
   CButton,
+  CButtonGroup,
+  CButtonSeparator,
   CRadio,
   CRadioGroup,
   CSelect,
@@ -136,6 +138,20 @@ const THEME_SNIPPET = `
 </Theme>
 `.trim();
 
+const BUTTON_GROUP_SNIPPET = `
+<CButtonGroup variant="primary">
+  <CButton>Back</CButton>
+  <CButton>Next</CButton>
+  <CButtonSeparator />
+  <CButton variant="ghost">Cancel</CButton>
+</CButtonGroup>
+
+<CButtonGroup orientation="vertical" disabled>
+  <CButton>Up</CButton>
+  <CButton>Down</CButton>
+</CButtonGroup>
+`.trim();
+
 function ThemeShowcase(): React.ReactElement {
   return (
     <ShowcaseSection title="Theme" testId="catalog-section-theme" code={THEME_SNIPPET}>
@@ -160,6 +176,41 @@ function ThemeShowcase(): React.ReactElement {
           <Theme name="cm-theme--win98">
             <CButton theme="cm-theme--default">Prop overrides</CButton>
           </Theme>
+        </div>
+      </div>
+    </ShowcaseSection>
+  );
+}
+
+function ButtonGroupShowcase(): React.ReactElement {
+  return (
+    <ShowcaseSection
+      title="ButtonGroup"
+      testId="catalog-section-button-group"
+      code={BUTTON_GROUP_SNIPPET}
+    >
+      <div className="cm-catalog__stack">
+        <div className="cm-catalog__row">
+          <CButtonGroup data-testid="button-group-demo-horizontal" variant="primary">
+            <CButton>Back</CButton>
+            <CButton>Next</CButton>
+            <CButtonSeparator />
+            <CButton variant="ghost">Cancel</CButton>
+          </CButtonGroup>
+        </div>
+        <div className="cm-catalog__row">
+          <CButtonGroup data-testid="button-group-demo-vertical" orientation="vertical">
+            <CButton>Top</CButton>
+            <CButton>Middle</CButton>
+            <CButtonSeparator />
+            <CButton>Bottom</CButton>
+          </CButtonGroup>
+          <CButtonGroup data-testid="button-group-demo-disabled" disabled variant="primary">
+            <CButton>Save</CButton>
+            <CButton>Apply</CButton>
+            <CButtonSeparator />
+            <CButton variant="ghost">Reset</CButton>
+          </CButtonGroup>
         </div>
       </div>
     </ShowcaseSection>
@@ -384,6 +435,7 @@ export function ComponentCatalog({
         <DevThemeRoot theme={theme}>
           <div className="cm-catalog__showcase-list">
             <ButtonShowcase />
+            <ButtonGroupShowcase />
             <RadioGroupShowcase />
             <SelectShowcase />
             <WindowShowcase />

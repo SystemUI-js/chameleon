@@ -1,4 +1,6 @@
 export * from './Button/Button';
+export * from './ButtonGroup/ButtonGroup';
+export * from './ButtonSeparator/ButtonSeparator';
 export * from './Dock/Dock';
 export * from './Grid';
 export * from './Radio/Radio';

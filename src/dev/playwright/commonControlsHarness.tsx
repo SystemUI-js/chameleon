@@ -1,6 +1,14 @@
 import { type ReactNode, useState } from 'react';
 import { createRoot } from 'react-dom/client';
-import { CButton, CRadio, CRadioGroup, CSelect, type CSelectOption } from '@/components';
+import {
+  CButton,
+  CButtonGroup,
+  CButtonSeparator,
+  CRadio,
+  CRadioGroup,
+  CSelect,
+  type CSelectOption,
+} from '@/components';
 import { DEV_THEME, DevThemeRoot, type DevThemeId } from '../themeSwitcher';
 
 type HarnessRoute = {
@@ -114,12 +122,60 @@ const DisabledFixture = (): ReactNode => {
   );
 };
 
+const GroupedButtonsFixture = (): ReactNode => {
+  return (
+    <HarnessLayout>
+      <CButtonGroup data-testid="button-group-demo" variant="primary">
+        <CButton data-testid="button-group-first">Back</CButton>
+        <CButton data-testid="button-group-second">Next</CButton>
+        <CButtonSeparator data-testid="button-group-separator" />
+        <CButton data-testid="button-group-third" variant="ghost">
+          Cancel
+        </CButton>
+      </CButtonGroup>
+      <CButtonGroup data-testid="button-group-vertical-demo" orientation="vertical">
+        <CButton data-testid="button-group-vertical-first">Top</CButton>
+        <CButtonSeparator data-testid="button-group-vertical-separator" />
+        <CButton data-testid="button-group-vertical-second">Bottom</CButton>
+      </CButtonGroup>
+    </HarnessLayout>
+  );
+};
+
+const GroupedButtonsDisabledFixture = (): ReactNode => {
+  return (
+    <HarnessLayout>
+      <CButtonGroup data-testid="button-group-disabled-demo" disabled variant="primary">
+        <CButton data-testid="button-group-disabled-first">Save</CButton>
+        <CButton data-testid="button-group-disabled-second">Apply</CButton>
+        <CButtonSeparator data-testid="button-group-disabled-separator" />
+        <CButton data-testid="button-group-disabled-third" variant="ghost">
+          Reset
+        </CButton>
+      </CButtonGroup>
+      <CButtonGroup
+        data-testid="button-group-vertical-disabled-demo"
+        disabled
+        orientation="vertical"
+      >
+        <CButton data-testid="button-group-vertical-disabled-first">North</CButton>
+        <CButtonSeparator data-testid="button-group-vertical-disabled-separator" />
+        <CButton data-testid="button-group-vertical-disabled-second">South</CButton>
+      </CButtonGroup>
+    </HarnessLayout>
+  );
+};
+
 const renderFixture = (fixture: string): ReactNode => {
   switch (fixture) {
     case 'default':
       return <DefaultFixture />;
     case 'disabled':
       return <DisabledFixture />;
+    case 'grouped-buttons':
+      return <GroupedButtonsFixture />;
+    case 'grouped-buttons-disabled':
+      return <GroupedButtonsDisabledFixture />;
     default:
       return <div data-testid="fixture-error">Unknown fixture: {fixture}</div>;
   }

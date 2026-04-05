@@ -154,6 +154,64 @@
         cursor: not-allowed;
     }
 
+    .cm-button--grouped {
+        position: relative;
+    }
+
+    .cm-button--grouped:hover:not(:disabled),
+    .cm-button--grouped:focus-visible {
+        z-index: 1;
+    }
+
+    .cm-button--group-horizontal.cm-button--group-first {
+        border-top-right-radius: 0;
+        border-bottom-right-radius: 0;
+    }
+
+    .cm-button--group-horizontal.cm-button--group-middle {
+        margin-left: -1px;
+        border-radius: 0;
+    }
+
+    .cm-button--group-horizontal.cm-button--group-last {
+        margin-left: -1px;
+        border-top-left-radius: 0;
+        border-bottom-left-radius: 0;
+    }
+
+    .cm-button--group-vertical.cm-button--group-first {
+        border-bottom-right-radius: 0;
+        border-bottom-left-radius: 0;
+    }
+
+    .cm-button--group-vertical.cm-button--group-middle {
+        margin-top: -1px;
+        border-radius: 0;
+    }
+
+    .cm-button--group-vertical.cm-button--group-last {
+        margin-top: -1px;
+        border-top-left-radius: 0;
+        border-top-right-radius: 0;
+    }
+
+    .cm-button-separator,
+    .cm-button-separator.cm-theme--win98 {
+        background-color: #808080;
+    }
+
+    .cm-button-separator--vertical,
+    .cm-button-separator--vertical.cm-theme--win98 {
+        margin: 0 6px;
+        box-shadow: 1px 0 0 #ffffff;
+    }
+
+    .cm-button-separator--horizontal,
+    .cm-button-separator--horizontal.cm-theme--win98 {
+        margin: 6px 0;
+        box-shadow: 0 1px 0 #ffffff;
+    }
+
     .cm-radio,
     .cm-radio.cm-theme--win98 {
         display: inline-flex;
