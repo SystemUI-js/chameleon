@@ -142,20 +142,19 @@ describe('CWindow and CWindowTitle composition', () => {
     expect(titleText).toHaveTextContent('Composed Title');
   });
 
-  it('renders composed CWindowBody explicitly without changing caller styles', () => {
+  it('renders composed CWindowBody explicitly and lets callers extend styling with className', () => {
     const { getByTestId } = render(
       <CWindow>
         <CWindowTitle>Body host</CWindowTitle>
-        <CWindowBody className="window-body-custom" style={{ padding: 12 }}>
-          body content
-        </CWindowBody>
+        <CWindowBody className="window-body-custom window-body-padded">body content</CWindowBody>
       </CWindow>,
     );
 
     const body = getByTestId('window-body');
 
+    expect(body).toHaveClass('cm-window__body');
     expect(body).toHaveClass('window-body-custom');
-    expect(body).toHaveStyle({ padding: '12px' });
+    expect(body).toHaveClass('window-body-padded');
     expect(body).toHaveTextContent('body content');
   });
 

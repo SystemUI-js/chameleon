@@ -1,13 +1,13 @@
 import type React from 'react';
 import { mergeClasses } from '../Theme/mergeClasses';
+import { normalizeThemeClassName } from '../Theme/normalizeThemeClassName';
 import { useTheme } from '../Theme/useTheme';
 import './index.scss';
 
 export type CButtonVariant = 'default' | 'primary' | 'ghost';
 export type CButtonType = 'button' | 'submit' | 'reset';
 
-export interface CButtonProps {
-  children?: React.ReactNode;
+export interface CButtonProps extends Omit<React.ButtonHTMLAttributes<HTMLButtonElement>, 'type'> {
   variant?: CButtonVariant;
   type?: CButtonType;
   disabled?: boolean;
@@ -16,13 +16,6 @@ export interface CButtonProps {
   className?: string;
   theme?: string;
   'data-testid'?: string;
-}
-
-function resolveThemeClass(theme: string | undefined): string | undefined {
-  if (theme === undefined) {
-    return undefined;
-  }
-  return theme.startsWith('cm-theme--') ? theme : `cm-theme--${theme}`;
 }
 
 export function CButton({
@@ -35,8 +28,9 @@ export function CButton({
   className,
   theme,
   'data-testid': dataTestId,
+  ...buttonProps
 }: CButtonProps): React.ReactElement {
-  const resolvedTheme = resolveThemeClass(useTheme(theme));
+  const resolvedTheme = normalizeThemeClassName(useTheme(theme));
   const baseClasses = ['cm-button'];
 
   if (variant !== 'default') {
@@ -45,6 +39,7 @@ export function CButton({
 
   return (
     <button
+      {...buttonProps}
       type={type}
       disabled={disabled}
       onClick={onClick}

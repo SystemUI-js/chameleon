@@ -71,6 +71,7 @@ Wave 4: Task 4 `manager/theme compatibility`
 Wave 5: Task 5 `Playwright contract refresh`
 
 ### Dependency Matrix (full, all tasks)
+
 | Task | Depends On | Blocks |
 |---|---|---|
 | 1 | none | 2, 3, 4, 5 |
@@ -123,6 +124,7 @@ Wave 5: Task 5 `Playwright contract refresh`
   - [ ] `CWidget.uuid` remains stable across rerender and still renders a positioned frame with inline `left/top/width/height` styles.
 
   **QA Scenarios** (MANDATORY — task incomplete without these):
+
   ```text
   Scenario: Base frame ownership remains stable
     Tool: Bash
@@ -170,6 +172,7 @@ Wave 5: Task 5 `Playwright contract refresh`
   - [ ] East/west/north/south/corner resizing still preserves existing clamp and anchor behavior.
 
   **QA Scenarios** (MANDATORY — task incomplete without these):
+
   ```text
   Scenario: Resize matrix stays behaviorally identical
     Tool: Bash
@@ -219,6 +222,7 @@ Wave 5: Task 5 `Playwright contract refresh`
   - [ ] Add at least one unit case covering active-gesture teardown or post-unmount safety for the new widget-level drag wiring.
 
   **QA Scenarios** (MANDATORY — task incomplete without these):
+
   ```text
   Scenario: Title drag still moves only when explicitly composed
     Tool: Bash
@@ -265,6 +269,7 @@ Wave 5: Task 5 `Playwright contract refresh`
   - [ ] Default theme subclasses keep base class names plus theme-specific class names and still support dragging.
 
   **QA Scenarios** (MANDATORY — task incomplete without these):
+
   ```text
   Scenario: Manager compatibility remains intact
     Tool: Bash
@@ -309,6 +314,7 @@ Wave 5: Task 5 `Playwright contract refresh`
   - [ ] CI command sequence for lint/test/test:ui/build remains valid after the refactor.
 
   **QA Scenarios** (MANDATORY — task incomplete without these):
+
   ```text
   Scenario: Full browser regression matrix passes
     Tool: Bash
@@ -330,7 +336,8 @@ Wave 5: Task 5 `Playwright contract refresh`
 > **Do NOT auto-proceed after verification. Wait for user's explicit approval before marking work complete.**
 > **Never mark F1-F4 as checked before getting user's okay.** Rejection or user feedback -> fix -> re-run -> present again -> wait for okay.
 > Review-agent scenarios below use `Read`, `Grep`, and `Bash` inside the assigned review agent; browser scenarios use `Bash` to start the preview server and `Playwright` to drive the page.
-- [x] F1. Plan Compliance Audit — deep ✅ PASSED
+> User confirmation required before re-checking F1-F4: <approver>@<timestamp> (<link>)
+- [ ] F1. Plan Compliance Audit — deep ✅ PASSED
 
   **What to do**: Run a final plan-vs-implementation audit after Tasks 1-5 finish. Use `.sisyphus/plans/window-resize-drag-cwidget.md` as the source of truth, compare delivered files and evidence against every task's acceptance criteria, and treat any omitted requirement as a blocker instead of a review note.
   **Must NOT do**: Do not fix code during this audit, do not waive missing evidence, and do not mark the task complete on a partial match.
@@ -359,6 +366,7 @@ Wave 5: Task 5 `Playwright contract refresh`
   - [ ] No must-have requirement or must-NOT-have guardrail is left unverified at plan closeout.
 
   **QA Scenarios** (MANDATORY — task incomplete without these):
+
   ```text
   Scenario: Plan deliverables map cleanly to implementation
     Tool: Read + Grep
@@ -375,7 +383,7 @@ Wave 5: Task 5 `Playwright contract refresh`
 
   **Commit**: NO | Message: `n/a` | Files: none
 
-- [x] F2. Code Quality Review — unspecified-high ✅ PASSED
+- [ ] F2. Code Quality Review — unspecified-high ✅ PASSED
 
   **What to do**: Perform a read-only code-quality review across the refactor output. Focus on lifecycle cleanup, state ownership duplication, selector stability, unnecessary branching, and whether the new base-class helpers make `CWindow` thinner instead of merely relocating duplicated logic.
   **Must NOT do**: Do not treat a green test run as sufficient by itself, do not suggest optional redesigns, and do not ignore leaked drag/resize ownership that survives in `CWindow`.
@@ -403,6 +411,7 @@ Wave 5: Task 5 `Playwright contract refresh`
   - [ ] Review output contains either approval or a bounded list of actionable defects with exact file paths.
 
   **QA Scenarios** (MANDATORY — task incomplete without these):
+
   ```text
   Scenario: Quality gates and regression suite pass together
     Tool: Bash
@@ -419,7 +428,7 @@ Wave 5: Task 5 `Playwright contract refresh`
 
   **Commit**: NO | Message: `n/a` | Files: none
 
-- [x] F3. Real Manual QA — visual-engineering ✅ PASSED
+- [ ] F3. Real Manual QA — visual-engineering ✅ PASSED
 
   **What to do**: Run true browser-driven QA against the real preview page, not just CLI test output. Start the local preview/dev server, use the `playwright` skill to interact with the rendered window fixtures directly, and confirm the exact drag/resize behaviors that the automated specs assert.
   **Must NOT do**: Do not substitute screenshots-only review, do not use approximate geometry checks, and do not skip the `drag-only`, `min-clamp`, or `max-clamp` fixtures.
@@ -447,6 +456,7 @@ Wave 5: Task 5 `Playwright contract refresh`
   **Precondition**: Before running either browser scenario, start `yarn dev --host 127.0.0.1 --port 5673 > .sisyphus/evidence/f3-preview.log 2>&1 &` with `Bash`, wait until `http://127.0.0.1:5673/playwright-window.html?fixture=default` responds, and reuse that same server for both scenarios.
 
   **QA Scenarios** (MANDATORY — task incomplete without these):
+
   ```text
   Scenario: Default fixture drag and resize behave exactly in browser
     Tool: Bash + Playwright
@@ -463,7 +473,7 @@ Wave 5: Task 5 `Playwright contract refresh`
 
   **Commit**: NO | Message: `n/a` | Files: none
 
-- [x] F4. Scope Fidelity Check — deep ✅ PASSED
+- [ ] F4. Scope Fidelity Check — deep ✅ PASSED
 
   **What to do**: Audit the delivered work against the original request and the plan's guardrails. Confirm the implementation moved drag/resize into `CWidget` without introducing hooks/context, new public exports, selector renames, dependency swaps, or unrelated window-system redesign work.
   **Must NOT do**: Do not accept adjacent cleanup outside the agreed scope, do not permit public API growth without explicit approval, and do not overlook dependency or selector churn because tests happen to pass.
@@ -490,6 +500,7 @@ Wave 5: Task 5 `Playwright contract refresh`
   - [ ] Any deviation from the agreed scope is reported as a blocker with exact file paths.
 
   **QA Scenarios** (MANDATORY — task incomplete without these):
+
   ```text
   Scenario: Guardrail search confirms no forbidden implementation patterns
     Tool: Grep

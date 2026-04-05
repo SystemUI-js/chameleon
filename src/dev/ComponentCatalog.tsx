@@ -311,26 +311,26 @@ function StartBarShowcase(): React.ReactElement {
 }
 
 const GRID_SNIPPET = `<CGrid
-  className="cm-catalog__grid"
+  className="cm-grid-demo-3x3"
   grid={GRID}
   initGridSize={{ rows: ['1fr', '1fr', '1fr'], columns: GRID_COLUMNS }}
 >
-  <CGridItem parentGrid={GRID} grid={[1, 2, 1, 2]} className="cm-catalog__grid-item">
+  <CGridItem parentGrid={GRID} grid={[1, 2, 1, 2]} className="cm-grid-demo-3x3__item">
     Item 1
   </CGridItem>
-  <CGridItem parentGrid={GRID} grid={[1, 2, 2, 3]} className="cm-catalog__grid-item">
+  <CGridItem parentGrid={GRID} grid={[1, 2, 2, 3]} className="cm-grid-demo-3x3__item">
     Item 2
   </CGridItem>
-  <CGridItem parentGrid={GRID} grid={[1, 2, 3, 4]} className="cm-catalog__grid-item">
+  <CGridItem parentGrid={GRID} grid={[1, 2, 3, 4]} className="cm-grid-demo-3x3__item">
     Item 3
   </CGridItem>
-  <CGridItem parentGrid={GRID} grid={[2, 3, 1, 2]} className="cm-catalog__grid-item">
+  <CGridItem parentGrid={GRID} grid={[2, 3, 1, 2]} className="cm-grid-demo-3x3__item">
     Item 4
   </CGridItem>
-  <CGridItem parentGrid={GRID} grid={[2, 3, 2, 4]} className="cm-catalog__grid-item">
+  <CGridItem parentGrid={GRID} grid={[2, 3, 2, 4]} className="cm-grid-demo-3x3__item">
     Item 5
   </CGridItem>
-  <CGridItem parentGrid={GRID} grid={[3, 4, 1, 4]} className="cm-catalog__grid-item">
+  <CGridItem parentGrid={GRID} grid={[3, 4, 1, 4]} className="cm-grid-demo-3x3__item">
     Item 6
   </CGridItem>
 </CGrid>`.trim();
@@ -341,26 +341,26 @@ function GridShowcase(): React.ReactElement {
   return (
     <ShowcaseSection title="Grid" testId="catalog-section-grid" code={GRID_SNIPPET}>
       <CGrid
-        className="cm-catalog__grid"
+        className="cm-grid-demo-3x3"
         grid={GRID}
         initGridSize={{ rows: ['1fr', '1fr', '1fr'], columns: GRID_COLUMNS }}
       >
-        <CGridItem parentGrid={GRID} grid={[1, 2, 1, 2]} className="cm-catalog__grid-item">
+        <CGridItem parentGrid={GRID} grid={[1, 2, 1, 2]} className="cm-grid-demo-3x3__item">
           Item 1
         </CGridItem>
-        <CGridItem parentGrid={GRID} grid={[1, 2, 2, 3]} className="cm-catalog__grid-item">
+        <CGridItem parentGrid={GRID} grid={[1, 2, 2, 3]} className="cm-grid-demo-3x3__item">
           Item 2
         </CGridItem>
-        <CGridItem parentGrid={GRID} grid={[1, 2, 3, 4]} className="cm-catalog__grid-item">
+        <CGridItem parentGrid={GRID} grid={[1, 2, 3, 4]} className="cm-grid-demo-3x3__item">
           Item 3
         </CGridItem>
-        <CGridItem parentGrid={GRID} grid={[2, 3, 1, 2]} className="cm-catalog__grid-item">
+        <CGridItem parentGrid={GRID} grid={[2, 3, 1, 2]} className="cm-grid-demo-3x3__item">
           Item 4
         </CGridItem>
-        <CGridItem parentGrid={GRID} grid={[2, 3, 2, 4]} className="cm-catalog__grid-item">
+        <CGridItem parentGrid={GRID} grid={[2, 3, 2, 4]} className="cm-grid-demo-3x3__item">
           Item 5
         </CGridItem>
-        <CGridItem parentGrid={GRID} grid={[3, 4, 1, 4]} className="cm-catalog__grid-item">
+        <CGridItem parentGrid={GRID} grid={[3, 4, 1, 4]} className="cm-grid-demo-3x3__item">
           Item 6
         </CGridItem>
       </CGrid>

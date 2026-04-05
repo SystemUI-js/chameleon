@@ -125,7 +125,7 @@ Wave 3: Task 5-6 (browser coverage and full validation)
   - [ ] Code text such as `<CButton>Primary</CButton>` is rendered as text inside `<code>`, not as a live button.
 
   **QA Scenarios** (MANDATORY — task incomplete without these):
-  ```
+  ```text
   Scenario: Direct disclosure happy path
     Tool: Bash
     Steps: Run `yarn test --runInBand tests/ShowcaseCodeDisclosure.test.tsx`
@@ -167,7 +167,7 @@ Wave 3: Task 5-6 (browser coverage and full validation)
   - [ ] Catalog styles compile successfully with the new code-block classes.
 
   **QA Scenarios** (MANDATORY — task incomplete without these):
-  ```
+  ```text
   Scenario: Catalog seam happy path
     Tool: Bash
     Steps: Run `yarn test --runInBand tests/ComponentCatalog.test.tsx`
@@ -209,7 +209,7 @@ Wave 3: Task 5-6 (browser coverage and full validation)
   - [ ] Expanding Button leaves RadioGroup and Select regions hidden until explicitly opened.
 
   **QA Scenarios** (MANDATORY — task incomplete without these):
-  ```
+  ```text
   Scenario: First-column snippet happy path
     Tool: Bash
     Steps: Run `yarn test --runInBand tests/ComponentCatalog.test.tsx`
@@ -251,7 +251,7 @@ Wave 3: Task 5-6 (browser coverage and full validation)
   - [ ] Expanding Window leaves Grid hidden until its own toggle is clicked.
 
   **QA Scenarios** (MANDATORY — task incomplete without these):
-  ```
+  ```text
   Scenario: Second-column snippet happy path
     Tool: Bash
     Steps: Run `yarn test --runInBand tests/ComponentCatalog.test.tsx`
@@ -291,7 +291,7 @@ Wave 3: Task 5-6 (browser coverage and full validation)
   - [ ] Browser test verifies Window section remains collapsed before its own toggle is clicked.
 
   **QA Scenarios** (MANDATORY — task incomplete without these):
-  ```
+  ```text
   Scenario: Browser disclosure happy path
     Tool: Bash
     Steps: Run `yarn test:ui tests/ui/component-catalog-code.spec.ts`
@@ -333,7 +333,7 @@ Wave 3: Task 5-6 (browser coverage and full validation)
   - [ ] Evidence files exist for all six tasks under `.sisyphus/evidence/`.
 
   **QA Scenarios** (MANDATORY — task incomplete without these):
-  ```
+  ```text
   Scenario: Full validation happy path
     Tool: Bash
     Steps: Run `yarn lint && yarn test && yarn test:ui && yarn build`

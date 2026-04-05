@@ -14,7 +14,7 @@ Chameleon
 
 目录结构
 
-```
+```text
 ./
 ├── src/
 │   ├── components/    # 组件源码
@@ -74,7 +74,7 @@ import { Theme } from '@system-ui-js/chameleon';
 
 <Theme name="cm-theme--win98">
   <CButton>Themed Button</CButton>
-</Theme>
+</Theme>;
 ```
 
 `Theme` 组件会提供主题 Context，并渲染一个带对应 className 的 wrapper DOM。
@@ -88,7 +88,7 @@ import { Theme } from '@system-ui-js/chameleon';
 ```tsx
 import { CButton } from '@system-ui-js/chameleon';
 
-<CButton theme="cm-theme--win98">Win98 Button</CButton>
+<CButton theme="cm-theme--win98">Win98 Button</CButton>;
 ```
 
 ### 主题定义

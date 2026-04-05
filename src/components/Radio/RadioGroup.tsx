@@ -1,5 +1,6 @@
 import React from 'react';
 import { mergeClasses } from '../Theme/mergeClasses';
+import { normalizeThemeClassName } from '../Theme/normalizeThemeClassName';
 import { useTheme } from '../Theme/useTheme';
 import './index.scss';
 
@@ -26,13 +27,6 @@ export interface RadioGroupContextValue {
 
 export const RadioGroupContext = React.createContext<RadioGroupContextValue | null>(null);
 
-function resolveThemeClass(theme: string | undefined): string | undefined {
-  if (theme === undefined) {
-    return undefined;
-  }
-  return theme.startsWith('cm-theme--') ? theme : `cm-theme--${theme}`;
-}
-
 export function CRadioGroup({
   name,
   value,
@@ -45,7 +39,7 @@ export function CRadioGroup({
   theme,
   'data-testid': dataTestId,
 }: CRadioGroupProps): React.ReactElement {
-  const resolvedTheme = resolveThemeClass(useTheme(theme));
+  const resolvedTheme = normalizeThemeClassName(useTheme(theme));
   const [uncontrolledValue, setUncontrolledValue] = React.useState(defaultValue);
 
   React.useEffect(() => {
