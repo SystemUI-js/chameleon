@@ -2,9 +2,26 @@ import '@testing-library/jest-dom';
 import { fireEvent, render, screen } from '@testing-library/react';
 import type React from 'react';
 import { CIcon as PackageEntryCIcon, Theme } from '../src';
-import { CIcon } from '../src/components/Icon/Icon';
+import { CIcon, type CIconProps } from '../src/components/Icon/Icon';
 
 describe('CIcon', () => {
+  it('does not expose drag callbacks on direct icon props', () => {
+    const baseProps = { icon: <span>icon</span> };
+
+    // @ts-expect-error - direct CIcon drag callbacks are not part of CIconProps
+    const withDragStart: CIconProps = { ...baseProps, onDragStart: () => undefined };
+
+    // @ts-expect-error - direct CIcon drag callbacks are not part of CIconProps
+    const withDrag: CIconProps = { ...baseProps, onDrag: () => undefined };
+
+    // @ts-expect-error - direct CIcon drag callbacks are not part of CIconProps
+    const withDragEnd: CIconProps = { ...baseProps, onDragEnd: () => undefined };
+
+    expect(withDragStart).toBeDefined();
+    expect(withDrag).toBeDefined();
+    expect(withDragEnd).toBeDefined();
+  });
+
   it('exports CIcon from package entry', () => {
     render(<PackageEntryCIcon icon={<span>icon</span>} data-testid="icon-package-entry" />);
 

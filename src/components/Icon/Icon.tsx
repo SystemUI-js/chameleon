@@ -1,5 +1,6 @@
 import type React from 'react';
 import { mergeClasses } from '../Theme/mergeClasses';
+import { resolveThemeClassName } from '../Theme/themeName';
 import { useTheme } from '../Theme/useTheme';
 import './index.scss';
 
@@ -9,15 +10,18 @@ export type CIconActiveTrigger = 'click' | 'hover';
 
 export type CIconOpenTrigger = 'click' | 'doubleClick';
 
+export interface CIconDragCallbacks {
+  onDragStart?: (position: CIconPosition) => void;
+  onDrag?: (position: CIconPosition) => void;
+  onDragEnd?: (position: CIconPosition) => void;
+}
+
 export interface CIconProps {
   title?: string;
   icon: React.ReactNode;
   active?: boolean;
   onActive?: (active: boolean) => void;
   activeTrigger?: CIconActiveTrigger;
-  onDragStart?: (position: CIconPosition) => void;
-  onDrag?: (position: CIconPosition) => void;
-  onDragEnd?: (position: CIconPosition) => void;
   position?: CIconPosition;
   onContextMenu?: (event: React.MouseEvent) => void;
   onOpen?: () => void;
@@ -27,22 +31,12 @@ export interface CIconProps {
   'data-testid'?: string;
 }
 
-function resolveThemeClass(theme: string | undefined): string | undefined {
-  if (theme === undefined) {
-    return undefined;
-  }
-  return theme.startsWith('cm-theme--') ? theme : `cm-theme--${theme}`;
-}
-
 export function CIcon({
   title,
   icon,
   active,
   onActive,
   activeTrigger,
-  onDragStart: _onDragStart,
-  onDrag: _onDrag,
-  onDragEnd: _onDragEnd,
   position,
   onContextMenu,
   onOpen,
@@ -51,7 +45,7 @@ export function CIcon({
   theme,
   'data-testid': dataTestId,
 }: CIconProps): React.ReactElement {
-  const resolvedTheme = resolveThemeClass(useTheme(theme));
+  const resolvedTheme = resolveThemeClassName(useTheme(theme));
   const baseClasses = ['cm-icon'];
 
   if (active) {

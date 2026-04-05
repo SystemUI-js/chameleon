@@ -1,10 +1,12 @@
 import { Drag, DragOperationType, type Pose } from '@system-ui-js/multi-drag';
 import React from 'react';
 import { mergeClasses } from '../Theme/mergeClasses';
+import { resolveThemeClassName } from '../Theme/themeName';
 import { useTheme } from '../Theme/useTheme';
 import {
   CIcon,
   type CIconActiveTrigger,
+  type CIconDragCallbacks,
   type CIconOpenTrigger,
   type CIconPosition,
   type CIconProps,
@@ -19,10 +21,9 @@ export interface CIconContainerConfig {
   openTrigger?: CIconOpenTrigger;
 }
 
-export type CIconContainerItem = Omit<CIconProps, 'onDragStart' | 'onDrag' | 'onDragEnd'>;
+export type CIconContainerItem = CIconProps;
 
-type CIconContainerRuntimeItem = CIconContainerItem &
-  Pick<CIconProps, 'onDragStart' | 'onDrag' | 'onDragEnd'>;
+type CIconContainerRuntimeItem = CIconContainerItem & CIconDragCallbacks;
 
 type IconSlotPointerSession = {
   pointerId: number;
@@ -37,13 +38,17 @@ type IconSlotRecord = {
   drag: Drag;
   generation: number;
   pointerSession?: IconSlotPointerSession;
-  suppressNativeContextMenu: boolean;
-  dispatchingSyntheticContextMenu: boolean;
+  suppressedContextMenu?: {
+    x: number;
+    y: number;
+    expiresAt: number;
+  };
   removeDragStartListener: () => void;
 };
 
 const TOUCH_LONG_PRESS_DELAY_MS = 500;
 const TOUCH_LONG_PRESS_MOVE_THRESHOLD_PX = 6;
+const SYNTHETIC_CONTEXT_MENU_SUPPRESSION_MS = 1000;
 
 function getResolvedPosition(
   item: CIconContainerItem | undefined,
@@ -71,14 +76,6 @@ export interface CIconContainerProps {
   className?: string;
   theme?: string;
   'data-testid'?: string;
-}
-
-function resolveThemeClass(theme: string | undefined): string | undefined {
-  if (theme === undefined) {
-    return undefined;
-  }
-
-  return theme.startsWith('cm-theme--') ? theme : `cm-theme--${theme}`;
 }
 
 function getInitialActiveIndex(iconList: readonly CIconContainerItem[]): number | null {
@@ -115,13 +112,14 @@ export function CIconContainer({
   theme,
   'data-testid': dataTestId,
 }: CIconContainerProps): React.ReactElement {
-  const resolvedTheme = resolveThemeClass(useTheme(theme));
+  const resolvedTheme = resolveThemeClassName(useTheme(theme));
   const baseClasses = ['cm-icon-container'];
   const isMountedRef = React.useRef(true);
   const slotElementRefs = React.useRef<Array<HTMLDivElement | null>>([]);
   const slotRecordsRef = React.useRef(new Map<number, IconSlotRecord>());
   const latestIconListRef = React.useRef<readonly CIconContainerRuntimeItem[]>(iconList);
   const latestConfigRef = React.useRef(config);
+  const hadExplicitActiveRef = React.useRef(iconList.some((item) => item.active !== undefined));
   const positionsRef = React.useRef<Array<CIconPosition | undefined>>([]);
   const [activeIndex, setActiveIndex] = React.useState<number | null>(() =>
     getInitialActiveIndex(iconList),
@@ -160,8 +158,7 @@ export function CIconContainer({
       }
 
       clearPointerSession(record);
-      record.suppressNativeContextMenu = false;
-      record.dispatchingSyntheticContextMenu = false;
+      record.suppressedContextMenu = undefined;
       record.generation += 1;
       record.removeDragStartListener();
       record.drag.setDisabled();
@@ -175,13 +172,26 @@ export function CIconContainer({
   }, [config, iconList]);
 
   React.useEffect(() => {
+    const hasExplicitActive = iconList.some((item) => item.active !== undefined);
+    const hadExplicitActive = hadExplicitActiveRef.current;
+
     setActiveIndex((previousActiveIndex) => {
+      if (hasExplicitActive) {
+        return getInitialActiveIndex(iconList);
+      }
+
+      if (hadExplicitActive) {
+        return null;
+      }
+
       if (previousActiveIndex !== null && previousActiveIndex < iconList.length) {
         return previousActiveIndex;
       }
 
-      return getInitialActiveIndex(iconList);
+      return null;
     });
+
+    hadExplicitActiveRef.current = hasExplicitActive;
   }, [iconList]);
 
   React.useEffect(() => {
@@ -284,8 +294,7 @@ export function CIconContainer({
         element,
         drag,
         generation: 0,
-        suppressNativeContextMenu: false,
-        dispatchingSyntheticContextMenu: false,
+        suppressedContextMenu: undefined,
         removeDragStartListener: () => undefined,
       };
 
@@ -341,8 +350,7 @@ export function CIconContainer({
       }
 
       clearPointerSession(record);
-      record.suppressNativeContextMenu = false;
-      record.dispatchingSyntheticContextMenu = false;
+      record.suppressedContextMenu = undefined;
 
       const pointerId = event.pointerId;
       const startPoint = { x: event.clientX, y: event.clientY };
@@ -416,7 +424,6 @@ export function CIconContainer({
         }
 
         activeSession.firedLongPress = true;
-        currentRecord.dispatchingSyntheticContextMenu = false;
         setActiveIndex(index);
         buttonElement.dispatchEvent(
           new MouseEvent('contextmenu', {
@@ -427,7 +434,11 @@ export function CIconContainer({
             button: 2,
           }),
         );
-        currentRecord.dispatchingSyntheticContextMenu = true;
+        currentRecord.suppressedContextMenu = {
+          x: startPoint.x,
+          y: startPoint.y,
+          expiresAt: Date.now() + SYNTHETIC_CONTEXT_MENU_SUPPRESSION_MS,
+        };
         clearPointerSession(currentRecord);
       }, TOUCH_LONG_PRESS_DELAY_MS);
 
@@ -463,16 +474,28 @@ export function CIconContainer({
         return;
       }
 
-      if (record.dispatchingSyntheticContextMenu) {
-        event.stopPropagation();
+      if (!record.suppressedContextMenu) {
         return;
       }
 
-      if (record.suppressNativeContextMenu) {
-        record.suppressNativeContextMenu = false;
-        event.preventDefault();
-        event.stopPropagation();
+      if (Date.now() > record.suppressedContextMenu.expiresAt) {
+        record.suppressedContextMenu = undefined;
+        return;
       }
+
+      const isSameLongPressLocation =
+        Math.abs(event.nativeEvent.clientX - record.suppressedContextMenu.x) <=
+          TOUCH_LONG_PRESS_MOVE_THRESHOLD_PX &&
+        Math.abs(event.nativeEvent.clientY - record.suppressedContextMenu.y) <=
+          TOUCH_LONG_PRESS_MOVE_THRESHOLD_PX;
+
+      if (!isSameLongPressLocation) {
+        return;
+      }
+
+      record.suppressedContextMenu = undefined;
+      event.preventDefault();
+      event.stopPropagation();
     },
     [],
   );

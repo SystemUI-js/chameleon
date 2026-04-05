@@ -1,5 +1,6 @@
 import type React from 'react';
 import { mergeClasses } from '../Theme/mergeClasses';
+import { resolveThemeClassName } from '../Theme/themeName';
 import { useTheme } from '../Theme/useTheme';
 import './index.scss';
 
@@ -17,13 +18,6 @@ export interface CButtonProps {
   'data-testid'?: string;
 }
 
-function resolveThemeClass(theme: string | undefined): string | undefined {
-  if (theme === undefined) {
-    return undefined;
-  }
-  return theme.startsWith('cm-theme--') ? theme : `cm-theme--${theme}`;
-}
-
 export function CButton({
   children,
   variant = 'default',
@@ -34,7 +28,7 @@ export function CButton({
   theme,
   'data-testid': dataTestId,
 }: CButtonProps): React.ReactElement {
-  const resolvedTheme = resolveThemeClass(useTheme(theme));
+  const resolvedTheme = resolveThemeClassName(useTheme(theme));
   const baseClasses = ['cm-button'];
 
   if (variant !== 'default') {

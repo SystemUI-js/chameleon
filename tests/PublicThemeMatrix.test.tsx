@@ -44,7 +44,38 @@ describe('public component theme matrix', () => {
       </Theme>,
     );
 
+    const providerWrapper = screen.getByTestId('theme-matrix-provider-button')
+      .parentElement as HTMLElement;
+
+    expect(providerWrapper).toHaveClass('cm-theme--win98');
+    expect(providerWrapper).not.toHaveClass('win98');
     expect(screen.getByTestId('theme-matrix-provider-button')).toHaveClass('cm-theme--win98');
+  });
+
+  it('normalizes provider wrapper and window/grid chain themes', () => {
+    const { container } = render(
+      <Theme name="win98">
+        <CGrid grid={[1, 1]}>
+          <CWindow>
+            <CWindowTitle>Window</CWindowTitle>
+          </CWindow>
+        </CGrid>
+      </Theme>,
+    );
+
+    const providerWrapper = container.firstElementChild as HTMLElement;
+    const grid = container.querySelector('.cm-grid') as HTMLElement;
+    const windowFrame = screen.getByTestId('window-frame');
+    const windowContent = screen.getByTestId('window-content');
+
+    expect(providerWrapper).toHaveClass('cm-theme--win98');
+    expect(providerWrapper).not.toHaveClass('win98');
+    expect(grid).toHaveClass('cm-grid', 'cm-theme--win98');
+    expect(grid).not.toHaveClass('win98');
+    expect(windowFrame).toHaveClass('cm-theme--win98');
+    expect(windowFrame).not.toHaveClass('win98');
+    expect(windowContent).toHaveClass('cm-theme--win98');
+    expect(windowContent).not.toHaveClass('win98');
   });
 
   it('covers CButton explicit theme', () => {

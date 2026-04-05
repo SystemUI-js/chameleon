@@ -1,4 +1,5 @@
 import type React from 'react';
+import { resolveThemeClassName } from './themeName';
 import { useTheme } from './useTheme';
 
 export interface ResolvedThemeClassNameProps {
@@ -10,7 +11,7 @@ export function ResolvedThemeClassName({
   theme,
   children,
 }: ResolvedThemeClassNameProps): React.ReactElement {
-  const resolvedTheme = useTheme(theme);
+  const resolvedTheme = resolveThemeClassName(useTheme(theme));
 
   return children(resolvedTheme);
 }

@@ -1,8 +1,7 @@
+import { DragOperationType } from '@system-ui-js/multi-drag';
 import '@testing-library/jest-dom';
 import { createEvent, fireEvent, render, screen } from '@testing-library/react';
 import { act } from 'react';
-import { DragOperationType } from '@system-ui-js/multi-drag';
-import type { CIconProps } from '../src/components/Icon/Icon';
 import { CIconContainer as PackageEntryCIconContainer, type CIconContainerItem } from '../src';
 import { CIconContainer } from '../src/components/Icon/IconContainer';
 
@@ -21,7 +20,11 @@ type MockDragOptions = {
 
 type DragListener = () => void;
 
-type RuntimeDragCallbacks = Pick<CIconProps, 'onDragStart' | 'onDrag' | 'onDragEnd'>;
+type RuntimeDragCallbacks = {
+  onDragStart?: (position: { x: number; y: number }) => void;
+  onDrag?: (position: { x: number; y: number }) => void;
+  onDragEnd?: (position: { x: number; y: number }) => void;
+};
 type RuntimeIconContainerItem = CIconContainerItem & RuntimeDragCallbacks;
 
 const dispatchTouchPointerDown = (
@@ -337,6 +340,70 @@ describe('CIconContainer', () => {
       expect(secondItem).toHaveClass('cm-icon--active');
       expect(firstItem).toHaveStyle({ left: '10px', top: '20px' });
       expect(secondItem).toHaveStyle({ left: '100px', top: '200px' });
+    });
+
+    it('syncs active UI when parent rerenders a different active item', () => {
+      const firstIcon = <span>First</span>;
+      const secondIcon = <span>Second</span>;
+
+      const { rerender } = render(
+        <CIconContainer
+          iconList={[
+            { icon: firstIcon, title: 'First', active: true },
+            { icon: secondIcon, title: 'Second' },
+          ]}
+        />,
+      );
+
+      const firstItem = screen.getByTestId('icon-item-0');
+      const secondItem = screen.getByTestId('icon-item-1');
+
+      expect(firstItem).toHaveClass('cm-icon--active');
+      expect(secondItem).not.toHaveClass('cm-icon--active');
+
+      rerender(
+        <CIconContainer
+          iconList={[
+            { icon: firstIcon, title: 'First' },
+            { icon: secondIcon, title: 'Second', active: true },
+          ]}
+        />,
+      );
+
+      expect(firstItem).not.toHaveClass('cm-icon--active');
+      expect(secondItem).toHaveClass('cm-icon--active');
+    });
+
+    it('clears active UI when parent rerenders with no active item', () => {
+      const firstIcon = <span>First</span>;
+      const secondIcon = <span>Second</span>;
+
+      const { rerender } = render(
+        <CIconContainer
+          iconList={[
+            { icon: firstIcon, title: 'First', active: true },
+            { icon: secondIcon, title: 'Second', active: false },
+          ]}
+        />,
+      );
+
+      const firstItem = screen.getByTestId('icon-item-0');
+      const secondItem = screen.getByTestId('icon-item-1');
+
+      expect(firstItem).toHaveClass('cm-icon--active');
+      expect(secondItem).not.toHaveClass('cm-icon--active');
+
+      rerender(
+        <CIconContainer
+          iconList={[
+            { icon: firstIcon, title: 'First' },
+            { icon: secondIcon, title: 'Second' },
+          ]}
+        />,
+      );
+
+      expect(firstItem).not.toHaveClass('cm-icon--active');
+      expect(secondItem).not.toHaveClass('cm-icon--active');
     });
 
     it('creates per-icon drags, updates only the targeted icon position, and emits drag callbacks in order', () => {

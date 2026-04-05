@@ -1,4 +1,5 @@
 import React from 'react';
+import { normalizeThemeName, resolveThemeClassName } from './themeName';
 
 export interface ThemeContextValue {
   theme: string | undefined;
@@ -15,16 +16,6 @@ export const ThemeContext = React.createContext<ThemeContextValue>({
   hasThemeProvider: false,
 });
 
-function normalizeTheme(theme: string | undefined): string | undefined {
-  if (theme === undefined) {
-    return undefined;
-  }
-
-  const normalizedTheme = theme.trim();
-
-  return normalizedTheme.length > 0 ? normalizedTheme : undefined;
-}
-
 export function Theme({ name, children }: ThemeProps): React.ReactElement {
   const parentContext = React.useContext(ThemeContext);
 
@@ -33,13 +24,13 @@ export function Theme({ name, children }: ThemeProps): React.ReactElement {
   }
 
   const contextValue = React.useMemo<ThemeContextValue>(
-    () => ({ theme: normalizeTheme(name), hasThemeProvider: true }),
+    () => ({ theme: normalizeThemeName(name), hasThemeProvider: true }),
     [name],
   );
 
   return (
     <ThemeContext.Provider value={contextValue}>
-      <div className={name}>{children}</div>
+      <div className={resolveThemeClassName(name)}>{children}</div>
     </ThemeContext.Provider>
   );
 }

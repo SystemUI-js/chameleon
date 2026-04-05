@@ -1,7 +1,12 @@
 import { Drag, type Pose } from '@system-ui-js/multi-drag';
 import React from 'react';
 import { generateUUID } from '@/utils/uuid';
-import { mergeClasses, ThemeContext, type ThemeContextValue } from '../Theme';
+import {
+  mergeClasses,
+  resolveThemeClassName,
+  ThemeContext,
+  type ThemeContextValue,
+} from '../Theme';
 
 export interface WidgetLayoutProps {
   x?: number;
@@ -484,10 +489,10 @@ export class CWidget extends React.Component<CWidgetProps, WidgetComponentState>
     const explicitTheme = this.normalizeTheme(theme ?? this.props.theme);
 
     if (explicitTheme !== undefined) {
-      return explicitTheme;
+      return resolveThemeClassName(explicitTheme);
     }
 
-    return this.normalizeTheme(this.context.theme);
+    return resolveThemeClassName(this.normalizeTheme(this.context.theme));
   }
 
   protected mergeThemeClassName(className?: string, theme?: string): string | undefined {
