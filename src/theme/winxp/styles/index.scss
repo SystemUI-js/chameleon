@@ -5,6 +5,37 @@
         color: #ffffff;
     }
 
+    .cm-window__title-bar--with-controls,
+    .cm-window__title-bar--with-controls.cm-theme--winxp {
+        display: flex;
+        align-items: center;
+        gap: 8px;
+    }
+
+    .cm-window__title-bar--with-controls .cm-window__title-bar__text,
+    .cm-window__title-bar--with-controls.cm-theme--winxp .cm-window__title-bar__text {
+        flex: 1 1 auto;
+        min-width: 0;
+    }
+
+    .cm-window__title-bar__controls,
+    .cm-window__title-bar__controls.cm-theme--winxp {
+        display: flex;
+        align-items: center;
+        gap: 6px;
+        flex-shrink: 0;
+    }
+
+    .cm-window__title-bar__controls--right,
+    .cm-window__title-bar__controls--right.cm-theme--winxp {
+        margin-left: auto;
+    }
+
+    .cm-window__title-bar__controls--left,
+    .cm-window__title-bar__controls--left.cm-theme--winxp {
+        margin-right: 2px;
+    }
+
     .cm-window > :not(.cm-window__title-bar) {
         background: linear-gradient(180deg, #f8fbff 0%, #e7eefb 100%);
     }

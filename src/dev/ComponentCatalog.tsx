@@ -13,6 +13,7 @@ import {
   CGrid,
   CGridItem,
   type CSelectOption,
+  type WindowTitleActionButtonPosition,
   WidgetInteractionBehavior,
 } from '@/components';
 import { DEV_THEME, DevThemeRoot, type DevThemeId } from './themeSwitcher';
@@ -26,6 +27,13 @@ const SIZE_OPTIONS: readonly CSelectOption[] = [
 ];
 
 const GRID_COLUMNS = ['1fr', '1fr', '1fr'];
+const WINDOW_ACTION_BUTTON_POSITIONS = ['left', 'right'] as const;
+
+const isWindowTitleActionButtonPosition = (
+  value: string,
+): value is WindowTitleActionButtonPosition => {
+  return WINDOW_ACTION_BUTTON_POSITIONS.includes(value as WindowTitleActionButtonPosition);
+};
 
 interface ComponentCatalogProps {
   readonly theme: DevThemeId;
@@ -243,31 +251,120 @@ function SelectShowcase(): React.ReactElement {
   );
 }
 
-const WINDOW_SNIPPET = `<CWindow x={24} y={24} width={320} height={200}>
-  <CWindowTitle>Sample Window</CWindowTitle>
-  <CWindowBody>
-    <p>Window content goes here.</p>
-    <p>Try dragging the title bar.</p>
-  </CWindowBody>
-</CWindow>`.trim();
+const WINDOW_SNIPPET =
+  `const [actionButtonPosition, setActionButtonPosition] = useState<'left' | 'right'>('right');
+
+const actionButtons = (
+  <div className="cm-catalog__window-actions">
+    <button type="button">—</button>
+    <button type="button">□</button>
+    <button type="button">×</button>
+  </div>
+);
+
+return (
+  <>
+    <CRadioGroup
+      aria-label="Window action button position"
+      name="window-action-button-position"
+      value={actionButtonPosition}
+      onChange={setActionButtonPosition}
+    >
+      <CRadio value="left">Left</CRadio>
+      <CRadio value="right">Right</CRadio>
+    </CRadioGroup>
+
+    <CWindow x={24} y={24} width={300} height={140} resizeBehavior={WidgetInteractionBehavior.Outline}>
+      <CWindowTitle actionButton={actionButtons} actionButtonPosition={actionButtonPosition}>
+        Sample Window
+      </CWindowTitle>
+      <CWindowBody>
+        <p>Window content goes here.</p>
+        <p>Try dragging the title bar.</p>
+      </CWindowBody>
+    </CWindow>
+  </>
+);`.trim();
 
 function WindowShowcase(): React.ReactElement {
+  const [actionButtonPosition, setActionButtonPosition] =
+    React.useState<WindowTitleActionButtonPosition>('right');
+
+  const handleActionButtonPositionChange = React.useCallback((nextValue: string) => {
+    if (isWindowTitleActionButtonPosition(nextValue)) {
+      setActionButtonPosition(nextValue);
+    }
+  }, []);
+
+  const handleWindowActionClick = React.useCallback((): void => {}, []);
+
+  const actionButtons = React.useMemo(
+    () => (
+      <div className="cm-catalog__window-actions">
+        <button
+          type="button"
+          className="cm-catalog__window-action"
+          data-testid="window-demo-minimize"
+          aria-label="Minimize window"
+          onClick={handleWindowActionClick}
+        >
+          —
+        </button>
+        <button
+          type="button"
+          className="cm-catalog__window-action"
+          data-testid="window-demo-maximize"
+          aria-label="Maximize window"
+          onClick={handleWindowActionClick}
+        >
+          □
+        </button>
+        <button
+          type="button"
+          className="cm-catalog__window-action cm-catalog__window-action--close"
+          data-testid="window-demo-close"
+          aria-label="Close window"
+          onClick={handleWindowActionClick}
+        >
+          ×
+        </button>
+      </div>
+    ),
+    [handleWindowActionClick],
+  );
+
   return (
     <ShowcaseSection title="Window" testId="catalog-section-window" code={WINDOW_SNIPPET}>
-      <div className="cm-catalog__stage cm-catalog__stage--relative">
-        <CWindow
-          x={24}
-          y={24}
-          width={300}
-          height={140}
-          resizeBehavior={WidgetInteractionBehavior.Outline}
+      <div className="cm-catalog__stack">
+        <CRadioGroup
+          aria-label="Window action button position"
+          data-testid="window-demo-position"
+          name="window-action-button-position"
+          value={actionButtonPosition}
+          onChange={handleActionButtonPositionChange}
         >
-          <CWindowTitle>Sample Window</CWindowTitle>
-          <CWindowBody>
-            <p>Window content goes here.</p>
-            <p>Try dragging the title bar.</p>
-          </CWindowBody>
-        </CWindow>
+          <div className="cm-catalog__choice-row cm-catalog__window-position-choice-row">
+            <CRadio value="left">Left</CRadio>
+            <CRadio value="right">Right</CRadio>
+          </div>
+        </CRadioGroup>
+        <div className="cm-catalog__stage cm-catalog__stage--relative">
+          <CWindow
+            x={24}
+            y={24}
+            width={300}
+            height={140}
+            resizeBehavior={WidgetInteractionBehavior.Outline}
+          >
+            <CWindowTitle actionButton={actionButtons} actionButtonPosition={actionButtonPosition}>
+              Sample Window
+            </CWindowTitle>
+            <CWindowBody>
+              <p>Window content goes here.</p>
+              <p>Try dragging the title bar.</p>
+            </CWindowBody>
+          </CWindow>
+        </div>
       </div>
     </ShowcaseSection>
   );

@@ -4,6 +4,7 @@ import { mergeClasses, ResolvedThemeClassName } from '../Theme';
 import { WidgetInteractionBehavior, type WidgetFrameMovePosition } from '../Widget/Widget';
 
 export type WindowPosition = WidgetFrameMovePosition;
+export type WindowTitleActionButtonPosition = 'left' | 'right';
 
 export interface CWindowTitleProps {
   children?: React.ReactNode;
@@ -15,6 +16,8 @@ export interface CWindowTitleProps {
   onWindowMovePreview?: (position: WindowPosition) => void;
   onWindowMovePreviewClear?: () => void;
   getWindowPose?: () => Pose;
+  actionButton?: React.ReactNode;
+  actionButtonPosition?: WindowTitleActionButtonPosition;
 }
 
 export interface WindowTitleBarTextProps {
@@ -112,6 +115,11 @@ export class CWindowTitle extends React.Component<CWindowTitleProps> {
     this.cancelOutlineDrag();
   };
 
+  private handleControlsPointerEventCapture = (event: React.PointerEvent<HTMLDivElement>): void => {
+    event.nativeEvent.stopImmediatePropagation();
+    event.stopPropagation();
+  };
+
   private handleDragPose(pose: Partial<Pose>): void {
     if (!this.isDragActive) {
       return;
@@ -184,9 +192,31 @@ export class CWindowTitle extends React.Component<CWindowTitleProps> {
   }
 
   protected renderTitle(content: React.ReactNode, className?: string): React.ReactElement {
+    const actionButtonPosition = this.props.actionButtonPosition ?? 'right';
+    const actionButtonContent = React.Children.toArray(this.props.actionButton);
+    const hasActionButton = actionButtonContent.length > 0;
     const shouldWrapTitleText =
       React.Children.count(content) === 1 &&
       (typeof content === 'string' || typeof content === 'number');
+
+    const titleContent = shouldWrapTitleText ? (
+      <WindowTitleBarText>{content}</WindowTitleBarText>
+    ) : (
+      content
+    );
+    const controls = hasActionButton ? (
+      <div
+        data-testid="window-title-controls"
+        className={mergeClasses([
+          'cm-window__title-bar__controls',
+          `cm-window__title-bar__controls--${actionButtonPosition}`,
+        ])}
+        onPointerDownCapture={this.handleControlsPointerEventCapture}
+        onPointerCancelCapture={this.handleControlsPointerEventCapture}
+      >
+        {this.props.actionButton}
+      </div>
+    ) : null;
 
     return (
       <ResolvedThemeClassName theme={this.props.theme}>
@@ -196,10 +226,26 @@ export class CWindowTitle extends React.Component<CWindowTitleProps> {
             onPointerDown={this.handlePointerDown}
             onPointerCancel={this.handlePointerCancel}
             data-testid="window-title"
-            className={mergeClasses(['cm-window__title-bar'], theme, className)}
+            className={mergeClasses(
+              hasActionButton
+                ? ['cm-window__title-bar', 'cm-window__title-bar--with-controls']
+                : ['cm-window__title-bar'],
+              theme,
+              className,
+            )}
             style={this.props.style}
           >
-            {shouldWrapTitleText ? <WindowTitleBarText>{content}</WindowTitleBarText> : content}
+            {hasActionButton && actionButtonPosition === 'left' ? (
+              <>
+                {controls}
+                {titleContent}
+              </>
+            ) : (
+              <>
+                {titleContent}
+                {controls}
+              </>
+            )}
           </div>
         )}
       </ResolvedThemeClassName>
