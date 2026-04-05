@@ -27,6 +27,7 @@ export interface CMenuProps {
 interface TriggerElementProps {
   onClick?: React.MouseEventHandler<Element>;
   onPointerEnter?: React.PointerEventHandler<Element>;
+  'aria-controls'?: string;
   'aria-expanded'?: boolean;
   'aria-haspopup'?: React.AriaAttributes['aria-haspopup'];
 }
@@ -53,6 +54,8 @@ export function CMenu({
 }: CMenuProps): React.ReactElement {
   const resolvedTheme = resolveThemeClass(useTheme(theme));
   const baseClasses = ['cm-menu'];
+  const menuInstanceId = React.useId().replace(/:/g, '');
+  const rootMenuId = `${menuInstanceId}-menu`;
   const rootRef = React.useRef<HTMLDivElement | null>(null);
   const [isRootOpen, setIsRootOpen] = React.useState(false);
   const [openBranchByDepth, setOpenBranchByDepth] = React.useState<string[]>([]);
@@ -115,10 +118,8 @@ export function CMenu({
       return;
     }
 
-    if (rootTriggerMode === 'click') {
-      setIsRootOpen((previous) => !previous);
-      setOpenBranchByDepth([]);
-    }
+    setIsRootOpen((previous) => !previous);
+    setOpenBranchByDepth([]);
   };
 
   const handleRootTriggerPointerEnter: React.PointerEventHandler<Element> = (event) => {
@@ -144,16 +145,27 @@ export function CMenu({
     items: readonly MenuListItem[],
     depth: number,
     parentTrigger: MenuTriggerMode,
+    listId: string,
+    parentPath = '',
   ): React.ReactElement => {
     return (
-      <ul className="cm-menu__list" data-testid="cm-menu-list" data-menu-depth={depth}>
+      // biome-ignore lint/a11y/noNoninteractiveElementToInteractiveRole: ul[role="menu"] is the required ARIA structure for this menu.
+      <ul
+        id={listId}
+        role="menu"
+        className="cm-menu__list"
+        data-testid="cm-menu-list"
+        data-menu-depth={depth}
+      >
         {items.map((item) => {
           const isParent = Array.isArray(item.children) && item.children.length > 0;
           const effectiveTrigger = item.trigger ?? parentTrigger;
           const isBranchOpen = openBranchByDepth[depth] === item.id;
+          const itemPath = parentPath === '' ? item.id : `${parentPath}-${item.id}`;
+          const submenuId = `${menuInstanceId}-${itemPath}-submenu`;
 
           const handleParentClick = (): void => {
-            if (item.disabled || effectiveTrigger !== 'click') {
+            if (item.disabled) {
               return;
             }
 
@@ -180,6 +192,7 @@ export function CMenu({
           return (
             <li
               key={item.id}
+              role="none"
               className={mergeClasses(
                 [
                   'cm-menu__item',
@@ -190,6 +203,7 @@ export function CMenu({
             >
               <button
                 type="button"
+                role="menuitem"
                 className={mergeClasses(
                   [
                     'cm-menu__item-button',
@@ -202,6 +216,9 @@ export function CMenu({
                 data-menu-item-key={item.key}
                 data-menu-item-type={isParent ? 'parent' : 'leaf'}
                 disabled={item.disabled}
+                aria-haspopup={isParent ? 'menu' : undefined}
+                aria-expanded={isParent ? isBranchOpen : undefined}
+                aria-controls={isParent ? submenuId : undefined}
                 onClick={isParent ? handleParentClick : handleLeafClick}
                 onPointerEnter={isParent ? handleParentPointerEnter : undefined}
               >
@@ -210,7 +227,13 @@ export function CMenu({
               </button>
               {isParent && isBranchOpen ? (
                 <div className="cm-menu__popup cm-menu__submenu">
-                  {renderItems(item.children ?? [], depth + 1, effectiveTrigger)}
+                  {renderItems(
+                    item.children ?? [],
+                    depth + 1,
+                    effectiveTrigger,
+                    submenuId,
+                    itemPath,
+                  )}
                 </div>
               ) : null}
             </li>
@@ -221,6 +244,7 @@ export function CMenu({
   };
 
   const triggerElement = React.cloneElement(children as React.ReactElement<TriggerElementProps>, {
+    'aria-controls': isRootOpen ? rootMenuId : undefined,
     'aria-expanded': isRootOpen,
     'aria-haspopup': 'menu',
     onClick: handleRootTriggerClick,
@@ -238,7 +262,7 @@ export function CMenu({
       <div className="cm-menu__trigger">{triggerElement}</div>
       {isRootOpen ? (
         <div className="cm-menu__popup" data-testid="menu-demo-popup">
-          {renderItems(menuList, 0, rootTriggerMode)}
+          {renderItems(menuList, 0, rootTriggerMode, rootMenuId)}
         </div>
       ) : null}
     </div>

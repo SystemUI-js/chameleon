@@ -1,13 +1,14 @@
 import '@testing-library/jest-dom';
 import { fireEvent, render, screen } from '@testing-library/react';
 import React from 'react';
-import { CMenu as PackageEntryCMenu, Theme } from '../src';
 import {
-  CMenu,
+  CMenu as PackageEntryCMenu,
+  Theme,
   type CMenuProps,
   type CMenuTrigger,
   type MenuListItem,
-} from '../src/components/Menu/Menu';
+} from '../src';
+import { CMenu } from '../src/components/Menu/Menu';
 
 const SAMPLE_MENU_LIST: readonly MenuListItem[] = [
   { id: 'item-1', key: 'item-1', title: 'Item 1' },
@@ -171,6 +172,60 @@ describe('CMenu', () => {
     expect(screen.queryByTestId('cm-menu-list')).not.toBeInTheDocument();
   });
 
+  it('hover root trigger still opens on click', () => {
+    render(
+      <CMenu menuList={SAMPLE_MENU_LIST} trigger="hover" data-testid="menu-hover-click-open">
+        <button type="button">Hover Menu</button>
+      </CMenu>,
+    );
+
+    const menu = screen.getByTestId('menu-hover-click-open');
+    const trigger = screen.getByRole('button', { name: 'Hover Menu' });
+
+    expect(menu).toHaveAttribute('data-menu-state', 'closed');
+
+    fireEvent.click(trigger);
+
+    expect(menu).toHaveAttribute('data-menu-state', 'open');
+    expect(screen.getByRole('menu')).toBeInTheDocument();
+  });
+
+  it('exposes menu ARIA semantics for root and parent items', () => {
+    render(
+      <CMenu menuList={INTERACTION_MENU_LIST} trigger="click" data-testid="menu-aria">
+        <button type="button">Open Menu</button>
+      </CMenu>,
+    );
+
+    const trigger = screen.getByRole('button', { name: 'Open Menu' });
+
+    expect(trigger).toHaveAttribute('aria-haspopup', 'menu');
+    expect(trigger).toHaveAttribute('aria-expanded', 'false');
+    expect(trigger).not.toHaveAttribute('aria-controls');
+
+    fireEvent.click(trigger);
+
+    const rootMenu = screen.getByRole('menu');
+    const parentItem = screen.getByRole('menuitem', { name: /Parent 1/ });
+    const submenuId = parentItem.getAttribute('aria-controls');
+    const rootMenuId = rootMenu.getAttribute('id');
+
+    expect(rootMenu).toBeInTheDocument();
+    expect(rootMenu).toHaveAttribute('data-menu-depth', '0');
+    expect(rootMenuId).toBeTruthy();
+    expect(trigger).toHaveAttribute('aria-controls', rootMenuId ?? '');
+    expect(parentItem).toHaveAttribute('aria-haspopup', 'menu');
+    expect(parentItem).toHaveAttribute('aria-expanded', 'false');
+    expect(submenuId).toBeTruthy();
+    expect(submenuId).toContain('parent-1-submenu');
+    expect(document.getElementById(submenuId ?? '')).not.toBeInTheDocument();
+
+    fireEvent.click(parentItem);
+
+    expect(parentItem).toHaveAttribute('aria-expanded', 'true');
+    expect(document.getElementById(submenuId ?? '')).toBeInTheDocument();
+  });
+
   it('outside click closes the menu', () => {
     render(
       <div>
@@ -217,7 +272,7 @@ describe('CMenu', () => {
     expect(handleSelect).not.toHaveBeenCalled();
     expect(menu).toHaveAttribute('data-menu-state', 'open');
 
-    fireEvent.click(screen.getByRole('button', { name: 'Leaf 1' }));
+    fireEvent.click(screen.getByRole('menuitem', { name: 'Leaf 1' }));
     expect(handleSelect).toHaveBeenCalledTimes(1);
     expect(handleSelect).toHaveBeenCalledWith({ id: 'leaf-1', key: 'leaf-1', title: 'Leaf 1' });
     expect(menu).toHaveAttribute('data-menu-state', 'closed');
@@ -246,7 +301,7 @@ describe('CMenu', () => {
 
     fireEvent.click(screen.getByTestId('menu-item-parent-1'));
 
-    fireEvent.click(screen.getByRole('button', { name: 'Disabled Leaf' }));
+    fireEvent.click(screen.getByRole('menuitem', { name: 'Disabled Leaf' }));
     expect(handleSelect).not.toHaveBeenCalled();
     expect(menu).toHaveAttribute('data-menu-state', 'open');
   });
@@ -278,7 +333,7 @@ describe('CMenu', () => {
     fireEvent.click(screen.getByTestId('menu-item-root-parent'));
     fireEvent.click(screen.getByTestId('menu-item-child-parent'));
 
-    expect(screen.getByRole('button', { name: 'Deep Leaf' })).toBeInTheDocument();
+    expect(screen.getByRole('menuitem', { name: 'Deep Leaf' })).toBeInTheDocument();
   });
 
   it('inherited trigger opens submenu', () => {
@@ -300,7 +355,7 @@ describe('CMenu', () => {
     fireEvent.pointerEnter(screen.getByRole('button', { name: 'Hover Trigger' }));
     fireEvent.pointerEnter(screen.getByTestId('menu-item-hover-parent'));
 
-    expect(screen.getByRole('button', { name: 'Hover Leaf' })).toBeInTheDocument();
+    expect(screen.getByRole('menuitem', { name: 'Hover Leaf' })).toBeInTheDocument();
   });
 
   it('explicit item trigger overrides parent trigger', () => {
@@ -323,11 +378,11 @@ describe('CMenu', () => {
     fireEvent.pointerEnter(screen.getByRole('button', { name: 'Hover Trigger' }));
     fireEvent.pointerEnter(screen.getByTestId('menu-item-click-parent'));
 
-    expect(screen.queryByRole('button', { name: 'Click Leaf' })).not.toBeInTheDocument();
+    expect(screen.queryByRole('menuitem', { name: 'Click Leaf' })).not.toBeInTheDocument();
 
     fireEvent.click(screen.getByTestId('menu-item-click-parent'));
 
-    expect(screen.getByRole('button', { name: 'Click Leaf' })).toBeInTheDocument();
+    expect(screen.getByRole('menuitem', { name: 'Click Leaf' })).toBeInTheDocument();
   });
 
   it('hover trigger opens and leaving menu tree closes', () => {
@@ -341,11 +396,11 @@ describe('CMenu', () => {
 
     fireEvent.pointerEnter(screen.getByRole('button', { name: 'Hover Trigger' }));
     expect(menu).toHaveAttribute('data-menu-state', 'open');
-    expect(screen.getByRole('button', { name: 'Item 1' })).toBeInTheDocument();
+    expect(screen.getByRole('menuitem', { name: 'Item 1' })).toBeInTheDocument();
 
     fireEvent.pointerLeave(menu);
     expect(menu).toHaveAttribute('data-menu-state', 'closed');
-    expect(screen.queryByRole('button', { name: 'Item 1' })).not.toBeInTheDocument();
+    expect(screen.queryByRole('menuitem', { name: 'Item 1' })).not.toBeInTheDocument();
   });
 
   it('disabled parent does not open submenu', () => {
@@ -368,7 +423,7 @@ describe('CMenu', () => {
     fireEvent.click(screen.getByRole('button', { name: 'Open Menu' }));
     fireEvent.click(screen.getByTestId('menu-item-disabled-parent'));
 
-    expect(screen.queryByRole('button', { name: 'Hidden Child' })).not.toBeInTheDocument();
+    expect(screen.queryByRole('menuitem', { name: 'Hidden Child' })).not.toBeInTheDocument();
   });
 
   it('nested leaf selection closes full tree', () => {
@@ -400,31 +455,34 @@ describe('CMenu', () => {
 
     fireEvent.click(screen.getByRole('button', { name: 'Open Nested Select' }));
     fireEvent.click(screen.getByTestId('menu-item-select-parent'));
-    fireEvent.click(screen.getByRole('button', { name: 'Nested Leaf' }));
+    fireEvent.click(screen.getByRole('menuitem', { name: 'Nested Leaf' }));
 
     expect(handleSelect).toHaveBeenCalledWith(nestedLeaf);
     expect(screen.getByTestId('menu-nested-select')).toHaveAttribute('data-menu-state', 'closed');
-    expect(screen.queryByRole('button', { name: 'Select Parent' })).not.toBeInTheDocument();
+    expect(screen.queryByRole('menuitem', { name: 'Select Parent' })).not.toBeInTheDocument();
   });
 
   it('rejects multiple trigger children', () => {
     const consoleError = jest.spyOn(console, 'error').mockImplementation(() => {});
 
-    expect(() => {
-      render(
-        React.createElement(
-          CMenu,
-          {
-            menuList: SAMPLE_MENU_LIST,
-            'data-testid': 'menu-multi-child',
-          } as CMenuProps,
-          React.createElement('button', { type: 'button' }, 'Trigger 1'),
-          React.createElement('button', { type: 'button' }, 'Trigger 2'),
-        ),
-      );
-    }).toThrow();
+    try {
+      expect(() => {
+        render(
+          React.createElement(
+            CMenu,
+            {
+              menuList: SAMPLE_MENU_LIST,
+              'data-testid': 'menu-multi-child',
+            } as CMenuProps,
+            React.createElement('button', { type: 'button' }, 'Trigger 1'),
+            React.createElement('button', { type: 'button' }, 'Trigger 2'),
+          ),
+        );
+      }).toThrow();
 
-    expect(consoleError).toHaveBeenCalled();
-    consoleError.mockRestore();
+      expect(consoleError).toHaveBeenCalled();
+    } finally {
+      consoleError.mockRestore();
+    }
   });
 });

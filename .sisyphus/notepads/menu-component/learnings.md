@@ -29,12 +29,9 @@
 - `CMenu` uses `data-menu-state="closed"` attribute on the wrapper div to provide a deterministic default state marker suitable for future state management tasks.
 - Theme resolution helper pattern `resolveThemeClass(theme)` prepends `cm-theme--` if not already present, consistent with Button/Select implementations.
 
-## 2026-04-04 Task 1 CMenu public contract (revised)
+## 2026-04-04 Task 1 CMenu public contract (superseded)
 
-- `CMenuTrigger` interface has `type: 'trigger'` field to satisfy non-empty interface requirement while serving as a marker type.
-- `MenuListItem` interface has recursive structure: `id`, `key?`, `title`, `children?`, `trigger?`, `disabled?` - sufficient for future task tree rendering.
-- `CMenuProps` includes `children: React.ReactElement` (narrowed from `React.ReactNode` for single child), `menuList?`, `root?`, `onSelect?`, plus existing `className`, `theme`, `data-testid`.
-- Unused future-task parameters (`menuList`, `onSelect`) use underscore prefix rename pattern (`menuList: _menuList`) to satisfy `no-unused-vars` rule while preserving public API shape.
+- Historical note only: an earlier draft mentioned marker interfaces and optional `key/menuList`; that draft is superseded by the final contract below and should not be used as implementation guidance.
 
 ## 2026-04-04 Task 1 CMenu contract corrections
 
@@ -50,6 +47,7 @@
 - `CMenuProps.menuList` is now required (not optional) per plan line 65: `readonly MenuListItem[]`.
 - `MenuListItem.key` is now required (not optional) per plan line 66: `key` is listed alongside `id`, `title` as part of the public item shape.
 - All test renders now supply `menuList` explicitly; `SAMPLE_MENU_LIST` includes required `key` field.
+- Canonical public shapes: `CMenuTrigger = React.ReactElement`; `MenuListItem` is recursive with required `id`, `key`, `title`; `CMenuProps` requires `menuList` and uses `trigger?: 'click' | 'hover'` plus `onSelect?: (item: MenuListItem) => void`.
 
 ## 2026-04-04 Task 1 test TypeScript fix
 
@@ -89,7 +87,7 @@
 - Duplicate caret issue: Menu.tsx renders `<span className="cm-menu__caret">▸</span>` as a real element. Theme SCSS should NOT also add `::after { content: '▸'; }` on `.cm-menu__item-button--parent` since that causes double caret. Fixed by replacing `::after` with `.cm-menu__caret { margin-left: 8px; }` in all three theme files - keeping spacing/style on the real element.
 - Favicon 404 fix: add `<link rel="icon" href="data:," />` to `playwright-menu.html` head to suppress browser default favicon request.
 - Hover trigger bug: `CMenu` uses `React.cloneElement` to inject `onPointerEnter` into trigger children. But `CButton` did not accept or forward `onPointerEnter`, so the event never reached the DOM. Fixed by adding `onPointerEnter?: React.PointerEventHandler<HTMLButtonElement>` to `CButtonProps` interface and forwarding it to the underlying `<button>` element.
-- SCSS state surface completeness: runtime-emitted state classes (like `cm-menu__item--disabled`, `cm-menu__item--open`) must be defined in the base component SCSS even if they have no styles, otherwise the formal styling surface is incomplete. Added empty `.cm-menu__item--disabled` and `.cm-menu__item--open` selectors to `src/components/Menu/index.scss`.
+- SCSS state surface completeness should not violate stylelint: runtime-emitted state classes can exist in markup without empty placeholder selectors in base SCSS.
 
 ## 2026-04-04 Task 5 release-facing integration
 

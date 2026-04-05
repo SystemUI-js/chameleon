@@ -326,10 +326,11 @@ Wave 2: 4) theme styles, 5) dev preview and verification integration
 > 4 review agents run in PARALLEL. ALL must APPROVE. Present consolidated results to user and get explicit "okay" before completing.
 > **Do NOT auto-proceed after verification. Wait for user's explicit approval before marking work complete.**
 > **Never mark F1-F4 as checked before getting user's okay.** Rejection or user feedback -> fix -> re-run -> present again -> wait for okay.
-- [x] F1. Plan Compliance Audit — oracle
-- [x] F2. Code Quality Review — unspecified-high
-- [x] F3. Real Manual QA — unspecified-high (+ playwright if UI)
-- [x] F4. Scope Fidelity Check — deep
+- Note: F1-F4 may only be checked after the user explicitly replies with `okay`.
+- [ ] F1. Plan Compliance Audit — oracle
+- [ ] F2. Code Quality Review — unspecified-high
+- [ ] F3. Real Manual QA — unspecified-high (+ playwright if UI)
+- [ ] F4. Scope Fidelity Check — deep
 
 ## Commit Strategy
 - Preferred implementation flow: one feature commit after all five tasks pass verification
