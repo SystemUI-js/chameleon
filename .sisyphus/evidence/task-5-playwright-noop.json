@@ -1,0 +1,11 @@
+{
+  "command": "npx playwright test tests/ui/window.action-buttons.spec.ts --grep \"no-op\"",
+  "result": "PASS",
+  "scenario": "action-buttons-left no-op",
+  "assertions": [
+    "window-demo-minimize click keeps frame metrics unchanged",
+    "window-demo-maximize click keeps frame metrics unchanged",
+    "window-demo-close click keeps frame metrics unchanged",
+    "URL remains unchanged and window-frame stays visible"
+  ]
+}

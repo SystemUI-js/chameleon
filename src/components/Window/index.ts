@@ -6,5 +6,9 @@ export function createWindow(props: CWindowProps): React.ReactElement {
 }
 
 export { CWindow, type CWindowProps } from './Window';
-export { CWindowTitle, type WindowPosition } from './WindowTitle';
+export {
+  CWindowTitle,
+  type WindowPosition,
+  type WindowTitleActionButtonPosition,
+} from './WindowTitle';
 export type { CWindowResizeOptions } from './Window';

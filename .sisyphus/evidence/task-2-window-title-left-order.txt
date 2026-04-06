@@ -1,0 +1,3 @@
+Command: yarn test -- CWindowTitleComposition.test.tsx
+Result: PASS
+Coverage: actionButtonPosition="left" 时，window-title-controls 具有 cm-window__title-bar__controls--left，且在 window-title-text 之前；window-title 仍保持单一根节点 test id。

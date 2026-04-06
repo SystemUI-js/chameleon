@@ -1,0 +1,3 @@
+Command: yarn test -- CWindowTitleComposition.test.tsx
+Result: PASS
+Coverage: 在 moveBehavior=Outline 场景下，从 controls 内按钮发起 pointer down + move + up 后，window-frame 的 left/top/width/height 保持 10/20/240/160，不生成 preview frame；实现通过 capture + native stopImmediatePropagation 阻断标题栏原生 Drag 链路。
