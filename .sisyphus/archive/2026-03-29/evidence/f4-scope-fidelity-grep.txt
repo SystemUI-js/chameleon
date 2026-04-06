@@ -1,0 +1,48 @@
+F4 Scope Fidelity Check - Public Surface & Selector Contract Evidence
+Date: 2026-03-28
+
+Scenario: Public surface and selector contract remain in scope
+
+1) Public export surface check
+- File: src/index.ts
+- Observed exports:
+  - export * from './components';
+  - export { CButton, CRadio, CRadioGroup, CSelect } from './components';
+  - export * from './system/registry';
+  - export * from './system/SystemHost';
+  - export * from './system/types';
+  - export const defaultThemeDefinition / win98ThemeDefinition / winXpThemeDefinition
+- Git status check:
+  - src/index.ts is not listed as modified
+- Result: no new public exports introduced by this refactor scope
+
+2) Selector/test-id stability check
+- File: tests/ui/window.helpers.ts
+- Stable tokens confirmed:
+  - window-frame
+  - window-title
+  - window-content
+  - window-resize-
+- File: src/components/Window/Window.tsx
+  - data-testid="window-content"
+  - data-window-uuid={this.uuid}
+  - getResizeHandleTestId(direction) => `window-resize-${direction}`
+  - renderFrame(..., { testId: 'window-frame' })
+- File: src/components/Window/WindowTitle.tsx
+  - data-testid="window-title"
+- Result: selector contract unchanged
+
+3) Responsibility boundary check (scope creep)
+- File: src/components/Window/Window.tsx
+  - 保留 window-specific 责任：className/testId 映射、title 元素识别、window 结构拼装
+  - 不再持有 resize Drag 实例/map/ref 生命周期（由基类承担）
+- File: src/components/Widget/Widget.tsx
+  - 承担通用 frame state、drag pose、resize 8 向 handle 渲染与 Drag 生命周期
+- Result: implementation remains within planned move-to-CWidget responsibilities
+
+Final conclusion
+- F4 scope fidelity PASS:
+  - no hooks/context in refactor path
+  - no public API growth in src/index.ts
+  - selector/test-id contract stable (window-frame/window-content/window-title/window-resize-*)
+  - no drag library replacement

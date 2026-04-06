@@ -1,0 +1,27 @@
+Task 3: Delegate title-drag composition from CWindow to widget-level helpers
+
+Changed files:
+- src/components/Widget/Widget.tsx
+- src/components/Window/Window.tsx
+- src/components/Window/WindowTitle.tsx
+- tests/CWindowTitleComposition.test.tsx
+
+Verification commands:
+1. yarn test --runInBand tests/CWindowTitleComposition.test.tsx --testNamePattern="implicitly render|moves window frame|content area|independent from resize"
+   Result: PASS (4 passed, 17 skipped)
+
+2. yarn test --runInBand tests/CWindowTitleComposition.test.tsx --testNamePattern="tears down an active title drag safely on unmount"
+   Result: PASS (1 passed, 20 skipped)
+
+3. yarn playwright test tests/ui/window.move.spec.ts tests/ui/window.smoke.spec.ts
+   Result: PASS (4 passed)
+
+4. yarn build
+   Result: PASS (vite build completed, dist emitted)
+   Note: vite:dts still prints pre-existing TS2533 at src/components/Screen/Grid.tsx:31.
+
+QA observations:
+- Explicitly composed CWindowTitle still drives frame movement.
+- Dragging window content remains a no-op.
+- Title drag stays independent from resize handles.
+- Active title drag is torn down safely on unmount.

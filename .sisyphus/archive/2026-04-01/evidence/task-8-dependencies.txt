@@ -1,0 +1,17 @@
+# Task 8 - Dependencies Verification
+
+## eventemitter3
+- Found in: yarn.lock only (indirect/ transitive dependency)
+- NOT found in: src/, tests/, package.json
+- Status: OK (only indirect dependency, not directly used)
+
+## multi-drag
+- Found in: package.json, yarn.lock
+- Actively used by:
+  - src/components/Widget/Widget.tsx
+  - src/components/Window/WindowTitle.tsx
+- Status: KEEP (required for Window drag/resize functionality)
+
+## Summary
+- eventemitter3: NOT a direct dependency - OK
+- multi-drag: Active dependency - KEEP

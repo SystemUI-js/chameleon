@@ -1,76 +1,51 @@
-import { SystemHost } from '@/system/SystemHost';
-import {
-  DEFAULT_THEME_BY_SYSTEM,
-  resolveSystemTypeDefinition,
-  resolveThemeDefinition,
-  SYSTEM_TYPE,
-  THEME,
-} from '@/system/registry';
-import type {
-  SystemThemeSelection,
-  SystemTypeDefinition,
-  SystemTypeId,
-  ThemeDefinition,
-  ThemeId,
-} from '@/system/types';
-import type { ReactElement } from 'react';
+import type { ReactElement, ReactNode } from 'react';
+import { Theme } from '@/components';
+import { defaultThemeDefinition } from '@/theme/default';
+import type { ThemeDefinition, ThemeId } from '@/theme/types';
+import { win98ThemeDefinition } from '@/theme/win98';
+import { winXpThemeDefinition } from '@/theme/winxp';
 
-export const DEV_SYSTEM_TYPE = SYSTEM_TYPE;
-
-export const DEV_THEME = THEME;
+export const DEV_THEME = {
+  default: 'default',
+  win98: 'win98',
+  winxp: 'winxp',
+} as const satisfies Record<ThemeId, ThemeId>;
 
 export type DevThemeId = (typeof DEV_THEME)[keyof typeof DEV_THEME];
 
-export type DevSystemTypeId = (typeof DEV_SYSTEM_TYPE)[keyof typeof DEV_SYSTEM_TYPE];
-
 export const DEFAULT_DEV_SELECTION = {
-  systemType: DEV_SYSTEM_TYPE.default,
   theme: DEV_THEME.default,
-} as const satisfies SystemThemeSelection;
+} as const;
 
-interface DevSelectionInput {
-  readonly systemType?: SystemTypeId;
-  readonly theme?: ThemeId;
+const DEV_THEME_DEFINITIONS: Record<DevThemeId, ThemeDefinition> = {
+  default: defaultThemeDefinition,
+  win98: win98ThemeDefinition,
+  winxp: winXpThemeDefinition,
+};
+
+export function resolveDevThemeDefinition(
+  theme: DevThemeId = DEFAULT_DEV_SELECTION.theme,
+): ThemeDefinition {
+  return DEV_THEME_DEFINITIONS[theme];
 }
 
-const resolveDevSelection = ({
-  systemType = DEFAULT_DEV_SELECTION.systemType,
-  theme = DEFAULT_DEV_SELECTION.theme,
-}: DevSelectionInput = {}): SystemThemeSelection => ({
-  systemType,
-  theme,
-});
-
-export function resolveDevSelectionForSystemType(systemType: SystemTypeId): SystemThemeSelection {
-  return {
-    systemType,
-    theme: DEFAULT_THEME_BY_SYSTEM[systemType],
-  };
-}
-
-export function resolveDevSystemDefinition(
-  systemType: DevSystemTypeId = DEFAULT_DEV_SELECTION.systemType,
-): SystemTypeDefinition {
-  return resolveSystemTypeDefinition(systemType);
-}
-
-export function resolveDevThemeDefinition(selection: DevSelectionInput = {}): ThemeDefinition {
-  return resolveThemeDefinition(resolveDevSelection(selection));
-}
-
-interface DevSystemRootProps {
-  readonly systemType?: DevSystemTypeId;
+interface DevThemeRootProps {
   readonly theme?: DevThemeId;
-  readonly onSelectionChange?: (selection: SystemThemeSelection) => void;
+  readonly children?: ReactNode;
+  readonly testId?: string | null;
 }
 
-export function DevSystemRoot({
-  systemType = DEFAULT_DEV_SELECTION.systemType,
+export function DevThemeRoot({
   theme = DEFAULT_DEV_SELECTION.theme,
-  onSelectionChange,
-}: DevSystemRootProps): ReactElement {
-  resolveDevSystemDefinition(systemType);
-  resolveDevThemeDefinition({ systemType, theme });
+  children,
+  testId,
+}: DevThemeRootProps): ReactElement {
+  const themeDefinition = resolveDevThemeDefinition(theme);
+  const rootTestId = testId === undefined ? 'theme-root' : testId;
 
-  return <SystemHost systemType={systemType} theme={theme} onSelectionChange={onSelectionChange} />;
+  return (
+    <Theme name={themeDefinition.className}>
+      <div data-testid={rootTestId}>{children}</div>
+    </Theme>
+  );
 }

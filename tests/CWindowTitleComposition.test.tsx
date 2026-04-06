@@ -1,9 +1,16 @@
-import { fireEvent } from '@testing-library/dom';
-import { render } from '@testing-library/react';
 import '@testing-library/jest-dom';
+import { fireEvent } from '@testing-library/dom';
+import { act, render } from '@testing-library/react';
 import React from 'react';
+import { Theme } from '../src';
 import { CWindow } from '../src/components/Window/Window';
+import { CWindowBody } from '../src/components/Window/WindowBody';
 import { CWindowTitle } from '../src/components/Window/WindowTitle';
+import {
+  WidgetInteractionBehavior,
+  WidgetPreviewSource,
+  type WidgetPreviewRect,
+} from '../src/components/Widget/Widget';
 
 const setRect = (
   element: HTMLElement,
@@ -63,7 +70,42 @@ const getFrameMetrics = (
   height: Number.parseFloat(frame.style.height),
 });
 
+class PreviewTestWindow extends CWindow {
+  public setPreview(rect: WidgetPreviewRect) {
+    this.setPreviewRect(rect, {
+      source: WidgetPreviewSource.Move,
+      behavior: WidgetInteractionBehavior.Outline,
+      active: true,
+    });
+  }
+}
+
 describe('CWindow and CWindowTitle composition', () => {
+  it('keeps default live behavior and does not render preview frame when behavior props are omitted', () => {
+    const { getByTestId, queryByTestId } = render(
+      <CWindow x={10} y={20} width={240} height={160}>
+        <CWindowTitle>Default behavior</CWindowTitle>
+      </CWindow>,
+    );
+
+    const frame = getByTestId('window-frame');
+
+    expect(queryByTestId('window-preview-frame')).not.toBeInTheDocument();
+
+    dragPointer(getByTestId('window-title'), {
+      pointerId: 101,
+      start: { x: 40, y: 40 },
+      end: { x: 60, y: 65 },
+    });
+
+    expect(getFrameMetrics(frame)).toEqual({
+      x: 30,
+      y: 45,
+      width: 240,
+      height: 160,
+    });
+  });
+
   it('uses uuid from CWidget and keeps it stable across re-render', () => {
     const windowRef = React.createRef<CWindow>();
     const { rerender } = render(<CWindow ref={windowRef} />);
@@ -100,6 +142,52 @@ describe('CWindow and CWindowTitle composition', () => {
     expect(titleText).toHaveTextContent('Composed Title');
   });
 
+  it('renders composed CWindowBody explicitly and lets callers extend styling with className', () => {
+    const { getByTestId } = render(
+      <CWindow>
+        <CWindowTitle>Body host</CWindowTitle>
+        <CWindowBody className="window-body-custom window-body-padded">body content</CWindowBody>
+      </CWindow>,
+    );
+
+    const body = getByTestId('window-body');
+
+    expect(body).toHaveClass('cm-window__body');
+    expect(body).toHaveClass('window-body-custom');
+    expect(body).toHaveClass('window-body-padded');
+    expect(body).toHaveTextContent('body content');
+  });
+
+  it('inherits theme for title and body while keeping base classes', () => {
+    const { getByTestId } = render(
+      <Theme name="cm-theme--retro">
+        <CWindow>
+          <CWindowTitle>Theme Title</CWindowTitle>
+          <CWindowBody>Theme Body</CWindowBody>
+        </CWindow>
+      </Theme>,
+    );
+
+    expect(getByTestId('window-title')).toHaveClass('cm-window__title-bar', 'cm-theme--retro');
+    expect(getByTestId('window-body')).toHaveClass('cm-window__body', 'cm-theme--retro');
+  });
+
+  it('prefers explicit theme over provider theme for title and body', () => {
+    const { getByTestId } = render(
+      <Theme name="cm-theme--retro">
+        <CWindow>
+          <CWindowTitle theme="cm-theme--xp">Theme Title</CWindowTitle>
+          <CWindowBody theme="cm-theme--classic">Theme Body</CWindowBody>
+        </CWindow>
+      </Theme>,
+    );
+
+    expect(getByTestId('window-title')).toHaveClass('cm-window__title-bar', 'cm-theme--xp');
+    expect(getByTestId('window-title')).not.toHaveClass('cm-theme--retro');
+    expect(getByTestId('window-body')).toHaveClass('cm-window__body', 'cm-theme--classic');
+    expect(getByTestId('window-body')).not.toHaveClass('cm-theme--retro');
+  });
+
   it('keeps the outer frame absolute and places resize handles in an inner wrapper', () => {
     const { getByTestId } = render(
       <CWindow x={10} y={20} width={240} height={160}>
@@ -121,10 +209,45 @@ describe('CWindow and CWindowTitle composition', () => {
     expect(content).not.toContainElement(eastHandle);
   });
 
+  it('inherits theme from provider on frame and content roots', () => {
+    const { getByTestId } = render(
+      <Theme name="cm-theme--win98">
+        <CWindow>
+          <CWindowTitle>Themed</CWindowTitle>
+          <div data-testid="window-body">body</div>
+        </CWindow>
+      </Theme>,
+    );
+
+    const frame = getByTestId('window-frame');
+    const content = getByTestId('window-content');
+
+    expect(frame).toHaveClass('cm-theme--win98');
+    expect(content).toHaveClass('cm-theme--win98');
+  });
+
+  it('prefers explicit window theme over provider theme', () => {
+    const { getByTestId } = render(
+      <Theme name="cm-theme--win98">
+        <CWindow theme="cm-theme--winxp">
+          <CWindowTitle>Override</CWindowTitle>
+        </CWindow>
+      </Theme>,
+    );
+
+    const frame = getByTestId('window-frame');
+    const content = getByTestId('window-content');
+
+    expect(frame).toHaveClass('cm-theme--winxp');
+    expect(content).toHaveClass('cm-theme--winxp');
+    expect(frame).not.toHaveClass('cm-theme--win98');
+    expect(content).not.toHaveClass('cm-theme--win98');
+  });
+
   it('moves window frame when dragging title bar', () => {
     const { getByTestId } = render(
       <CWindow x={10} y={20} width={240} height={160}>
-        <CWindowTitle>Draggable</CWindowTitle>
+        <CWindowTitle theme="cm-theme--xp">Draggable</CWindowTitle>
         <div data-testid="window-body">body</div>
       </CWindow>,
     );
@@ -142,11 +265,217 @@ describe('CWindow and CWindowTitle composition', () => {
 
     expect(frame.style.left).toBe('30px');
     expect(frame.style.top).toBe('60px');
+    expect(title).toHaveClass('cm-window__title-bar', 'cm-theme--xp');
   });
 
-  it('does not move window when dragging content area', () => {
-    const { getByTestId } = render(
-      <CWindow x={15} y={25}>
+  it('threads moveBehavior into composed window titles and keeps live move behavior unchanged', () => {
+    const receivedMoveBehaviors: Array<WidgetInteractionBehavior | undefined> = [];
+
+    class InspectableWindowTitle extends CWindowTitle {
+      public override render(): React.ReactElement {
+        receivedMoveBehaviors.push(this.props.moveBehavior);
+        return super.render();
+      }
+    }
+
+    const { getByTestId, queryByTestId } = render(
+      <CWindow
+        x={10}
+        y={20}
+        width={240}
+        height={160}
+        moveBehavior={WidgetInteractionBehavior.Outline}
+        resizeBehavior={WidgetInteractionBehavior.Outline}
+      >
+        <InspectableWindowTitle>Threaded behavior</InspectableWindowTitle>
+      </CWindow>,
+    );
+
+    const frame = getByTestId('window-frame');
+
+    expect(receivedMoveBehaviors).toContain(WidgetInteractionBehavior.Outline);
+    expect(queryByTestId('window-preview-frame')).not.toBeInTheDocument();
+
+    dragPointer(getByTestId('window-title'), {
+      pointerId: 102,
+      start: { x: 30, y: 30 },
+      end: { x: 55, y: 50 },
+    });
+
+    expect(getFrameMetrics(frame)).toEqual({
+      x: 35,
+      y: 40,
+      width: 240,
+      height: 160,
+    });
+  });
+
+  it('keeps real frame fixed and renders preview only during outline title drag until release', () => {
+    const { getByTestId, queryByTestId } = render(
+      <CWindow
+        x={10}
+        y={20}
+        width={240}
+        height={160}
+        moveBehavior={WidgetInteractionBehavior.Outline}
+      >
+        <CWindowTitle>Outline drag</CWindowTitle>
+      </CWindow>,
+    );
+
+    const frame = getByTestId('window-frame');
+    const title = getByTestId('window-title');
+
+    fireEvent.pointerDown(title, {
+      pointerId: 103,
+      button: 0,
+      clientX: 50,
+      clientY: 40,
+    });
+
+    fireEvent.pointerMove(document, {
+      pointerId: 103,
+      clientX: 70,
+      clientY: 70,
+    });
+
+    expect(getFrameMetrics(frame)).toEqual({
+      x: 10,
+      y: 20,
+      width: 240,
+      height: 160,
+    });
+
+    const previewFrame = queryByTestId('window-preview-frame');
+    expect(previewFrame).toBeInTheDocument();
+    expect(previewFrame).toHaveStyle({
+      left: '30px',
+      top: '50px',
+      width: '240px',
+      height: '160px',
+    });
+
+    fireEvent.pointerUp(document, {
+      pointerId: 103,
+      clientX: 70,
+      clientY: 70,
+    });
+
+    expect(queryByTestId('window-preview-frame')).not.toBeInTheDocument();
+    expect(getFrameMetrics(frame)).toEqual({
+      x: 30,
+      y: 50,
+      width: 240,
+      height: 160,
+    });
+  });
+
+  it('does not commit or render preview on zero-delta outline release', () => {
+    const { getByTestId, queryByTestId } = render(
+      <CWindow
+        x={10}
+        y={20}
+        width={240}
+        height={160}
+        moveBehavior={WidgetInteractionBehavior.Outline}
+      >
+        <CWindowTitle>Zero delta</CWindowTitle>
+      </CWindow>,
+    );
+
+    const frame = getByTestId('window-frame');
+    const title = getByTestId('window-title');
+
+    fireEvent.pointerDown(title, {
+      pointerId: 104,
+      button: 0,
+      clientX: 45,
+      clientY: 45,
+    });
+
+    fireEvent.pointerUp(document, {
+      pointerId: 104,
+      clientX: 45,
+      clientY: 45,
+    });
+
+    expect(queryByTestId('window-preview-frame')).not.toBeInTheDocument();
+    expect(getFrameMetrics(frame)).toEqual({
+      x: 10,
+      y: 20,
+      width: 240,
+      height: 160,
+    });
+  });
+
+  it('clears outline move preview and suppresses commit on pointer cancel', () => {
+    const { getByTestId, queryByTestId } = render(
+      <CWindow
+        x={10}
+        y={20}
+        width={240}
+        height={160}
+        moveBehavior={WidgetInteractionBehavior.Outline}
+      >
+        <CWindowTitle>Cancelled outline move</CWindowTitle>
+      </CWindow>,
+    );
+
+    const frame = getByTestId('window-frame');
+    const title = getByTestId('window-title');
+
+    fireEvent.pointerDown(title, {
+      pointerId: 105,
+      button: 0,
+      clientX: 50,
+      clientY: 40,
+    });
+
+    fireEvent.pointerMove(document, {
+      pointerId: 105,
+      clientX: 80,
+      clientY: 70,
+    });
+
+    expect(queryByTestId('window-preview-frame')).toHaveStyle({
+      left: '40px',
+      top: '50px',
+      width: '240px',
+      height: '160px',
+    });
+
+    fireEvent.pointerCancel(title, {
+      pointerId: 105,
+      clientX: 80,
+      clientY: 70,
+    });
+
+    expect(queryByTestId('window-preview-frame')).not.toBeInTheDocument();
+    expect(getFrameMetrics(frame)).toEqual({
+      x: 10,
+      y: 20,
+      width: 240,
+      height: 160,
+    });
+
+    fireEvent.pointerUp(document, {
+      pointerId: 105,
+      clientX: 80,
+      clientY: 70,
+    });
+
+    expect(queryByTestId('window-preview-frame')).not.toBeInTheDocument();
+    expect(getFrameMetrics(frame)).toEqual({
+      x: 10,
+      y: 20,
+      width: 240,
+      height: 160,
+    });
+  });
+
+  it('does not move window when dragging content area even when outline move is enabled', () => {
+    const { getByTestId, queryByTestId } = render(
+      <CWindow x={15} y={25} moveBehavior={WidgetInteractionBehavior.Outline}>
         <CWindowTitle>Title</CWindowTitle>
         <div data-testid="window-body">body</div>
       </CWindow>,
@@ -163,6 +492,56 @@ describe('CWindow and CWindowTitle composition', () => {
 
     expect(frame.style.left).toBe('15px');
     expect(frame.style.top).toBe('25px');
+    expect(queryByTestId('window-preview-frame')).not.toBeInTheDocument();
+  });
+
+  it('tears down an active outline title drag safely on unmount without leaking preview', () => {
+    const { getByTestId, queryByTestId, unmount } = render(
+      <CWindow
+        x={15}
+        y={25}
+        width={240}
+        height={160}
+        moveBehavior={WidgetInteractionBehavior.Outline}
+      >
+        <CWindowTitle>Unmount safety</CWindowTitle>
+      </CWindow>,
+    );
+
+    const title = getByTestId('window-title');
+
+    fireEvent.pointerDown(title, {
+      pointerId: 17,
+      button: 0,
+      clientX: 40,
+      clientY: 40,
+    });
+
+    fireEvent.pointerMove(document, {
+      pointerId: 17,
+      clientX: 75,
+      clientY: 95,
+    });
+
+    expect(queryByTestId('window-preview-frame')).toBeInTheDocument();
+
+    unmount();
+
+    expect(document.querySelector('[data-testid="window-preview-frame"]')).not.toBeInTheDocument();
+
+    expect(() => {
+      fireEvent.pointerMove(document, {
+        pointerId: 17,
+        clientX: 75,
+        clientY: 95,
+      });
+
+      fireEvent.pointerUp(document, {
+        pointerId: 17,
+        clientX: 75,
+        clientY: 95,
+      });
+    }).not.toThrow();
   });
 
   it.each([
@@ -221,9 +600,241 @@ describe('CWindow and CWindowTitle composition', () => {
     },
   );
 
-  it('disables resize when resizable is false but still allows title dragging', () => {
+  it('keeps committed frame stable and renders resize preview only until outline resize release', () => {
     const { getByTestId, queryByTestId } = render(
-      <CWindow x={12} y={24} width={200} height={120} resizable={false}>
+      <CWindow
+        x={10}
+        y={20}
+        width={240}
+        height={160}
+        resizeBehavior={WidgetInteractionBehavior.Outline}
+      >
+        <CWindowTitle>Outline resize</CWindowTitle>
+      </CWindow>,
+    );
+
+    const frame = getByTestId('window-frame');
+    const eastHandle = getByTestId('window-resize-e');
+
+    fireEvent.pointerDown(eastHandle, {
+      pointerId: 301,
+      button: 0,
+      clientX: 250,
+      clientY: 100,
+    });
+
+    fireEvent.pointerMove(document, {
+      pointerId: 301,
+      clientX: 290,
+      clientY: 100,
+    });
+
+    expect(getFrameMetrics(frame)).toEqual({
+      x: 10,
+      y: 20,
+      width: 240,
+      height: 160,
+    });
+
+    expect(queryByTestId('window-preview-frame')).toHaveStyle({
+      left: '10px',
+      top: '20px',
+      width: '280px',
+      height: '160px',
+    });
+
+    fireEvent.pointerUp(document, {
+      pointerId: 301,
+      clientX: 290,
+      clientY: 100,
+    });
+
+    expect(queryByTestId('window-preview-frame')).not.toBeInTheDocument();
+    expect(getFrameMetrics(frame)).toEqual({
+      x: 10,
+      y: 20,
+      width: 280,
+      height: 160,
+    });
+  });
+
+  it('applies resize clamp during outline preview before release commit', () => {
+    const { getByTestId, queryByTestId } = render(
+      <CWindow
+        x={30}
+        y={40}
+        width={40}
+        height={30}
+        resizeBehavior={WidgetInteractionBehavior.Outline}
+        resizeOptions={{
+          minContentWidth: 20,
+          minContentHeight: 10,
+          maxContentWidth: 50,
+          maxContentHeight: 60,
+        }}
+      >
+        <CWindowTitle>Outline clamp</CWindowTitle>
+      </CWindow>,
+    );
+
+    const frame = getByTestId('window-frame');
+    const eastHandle = getByTestId('window-resize-e');
+
+    fireEvent.pointerDown(eastHandle, {
+      pointerId: 302,
+      button: 0,
+      clientX: 70,
+      clientY: 55,
+    });
+
+    fireEvent.pointerMove(document, {
+      pointerId: 302,
+      clientX: 170,
+      clientY: 55,
+    });
+
+    expect(getFrameMetrics(frame)).toEqual({
+      x: 30,
+      y: 40,
+      width: 40,
+      height: 30,
+    });
+
+    expect(queryByTestId('window-preview-frame')).toHaveStyle({
+      left: '30px',
+      top: '40px',
+      width: '50px',
+      height: '30px',
+    });
+
+    fireEvent.pointerUp(document, {
+      pointerId: 302,
+      clientX: 170,
+      clientY: 55,
+    });
+
+    expect(queryByTestId('window-preview-frame')).not.toBeInTheDocument();
+    expect(getFrameMetrics(frame)).toEqual({
+      x: 30,
+      y: 40,
+      width: 50,
+      height: 30,
+    });
+  });
+
+  it('does not commit or render resize preview on zero-delta outline resize release', () => {
+    const { getByTestId, queryByTestId } = render(
+      <CWindow
+        x={10}
+        y={20}
+        width={240}
+        height={160}
+        resizeBehavior={WidgetInteractionBehavior.Outline}
+      >
+        <CWindowTitle>Zero delta resize</CWindowTitle>
+      </CWindow>,
+    );
+
+    const frame = getByTestId('window-frame');
+    const eastHandle = getByTestId('window-resize-e');
+
+    fireEvent.pointerDown(eastHandle, {
+      pointerId: 303,
+      button: 0,
+      clientX: 250,
+      clientY: 100,
+    });
+
+    fireEvent.pointerUp(document, {
+      pointerId: 303,
+      clientX: 250,
+      clientY: 100,
+    });
+
+    expect(queryByTestId('window-preview-frame')).not.toBeInTheDocument();
+    expect(getFrameMetrics(frame)).toEqual({
+      x: 10,
+      y: 20,
+      width: 240,
+      height: 160,
+    });
+  });
+
+  it('clears outline resize preview and suppresses commit on pointer cancel', () => {
+    const { getByTestId, queryByTestId } = render(
+      <CWindow
+        x={10}
+        y={20}
+        width={240}
+        height={160}
+        resizeBehavior={WidgetInteractionBehavior.Outline}
+      >
+        <CWindowTitle>Cancelled outline resize</CWindowTitle>
+      </CWindow>,
+    );
+
+    const frame = getByTestId('window-frame');
+    const eastHandle = getByTestId('window-resize-e');
+
+    fireEvent.pointerDown(eastHandle, {
+      pointerId: 305,
+      button: 0,
+      clientX: 250,
+      clientY: 100,
+    });
+
+    fireEvent.pointerMove(document, {
+      pointerId: 305,
+      clientX: 290,
+      clientY: 100,
+    });
+
+    expect(queryByTestId('window-preview-frame')).toHaveStyle({
+      left: '10px',
+      top: '20px',
+      width: '280px',
+      height: '160px',
+    });
+
+    fireEvent.pointerCancel(eastHandle, {
+      pointerId: 305,
+      clientX: 290,
+      clientY: 100,
+    });
+
+    expect(queryByTestId('window-preview-frame')).not.toBeInTheDocument();
+    expect(getFrameMetrics(frame)).toEqual({
+      x: 10,
+      y: 20,
+      width: 240,
+      height: 160,
+    });
+
+    fireEvent.pointerUp(document, {
+      pointerId: 305,
+      clientX: 290,
+      clientY: 100,
+    });
+
+    expect(queryByTestId('window-preview-frame')).not.toBeInTheDocument();
+    expect(getFrameMetrics(frame)).toEqual({
+      x: 10,
+      y: 20,
+      width: 240,
+      height: 160,
+    });
+  });
+
+  it('disables resize when resizable is false and never creates a resize preview', () => {
+    const { getByTestId, queryByTestId } = render(
+      <CWindow
+        x={12}
+        y={24}
+        width={200}
+        height={120}
+        resizable={false}
+        resizeBehavior={WidgetInteractionBehavior.Outline}
+      >
         <CWindowTitle>Drag only</CWindowTitle>
       </CWindow>,
     );
@@ -243,6 +854,7 @@ describe('CWindow and CWindowTitle composition', () => {
     expect(frame.style.top).toBe('64px');
     expect(frame.style.width).toBe('200px');
     expect(frame.style.height).toBe('120px');
+    expect(queryByTestId('window-preview-frame')).not.toBeInTheDocument();
   });
 
   it('applies default edgeWidth as 4px when omitted', () => {
@@ -363,5 +975,136 @@ describe('CWindow and CWindowTitle composition', () => {
     expect(metrics.y).toBe(60);
     expect(metrics.width).toBe(200);
     expect(metrics.height).toBe(120);
+  });
+
+  it('tears down an active outline resize safely on unmount without leaking preview', () => {
+    const consoleError = jest.spyOn(console, 'error').mockImplementation(() => {});
+
+    try {
+      const { getByTestId, queryByTestId, unmount } = render(
+        <CWindow
+          x={15}
+          y={25}
+          width={240}
+          height={160}
+          resizeBehavior={WidgetInteractionBehavior.Outline}
+        >
+          <CWindowTitle>Resize unmount safety</CWindowTitle>
+        </CWindow>,
+      );
+
+      const eastHandle = getByTestId('window-resize-e');
+
+      fireEvent.pointerDown(eastHandle, {
+        pointerId: 304,
+        button: 0,
+        clientX: 255,
+        clientY: 100,
+      });
+
+      fireEvent.pointerMove(document, {
+        pointerId: 304,
+        clientX: 295,
+        clientY: 100,
+      });
+
+      expect(queryByTestId('window-preview-frame')).toBeInTheDocument();
+
+      unmount();
+
+      expect(
+        document.querySelector('[data-testid="window-preview-frame"]'),
+      ).not.toBeInTheDocument();
+
+      expect(() => {
+        fireEvent.pointerMove(document, {
+          pointerId: 304,
+          clientX: 295,
+          clientY: 100,
+        });
+
+        fireEvent.pointerUp(document, {
+          pointerId: 304,
+          clientX: 295,
+          clientY: 100,
+        });
+      }).not.toThrow();
+
+      expect(consoleError.mock.calls.flat().join(' ')).not.toContain(
+        "Can't perform a React state update on an unmounted component",
+      );
+    } finally {
+      consoleError.mockRestore();
+    }
+  });
+
+  it('renders preview frame when preview is active with outline behavior while real frame remains', () => {
+    const windowRef = React.createRef<PreviewTestWindow>();
+    const { queryByTestId } = render(
+      <PreviewTestWindow ref={windowRef} x={10} y={20} width={240} height={160}>
+        <CWindowTitle>Preview test</CWindowTitle>
+      </PreviewTestWindow>,
+    );
+
+    expect(queryByTestId('window-preview-frame')).not.toBeInTheDocument();
+
+    act(() => {
+      windowRef.current?.setPreview({ x: 50, y: 60, width: 280, height: 180 });
+    });
+
+    const previewFrame = queryByTestId('window-preview-frame');
+    expect(previewFrame).toBeInTheDocument();
+    expect(previewFrame).toHaveClass('cm-window-preview-frame');
+    expect(previewFrame).toHaveStyle({
+      left: '50px',
+      top: '60px',
+      width: '280px',
+      height: '180px',
+      zIndex: '2',
+      pointerEvents: 'none',
+    });
+    expect(previewFrame?.previousElementSibling).toHaveAttribute('data-testid', 'window-frame');
+  });
+
+  it('does not render preview frame in default live mode even after drag interaction', () => {
+    const { getByTestId, queryByTestId } = render(
+      <CWindow x={10} y={20} width={240} height={160}>
+        <CWindowTitle>Live mode no preview</CWindowTitle>
+      </CWindow>,
+    );
+
+    const frame = getByTestId('window-frame');
+
+    dragPointer(getByTestId('window-title'), {
+      pointerId: 201,
+      start: { x: 40, y: 40 },
+      end: { x: 60, y: 65 },
+    });
+
+    expect(queryByTestId('window-preview-frame')).not.toBeInTheDocument();
+    expect(getFrameMetrics(frame)).toEqual({
+      x: 30,
+      y: 45,
+      width: 240,
+      height: 160,
+    });
+  });
+
+  it('preview frame has dedicated className for theme styling', () => {
+    const windowRef = React.createRef<PreviewTestWindow>();
+    render(
+      <PreviewTestWindow ref={windowRef} x={10} y={20} width={240} height={160}>
+        <CWindowTitle>Styled preview</CWindowTitle>
+      </PreviewTestWindow>,
+    );
+
+    act(() => {
+      windowRef.current?.setPreview({ x: 50, y: 60, width: 280, height: 180 });
+    });
+
+    const previewFrame = document.querySelector('.cm-window-preview-frame');
+    expect(previewFrame).toBeInTheDocument();
+    expect(previewFrame).toHaveClass('cm-window-preview-frame');
+    expect(previewFrame).not.toHaveClass('cm-window-frame');
   });
 });

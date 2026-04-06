@@ -1,8 +1,0 @@
-COMMAND: rg -n "StartMenu|Tray|Clock|TaskList|pin|pinned|menu popover|system tray" src/components/StartBar src/system/windows tests
-OUTPUT:
-tests/Dock.test.tsx:17:  it('requires height or defaultHeight in props typing', () => {
-RG_EXIT_CODE=0
-
-NOTE:
-- 出现匹配项，且退出码为 0（不符合“无匹配/退出码 1”的预期）。
-- 命中项为 "typing" 中的 "pin" 子串（正则未加词边界）。

@@ -1,5 +1,14 @@
 import { expect, test } from '@playwright/test';
-import { dragLocatorBy, gotoWindowFixture, readFrameMetrics } from './window.helpers';
+import {
+  dragLocatorBy,
+  expectNoPreviewFrame,
+  finishDrag,
+  gotoWindowFixture,
+  moveDragBy,
+  readFrameMetrics,
+  readPreviewMetrics,
+  startLocatorDrag,
+} from './window.helpers';
 
 type ResizeDir = 'n' | 's' | 'e' | 'w' | 'ne' | 'nw' | 'se' | 'sw';
 
@@ -121,4 +130,89 @@ test.describe('Window drag matrix', () => {
       expect(actual.height).toBe(c.expected.height);
     });
   }
+});
+
+test('outline-resize keeps committed frame stable, renders preview, and cleans it up on release', async ({
+  page,
+}) => {
+  await gotoWindowFixture(page, 'outline-resize');
+
+  const eastHandle = page.getByTestId('window-resize-e');
+  const dragSession = await startLocatorDrag(eastHandle);
+
+  await moveDragBy(dragSession, 20, 0);
+
+  await expect(readFrameMetrics(page)).resolves.toEqual({
+    x: 10,
+    y: 20,
+    width: 240,
+    height: 160,
+  });
+  await expect(readPreviewMetrics(page)).resolves.toEqual({
+    x: 10,
+    y: 20,
+    width: 260,
+    height: 160,
+  });
+
+  await finishDrag(dragSession);
+
+  await expectNoPreviewFrame(page);
+  await expect(readFrameMetrics(page)).resolves.toEqual({
+    x: 10,
+    y: 20,
+    width: 260,
+    height: 160,
+  });
+});
+
+test('outline-both resize keeps committed frame stable, renders preview, and cleans it up on release', async ({
+  page,
+}) => {
+  await gotoWindowFixture(page, 'outline-both');
+
+  const eastHandle = page.getByTestId('window-resize-e');
+  const dragSession = await startLocatorDrag(eastHandle);
+
+  await moveDragBy(dragSession, 20, 0);
+
+  await expect(readFrameMetrics(page)).resolves.toEqual({
+    x: 10,
+    y: 20,
+    width: 240,
+    height: 160,
+  });
+  await expect(readPreviewMetrics(page)).resolves.toEqual({
+    x: 10,
+    y: 20,
+    width: 260,
+    height: 160,
+  });
+
+  await finishDrag(dragSession);
+
+  await expectNoPreviewFrame(page);
+  await expect(readFrameMetrics(page)).resolves.toEqual({
+    x: 10,
+    y: 20,
+    width: 260,
+    height: 160,
+  });
+});
+
+test('outline-resize keeps title drag live without rendering a preview frame', async ({ page }) => {
+  await gotoWindowFixture(page, 'outline-resize');
+
+  const titleLocator = page.getByTestId('window-title');
+
+  await expectNoPreviewFrame(page);
+  await dragLocatorBy(titleLocator, 20, 40);
+
+  await expect(readFrameMetrics(page)).resolves.toEqual({
+    x: 30,
+    y: 60,
+    width: 240,
+    height: 160,
+  });
+  await expectNoPreviewFrame(page);
 });

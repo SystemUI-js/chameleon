@@ -1,6 +1,10 @@
 import { fireEvent, render, screen } from '@testing-library/react';
 import '@testing-library/jest-dom';
-import { CRadio as PackageEntryCRadio, CRadioGroup as PackageEntryCRadioGroup } from '../src';
+import {
+  CRadio as PackageEntryCRadio,
+  CRadioGroup as PackageEntryCRadioGroup,
+  Theme,
+} from '../src';
 import { CRadio } from '../src/components/Radio/Radio';
 import { CRadioGroup } from '../src/components/Radio/RadioGroup';
 
@@ -161,5 +165,130 @@ describe('CRadioGroup', () => {
 
     expect(groupDisabledEnabledRadio).not.toBeChecked();
     expect(handleChange).not.toHaveBeenCalled();
+  });
+
+  describe('CRadioGroup theme prop', () => {
+    it('applies theme class from explicit theme prop', () => {
+      render(
+        <CRadioGroup name="fruit" theme="cm-theme--win98">
+          <CRadio value="apple">Apple</CRadio>
+        </CRadioGroup>,
+      );
+
+      const radioGroup = screen.getByRole('radio', { name: 'Apple' }).closest('.cm-radio-group');
+
+      expect(radioGroup).toHaveClass('cm-radio-group');
+      expect(radioGroup).toHaveClass('cm-theme--win98');
+    });
+
+    it('applies theme class from Theme provider when no explicit prop', () => {
+      render(
+        <Theme name="win98">
+          <CRadioGroup data-testid="provider-themed" name="fruit">
+            <CRadio value="apple">Apple</CRadio>
+          </CRadioGroup>
+        </Theme>,
+      );
+
+      const radioGroup = screen.getByTestId('provider-themed');
+
+      expect(radioGroup).toHaveClass('cm-radio-group');
+      expect(radioGroup).toHaveClass('cm-theme--win98');
+    });
+
+    it('explicit theme prop overrides Theme provider', () => {
+      render(
+        <Theme name="win98">
+          <CRadioGroup theme="cm-theme--winxp" data-testid="override-themed" name="fruit">
+            <CRadio value="apple">Apple</CRadio>
+          </CRadioGroup>
+        </Theme>,
+      );
+
+      const radioGroup = screen.getByTestId('override-themed');
+
+      expect(radioGroup).toHaveClass('cm-radio-group');
+      expect(radioGroup).toHaveClass('cm-theme--winxp');
+      expect(radioGroup).not.toHaveClass('cm-theme--win98');
+    });
+
+    it('merges className with theme following correct order', () => {
+      render(
+        <CRadioGroup name="fruit" className="custom-class" theme="cm-theme--win98">
+          <CRadio value="apple">Apple</CRadio>
+        </CRadioGroup>,
+      );
+
+      const radioGroup = screen.getByRole('radio', { name: 'Apple' }).closest('.cm-radio-group');
+
+      expect(radioGroup).toHaveClass('cm-radio-group');
+      expect(radioGroup).toHaveClass('cm-theme--win98');
+      expect(radioGroup).toHaveClass('custom-class');
+    });
+  });
+
+  describe('CRadio theme prop', () => {
+    it('applies explicit theme prop on the radio root while keeping provider theme on the group', () => {
+      render(
+        <Theme name="win98">
+          <CRadioGroup name="fruit">
+            <CRadio data-testid="radio-with-theme" value="apple" theme="cm-theme--winxp">
+              Apple
+            </CRadio>
+          </CRadioGroup>
+        </Theme>,
+      );
+
+      const radioInput = screen.getByTestId('radio-with-theme');
+      const radioLabel = radioInput.closest('.cm-radio');
+      const radioGroup = radioLabel?.closest('.cm-radio-group');
+
+      expect(radioGroup).toHaveClass('cm-theme--win98');
+      expect(radioLabel).toHaveClass('cm-radio');
+      expect(radioLabel).toHaveClass('cm-theme--winxp');
+    });
+
+    it('supports provider inheritance without explicit prop', () => {
+      render(
+        <Theme name="win98">
+          <CRadioGroup name="fruit">
+            <CRadio data-testid="radio-provider-themed" value="apple">
+              Apple
+            </CRadio>
+          </CRadioGroup>
+        </Theme>,
+      );
+
+      const radioInput = screen.getByTestId('radio-provider-themed');
+      const radioLabel = radioInput.closest('.cm-radio');
+      const radioGroup = radioLabel?.closest('.cm-radio-group');
+
+      expect(radioGroup).toHaveClass('cm-theme--win98');
+      expect(radioLabel).toHaveClass('cm-radio');
+      expect(radioLabel).toHaveClass('cm-theme--win98');
+    });
+
+    it('RadioGroupContext remains unchanged with theme support', () => {
+      const handleChange = jest.fn();
+
+      render(
+        <Theme name="win98">
+          <CRadioGroup name="theme" value="light" onChange={handleChange}>
+            <CRadio value="light">Light</CRadio>
+            <CRadio value="dark">Dark</CRadio>
+          </CRadioGroup>
+        </Theme>,
+      );
+
+      const lightRadio = screen.getByRole('radio', { name: 'Light' });
+      const darkRadio = screen.getByRole('radio', { name: 'Dark' });
+
+      expect(lightRadio).toBeChecked();
+      expect(darkRadio).not.toBeChecked();
+
+      fireEvent.click(darkRadio);
+
+      expect(handleChange).toHaveBeenCalledWith('dark');
+    });
   });
 });

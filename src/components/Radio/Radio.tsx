@@ -1,4 +1,7 @@
 import React from 'react';
+import { mergeClasses } from '../Theme/mergeClasses';
+import { normalizeThemeClassName } from '../Theme/normalizeThemeClassName';
+import { useTheme } from '../Theme/useTheme';
 import { RadioGroupContext } from './RadioGroup';
 import './index.scss';
 
@@ -7,6 +10,7 @@ export interface CRadioProps {
   disabled?: boolean;
   children?: React.ReactNode;
   label?: React.ReactNode;
+  theme?: string;
   'data-testid'?: string;
 }
 
@@ -15,8 +19,10 @@ export function CRadio({
   disabled = false,
   children,
   label,
+  theme,
   'data-testid': dataTestId,
 }: CRadioProps): React.ReactElement {
+  const resolvedTheme = normalizeThemeClassName(useTheme(theme));
   const groupContext = React.useContext(RadioGroupContext);
 
   if (groupContext === null) {
@@ -39,7 +45,7 @@ export function CRadio({
   };
 
   return (
-    <label className={classNames.join(' ')}>
+    <label className={mergeClasses(classNames, resolvedTheme)}>
       <input
         checked={isChecked}
         className="cm-radio__input"

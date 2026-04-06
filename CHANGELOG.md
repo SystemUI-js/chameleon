@@ -1,5 +1,16 @@
 ### [UnReleased]
 
+- **Feature:** 新增 `CMenu` 组件并完成发布级集成
+  - 支持根触发模式 `click` / `hover`，并在子菜单层级中继承或按项覆盖触发方式
+  - 支持基于递归 `menuList` 数据的多级菜单渲染，保持叶子节点选择回调与整树关闭行为
+  - 补充并对齐 Jest + Playwright 覆盖，验证导出面、交互行为与 UI 夹具选择器契约
+
+- **Breaking:** 重构为纯组件库，移除系统导向 API
+  - 移除 ThemeContext、systemType、SystemHost、WindowManager、ScreenManager
+  - 主题现在通过 CSS 变量直接应用，不依赖系统注册
+  - Window 组件现在是独立可拖拽/缩放组件，不作为 shell 窗口管理器
+  - 迁移：现有代码需要移除 SystemHost 相关调用，改用纯组件组合
+
 - **Fix:** 优化 Window 边框缩放手柄的定位与交互反馈
   - 修正 8 个方向 resize handle 的边缘与角落热区定位，保证拖拽命中范围与视觉边界一致
   - 为不同方向的 resize handle 补充对应 cursor，提升桌面窗口缩放时的交互可预期性

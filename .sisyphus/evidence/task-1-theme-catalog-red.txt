@@ -1,0 +1,565 @@
+yarn run v1.22.19
+warning ../../../package.json: No license field
+warning From Yarn 1.0 onwards, scripts don't require "--" for options to be forwarded. In a future version, any explicit "--" will be forwarded as-is to the scripts.
+$ jest ComponentCatalog
+FAIL tests/ComponentCatalog.test.tsx
+  ComponentCatalog
+    ✓ renders baseline catalog with default theme (32 ms)
+    ✓ Button section exposes a Show code button (33 ms)
+    ✓ RadioGroup section exposes a Show code button (15 ms)
+    ✓ Select section exposes a Show code button (10 ms)
+    ✓ expanding Button does not auto-expand RadioGroup or Select (27 ms)
+    ✓ Window section exposes a Show code button (10 ms)
+    ✓ Dock section exposes a Show code button (11 ms)
+    ✓ StartBar section exposes a Show code button (11 ms)
+    ✓ Grid section exposes a Show code button (10 ms)
+    ✓ expanding Window section reveals CWindow snippet (13 ms)
+    ✓ Grid section remains collapsed until explicitly clicked (10 ms)
+    ✕ Theme section exposes a Show code button (9 ms)
+    ✕ expanding Theme section reveals Theme-related snippet text (9 ms)
+    ✕ expanding Theme section does not auto-expand Button or Window sections (7 ms)
+
+  ● ComponentCatalog › Theme section exposes a Show code button
+
+    TestingLibraryElementError: Unable to find an element by: [data-testid="catalog-section-theme"]
+
+    Ignored nodes: comments, script, style
+    [36m<body>[39m
+      [36m<div>[39m
+        [36m<div[39m
+          [33mclass[39m=[32m"cm-theme--default"[39m
+        [36m>[39m
+          [36m<div[39m
+            [33mdata-testid[39m=[32m"theme-root"[39m
+          [36m>[39m
+            [36m<div[39m
+              [33mclass[39m=[32m"cm-catalog"[39m
+              [33mdata-testid[39m=[32m"component-catalog"[39m
+            [36m>[39m
+              [36m<header[39m
+                [33mclass[39m=[32m"cm-catalog__header"[39m
+              [36m>[39m
+                [36m<h1[39m
+                  [33mclass[39m=[32m"cm-catalog__title"[39m
+                [36m>[39m
+                  [0mComponent Catalog[0m
+                [36m</h1>[39m
+                [36m<div[39m
+                  [33mclass[39m=[32m"cm-catalog__theme-switcher"[39m
+                  [33mdata-testid[39m=[32m"catalog-theme-switch"[39m
+                [36m>[39m
+                  [36m<label[39m
+                    [33mclass[39m=[32m"cm-catalog__theme-label"[39m
+                  [36m>[39m
+                    [0mTheme[0m
+                    [36m<select[39m
+                      [33mclass[39m=[32m"cm-catalog__theme-select"[39m
+                    [36m>[39m
+                      [36m<option[39m
+                        [33mvalue[39m=[32m"default"[39m
+                      [36m>[39m
+                        [0mdefault[0m
+                      [36m</option>[39m
+                      [36m<option[39m
+                        [33mvalue[39m=[32m"win98"[39m
+                      [36m>[39m
+                        [0mwin98[0m
+                      [36m</option>[39m
+                      [36m<option[39m
+                        [33mvalue[39m=[32m"winxp"[39m
+                      [36m>[39m
+                        [0mwinxp[0m
+                      [36m</option>[39m
+                    [36m</select>[39m
+                  [36m</label>[39m
+                [36m</div>[39m
+              [36m</header>[39m
+              [36m<main[39m
+                [33mclass[39m=[32m"cm-catalog__main"[39m
+              [36m>[39m
+                [36m<div[39m
+                  [33mclass[39m=[32m"cm-catalog__grid"[39m
+                [36m>[39m
+                  [36m<div[39m
+                    [33mclass[39m=[32m"cm-catalog__column"[39m
+                  [36m>[39m
+                    [36m<section[39m
+                      [33mclass[39m=[32m"cm-catalog__section"[39m
+                      [33mdata-testid[39m=[32m"catalog-section-button"[39m
+                    [36m>[39m
+                      [36m<h2[39m
+                        [33mclass[39m=[32m"cm-catalog__section-title"[39m
+                      [36m>[39m
+                        [0mButton[0m
+                      [36m</h2>[39m
+                      [36m<div[39m
+                        [33mclass[39m=[32m"cm-catalog__section-content"[39m
+                      [36m>[39m
+                        [36m<div[39m
+                          [33mclass[39m=[32m"cm-catalog__stack"[39m
+                        [36m>[39m
+                          [36m<div[39m
+                            [33mclass[39m=[32m"cm-catalog__row"[39m
+                          [36m>[39m
+                            [36m<button[39m
+                              [33mclass[39m=[32m"cm-button cm-button--primary cm-theme--default"[39m
+                              [33mdata-testid[39m=[32m"button-demo-primary"[39m
+                              [33mtype[39m=[32m"button"[39m
+                            [36m>[39m
+                              [0mPrimary action[0m
+                            [36m</button>[39m
+                            [36m<button[39m
+                              [33mclass[39m=[32m"cm-button cm-theme--default"[39m
+                              [33mtype[39m=[32m"button"[39m
+                            [36m>[39m
+                              [0mDefault action[0m
+                            [36m</button>[39m
+                            [36m<button[39m
+                              [33mclass[39m=[32m"cm-button cm-button--ghost cm-theme--default"[39m
+                              [33mtype[39m=[32m"button"[39m
+                            [36m>[39m
+                              [0mGhost action[0m
+                            [36m</button>[39m
+                          [36m</div>[39m
+                          [36m<div[39m
+                            [33mclass[39m=[32m"cm-catalog__row"[39m
+                          [36m>[39m
+                            [36m<button[39m
+                              [33mclass[39m=[32m"cm-button cm-theme--default"[39m
+                              [33mdisabled[39m=[32m""[39m
+                              [33mtype[39m=[32m"button"[39m
+                            [36m>[39m
+                              [0mDisabled default[0m
+                            [36m</button>[39m
+                            [36m<button[39m
+                              [33mclass[39m=[32m"cm-button cm-button--primary cm-theme--default"[39m
+                              [33mdisabled[39m=[32m""[39m
+                              [33mtype[39m=[32m"button"[39m
+                            [36m>[39m
+                              [0mDisabled primary[0m
+                            [36m</button>[39m
+                          [36m</div>[39m
+                          [36m<p[39m
+                            [33mclass[39m=[32m"cm-catalog__value"[39m
+                          [36m>[39m
+                            [0mPrimary button clicks: [0m
+                            [0m0[0m
+                          [36m</p>[39m
+                        [36m</div>[39m
+                      [36m</div>[39m
+                      [36m<div[39m
+                        [33mclass[39m=[32m"cm-catalog__code-disclosure"[39m
+                      [36m>[39m
+                        [36m<button[39m
+                          [33maria-controls[39m=[32m"catalog-section-button-code-region"[39m
+                          [33maria-expanded[39m=[32m"false"[39m
+                          [33mclass[39m=[32m"cm-catalog__code-toggle"[39m
+                          [33mtype[39m=[32m"button"[39m
+                        [36m>[39m
+                          [0mShow code[0m
+                        [36m</button>[39m
+                        [36m<div[39m
+                          [33mclass[39m=[32m"cm-catalog__code-region"[39m
+                          [33mhidden[39m=[32m""[39m
+                          [33mid[39m=[32m"catalog-section-button-code-region"[39m
+                        [36m>[39m
+                          [36m<pre[39m
+                            [33mclass[39m=[32m"cm-catalog__code-block"[39m
+                          [36m>[39m
+                            [36m<code>[39m
+                              [0mconst [buttonClicks, setButtonClicks] = useState(0);
+
+    return (
+      &lt;&gt;
+        &lt;CButton variant="primary" onClick={() =&gt; setButtonClicks((c) =&gt; c + 1)}&gt;Primary action&lt;/CButton&gt;
+        &lt;CButton&gt;Default action&lt;/CButton&gt;
+        &lt;CButton variant="ghost"&gt;Ghost action&lt;/CButton&gt;
+
+        &lt;p&gt;Primary button clicks: {buttonClicks}&lt;/p&gt;
+      &lt;/&gt;
+    );[0m
+                            [36m</code>[39m
+                          [36m</pre>[39m
+                        [36m</div>[39m
+                      [36m</div>[39m
+                    [36m<...
+
+      134 |     render(<ComponentCatalog theme={DEV_THEME.default} onThemeChange={() => {}} />);
+      135 |
+    > 136 |     const themeSection = screen.getByTestId('catalog-section-theme');
+          |                                 ^
+      137 |     const showCodeButton = within(themeSection).getByRole('button', { name: 'Show code' });
+      138 |     expect(showCodeButton).toBeInTheDocument();
+      139 |     expect(showCodeButton).toHaveAttribute('aria-expanded', 'false');
+
+      at Object.getElementError (node_modules/@testing-library/dom/dist/config.js:37:19)
+      at node_modules/@testing-library/dom/dist/query-helpers.js:76:38
+      at node_modules/@testing-library/dom/dist/query-helpers.js:52:17
+      at node_modules/@testing-library/dom/dist/query-helpers.js:95:19
+      at Object.<anonymous> (tests/ComponentCatalog.test.tsx:136:33)
+
+  ● ComponentCatalog › expanding Theme section reveals Theme-related snippet text
+
+    TestingLibraryElementError: Unable to find an element by: [data-testid="catalog-section-theme"]
+
+    Ignored nodes: comments, script, style
+    [36m<body>[39m
+      [36m<div>[39m
+        [36m<div[39m
+          [33mclass[39m=[32m"cm-theme--default"[39m
+        [36m>[39m
+          [36m<div[39m
+            [33mdata-testid[39m=[32m"theme-root"[39m
+          [36m>[39m
+            [36m<div[39m
+              [33mclass[39m=[32m"cm-catalog"[39m
+              [33mdata-testid[39m=[32m"component-catalog"[39m
+            [36m>[39m
+              [36m<header[39m
+                [33mclass[39m=[32m"cm-catalog__header"[39m
+              [36m>[39m
+                [36m<h1[39m
+                  [33mclass[39m=[32m"cm-catalog__title"[39m
+                [36m>[39m
+                  [0mComponent Catalog[0m
+                [36m</h1>[39m
+                [36m<div[39m
+                  [33mclass[39m=[32m"cm-catalog__theme-switcher"[39m
+                  [33mdata-testid[39m=[32m"catalog-theme-switch"[39m
+                [36m>[39m
+                  [36m<label[39m
+                    [33mclass[39m=[32m"cm-catalog__theme-label"[39m
+                  [36m>[39m
+                    [0mTheme[0m
+                    [36m<select[39m
+                      [33mclass[39m=[32m"cm-catalog__theme-select"[39m
+                    [36m>[39m
+                      [36m<option[39m
+                        [33mvalue[39m=[32m"default"[39m
+                      [36m>[39m
+                        [0mdefault[0m
+                      [36m</option>[39m
+                      [36m<option[39m
+                        [33mvalue[39m=[32m"win98"[39m
+                      [36m>[39m
+                        [0mwin98[0m
+                      [36m</option>[39m
+                      [36m<option[39m
+                        [33mvalue[39m=[32m"winxp"[39m
+                      [36m>[39m
+                        [0mwinxp[0m
+                      [36m</option>[39m
+                    [36m</select>[39m
+                  [36m</label>[39m
+                [36m</div>[39m
+              [36m</header>[39m
+              [36m<main[39m
+                [33mclass[39m=[32m"cm-catalog__main"[39m
+              [36m>[39m
+                [36m<div[39m
+                  [33mclass[39m=[32m"cm-catalog__grid"[39m
+                [36m>[39m
+                  [36m<div[39m
+                    [33mclass[39m=[32m"cm-catalog__column"[39m
+                  [36m>[39m
+                    [36m<section[39m
+                      [33mclass[39m=[32m"cm-catalog__section"[39m
+                      [33mdata-testid[39m=[32m"catalog-section-button"[39m
+                    [36m>[39m
+                      [36m<h2[39m
+                        [33mclass[39m=[32m"cm-catalog__section-title"[39m
+                      [36m>[39m
+                        [0mButton[0m
+                      [36m</h2>[39m
+                      [36m<div[39m
+                        [33mclass[39m=[32m"cm-catalog__section-content"[39m
+                      [36m>[39m
+                        [36m<div[39m
+                          [33mclass[39m=[32m"cm-catalog__stack"[39m
+                        [36m>[39m
+                          [36m<div[39m
+                            [33mclass[39m=[32m"cm-catalog__row"[39m
+                          [36m>[39m
+                            [36m<button[39m
+                              [33mclass[39m=[32m"cm-button cm-button--primary cm-theme--default"[39m
+                              [33mdata-testid[39m=[32m"button-demo-primary"[39m
+                              [33mtype[39m=[32m"button"[39m
+                            [36m>[39m
+                              [0mPrimary action[0m
+                            [36m</button>[39m
+                            [36m<button[39m
+                              [33mclass[39m=[32m"cm-button cm-theme--default"[39m
+                              [33mtype[39m=[32m"button"[39m
+                            [36m>[39m
+                              [0mDefault action[0m
+                            [36m</button>[39m
+                            [36m<button[39m
+                              [33mclass[39m=[32m"cm-button cm-button--ghost cm-theme--default"[39m
+                              [33mtype[39m=[32m"button"[39m
+                            [36m>[39m
+                              [0mGhost action[0m
+                            [36m</button>[39m
+                          [36m</div>[39m
+                          [36m<div[39m
+                            [33mclass[39m=[32m"cm-catalog__row"[39m
+                          [36m>[39m
+                            [36m<button[39m
+                              [33mclass[39m=[32m"cm-button cm-theme--default"[39m
+                              [33mdisabled[39m=[32m""[39m
+                              [33mtype[39m=[32m"button"[39m
+                            [36m>[39m
+                              [0mDisabled default[0m
+                            [36m</button>[39m
+                            [36m<button[39m
+                              [33mclass[39m=[32m"cm-button cm-button--primary cm-theme--default"[39m
+                              [33mdisabled[39m=[32m""[39m
+                              [33mtype[39m=[32m"button"[39m
+                            [36m>[39m
+                              [0mDisabled primary[0m
+                            [36m</button>[39m
+                          [36m</div>[39m
+                          [36m<p[39m
+                            [33mclass[39m=[32m"cm-catalog__value"[39m
+                          [36m>[39m
+                            [0mPrimary button clicks: [0m
+                            [0m0[0m
+                          [36m</p>[39m
+                        [36m</div>[39m
+                      [36m</div>[39m
+                      [36m<div[39m
+                        [33mclass[39m=[32m"cm-catalog__code-disclosure"[39m
+                      [36m>[39m
+                        [36m<button[39m
+                          [33maria-controls[39m=[32m"catalog-section-button-code-region"[39m
+                          [33maria-expanded[39m=[32m"false"[39m
+                          [33mclass[39m=[32m"cm-catalog__code-toggle"[39m
+                          [33mtype[39m=[32m"button"[39m
+                        [36m>[39m
+                          [0mShow code[0m
+                        [36m</button>[39m
+                        [36m<div[39m
+                          [33mclass[39m=[32m"cm-catalog__code-region"[39m
+                          [33mhidden[39m=[32m""[39m
+                          [33mid[39m=[32m"catalog-section-button-code-region"[39m
+                        [36m>[39m
+                          [36m<pre[39m
+                            [33mclass[39m=[32m"cm-catalog__code-block"[39m
+                          [36m>[39m
+                            [36m<code>[39m
+                              [0mconst [buttonClicks, setButtonClicks] = useState(0);
+
+    return (
+      &lt;&gt;
+        &lt;CButton variant="primary" onClick={() =&gt; setButtonClicks((c) =&gt; c + 1)}&gt;Primary action&lt;/CButton&gt;
+        &lt;CButton&gt;Default action&lt;/CButton&gt;
+        &lt;CButton variant="ghost"&gt;Ghost action&lt;/CButton&gt;
+
+        &lt;p&gt;Primary button clicks: {buttonClicks}&lt;/p&gt;
+      &lt;/&gt;
+    );[0m
+                            [36m</code>[39m
+                          [36m</pre>[39m
+                        [36m</div>[39m
+                      [36m</div>[39m
+                    [36m<...
+
+      143 |     render(<ComponentCatalog theme={DEV_THEME.default} onThemeChange={() => {}} />);
+      144 |
+    > 145 |     const themeSection = screen.getByTestId('catalog-section-theme');
+          |                                 ^
+      146 |     const showCodeButton = within(themeSection).getByRole('button', { name: 'Show code' });
+      147 |
+      148 |     act(() => {
+
+      at Object.getElementError (node_modules/@testing-library/dom/dist/config.js:37:19)
+      at node_modules/@testing-library/dom/dist/query-helpers.js:76:38
+      at node_modules/@testing-library/dom/dist/query-helpers.js:52:17
+      at node_modules/@testing-library/dom/dist/query-helpers.js:95:19
+      at Object.<anonymous> (tests/ComponentCatalog.test.tsx:145:33)
+
+  ● ComponentCatalog › expanding Theme section does not auto-expand Button or Window sections
+
+    TestingLibraryElementError: Unable to find an element by: [data-testid="catalog-section-theme"]
+
+    Ignored nodes: comments, script, style
+    [36m<body>[39m
+      [36m<div>[39m
+        [36m<div[39m
+          [33mclass[39m=[32m"cm-theme--default"[39m
+        [36m>[39m
+          [36m<div[39m
+            [33mdata-testid[39m=[32m"theme-root"[39m
+          [36m>[39m
+            [36m<div[39m
+              [33mclass[39m=[32m"cm-catalog"[39m
+              [33mdata-testid[39m=[32m"component-catalog"[39m
+            [36m>[39m
+              [36m<header[39m
+                [33mclass[39m=[32m"cm-catalog__header"[39m
+              [36m>[39m
+                [36m<h1[39m
+                  [33mclass[39m=[32m"cm-catalog__title"[39m
+                [36m>[39m
+                  [0mComponent Catalog[0m
+                [36m</h1>[39m
+                [36m<div[39m
+                  [33mclass[39m=[32m"cm-catalog__theme-switcher"[39m
+                  [33mdata-testid[39m=[32m"catalog-theme-switch"[39m
+                [36m>[39m
+                  [36m<label[39m
+                    [33mclass[39m=[32m"cm-catalog__theme-label"[39m
+                  [36m>[39m
+                    [0mTheme[0m
+                    [36m<select[39m
+                      [33mclass[39m=[32m"cm-catalog__theme-select"[39m
+                    [36m>[39m
+                      [36m<option[39m
+                        [33mvalue[39m=[32m"default"[39m
+                      [36m>[39m
+                        [0mdefault[0m
+                      [36m</option>[39m
+                      [36m<option[39m
+                        [33mvalue[39m=[32m"win98"[39m
+                      [36m>[39m
+                        [0mwin98[0m
+                      [36m</option>[39m
+                      [36m<option[39m
+                        [33mvalue[39m=[32m"winxp"[39m
+                      [36m>[39m
+                        [0mwinxp[0m
+                      [36m</option>[39m
+                    [36m</select>[39m
+                  [36m</label>[39m
+                [36m</div>[39m
+              [36m</header>[39m
+              [36m<main[39m
+                [33mclass[39m=[32m"cm-catalog__main"[39m
+              [36m>[39m
+                [36m<div[39m
+                  [33mclass[39m=[32m"cm-catalog__grid"[39m
+                [36m>[39m
+                  [36m<div[39m
+                    [33mclass[39m=[32m"cm-catalog__column"[39m
+                  [36m>[39m
+                    [36m<section[39m
+                      [33mclass[39m=[32m"cm-catalog__section"[39m
+                      [33mdata-testid[39m=[32m"catalog-section-button"[39m
+                    [36m>[39m
+                      [36m<h2[39m
+                        [33mclass[39m=[32m"cm-catalog__section-title"[39m
+                      [36m>[39m
+                        [0mButton[0m
+                      [36m</h2>[39m
+                      [36m<div[39m
+                        [33mclass[39m=[32m"cm-catalog__section-content"[39m
+                      [36m>[39m
+                        [36m<div[39m
+                          [33mclass[39m=[32m"cm-catalog__stack"[39m
+                        [36m>[39m
+                          [36m<div[39m
+                            [33mclass[39m=[32m"cm-catalog__row"[39m
+                          [36m>[39m
+                            [36m<button[39m
+                              [33mclass[39m=[32m"cm-button cm-button--primary cm-theme--default"[39m
+                              [33mdata-testid[39m=[32m"button-demo-primary"[39m
+                              [33mtype[39m=[32m"button"[39m
+                            [36m>[39m
+                              [0mPrimary action[0m
+                            [36m</button>[39m
+                            [36m<button[39m
+                              [33mclass[39m=[32m"cm-button cm-theme--default"[39m
+                              [33mtype[39m=[32m"button"[39m
+                            [36m>[39m
+                              [0mDefault action[0m
+                            [36m</button>[39m
+                            [36m<button[39m
+                              [33mclass[39m=[32m"cm-button cm-button--ghost cm-theme--default"[39m
+                              [33mtype[39m=[32m"button"[39m
+                            [36m>[39m
+                              [0mGhost action[0m
+                            [36m</button>[39m
+                          [36m</div>[39m
+                          [36m<div[39m
+                            [33mclass[39m=[32m"cm-catalog__row"[39m
+                          [36m>[39m
+                            [36m<button[39m
+                              [33mclass[39m=[32m"cm-button cm-theme--default"[39m
+                              [33mdisabled[39m=[32m""[39m
+                              [33mtype[39m=[32m"button"[39m
+                            [36m>[39m
+                              [0mDisabled default[0m
+                            [36m</button>[39m
+                            [36m<button[39m
+                              [33mclass[39m=[32m"cm-button cm-button--primary cm-theme--default"[39m
+                              [33mdisabled[39m=[32m""[39m
+                              [33mtype[39m=[32m"button"[39m
+                            [36m>[39m
+                              [0mDisabled primary[0m
+                            [36m</button>[39m
+                          [36m</div>[39m
+                          [36m<p[39m
+                            [33mclass[39m=[32m"cm-catalog__value"[39m
+                          [36m>[39m
+                            [0mPrimary button clicks: [0m
+                            [0m0[0m
+                          [36m</p>[39m
+                        [36m</div>[39m
+                      [36m</div>[39m
+                      [36m<div[39m
+                        [33mclass[39m=[32m"cm-catalog__code-disclosure"[39m
+                      [36m>[39m
+                        [36m<button[39m
+                          [33maria-controls[39m=[32m"catalog-section-button-code-region"[39m
+                          [33maria-expanded[39m=[32m"false"[39m
+                          [33mclass[39m=[32m"cm-catalog__code-toggle"[39m
+                          [33mtype[39m=[32m"button"[39m
+                        [36m>[39m
+                          [0mShow code[0m
+                        [36m</button>[39m
+                        [36m<div[39m
+                          [33mclass[39m=[32m"cm-catalog__code-region"[39m
+                          [33mhidden[39m=[32m""[39m
+                          [33mid[39m=[32m"catalog-section-button-code-region"[39m
+                        [36m>[39m
+                          [36m<pre[39m
+                            [33mclass[39m=[32m"cm-catalog__code-block"[39m
+                          [36m>[39m
+                            [36m<code>[39m
+                              [0mconst [buttonClicks, setButtonClicks] = useState(0);
+
+    return (
+      &lt;&gt;
+        &lt;CButton variant="primary" onClick={() =&gt; setButtonClicks((c) =&gt; c + 1)}&gt;Primary action&lt;/CButton&gt;
+        &lt;CButton&gt;Default action&lt;/CButton&gt;
+        &lt;CButton variant="ghost"&gt;Ghost action&lt;/CButton&gt;
+
+        &lt;p&gt;Primary button clicks: {buttonClicks}&lt;/p&gt;
+      &lt;/&gt;
+    );[0m
+                            [36m</code>[39m
+                          [36m</pre>[39m
+                        [36m</div>[39m
+                      [36m</div>[39m
+                    [36m<...
+
+      158 |     render(<ComponentCatalog theme={DEV_THEME.default} onThemeChange={() => {}} />);
+      159 |
+    > 160 |     const themeSection = screen.getByTestId('catalog-section-theme');
+          |                                 ^
+      161 |     const buttonSection = screen.getByTestId('catalog-section-button');
+      162 |     const windowSection = screen.getByTestId('catalog-section-window');
+      163 |
+
+      at Object.getElementError (node_modules/@testing-library/dom/dist/config.js:37:19)
+      at node_modules/@testing-library/dom/dist/query-helpers.js:76:38
+      at node_modules/@testing-library/dom/dist/query-helpers.js:52:17
+      at node_modules/@testing-library/dom/dist/query-helpers.js:95:19
+      at Object.<anonymous> (tests/ComponentCatalog.test.tsx:160:33)
+
+Test Suites: 1 failed, 1 total
+Tests:       3 failed, 11 passed, 14 total
+Snapshots:   0 total
+Time:        0.61 s, estimated 1 s
+Ran all test suites matching /ComponentCatalog/i.
+error Command failed with exit code 1.
+info Visit https://yarnpkg.com/en/docs/cli/run for documentation about this command.

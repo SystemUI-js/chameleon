@@ -1,4 +1,7 @@
 import type React from 'react';
+import { mergeClasses } from '../Theme/mergeClasses';
+import { normalizeThemeClassName } from '../Theme/normalizeThemeClassName';
+import { useTheme } from '../Theme/useTheme';
 import './index.scss';
 
 export interface CSelectOption {
@@ -17,6 +20,7 @@ export interface CSelectProps {
   required?: boolean;
   placeholder?: string;
   className?: string;
+  theme?: string;
   'aria-label'?: string;
   'data-testid'?: string;
 }
@@ -31,19 +35,17 @@ export function CSelect({
   required,
   placeholder,
   className,
+  theme,
   'aria-label': ariaLabel,
   'data-testid': dataTestId,
 }: CSelectProps): React.ReactElement {
-  const classNames = ['cm-select'];
+  const resolvedTheme = normalizeThemeClassName(useTheme(theme));
+  const baseClasses = ['cm-select'];
   const isControlled = value !== undefined;
   let resolvedDefaultValue: string | undefined;
 
   if (!isControlled) {
     resolvedDefaultValue = defaultValue ?? (placeholder ? '' : undefined);
-  }
-
-  if (className) {
-    classNames.push(className);
   }
 
   const handleChange = (event: React.ChangeEvent<HTMLSelectElement>): void => {
@@ -58,7 +60,7 @@ export function CSelect({
       value={isControlled ? value : undefined}
       defaultValue={resolvedDefaultValue}
       onChange={handleChange}
-      className={classNames.join(' ')}
+      className={mergeClasses(baseClasses, resolvedTheme, className)}
       aria-label={ariaLabel}
       data-testid={dataTestId}
     >

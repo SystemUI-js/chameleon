@@ -1,0 +1,9 @@
+yarn test --runInBand tests/WindowManager.test.tsx --testNamePattern="direct CWidget constructor|updates cached window element"
+
+PASS tests/WindowManager.test.tsx
+- accepts direct CWidget constructor through addWindow
+- updates cached window element when same constructor receives new props
+
+Summary:
+- Test Suites: 1 passed, 1 total
+- Tests: 2 passed, 6 skipped, 8 total

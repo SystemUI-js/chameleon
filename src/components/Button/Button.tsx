@@ -1,16 +1,20 @@
 import type React from 'react';
+import { mergeClasses } from '../Theme/mergeClasses';
+import { normalizeThemeClassName } from '../Theme/normalizeThemeClassName';
+import { useTheme } from '../Theme/useTheme';
 import './index.scss';
 
 export type CButtonVariant = 'default' | 'primary' | 'ghost';
 export type CButtonType = 'button' | 'submit' | 'reset';
 
-export interface CButtonProps {
-  children?: React.ReactNode;
+export interface CButtonProps extends Omit<React.ButtonHTMLAttributes<HTMLButtonElement>, 'type'> {
   variant?: CButtonVariant;
   type?: CButtonType;
   disabled?: boolean;
   onClick?: React.MouseEventHandler<HTMLButtonElement>;
+  onPointerEnter?: React.PointerEventHandler<HTMLButtonElement>;
   className?: string;
+  theme?: string;
   'data-testid'?: string;
 }
 
@@ -20,25 +24,27 @@ export function CButton({
   type = 'button',
   disabled,
   onClick,
+  onPointerEnter,
   className,
+  theme,
   'data-testid': dataTestId,
+  ...buttonProps
 }: CButtonProps): React.ReactElement {
-  const classNames = ['cm-button'];
+  const resolvedTheme = normalizeThemeClassName(useTheme(theme));
+  const baseClasses = ['cm-button'];
 
   if (variant !== 'default') {
-    classNames.push(`cm-button--${variant}`);
-  }
-
-  if (className) {
-    classNames.push(className);
+    baseClasses.push(`cm-button--${variant}`);
   }
 
   return (
     <button
+      {...buttonProps}
       type={type}
       disabled={disabled}
       onClick={onClick}
-      className={classNames.join(' ')}
+      onPointerEnter={onPointerEnter}
+      className={mergeClasses(baseClasses, resolvedTheme, className)}
       data-testid={dataTestId}
     >
       {children}

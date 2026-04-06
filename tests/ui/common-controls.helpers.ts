@@ -1,4 +1,5 @@
 import type { Page } from '@playwright/test';
+import type { DevThemeId } from '@/dev/themeSwitcher';
 
 const PLAYWRIGHT_COMMON_CONTROLS_PATH = '/playwright-common-controls.html';
 const BUTTON_TEST_ID = 'button-demo-primary';
@@ -57,34 +58,46 @@ const waitForWin98ThemedControls = async (page: Page): Promise<void> => {
 };
 
 export const gotoCommonControlsFixture = async (page: Page, fixture: string): Promise<void> => {
-  await page.goto(`${PLAYWRIGHT_COMMON_CONTROLS_PATH}?fixture=${encodeURIComponent(fixture)}`);
+  const searchParams = new URLSearchParams({
+    theme: 'default',
+    fixture,
+  });
+
+  await page.goto(`${PLAYWRIGHT_COMMON_CONTROLS_PATH}?${searchParams.toString()}`);
   await waitForCommonControlsHarness(page);
 };
 
-export type CommonControlsThemeSelection = {
-  systemType: 'windows' | 'default';
-  theme: 'win98' | 'winxp' | 'default';
+export type CommonControlsHarnessSelection = {
+  theme: DevThemeId;
+  fixture?: string;
+};
+
+export const gotoThemedCommonControls = async (
+  page: Page,
+  selection: CommonControlsHarnessSelection,
+): Promise<void> => {
+  const searchParams = new URLSearchParams({
+    theme: selection.theme,
+  });
+
+  if (selection.fixture !== undefined) {
+    searchParams.set('fixture', selection.fixture);
+  }
+
+  await page.goto(`${PLAYWRIGHT_COMMON_CONTROLS_PATH}?${searchParams.toString()}`);
+  await waitForWin98ThemedControls(page);
+  await page.locator(`.cm-theme--${selection.theme}`).first().waitFor({ state: 'attached' });
 };
 
 export const gotoWin98CommonControls = async (page: Page): Promise<void> => {
-  const searchParams = new URLSearchParams({
-    systemType: 'windows',
-    theme: 'win98',
-  });
-
-  await page.goto(`${PLAYWRIGHT_COMMON_CONTROLS_PATH}?${searchParams.toString()}`);
-  await waitForWin98ThemedControls(page);
+  await gotoThemedCommonControls(page, { theme: 'win98' });
 };
 
 export const gotoWin98DisabledCommonControls = async (page: Page): Promise<void> => {
-  const searchParams = new URLSearchParams({
-    systemType: 'windows',
+  await gotoThemedCommonControls(page, {
     theme: 'win98',
     fixture: 'disabled',
   });
-
-  await page.goto(`${PLAYWRIGHT_COMMON_CONTROLS_PATH}?${searchParams.toString()}`);
-  await waitForWin98ThemedControls(page);
 };
 
 export const readCommonControlsRadioValue = async (page: Page): Promise<string | null> => {

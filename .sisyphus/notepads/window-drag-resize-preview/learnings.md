@@ -1,0 +1,30 @@
+
+- `src/components/Widget/Widget.tsx` 是窗口几何状态唯一权威位置；当前 committed `x/y/width/height` 存在 `this.state`，move 和 resize 都直接写这里。
+- `src/components/Window/Window.tsx` 是公共 API 入口，`CWindowProps` 通过组合模式把 move 相关能力注入 `CWindowTitle`，本身不应成为 preview state source of truth。
+- `src/components/Window/WindowTitle.tsx` 只消费 `onWindowMove` / `getWindowPose`，不持有长期 geometry；适合作为 move drag 触发点，不适合作为 preview 状态拥有者。
+- `tests/CWindowTitleComposition.test.tsx` 是 Window move/resize/Jest 组合回归主入口。
+- `src/dev/playwright/windowHarness.tsx` 目前 fixture 路由基于 `?fixture=`，现有 fixtures 为 `default` / `drag-only` / `min-clamp` / `max-clamp`。
+- `tests/ui/window.helpers.ts` 当前只区分 `window-frame`，通过读取 inline style 的 `left/top/width/height` 获取 committed rect；后续需扩展 preview-aware helper。
+- `Widget.renderFrame()` 当前负责真实 frame 渲染，适合在同一渲染链路上增加 `data-testid="window-preview-frame"` 的 preview DOM。
+- `Widget.getResizedRect()` 已包含 min/max clamp 与方向 resize 数学；outline resize 必须复用这条链路，不能复制算法。
+- `moveBehavior` 适合继续沿 `CWindow -> CWidget.getFrameMoveHandleProps() -> CWindowTitle` 透传；`resizeBehavior` 应保留在 `Widget` 几何层，供未来 resize preview 直接消费。
+- `Widget` 的 preview 合约可以先冻结为统一 `preview: { active, behavior, source, rect }`，并通过 `renderPreviewFrame()` 固定 `window-preview-frame` 选择器，而不必提前启用 outline 交互。
+- `CWidget` 有 `Dock` / `StartBar` 等子类复用，自身 state 类型不能收窄为只包含 frame+preview 的封闭结构，否则会破坏子类自定义 state 兼容性。
+- `Widget.renderPreviewFrame()` 条件已更新为 `preview.active && preview.rect && preview.behavior === 'outline'`，确保 preview 只在 outline 模式激活时渲染。
+- `Window.tsx` 覆盖了 `renderPreviewFrame()`，使用独立 className `cm-window-preview-frame`，而非复用 frame className，保持 preview 视觉解耦。
+- 默认主题中 `.cm-window-preview-frame` 样式包含：虚线边框 (`2px dashed #5f7fab`)、透明背景、`pointer-events: none`。
+- 测试中使用 `act()` 包装组件内部 state 更新，确保 React 完成批量更新后才进行 DOM 断言。
+- Jest 环境中 CSS 不会实际加载到 `getComputedStyle`，因此 pointer-events 等 CSS 样式无法通过 computed style 验证，改用 className 存在性验证。
+- `src/components/Window/WindowTitle.tsx` 可以通过 `multi-drag` 的 `setPose` + `setPoseOnEnd` 分离 outline move 生命周期：拖动中只把位置透传给 `Widget` preview，release 时再做一次最终 commit。
+- `src/components/Widget/Widget.tsx` 中 move outline preview 可直接复用 committed frame 的 `width/height` 与 `getFrameMovePatch(position)`，这样 preview rect 不需要在 `WindowTitle` 侧维护独立几何模型。
+- resize outline 也可以沿用同样的双阶段链路：`setPose` 中只调用 `getResizedRect()` 生成 `source: 'resize'` 的 preview，`setPoseOnEnd` 再用同一算法计算并一次性提交 committed geometry。
+- resize preview 在 delta 回到零、`resizable={false}`、drag cleanup / unmount 时都应由 `Widget` 统一清空，避免预览 DOM 残留或额外 geometry commit。
+- Task 5 完成：`windowHarness.tsx` 新增 4 个 fixtures - `outline-move`（moveBehavior="outline"）、`outline-resize`（resizeBehavior="outline"）、`outline-both`（两者均为"outline"）、`default` 保持双 live。
+- Task 5 完成：`window.helpers.ts` 新增 `readPreviewMetrics()` 返回 `FrameMetrics | null`（基于 `data-testid="window-preview-frame"`）和 `expectNoPreviewFrame()` 使用 Playwright `toHaveCount(0)` 验证预览帧不存在。
+- 导入 `expect` 时必须使用 `import { expect, type Locator, type Page } from '@playwright/test'` 形式，否则 vite:dts 会错误地使用 Jest 类型导致 TS2339 错误。
+- Task 6 完成：Playwright 侧通过 `startLocatorDrag()` / `moveDragBy()` / `finishDrag()` 把拖拽拆成“按下-移动-释放”三阶段后，才能稳定区分 committed frame 与 `window-preview-frame`，避免只能在 release 后断言的覆盖盲区。
+- Task 6 完成：`outline-move` 与 `outline-resize` 已分别验证 mixed-mode independence——前者仅标题拖拽出现 preview、resize 仍为 live；后者仅 resize 出现 preview、标题拖拽仍为 live。
+- Task 6 完成：`drag-only` / `min-clamp` / `max-clamp` fixtures 调整为 outline-capable 后，浏览器回归可以直接验证 `resizable={false}` 不生成 preview、clamp 先作用于 preview 再在 release 时 commit。
+- Task 6 acceptance fix：除了 `outline-move` / `outline-resize` 的单边模式外，还需要在各自 spec 中显式覆盖 `outline-both`，否则 mixed-mode 语义虽然由单边用例间接体现，仍不满足计划项的 fixture 级验收要求。
+- Final-wave fix：`WindowTitle` 的 outline move 需要显式监听 `pointercancel`，先清理 `window-preview-frame`，再通过本地 cancel flag 阻止后续 `setPoseOnEnd` 落盘；否则 cancel 之后仍可能被 release/end 误提交。
+- Final-wave fix：`Widget` 的 outline resize 用按方向的 cancelled set 比只删 pending rect 更稳妥，因为 `setPoseOnEnd` 仍可能在 cancel 后进入，必须在 end 阶段再次显式 short-circuit 才能保证不 commit。

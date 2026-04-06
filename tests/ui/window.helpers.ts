@@ -1,4 +1,5 @@
-import type { Locator, Page } from '@playwright/test';
+import { expect, type Locator, type Page } from '@playwright/test';
+import type { DevThemeId } from '@/dev/themeSwitcher';
 
 export type FrameMetrics = {
   x: number;
@@ -7,14 +8,17 @@ export type FrameMetrics = {
   height: number;
 };
 
-export type WindowHarnessSelection = {
-  systemType: 'windows' | 'default';
-  theme: 'win98' | 'winxp' | 'default';
+export type DragSession = {
+  page: Page;
+  startX: number;
+  startY: number;
+  currentX: number;
+  currentY: number;
 };
 
 const PLAYWRIGHT_WINDOW_PATH = '/playwright-window.html';
-const SCREEN_ROOT_TEST_ID = 'screen-root';
 const WINDOW_FRAME_TEST_ID = 'window-frame';
+const WINDOW_PREVIEW_FRAME_TEST_ID = 'window-preview-frame';
 const WINDOW_TITLE_TEST_ID = 'window-title';
 const WINDOW_CONTENT_TEST_ID = 'window-content';
 const WINDOW_RESIZE_TEST_ID_PREFIX = 'window-resize-';
@@ -30,93 +34,117 @@ const parsePixelValue = (value: string, property: string): number => {
   return parsed;
 };
 
-const waitForWindowHarness = async (
-  page: Page,
-  selection?: WindowHarnessSelection,
-): Promise<void> => {
-  await page.waitForFunction(
-    ({
-      frameTestId,
-      titleTestId,
-      contentTestId,
-      resizeTestIdPrefix,
-      fixtureErrorTestId,
-      screenRootTestId,
-      systemType,
-      theme,
-    }) => {
-      const frame = document.querySelector(`[data-testid="${frameTestId}"]`);
-      const title = document.querySelector(`[data-testid="${titleTestId}"]`);
-      const content = document.querySelector(`[data-testid="${contentTestId}"]`);
-      const resizeHandle = document.querySelector(`[data-testid^="${resizeTestIdPrefix}"]`);
-      const fixtureError = document.querySelector(`[data-testid="${fixtureErrorTestId}"]`);
-      const screenRoot = document.querySelector(`[data-testid="${screenRootTestId}"]`);
-
-      const hasWindow = Boolean(
-        (frame && title) || (frame && content) || (frame && resizeHandle) || fixtureError,
-      );
-
-      if (!hasWindow) {
-        return false;
-      }
-
-      if (!systemType || !theme) {
-        return true;
-      }
-
-      return (
-        screenRoot instanceof HTMLElement &&
-        screenRoot.dataset.systemType === systemType &&
-        screenRoot.dataset.theme === theme
-      );
-    },
-    {
-      frameTestId: WINDOW_FRAME_TEST_ID,
-      titleTestId: WINDOW_TITLE_TEST_ID,
-      contentTestId: WINDOW_CONTENT_TEST_ID,
-      resizeTestIdPrefix: WINDOW_RESIZE_TEST_ID_PREFIX,
-      fixtureErrorTestId: FIXTURE_ERROR_TEST_ID,
-      screenRootTestId: SCREEN_ROOT_TEST_ID,
-      systemType: selection?.systemType ?? null,
-      theme: selection?.theme ?? null,
-    },
-  );
+type WindowHarnessNavigationSelection = {
+  theme: DevThemeId;
+  fixture?: string;
 };
 
-export const gotoWindowFixture = async (page: Page, fixture: string): Promise<void> => {
-  await page.goto(`${PLAYWRIGHT_WINDOW_PATH}?fixture=${encodeURIComponent(fixture)}`);
-  await waitForWindowHarness(page);
+type WindowHarnessNavigationOptions = {
+  allowFixtureError?: boolean;
 };
 
-export const gotoWindowSelection = async (
-  page: Page,
-  selection: WindowHarnessSelection,
-): Promise<void> => {
+const readWindowFixtureErrorText = async (page: Page): Promise<string | null> => {
+  return page.evaluate((fixtureErrorTestId) => {
+    const fixtureError = document.querySelector<HTMLElement>(
+      `[data-testid="${fixtureErrorTestId}"]`,
+    );
+
+    return fixtureError?.textContent?.trim() ?? null;
+  }, FIXTURE_ERROR_TEST_ID);
+};
+
+const waitForWindowHarness = async (page: Page): Promise<void> => {
+  try {
+    await page.waitForFunction(
+      ({ frameTestId, titleTestId, contentTestId, resizeTestIdPrefix }) => {
+        const frame = document.querySelector(`[data-testid="${frameTestId}"]`);
+        const title = document.querySelector(`[data-testid="${titleTestId}"]`);
+        const content = document.querySelector(`[data-testid="${contentTestId}"]`);
+        const resizeHandle = document.querySelector(`[data-testid^="${resizeTestIdPrefix}"]`);
+
+        return Boolean((frame && title) || (frame && content) || (frame && resizeHandle));
+      },
+      {
+        frameTestId: WINDOW_FRAME_TEST_ID,
+        titleTestId: WINDOW_TITLE_TEST_ID,
+        contentTestId: WINDOW_CONTENT_TEST_ID,
+        resizeTestIdPrefix: WINDOW_RESIZE_TEST_ID_PREFIX,
+      },
+    );
+  } catch (error) {
+    const fixtureErrorText = await readWindowFixtureErrorText(page);
+
+    if (fixtureErrorText !== null) {
+      throw new Error(`Window harness rendered fixture error: ${fixtureErrorText}`);
+    }
+
+    throw error;
+  }
+
+  const fixtureErrorText = await readWindowFixtureErrorText(page);
+
+  if (fixtureErrorText !== null) {
+    throw new Error(`Window harness rendered fixture error: ${fixtureErrorText}`);
+  }
+};
+
+const buildWindowFixtureUrl = (selection: WindowHarnessNavigationSelection): string => {
   const searchParams = new URLSearchParams({
-    systemType: selection.systemType,
     theme: selection.theme,
   });
 
-  await page.goto(`${PLAYWRIGHT_WINDOW_PATH}?${searchParams.toString()}`);
-  await waitForWindowHarness(page, selection);
+  if (selection.fixture !== undefined) {
+    searchParams.set('fixture', selection.fixture);
+  }
+
+  return `${PLAYWRIGHT_WINDOW_PATH}?${searchParams.toString()}`;
 };
 
-export const switchWindowSelection = async (
+const gotoWindowHarness = async (
+  page: Page,
+  selection: WindowHarnessNavigationSelection,
+  options: WindowHarnessNavigationOptions = {},
+): Promise<void> => {
+  await page.goto(buildWindowFixtureUrl(selection));
+
+  if (options.allowFixtureError === true) {
+    return;
+  }
+
+  await waitForWindowHarness(page);
+};
+
+export const gotoWindowFixture = async (page: Page, fixture: string): Promise<void> => {
+  await gotoWindowHarness(page, {
+    theme: 'default',
+    fixture,
+  });
+};
+
+export const gotoWindowFixtureAllowingError = async (
+  page: Page,
+  fixture: string,
+): Promise<void> => {
+  await gotoWindowHarness(
+    page,
+    {
+      theme: 'default',
+      fixture,
+    },
+    { allowFixtureError: true },
+  );
+};
+
+export type WindowHarnessSelection = {
+  theme: DevThemeId;
+  fixture?: string;
+};
+
+export const gotoThemedWindowFixture = async (
   page: Page,
   selection: WindowHarnessSelection,
 ): Promise<void> => {
-  await page.evaluate(({ systemType, theme }) => {
-    const nextUrl = new URL(window.location.href);
-
-    nextUrl.searchParams.delete('fixture');
-    nextUrl.searchParams.set('systemType', systemType);
-    nextUrl.searchParams.set('theme', theme);
-
-    window.history.replaceState({}, '', nextUrl);
-    window.dispatchEvent(new PopStateEvent('popstate'));
-  }, selection);
-
-  await waitForWindowHarness(page, selection);
+  await gotoWindowHarness(page, selection);
 };
 
 export const readFrameMetrics = async (page: Page): Promise<FrameMetrics> => {
@@ -139,7 +167,7 @@ export const readFrameMetrics = async (page: Page): Promise<FrameMetrics> => {
   };
 };
 
-export const dragLocatorBy = async (locator: Locator, dx: number, dy: number): Promise<void> => {
+export const startLocatorDrag = async (locator: Locator): Promise<DragSession> => {
   await locator.scrollIntoViewIfNeeded();
 
   const box = await locator.boundingBox();
@@ -151,12 +179,68 @@ export const dragLocatorBy = async (locator: Locator, dx: number, dy: number): P
   const page = locator.page();
   const startX = box.x + box.width / 2;
   const startY = box.y + box.height / 2;
-  const endX = startX + dx;
-  const endY = startY + dy;
-  const steps = Math.max(Math.abs(dx), Math.abs(dy), 4);
 
   await page.mouse.move(startX, startY);
   await page.mouse.down();
-  await page.mouse.move(endX, endY, { steps });
-  await page.mouse.up();
+
+  return {
+    page,
+    startX,
+    startY,
+    currentX: startX,
+    currentY: startY,
+  };
+};
+
+export const moveDragBy = async (session: DragSession, dx: number, dy: number): Promise<void> => {
+  const endX = session.currentX + dx;
+  const endY = session.currentY + dy;
+  const steps = Math.max(Math.abs(dx), Math.abs(dy), 4);
+
+  await session.page.mouse.move(endX, endY, { steps });
+
+  session.currentX = endX;
+  session.currentY = endY;
+};
+
+export const finishDrag = async (session: DragSession): Promise<void> => {
+  await session.page.mouse.up();
+};
+
+export const dragLocatorBy = async (locator: Locator, dx: number, dy: number): Promise<void> => {
+  const session = await startLocatorDrag(locator);
+  await moveDragBy(session, dx, dy);
+  await finishDrag(session);
+};
+
+export const readPreviewMetrics = async (page: Page): Promise<FrameMetrics | null> => {
+  const previewLocator = page.getByTestId(WINDOW_PREVIEW_FRAME_TEST_ID);
+  const count = await previewLocator.count();
+
+  if (count === 0) {
+    return null;
+  }
+
+  const inlineStyle = await previewLocator.evaluate((element) => {
+    const frame = element as HTMLElement;
+
+    return {
+      left: frame.style.left,
+      top: frame.style.top,
+      width: frame.style.width,
+      height: frame.style.height,
+    };
+  });
+
+  return {
+    x: parsePixelValue(inlineStyle.left, 'left'),
+    y: parsePixelValue(inlineStyle.top, 'top'),
+    width: parsePixelValue(inlineStyle.width, 'width'),
+    height: parsePixelValue(inlineStyle.height, 'height'),
+  };
+};
+
+export const expectNoPreviewFrame = async (page: Page): Promise<void> => {
+  const previewLocator = page.getByTestId(WINDOW_PREVIEW_FRAME_TEST_ID);
+  await expect(previewLocator).toHaveCount(0);
 };

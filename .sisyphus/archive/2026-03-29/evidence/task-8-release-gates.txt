@@ -1,0 +1,228 @@
+$ yarn lint
+yarn run v1.22.19
+warning ../../../package.json: No license field
+$ eslint "{src,tests}/**/*.{ts,tsx}"
+(node:16399) ESLintIgnoreWarning: The ".eslintignore" file is no longer supported. Switch to using the "ignores" property in "eslint.config.js": https://eslint.org/docs/latest/use/configure/migration-guide#ignoring-files
+(Use `node --trace-warnings ...` to show where the warning was created)
+Done in 3.65s.
+
+$ yarn test
+yarn run v1.22.19
+warning ../../../package.json: No license field
+$ jest
+PASS tests/SystemShellCharacterization.test.tsx
+PASS tests/SystemTypeSwitch.test.tsx
+PASS tests/SystemHost.test.tsx
+PASS tests/DevSystemSelection.test.tsx
+PASS tests/SystemTypeThemeRegistry.test.tsx
+PASS tests/ThemeSwitchPreservation.test.tsx
+PASS tests/CWindowTitleComposition.test.tsx
+PASS tests/Dock.test.tsx
+PASS tests/Win98WindowTitle.test.tsx
+PASS tests/GlobalRenderer.test.tsx
+PASS tests/WindowManager.test.tsx
+PASS tests/DefaultTheme.test.tsx
+PASS tests/ThemeScopeClassNames.test.tsx
+PASS tests/ScreenScope.test.tsx
+PASS tests/ScreenManager.test.tsx
+PASS tests/Grid.test.tsx
+
+Test Suites: 16 passed, 16 total
+Tests:       80 passed, 80 total
+Snapshots:   0 total
+Time:        1.585 s
+Ran all test suites.
+Done in 2.89s.
+
+$ yarn test:ui
+yarn run v1.22.19
+warning ../../../package.json: No license field
+$ playwright test --config=playwright.config.ts --pass-with-no-tests
+
+Running 17 tests using 4 workers
+
+  ✓   3 [chromium] › tests/ui/window.resize.spec.ts:113:5 › Window drag matrix › drag e (1.2s)
+  ✓   4 [chromium] › tests/ui/window.resize-guards.spec.ts:4:1 › drag-only fixture hides resize handles when resizable={false} and title drag still moves frame exactly (1.6s)
+  ✓   2 [chromium] › tests/ui/window.move.spec.ts:4:1 › title drag moves window from (10,20) to (30,60) (1.6s)
+  ✓   1 [chromium] › tests/ui/system-theme-switch.spec.ts:10:3 › system/theme switch › preserves dragged metrics on same-system theme switch (1.8s)
+  ✓   5 [chromium] › tests/ui/window.resize.spec.ts:113:5 › Window drag matrix › drag w (774ms)
+  ✓   9 [chromium] › tests/ui/window.resize.spec.ts:113:5 › Window drag matrix › drag n (520ms)
+  ✓   8 [chromium] › tests/ui/system-theme-switch.spec.ts:51:3 › system/theme switch › reboots to default boot layout on cross-system switch (901ms)
+  ✓   7 [chromium] › tests/ui/window.move.spec.ts:20:1 › window content drag is a no-op (does not move window) (1.1s)
+  ✓  11 [chromium] › tests/ui/window.smoke.spec.ts:4:1 › default fixture exposes baseline metrics (315ms)
+  ✓  10 [chromium] › tests/ui/window.resize.spec.ts:113:5 › Window drag matrix › drag s (555ms)
+  ✓  12 [chromium] › tests/ui/window.smoke.spec.ts:18:1 › unknown fixture shows explicit error (277ms)
+  ✓  13 [chromium] › tests/ui/window.resize.spec.ts:113:5 › Window drag matrix › drag ne (656ms)
+  ✓   6 [chromium] › tests/ui/window.resize-guards.spec.ts:24:1 › min-clamp fixture clamps east and south shrink to 1px (2.7s)
+  ✓  14 [chromium] › tests/ui/window.resize.spec.ts:113:5 › Window drag matrix › drag nw (636ms)
+  ✓  16 [chromium] › tests/ui/window.resize.spec.ts:113:5 › Window drag matrix › drag se (596ms)
+  ✓  17 [chromium] › tests/ui/window.resize.spec.ts:113:5 › Window drag matrix › drag sw (590ms)
+  ✓  15 [chromium] › tests/ui/window.resize-guards.spec.ts:38:1 › max-clamp fixture clamps east growth and north-west anchor behavior (3.4s)
+
+  17 passed (9.2s)
+Done in 10.11s.
+
+$ yarn build
+yarn run v1.22.19
+warning ../../../package.json: No license field
+$ vite build
+vite v5.4.21 building for production...
+transforming...
+DEPRECATION WARNING [legacy-js-api]: The legacy JS API is deprecated and will be removed in Dart Sass 2.0.0.
+
+More info: https://sass-lang.com/d/legacy-js-api
+
+DEPRECATION WARNING [legacy-js-api]: The legacy JS API is deprecated and will be removed in Dart Sass 2.0.0.
+
+More info: https://sass-lang.com/d/legacy-js-api
+
+DEPRECATION WARNING [legacy-js-api]: The legacy JS API is deprecated and will be removed in Dart Sass 2.0.0.
+
+More info: https://sass-lang.com/d/legacy-js-api
+
+DEPRECATION WARNING [legacy-js-api]: The legacy JS API is deprecated and will be removed in Dart Sass 2.0.0.
+
+More info: https://sass-lang.com/d/legacy-js-api
+
+DEPRECATION WARNING [legacy-js-api]: The legacy JS API is deprecated and will be removed in Dart Sass 2.0.0.
+
+More info: https://sass-lang.com/d/legacy-js-api
+
+DEPRECATION WARNING [legacy-js-api]: The legacy JS API is deprecated and will be removed in Dart Sass 2.0.0.
+
+More info: https://sass-lang.com/d/legacy-js-api
+
+✓ 37 modules transformed.
+rendering chunks...
+
+[vite:dts] Start generate declaration files...
+computing gzip size...
+dist/style.css          1.31 kB │ gzip:  0.53 kB
+dist/chameleon.es.js  183.41 kB │ gzip: 47.00 kB
+[vite:dts] Outside emitted: /Users/zhangxiao/frontend/SysUI/chameleon/tests/CWindowTitleComposition.test.d.ts
+[vite:dts] Outside emitted: /Users/zhangxiao/frontend/SysUI/chameleon/tests/DefaultTheme.test.d.ts
+[vite:dts] Outside emitted: /Users/zhangxiao/frontend/SysUI/chameleon/tests/DevSystemSelection.test.d.ts
+[vite:dts] Outside emitted: /Users/zhangxiao/frontend/SysUI/chameleon/tests/Dock.test.d.ts
+[vite:dts] Outside emitted: /Users/zhangxiao/frontend/SysUI/chameleon/tests/GlobalRenderer.test.d.ts
+[vite:dts] Outside emitted: /Users/zhangxiao/frontend/SysUI/chameleon/tests/Grid.test.d.ts
+[vite:dts] Outside emitted: /Users/zhangxiao/frontend/SysUI/chameleon/tests/ScreenManager.test.d.ts
+[vite:dts] Outside emitted: /Users/zhangxiao/frontend/SysUI/chameleon/tests/helpers/systemSession.fixture.d.ts
+[vite:dts] Outside emitted: /Users/zhangxiao/frontend/SysUI/chameleon/tests/ScreenScope.test.d.ts
+[vite:dts] Outside emitted: /Users/zhangxiao/frontend/SysUI/chameleon/tests/SystemHost.test.d.ts
+[vite:dts] Outside emitted: /Users/zhangxiao/frontend/SysUI/chameleon/tests/SystemShellCharacterization.test.d.ts
+[vite:dts] Outside emitted: /Users/zhangxiao/frontend/SysUI/chameleon/tests/SystemTypeSwitch.test.d.ts
+[vite:dts] Outside emitted: /Users/zhangxiao/frontend/SysUI/chameleon/tests/SystemTypeThemeRegistry.test.d.ts
+[vite:dts] Outside emitted: /Users/zhangxiao/frontend/SysUI/chameleon/tests/ThemeScopeClassNames.test.d.ts
+[vite:dts] Outside emitted: /Users/zhangxiao/frontend/SysUI/chameleon/tests/ThemeSwitchPreservation.test.d.ts
+[vite:dts] Outside emitted: /Users/zhangxiao/frontend/SysUI/chameleon/tests/Win98WindowTitle.test.d.ts
+[vite:dts] Outside emitted: /Users/zhangxiao/frontend/SysUI/chameleon/tests/WindowManager.test.d.ts
+[vite:dts] Outside emitted: /Users/zhangxiao/frontend/SysUI/chameleon/tests/ui/window.helpers.d.ts
+[vite:dts] Outside emitted: /Users/zhangxiao/frontend/SysUI/chameleon/tests/ui/system-theme-switch.spec.d.ts
+[vite:dts] Outside emitted: /Users/zhangxiao/frontend/SysUI/chameleon/tests/ui/window.move.spec.d.ts
+[vite:dts] Outside emitted: /Users/zhangxiao/frontend/SysUI/chameleon/tests/ui/window.resize-guards.spec.d.ts
+[vite:dts] Outside emitted: /Users/zhangxiao/frontend/SysUI/chameleon/tests/ui/window.resize.spec.d.ts
+[vite:dts] Outside emitted: /Users/zhangxiao/frontend/SysUI/chameleon/tests/ui/window.smoke.spec.d.ts
+[vite:dts] Outside emitted: /Users/zhangxiao/frontend/SysUI/chameleon/vite.config.d.ts
+[vite:dts] Outside emitted: /Users/zhangxiao/frontend/SysUI/chameleon/jest.config.d.ts
+[vite:dts] Outside emitted: /Users/zhangxiao/frontend/SysUI/chameleon/tests/CWindowTitleComposition.test.d.ts.map
+[vite:dts] Outside emitted: /Users/zhangxiao/frontend/SysUI/chameleon/tests/DefaultTheme.test.d.ts.map
+[vite:dts] Outside emitted: /Users/zhangxiao/frontend/SysUI/chameleon/tests/DevSystemSelection.test.d.ts.map
+[vite:dts] Outside emitted: /Users/zhangxiao/frontend/SysUI/chameleon/tests/Dock.test.d.ts.map
+[vite:dts] Outside emitted: /Users/zhangxiao/frontend/SysUI/chameleon/tests/GlobalRenderer.test.d.ts.map
+[vite:dts] Outside emitted: /Users/zhangxiao/frontend/SysUI/chameleon/tests/Grid.test.d.ts.map
+[vite:dts] Outside emitted: /Users/zhangxiao/frontend/SysUI/chameleon/tests/ScreenManager.test.d.ts.map
+[vite:dts] Outside emitted: /Users/zhangxiao/frontend/SysUI/chameleon/tests/helpers/systemSession.fixture.d.ts.map
+[vite:dts] Outside emitted: /Users/zhangxiao/frontend/SysUI/chameleon/tests/ScreenScope.test.d.ts.map
+[vite:dts] Outside emitted: /Users/zhangxiao/frontend/SysUI/chameleon/tests/SystemHost.test.d.ts.map
+[vite:dts] Outside emitted: /Users/zhangxiao/frontend/SysUI/chameleon/tests/SystemShellCharacterization.test.d.ts.map
+[vite:dts] Outside emitted: /Users/zhangxiao/frontend/SysUI/chameleon/tests/SystemTypeSwitch.test.d.ts.map
+[vite:dts] Outside emitted: /Users/zhangxiao/frontend/SysUI/chameleon/tests/SystemTypeThemeRegistry.test.d.ts.map
+[vite:dts] Outside emitted: /Users/zhangxiao/frontend/SysUI/chameleon/tests/ThemeScopeClassNames.test.d.ts.map
+[vite:dts] Outside emitted: /Users/zhangxiao/frontend/SysUI/chameleon/tests/ThemeSwitchPreservation.test.d.ts.map
+[vite:dts] Outside emitted: /Users/zhangxiao/frontend/SysUI/chameleon/tests/Win98WindowTitle.test.d.ts.map
+[vite:dts] Outside emitted: /Users/zhangxiao/frontend/SysUI/chameleon/tests/WindowManager.test.d.ts.map
+[vite:dts] Outside emitted: /Users/zhangxiao/frontend/SysUI/chameleon/tests/ui/window.helpers.d.ts.map
+[vite:dts] Outside emitted: /Users/zhangxiao/frontend/SysUI/chameleon/tests/ui/system-theme-switch.spec.d.ts.map
+[vite:dts] Outside emitted: /Users/zhangxiao/frontend/SysUI/chameleon/tests/ui/window.move.spec.d.ts.map
+[vite:dts] Outside emitted: /Users/zhangxiao/frontend/SysUI/chameleon/tests/ui/window.resize-guards.spec.d.ts.map
+[vite:dts] Outside emitted: /Users/zhangxiao/frontend/SysUI/chameleon/tests/ui/window.resize.spec.d.ts.map
+[vite:dts] Outside emitted: /Users/zhangxiao/frontend/SysUI/chameleon/tests/ui/window.smoke.spec.d.ts.map
+[vite:dts] Outside emitted: /Users/zhangxiao/frontend/SysUI/chameleon/vite.config.d.ts.map
+[vite:dts] Outside emitted: /Users/zhangxiao/frontend/SysUI/chameleon/jest.config.d.ts.map
+[vite:dts] Declaration files built in 1584ms.
+
+dist/style.css            1.31 kB │ gzip:  0.53 kB
+dist/chameleon.umd.cjs  114.91 kB │ gzip: 40.65 kB
+✓ built in 2.11s
+Done in 3.14s.
+
+$ npm pack --dry-run
+npm notice
+npm notice 📦  @system-ui-js/chameleon@0.1.0
+npm notice Tarball Contents
+npm notice 4.2kB README.md
+npm notice 183.7kB dist/chameleon.es.js
+npm notice 115.1kB dist/chameleon.umd.cjs
+npm notice 1.2kB dist/components/Dock/Dock.d.ts
+npm notice 1.2kB dist/components/Dock/Dock.d.ts.map
+npm notice 312B dist/components/index.d.ts
+npm notice 296B dist/components/index.d.ts.map
+npm notice 291B dist/components/Manager/isManagedConstructor.d.ts
+npm notice 342B dist/components/Manager/isManagedConstructor.d.ts.map
+npm notice 1.0kB dist/components/Screen/Grid.d.ts
+npm notice 1.2kB dist/components/Screen/Grid.d.ts.map
+npm notice 356B dist/components/Screen/Screen.d.ts
+npm notice 452B dist/components/Screen/Screen.d.ts.map
+npm notice 690B dist/components/Screen/ScreenManager.d.ts
+npm notice 605B dist/components/Screen/ScreenManager.d.ts.map
+npm notice 713B dist/components/Widget/Widget.d.ts
+npm notice 744B dist/components/Widget/Widget.d.ts.map
+npm notice 1.9kB dist/components/Window/Window.d.ts
+npm notice 1.5kB dist/components/Window/Window.d.ts.map
+npm notice 698B dist/components/Window/WindowManager.d.ts
+npm notice 607B dist/components/Window/WindowManager.d.ts.map
+npm notice 829B dist/components/Window/WindowTitle.d.ts
+npm notice 892B dist/components/Window/WindowTitle.d.ts.map
+npm notice 45B dist/dev/main.d.ts
+npm notice 110B dist/dev/main.d.ts.map
+npm notice 54B dist/dev/playwright/windowHarness.d.ts
+npm notice 142B dist/dev/playwright/windowHarness.d.ts.map
+npm notice 1.2kB dist/dev/themeSwitcher.d.ts
+npm notice 915B dist/dev/themeSwitcher.d.ts.map
+npm notice 387B dist/index.d.ts
+npm notice 295B dist/index.d.ts.map
+npm notice 1.3kB dist/style.css
+npm notice 378B dist/system/default/DefaultScreen.d.ts
+npm notice 418B dist/system/default/DefaultScreen.d.ts.map
+npm notice 317B dist/system/default/DefaultSystem.d.ts
+npm notice 348B dist/system/default/DefaultSystem.d.ts.map
+npm notice 1.0kB dist/system/registry.d.ts
+npm notice 594B dist/system/registry.d.ts.map
+npm notice 323B dist/system/SystemHost.d.ts
+npm notice 377B dist/system/SystemHost.d.ts.map
+npm notice 462B dist/system/types.d.ts
+npm notice 528B dist/system/types.d.ts.map
+npm notice 378B dist/system/windows/WindowsScreen.d.ts
+npm notice 418B dist/system/windows/WindowsScreen.d.ts.map
+npm notice 317B dist/system/windows/WindowsSystem.d.ts
+npm notice 349B dist/system/windows/WindowsSystem.d.ts.map
+npm notice 225B dist/theme/default/index.d.ts
+npm notice 183B dist/theme/default/index.d.ts.map
+npm notice 222B dist/theme/win98/index.d.ts
+npm notice 181B dist/theme/win98/index.d.ts.map
+npm notice 222B dist/theme/winxp/index.d.ts
+npm notice 181B dist/theme/winxp/index.d.ts.map
+npm notice 83B dist/utils/uuid.d.ts
+npm notice 148B dist/utils/uuid.d.ts.map
+npm notice 2.4kB package.json
+npm notice Tarball Details
+npm notice name: @system-ui-js/chameleon
+npm notice version: 0.1.0
+npm notice filename: system-ui-js-chameleon-0.1.0.tgz
+npm notice package size: 97.3 kB
+npm notice unpacked size: 333.4 kB
+npm notice shasum: 76158244485f184d7dc047a42fc28d6ff201111f
+npm notice integrity: sha512-VL7iJo09e+HrY[...]Yio+94K1ACK5w==
+npm notice total files: 55
+npm notice
+system-ui-js-chameleon-0.1.0.tgz
