@@ -55,7 +55,9 @@ export function CTab({
   }, [children, instanceId]);
 
   const [activeTabId, setActiveTabId] = React.useState<string | undefined>(undefined);
-  const effectiveActiveTabId = activeTabId ?? tabItems[0]?.id;
+  const hasActiveTab =
+    activeTabId !== undefined && tabItems.some((item) => item.id === activeTabId);
+  const effectiveActiveTabId = hasActiveTab ? activeTabId : tabItems[0]?.id;
 
   const activateTab = React.useCallback(
     (nextTabId: string): void => {

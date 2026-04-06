@@ -1,5 +1,6 @@
 import '@testing-library/jest-dom';
 import { fireEvent, render, screen } from '@testing-library/react';
+import React from 'react';
 import { CTab as PackageEntryCTab, CTabItem as PackageEntryCTabItem, type CTabProps } from '../src';
 import { CTab } from '../src/components/Tab/CTab';
 import { CTabItem, type CTabItemProps } from '../src/components/Tab/CTabItem';
@@ -158,5 +159,91 @@ describe('CTab', () => {
     expect(new Set(panelIds).size).toBe(panelIds.length);
     expect(tabs[0]).toHaveAttribute('aria-controls', panelIds[0] ?? '');
     expect(tabs[1]).toHaveAttribute('aria-controls', panelIds[1] ?? '');
+  });
+
+  it('falls back to the first available tab during the same render when the active tab is removed', () => {
+    interface DynamicTabItem {
+      key: string;
+      panel: string;
+      title: string;
+    }
+
+    interface Snapshot {
+      selectedTabs: string[];
+      visiblePanels: string[];
+    }
+
+    function readSnapshot(container: HTMLElement): Snapshot {
+      const selectedTabs = Array.from(
+        container.querySelectorAll<HTMLButtonElement>('[role="tab"][aria-selected="true"]'),
+      ).map((tab) => tab.textContent ?? '');
+      const visiblePanels = Array.from(
+        container.querySelectorAll<HTMLElement>('[role="tabpanel"]:not([hidden])'),
+      ).map((panel) => panel.textContent ?? '');
+
+      return { selectedTabs, visiblePanels };
+    }
+
+    function DynamicTabHarness({
+      items,
+      onSnapshot,
+    }: {
+      items: readonly DynamicTabItem[];
+      onSnapshot: (snapshot: Snapshot) => void;
+    }): React.ReactElement {
+      const containerRef = React.useRef<HTMLDivElement>(null);
+
+      React.useLayoutEffect(() => {
+        if (containerRef.current === null) {
+          return;
+        }
+
+        if (containerRef.current.querySelectorAll('[role="tab"]').length !== items.length) {
+          return;
+        }
+
+        onSnapshot(readSnapshot(containerRef.current));
+      }, [items.length, onSnapshot]);
+
+      return (
+        <div ref={containerRef}>
+          <CTab>
+            {items.map((item) => (
+              <CTabItem key={item.key} title={item.title}>
+                <div>{item.panel}</div>
+              </CTabItem>
+            ))}
+          </CTab>
+        </div>
+      );
+    }
+
+    const initialItems: readonly DynamicTabItem[] = [
+      { key: 'alpha', title: 'Alpha', panel: 'Alpha Panel' },
+      { key: 'beta', title: 'Beta', panel: 'Beta Panel' },
+      { key: 'gamma', title: 'Gamma', panel: 'Gamma Panel' },
+    ];
+    const snapshots: Snapshot[] = [];
+    const handleSnapshot = (snapshot: Snapshot): void => {
+      snapshots.push(snapshot);
+    };
+
+    const { rerender } = render(
+      <DynamicTabHarness items={initialItems} onSnapshot={handleSnapshot} />,
+    );
+
+    fireEvent.click(screen.getByRole('tab', { name: 'Beta' }));
+
+    rerender(
+      <DynamicTabHarness
+        items={initialItems.filter((item) => item.key !== 'beta')}
+        onSnapshot={handleSnapshot}
+      />,
+    );
+
+    expect(snapshots.at(-1)).toEqual({
+      selectedTabs: ['Alpha'],
+      visiblePanels: ['Alpha Panel'],
+    });
   });
 });
