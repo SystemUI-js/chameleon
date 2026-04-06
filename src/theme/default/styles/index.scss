@@ -398,6 +398,50 @@
         cursor: not-allowed;
     }
 
+    // Tab - Default Theme
+    .cm-ctab,
+    &.cm-ctab {
+        border: 1px solid #b9c6d8;
+        background: linear-gradient(180deg, #ffffff 0%, #f3f6fb 100%);
+        box-shadow:
+            inset 1px 1px 0 rgba(255, 255, 255, 0.95),
+            0 6px 16px rgba(72, 96, 127, 0.12);
+    }
+
+    .cm-ctab__list {
+        padding: 6px 6px 0;
+    }
+
+    .cm-ctab__tab {
+        min-height: 28px;
+        padding: 0 14px;
+        border: 1px solid #b9c6d8;
+        border-bottom: none;
+        border-top-left-radius: 6px;
+        border-top-right-radius: 6px;
+        background: linear-gradient(180deg, #f8fbff 0%, #dfe6f1 100%);
+        color: #233043;
+        font-size: 13px;
+        font-weight: 600;
+    }
+
+    .cm-ctab__tab:hover:not(:disabled):not(.cm-ctab__tab--active) {
+        background: linear-gradient(180deg, #ffffff 0%, #e6edf7 100%);
+    }
+
+    .cm-ctab__tab--active {
+        margin-bottom: -1px;
+        background: linear-gradient(180deg, #ffffff 0%, #ffffff 100%);
+        color: #20324b;
+    }
+
+    .cm-ctab__panel {
+        padding: 12px 14px;
+        border-top: 1px solid #b9c6d8;
+        background: #ffffff;
+        color: #233043;
+    }
+
     // Menu - Default Theme
     .cm-menu__popup {
         border: 1px solid #b9c6d8;

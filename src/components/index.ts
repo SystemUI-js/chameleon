@@ -5,6 +5,7 @@ export * from './Dock/Dock';
 export * from './Grid';
 export * from './Icon/Icon';
 export * from './Icon/IconContainer';
+export * from './Tab';
 export * from './Menu/Menu';
 export * from './Radio/Radio';
 export * from './Radio/RadioGroup';

@@ -8,6 +8,8 @@ export {
   CIcon,
   CIconContainer,
   CMenu,
+  CTab,
+  CTabItem,
   CRadio,
   CRadioGroup,
   CSelect,
