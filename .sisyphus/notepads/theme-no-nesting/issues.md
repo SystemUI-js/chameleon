@@ -4,19 +4,19 @@
 
 ### 风险 1: ThemeShowcase 污染影响按钮样式对比
 
-**问题**：当前 ThemeShowcase 和 ButtonShowcase 都在同一 `DevThemeRoot` 下，无法直观对比"有外层主题"和"无外层主题"的按钮样式差异。
+**问题**：按当前 `src/dev/ComponentCatalog.tsx:437-450` 的实现，`ThemeShowcase` 并不在 `DevThemeRoot` 内；它位于 `<main>` 中，处在前一个 `</DevThemeRoot>` 之后、包裹 `ButtonShowcase` 等示例的下一个 `<DevThemeRoot>` 之前。也就是说，`ThemeShowcase` 在主题 wrapper 外，而 `ButtonShowcase` 仍在 `DevThemeRoot` 内。
 
-**影响**：任务 5 隔离后，ThemeShowcase 的按钮应该是纯净的（无外层主题覆盖），而 ButtonShowcase 的按钮仍受主题控制。
+**影响**：当前需要防回归的事实不是“两个 showcase 同时在同一 theme wrapper 内”，而是保持 `ThemeShowcase` 与 `ButtonShowcase` 的现有 containment 差异：前者在 `DevThemeRoot` 外，后者在 `DevThemeRoot` 内。
 
-**建议**：红灯测试应明确用 DOM 结构断言隔离性，不要依赖视觉对比。
+**建议**：继续用 DOM 结构断言锁定隔离边界，不要把风险描述成当前仍存在的同层包裹问题。
 
 ### 风险 2: `component-catalog` 根节点位置
 
-**问题**：`src/dev/ComponentCatalog.tsx:379` 的 `<div data-testid="component-catalog">` 在 `DevThemeRoot` 内部，这意味着 catalog 根节点本身就被主题包裹。
+**问题**：`src/dev/ComponentCatalog.tsx:429-451` 的 `<div data-testid="component-catalog">` 是外层 catalog 根节点，它包住了 header 对应的 `DevThemeRoot`、`<main>`、`ThemeShowcase`，以及包裹 `ButtonShowcase` 等 section 的另一个 `DevThemeRoot`。也就是说，catalog root 包裹 `DevThemeRoot`，而不是处在它里面。
 
-**影响**：任务 5 隔离 ThemeShowcase 时，`<div data-testid="component-catalog">` 的位置决定了哪些 section 天然在 theme-root 内。
+**影响**：需要关注的真实结构是 `ComponentCatalog` → catalog root div → `<main>` → `ThemeShowcase` + `DevThemeRoot`，而不是建议移动 `ThemeShowcase`；`ThemeShowcase` 当前已经渲染在 `DevThemeRoot` 外部。
 
-**建议**：隔离方案应该是让 `ThemeShowcase` 在 `DevThemeRoot` 外部渲染，而不是移动 catalog 根节点。
+**建议**：风险说明应直接引用 `ComponentCatalog`、`DevThemeRoot`、`ThemeShowcase` 和 catalog root div 的当前包含关系，避免基于错误层级提出迁移建议。
 
 ### 歧义 1: `catalog-theme-switch` 是否需要保留
 
@@ -44,6 +44,8 @@
 - `tests/ui/component-catalog-code.spec.ts` 只测试 Theme 区块代码面板可展开/收起，未验证 snippet 文案不包含 "Inner wins"
 
 ## 2026-01-17 探索发现的风险与歧义
+
+> 注：以下为早期探索阶段的发现，部分问题可能已在后续任务中解决。记录于此供参考。
 
 ### 风险 1：空白 provider 边界容易漏检
 - **描述**：`Theme name="   "` 经 `normalizeTheme(name)` 后变成 `undefined`，如果嵌套判定写成 `context.theme !== undefined` 会漏掉空白 provider 作为"有效外层"的情况

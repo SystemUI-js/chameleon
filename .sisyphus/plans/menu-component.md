@@ -114,7 +114,7 @@ Wave 2: 4) theme styles, 5) dev preview and verification integration
 > Implementation + Test = ONE task. Never separate.
 > EVERY task MUST have: Agent Profile + Parallelization + QA Scenarios.
 
-- [ ] 1. Define the `CMenu` public contract and export surface
+- [x] 1. Define the `CMenu` public contract and export surface
 
   **What to do**: Create `src/components/Menu/Menu.tsx` as a function component that exports `CMenu`, `CMenuTrigger`, `MenuListItem`, and `CMenuProps`. Make `children` a single `React.ReactElement` trigger only, enforce it with `React.Children.only`, normalize theme input with the same helper pattern used by existing function components, and add the initial menu root wrapper structure with a deterministic closed default state. Update `src/components/index.ts` and `src/index.ts` so `CMenu` is available from both the component barrel and the package root. Add `tests/Menu.test.tsx` contract coverage for package export, class merging order, theme propagation, and multi-child rejection.
   **Must NOT do**: Do not introduce a portal, context-menu API, keyboard navigation, `any`, or a second public component name such as `Menu`.
@@ -158,7 +158,7 @@ Wave 2: 4) theme styles, 5) dev preview and verification integration
 
   **Commit**: NO | Message: `feat(menu): scaffold public CMenu API` | Files: `src/components/Menu/Menu.tsx`, `src/components/index.ts`, `src/index.ts`, `tests/Menu.test.tsx`
 
-- [ ] 2. Implement root click-trigger lifecycle and leaf selection flow
+- [x] 2. Implement root click-trigger lifecycle and leaf selection flow
 
   **What to do**: Extend `CMenu` to render the root popup from `menuList` in `click` mode, toggle it from the single trigger child, dismiss it on outside click, and close it after a successful leaf selection. Add `onSelect(item)` support for leaf items only, keep parent items non-selecting, and ensure disabled leaf items neither select nor close the menu. Use `id` as the stable internal identity and preserve `key` in the callback payload unchanged.
   **Must NOT do**: Do not add hover semantics here, do not fire `onSelect` for items with `children`, and do not keep the menu open after a valid leaf click.
@@ -198,7 +198,7 @@ Wave 2: 4) theme styles, 5) dev preview and verification integration
 
   **Commit**: NO | Message: `feat(menu): add click trigger lifecycle` | Files: `src/components/Menu/Menu.tsx`, `tests/Menu.test.tsx`
 
-- [ ] 3. Implement recursive submenu rendering and hover semantics
+- [x] 3. Implement recursive submenu rendering and hover semantics
 
   **What to do**: Add recursive rendering for arbitrary `children` depth, track one open branch per depth using `id`, and compute an effective trigger per submenu item (`item.trigger ?? parentTrigger`). In `hover` mode, open the root menu on trigger enter and close the entire menu tree when pointer leaves the composed trigger+popup region. For parent items with children, open submenus on their effective trigger, never call `onSelect`, and block submenu opening when `disabled` is true. For nested leaves, call `onSelect(item)` and close the full tree.
   **Must NOT do**: Do not add hover-intent delays, viewport collision logic, keyboard navigation, or selection events for parent nodes.
@@ -238,7 +238,7 @@ Wave 2: 4) theme styles, 5) dev preview and verification integration
 
   **Commit**: NO | Message: `feat(menu): add recursive submenu behavior` | Files: `src/components/Menu/Menu.tsx`, `tests/Menu.test.tsx`
 
-- [ ] 4. Add menu styling plus deterministic dev and Playwright surfaces
+- [x] 4. Add menu styling plus deterministic dev and Playwright surfaces
 
   **What to do**: Create `src/components/Menu/index.scss` with the full base class set for the menu tree (`cm-menu`, `cm-menu__trigger`, `cm-menu__popup`, `cm-menu__list`, `cm-menu__item`, `cm-menu__item--disabled`, `cm-menu__item--open`, `cm-menu__submenu`, `cm-menu__caret`, etc.). Keep base layout structural in component SCSS and add theme-specific visual overrides in `src/theme/default/styles/index.scss`, `src/theme/win98/styles/index.scss`, and `src/theme/winxp/styles/index.scss`. Extend the local dev catalog with a `CMenu` showcase showing click and hover examples plus current selection text. Add a dedicated Playwright harness at `src/dev/playwright/menuHarness.tsx` with a matching root HTML entry `playwright-menu.html`, and fix its fixtures around stable data-testid selectors: `menu-demo-trigger`, `menu-demo-popup`, `menu-item-file`, `menu-item-file-new`, `menu-item-file-open`, `menu-item-view`, `menu-item-view-zoom`, `menu-selection-value`, and `fixture-error`.
   **Must NOT do**: Do not introduce inline style positioning hacks that bypass SCSS, do not reuse common-controls selectors, and do not add viewport collision handling or portal rendering.
@@ -282,7 +282,7 @@ Wave 2: 4) theme styles, 5) dev preview and verification integration
 
   **Commit**: NO | Message: `feat(menu): add menu styles and harnesses` | Files: `src/components/Menu/index.scss`, `src/theme/default/styles/index.scss`, `src/theme/win98/styles/index.scss`, `src/theme/winxp/styles/index.scss`, `src/dev/ComponentCatalog.tsx`, `src/dev/playwright/menuHarness.tsx`, `playwright-menu.html`, `tests/ui/menu.helpers.ts`, `tests/ui/menu.spec.ts`
 
-- [ ] 5. Finalize release-facing integration, changelog, and full regression
+- [x] 5. Finalize release-facing integration, changelog, and full regression
 
   **What to do**: Update `CHANGELOG.md` under `### [UnReleased]` with a `Feature` entry for `CMenu`, summarizing root trigger modes, recursive menu data, and new test coverage. Ensure the final `tests/Menu.test.tsx` and `tests/ui/menu.spec.ts` coverage aligns exactly with the shipped behavior and public export surface. Run the full repo verification sequence (`lint`, `test`, `test:ui`, `build`) and add a post-build package-entry smoke check that confirms `CMenu` exists in the generated ESM bundle.
   **Must NOT do**: Do not edit release version numbers, do not add speculative future keyboard/a11y notes to the changelog, and do not leave the feature only partially wired in package entry.
@@ -326,6 +326,7 @@ Wave 2: 4) theme styles, 5) dev preview and verification integration
 > 4 review agents run in PARALLEL. ALL must APPROVE. Present consolidated results to user and get explicit "okay" before completing.
 > **Do NOT auto-proceed after verification. Wait for user's explicit approval before marking work complete.**
 > **Never mark F1-F4 as checked before getting user's okay.** Rejection or user feedback -> fix -> re-run -> present again -> wait for okay.
+- Note: F1-F4 may only be checked after the user explicitly replies with `okay`.
 - [ ] F1. Plan Compliance Audit — oracle
 - [ ] F2. Code Quality Review — unspecified-high
 - [ ] F3. Real Manual QA — unspecified-high (+ playwright if UI)

@@ -1,6 +1,6 @@
 import React from 'react';
 import { mergeClasses } from '../Theme/mergeClasses';
-import { resolveThemeClassName } from '../Theme/themeName';
+import { normalizeThemeClassName } from '../Theme/normalizeThemeClassName';
 import { useTheme } from '../Theme/useTheme';
 import './index.scss';
 
@@ -39,7 +39,7 @@ export function CRadioGroup({
   theme,
   'data-testid': dataTestId,
 }: CRadioGroupProps): React.ReactElement {
-  const resolvedTheme = resolveThemeClassName(useTheme(theme));
+  const resolvedTheme = normalizeThemeClassName(useTheme(theme));
   const [uncontrolledValue, setUncontrolledValue] = React.useState(defaultValue);
 
   React.useEffect(() => {

@@ -1,5 +1,14 @@
 export * from './components';
-export { CButton, CRadio, CRadioGroup, CSelect, Theme, CIcon, CIconContainer } from './components';
+export {
+  CButton,
+  CIcon,
+  CIconContainer,
+  CMenu,
+  CRadio,
+  CRadioGroup,
+  CSelect,
+  Theme,
+} from './components';
 export { defaultThemeDefinition } from './theme/default';
 export type { ThemeDefinition, ThemeId } from './theme/types';
 export { win98ThemeDefinition } from './theme/win98';

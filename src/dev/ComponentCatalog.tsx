@@ -1,6 +1,7 @@
 import React from 'react';
 import {
   CButton,
+  CMenu,
   CRadio,
   CRadioGroup,
   CSelect,
@@ -14,6 +15,7 @@ import {
   CGridItem,
   CIconContainer,
   type CSelectOption,
+  type MenuListItem,
   WidgetInteractionBehavior,
 } from '@/components';
 import { DEV_THEME, DevThemeRoot, type DevThemeId } from './themeSwitcher';
@@ -310,26 +312,26 @@ function StartBarShowcase(): React.ReactElement {
 }
 
 const GRID_SNIPPET = `<CGrid
-  className="cm-catalog__grid"
+  className="cm-grid-demo-3x3"
   grid={GRID}
   initGridSize={{ rows: ['1fr', '1fr', '1fr'], columns: GRID_COLUMNS }}
 >
-  <CGridItem parentGrid={GRID} grid={[1, 2, 1, 2]} className="cm-catalog__grid-item">
+  <CGridItem parentGrid={GRID} grid={[1, 2, 1, 2]} className="cm-grid-demo-3x3__item">
     Item 1
   </CGridItem>
-  <CGridItem parentGrid={GRID} grid={[1, 2, 2, 3]} className="cm-catalog__grid-item">
+  <CGridItem parentGrid={GRID} grid={[1, 2, 2, 3]} className="cm-grid-demo-3x3__item">
     Item 2
   </CGridItem>
-  <CGridItem parentGrid={GRID} grid={[1, 2, 3, 4]} className="cm-catalog__grid-item">
+  <CGridItem parentGrid={GRID} grid={[1, 2, 3, 4]} className="cm-grid-demo-3x3__item">
     Item 3
   </CGridItem>
-  <CGridItem parentGrid={GRID} grid={[2, 3, 1, 2]} className="cm-catalog__grid-item">
+  <CGridItem parentGrid={GRID} grid={[2, 3, 1, 2]} className="cm-grid-demo-3x3__item">
     Item 4
   </CGridItem>
-  <CGridItem parentGrid={GRID} grid={[2, 3, 2, 4]} className="cm-catalog__grid-item">
+  <CGridItem parentGrid={GRID} grid={[2, 3, 2, 4]} className="cm-grid-demo-3x3__item">
     Item 5
   </CGridItem>
-  <CGridItem parentGrid={GRID} grid={[3, 4, 1, 4]} className="cm-catalog__grid-item">
+  <CGridItem parentGrid={GRID} grid={[3, 4, 1, 4]} className="cm-grid-demo-3x3__item">
     Item 6
   </CGridItem>
 </CGrid>`.trim();
@@ -480,29 +482,82 @@ function GridShowcase(): React.ReactElement {
   return (
     <ShowcaseSection title="Grid" testId="catalog-section-grid" code={GRID_SNIPPET}>
       <CGrid
-        className="cm-catalog__grid"
+        className="cm-grid-demo-3x3"
         grid={GRID}
         initGridSize={{ rows: ['1fr', '1fr', '1fr'], columns: GRID_COLUMNS }}
       >
-        <CGridItem parentGrid={GRID} grid={[1, 2, 1, 2]} className="cm-catalog__grid-item">
+        <CGridItem parentGrid={GRID} grid={[1, 2, 1, 2]} className="cm-grid-demo-3x3__item">
           Item 1
         </CGridItem>
-        <CGridItem parentGrid={GRID} grid={[1, 2, 2, 3]} className="cm-catalog__grid-item">
+        <CGridItem parentGrid={GRID} grid={[1, 2, 2, 3]} className="cm-grid-demo-3x3__item">
           Item 2
         </CGridItem>
-        <CGridItem parentGrid={GRID} grid={[1, 2, 3, 4]} className="cm-catalog__grid-item">
+        <CGridItem parentGrid={GRID} grid={[1, 2, 3, 4]} className="cm-grid-demo-3x3__item">
           Item 3
         </CGridItem>
-        <CGridItem parentGrid={GRID} grid={[2, 3, 1, 2]} className="cm-catalog__grid-item">
+        <CGridItem parentGrid={GRID} grid={[2, 3, 1, 2]} className="cm-grid-demo-3x3__item">
           Item 4
         </CGridItem>
-        <CGridItem parentGrid={GRID} grid={[2, 3, 2, 4]} className="cm-catalog__grid-item">
+        <CGridItem parentGrid={GRID} grid={[2, 3, 2, 4]} className="cm-grid-demo-3x3__item">
           Item 5
         </CGridItem>
-        <CGridItem parentGrid={GRID} grid={[3, 4, 1, 4]} className="cm-catalog__grid-item">
+        <CGridItem parentGrid={GRID} grid={[3, 4, 1, 4]} className="cm-grid-demo-3x3__item">
           Item 6
         </CGridItem>
       </CGrid>
+    </ShowcaseSection>
+  );
+}
+
+const SAMPLE_MENU_LIST: readonly MenuListItem[] = [
+  { id: 'file', key: 'file', title: 'File' },
+  { id: 'edit', key: 'edit', title: 'Edit' },
+  { id: 'view', key: 'view', title: 'View' },
+];
+
+const MENU_SNIPPET = `
+const [selectedItem, setSelectedItem] = useState<MenuListItem | null>(null);
+
+return (
+  <>
+    <CMenu
+      data-testid="menu-demo"
+      trigger="click"
+      menuList={SAMPLE_MENU_LIST}
+      onSelect={setSelectedItem}
+    >
+      <CButton data-testid="menu-demo-trigger">Menu</CButton>
+    </CMenu>
+
+    <p>Selected: {selectedItem?.title ?? 'none'}</p>
+  </>
+);
+`.trim();
+
+function MenuShowcase(): React.ReactElement {
+  const [selectedItem, setSelectedItem] = React.useState<MenuListItem | null>(null);
+
+  return (
+    <ShowcaseSection title="Menu" testId="catalog-section-menu" code={MENU_SNIPPET}>
+      <div className="cm-catalog__stack">
+        <CMenu
+          data-testid="menu-demo"
+          trigger="click"
+          menuList={SAMPLE_MENU_LIST}
+          onSelect={setSelectedItem}
+        >
+          <CButton data-testid="menu-demo-trigger">Click Menu</CButton>
+        </CMenu>
+        <CMenu
+          data-testid="menu-demo-hover"
+          trigger="hover"
+          menuList={SAMPLE_MENU_LIST}
+          onSelect={setSelectedItem}
+        >
+          <CButton data-testid="menu-demo-trigger-hover">Hover Menu</CButton>
+        </CMenu>
+        <p className="cm-catalog__value">Selected: {selectedItem?.title ?? 'none'}</p>
+      </div>
     </ShowcaseSection>
   );
 }
@@ -528,6 +583,7 @@ export function ComponentCatalog({
             <RadioGroupShowcase />
             <SelectShowcase />
             <IconShowcase />
+            <MenuShowcase />
             <WindowShowcase />
             <DockShowcase />
             <StartBarShowcase />

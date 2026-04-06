@@ -86,6 +86,7 @@ export const gotoThemedCommonControls = async (
 
   await page.goto(`${PLAYWRIGHT_COMMON_CONTROLS_PATH}?${searchParams.toString()}`);
   await waitForWin98ThemedControls(page);
+  await page.locator(`.cm-theme--${selection.theme}`).first().waitFor({ state: 'attached' });
 };
 
 export const gotoWin98CommonControls = async (page: Page): Promise<void> => {

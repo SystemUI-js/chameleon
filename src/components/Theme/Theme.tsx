@@ -1,5 +1,5 @@
 import React from 'react';
-import { normalizeThemeName, resolveThemeClassName } from './themeName';
+import { normalizeThemeClassName } from './normalizeThemeClassName';
 
 export interface ThemeContextValue {
   theme: string | undefined;
@@ -23,14 +23,15 @@ export function Theme({ name, children }: ThemeProps): React.ReactElement {
     throw new Error('Nested Theme is not supported');
   }
 
+  const finalTheme = React.useMemo(() => normalizeThemeClassName(name), [name]);
   const contextValue = React.useMemo<ThemeContextValue>(
-    () => ({ theme: normalizeThemeName(name), hasThemeProvider: true }),
-    [name],
+    () => ({ theme: finalTheme, hasThemeProvider: true }),
+    [finalTheme],
   );
 
   return (
     <ThemeContext.Provider value={contextValue}>
-      <div className={resolveThemeClassName(name)}>{children}</div>
+      <div className={finalTheme}>{children}</div>
     </ThemeContext.Provider>
   );
 }

@@ -330,4 +330,42 @@
         color: #8a99ad;
         cursor: not-allowed;
     }
+
+    // Menu - Default Theme
+    .cm-menu__popup {
+        border: 1px solid #b9c6d8;
+        border-radius: 6px;
+        background: linear-gradient(180deg, #ffffff 0%, #f3f6fb 100%);
+        box-shadow:
+            inset 1px 1px 0 rgba(255, 255, 255, 0.95),
+            0 8px 20px rgba(72, 96, 127, 0.18);
+    }
+
+    .cm-menu__list {
+        padding: 6px 0;
+    }
+
+    .cm-menu__item-button {
+        padding: 8px 16px;
+        border: none;
+        border-radius: 0;
+        background: transparent;
+        color: #233043;
+        font-size: 13px;
+        font-weight: 500;
+    }
+
+    .cm-menu__item-button:hover:not(:disabled) {
+        background: linear-gradient(180deg, #e8eef6 0%, #d8e2f0 100%);
+    }
+
+    .cm-menu__item-button--disabled {
+        color: #8a99ad;
+        cursor: not-allowed;
+    }
+
+    .cm-menu__caret {
+        margin-left: 8px;
+        color: #5f7594;
+    }
 }

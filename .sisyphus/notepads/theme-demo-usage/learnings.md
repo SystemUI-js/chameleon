@@ -18,8 +18,8 @@
 
 ### Implementation Notes
 - Added Theme showcase to ComponentCatalog following Button pattern
-- THEME_SNIPPET contains Theme wrapper, nested provider, and explicit prop precedence examples
-- ThemeShowcase demonstrates: wrapper applies theme to subtree, nearest nested provider wins, explicit prop wins
+- THEME_SNIPPET contains Theme wrapper and explicit prop precedence examples; nested Theme is documented as unsupported
+- ThemeShowcase demonstrates: wrapper applies theme to subtree, nested Theme throws and is prohibited, explicit prop wins
 - Theme section positioned in left column between Button and RadioGroup as required
 - Uses existing CSS classes (cm-catalog__stack, cm-catalog__row, cm-catalog__value) without SCSS changes
 

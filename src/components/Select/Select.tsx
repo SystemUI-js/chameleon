@@ -1,6 +1,6 @@
 import type React from 'react';
 import { mergeClasses } from '../Theme/mergeClasses';
-import { resolveThemeClassName } from '../Theme/themeName';
+import { normalizeThemeClassName } from '../Theme/normalizeThemeClassName';
 import { useTheme } from '../Theme/useTheme';
 import './index.scss';
 
@@ -39,7 +39,7 @@ export function CSelect({
   'aria-label': ariaLabel,
   'data-testid': dataTestId,
 }: CSelectProps): React.ReactElement {
-  const resolvedTheme = resolveThemeClassName(useTheme(theme));
+  const resolvedTheme = normalizeThemeClassName(useTheme(theme));
   const baseClasses = ['cm-select'];
   const isControlled = value !== undefined;
   let resolvedDefaultValue: string | undefined;

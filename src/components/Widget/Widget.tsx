@@ -3,7 +3,7 @@ import React from 'react';
 import { generateUUID } from '@/utils/uuid';
 import {
   mergeClasses,
-  resolveThemeClassName,
+  normalizeThemeClassName,
   ThemeContext,
   type ThemeContextValue,
 } from '../Theme';
@@ -121,15 +121,19 @@ type WidgetFrameMoveHandleProps = {
   moveBehavior: WidgetInteractionBehavior;
 };
 
-type WidgetComponentState = Partial<WidgetFrameState> & {
-  preview?: WidgetPreviewState;
-} & Record<string, unknown>;
+export interface WidgetState extends WidgetFrameState {
+  preview: WidgetPreviewState;
+}
 
-export class CWidget extends React.Component<CWidgetProps, WidgetComponentState> {
+export class CWidget<TState extends WidgetState = WidgetState> extends React.Component<
+  CWidgetProps,
+  TState
+> {
   public static readonly contextType = ThemeContext;
   declare public context: ThemeContextValue;
 
   public readonly uuid = generateUUID();
+  private isUnmounting = false;
   private readonly resizeHandleRefs: Record<ResizeDirection, React.RefObject<HTMLDivElement>> = {
     n: React.createRef<HTMLDivElement>(),
     s: React.createRef<HTMLDivElement>(),
@@ -153,7 +157,7 @@ export class CWidget extends React.Component<CWidgetProps, WidgetComponentState>
 
   public constructor(props: CWidgetProps) {
     super(props);
-    this.state = CWidget.getInitialState(props);
+    this.state = CWidget.getInitialState(props) as TState;
   }
 
   public componentDidMount(): void {
@@ -172,6 +176,7 @@ export class CWidget extends React.Component<CWidgetProps, WidgetComponentState>
   }
 
   public componentWillUnmount(): void {
+    this.isUnmounting = true;
     this.cleanupResizeDrags();
   }
 
@@ -201,7 +206,7 @@ export class CWidget extends React.Component<CWidgetProps, WidgetComponentState>
     };
   }
 
-  protected static getInitialState(props: CWidgetProps): WidgetComponentState {
+  protected static getInitialState(props: CWidgetProps): WidgetState {
     return {
       ...CWidget.getInitialFrameState(props),
       preview: CWidget.getInitialPreviewState(props),
@@ -281,10 +286,10 @@ export class CWidget extends React.Component<CWidgetProps, WidgetComponentState>
     const { x, y, width, height } = this.state;
 
     return {
-      x: typeof x === 'number' ? x : 0,
-      y: typeof y === 'number' ? y : 0,
-      width: typeof width === 'number' ? width : 0,
-      height: typeof height === 'number' ? height : 0,
+      x,
+      y,
+      width,
+      height,
     };
   }
 
@@ -297,7 +302,7 @@ export class CWidget extends React.Component<CWidgetProps, WidgetComponentState>
   }
 
   protected getPreviewState(): WidgetPreviewState {
-    return this.state.preview ?? CWidget.getInitialPreviewState(this.props);
+    return this.state.preview;
   }
 
   protected getPreviewBehavior(source: WidgetPreviewSource): WidgetInteractionBehavior {
@@ -324,14 +329,12 @@ export class CWidget extends React.Component<CWidgetProps, WidgetComponentState>
     this.setState((prevState) => ({
       ...prevState,
       preview: {
-        ...(prevState.preview ?? CWidget.getInitialPreviewState(this.props)),
+        ...prevState.preview,
         rect,
-        source: options?.source ?? prevState.preview?.source ?? null,
+        source: options?.source ?? prevState.preview.source ?? null,
         behavior:
           options?.behavior ??
-          (options?.source
-            ? this.getPreviewBehavior(options.source)
-            : (prevState.preview?.behavior ?? WidgetInteractionBehavior.Live)),
+          (options?.source ? this.getPreviewBehavior(options.source) : prevState.preview.behavior),
         active: options?.active ?? rect !== null,
       },
     }));
@@ -476,23 +479,17 @@ export class CWidget extends React.Component<CWidgetProps, WidgetComponentState>
   }
 
   protected normalizeTheme(theme: string | undefined): string | undefined {
-    if (theme === undefined) {
-      return undefined;
-    }
-
-    const normalizedTheme = theme.trim();
-
-    return normalizedTheme.length > 0 ? normalizedTheme : undefined;
+    return normalizeThemeClassName(theme);
   }
 
   protected getTheme(theme?: string): string | undefined {
     const explicitTheme = this.normalizeTheme(theme ?? this.props.theme);
 
     if (explicitTheme !== undefined) {
-      return resolveThemeClassName(explicitTheme);
+      return explicitTheme;
     }
 
-    return resolveThemeClassName(this.normalizeTheme(this.context.theme));
+    return this.normalizeTheme(this.context.theme);
   }
 
   protected mergeThemeClassName(className?: string, theme?: string): string | undefined {
@@ -679,7 +676,10 @@ export class CWidget extends React.Component<CWidgetProps, WidgetComponentState>
     this.resizeStartByDirection.clear();
     this.pendingResizeRectByDirection.clear();
     this.cancelledResizeDirections.clear();
-    this.clearResizePreview();
+
+    if (!this.isUnmounting) {
+      this.clearResizePreview();
+    }
 
     RESIZE_DIRECTIONS.forEach((direction) => {
       const handle = this.resizeHandleRefs[direction].current;

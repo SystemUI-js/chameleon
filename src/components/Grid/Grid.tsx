@@ -72,7 +72,6 @@ interface GridItemProps {
   className?: string;
   theme?: string;
   children?: React.ReactNode;
-  setGridSize?: (rows: string[], columns: string[]) => void;
 }
 
 export class CGridItem extends React.Component<GridItemProps> {

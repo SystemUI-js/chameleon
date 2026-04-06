@@ -126,40 +126,105 @@ export const stopDedicatedWindowHarnessServer = (): void => {
   }
 };
 
-const waitForWindowHarness = async (page: Page): Promise<void> => {
-  await page.waitForFunction(
-    ({
-      frameTestId,
-      titleTestId,
-      contentTestId,
-      resizeTestIdPrefix,
-      iconContainerTestId,
-      fixtureErrorTestId,
-    }) => {
-      const frame = document.querySelector(`[data-testid="${frameTestId}"]`);
-      const title = document.querySelector(`[data-testid="${titleTestId}"]`);
-      const content = document.querySelector(`[data-testid="${contentTestId}"]`);
-      const resizeHandle = document.querySelector(`[data-testid^="${resizeTestIdPrefix}"]`);
-      const iconContainer = document.querySelector(`[data-testid="${iconContainerTestId}"]`);
-      const fixtureError = document.querySelector(`[data-testid="${fixtureErrorTestId}"]`);
+type WindowHarnessNavigationSelection = {
+  theme: DevThemeId;
+  fixture?: string;
+};
 
-      return Boolean(
-        (frame && title) ||
-          (frame && content) ||
-          (frame && resizeHandle) ||
-          iconContainer ||
-          fixtureError,
-      );
-    },
-    {
-      frameTestId: WINDOW_FRAME_TEST_ID,
-      titleTestId: WINDOW_TITLE_TEST_ID,
-      contentTestId: WINDOW_CONTENT_TEST_ID,
-      resizeTestIdPrefix: WINDOW_RESIZE_TEST_ID_PREFIX,
-      iconContainerTestId: ICON_CONTAINER_TEST_ID,
-      fixtureErrorTestId: FIXTURE_ERROR_TEST_ID,
-    },
-  );
+type WindowHarnessNavigationOptions = {
+  allowFixtureError?: boolean;
+  baseUrl?: string;
+  path?: string;
+};
+
+const readWindowFixtureErrorText = async (page: Page): Promise<string | null> => {
+  return page.evaluate((fixtureErrorTestId) => {
+    const fixtureError = document.querySelector<HTMLElement>(
+      `[data-testid="${fixtureErrorTestId}"]`,
+    );
+
+    return fixtureError?.textContent?.trim() ?? null;
+  }, FIXTURE_ERROR_TEST_ID);
+};
+
+const waitForWindowHarness = async (
+  page: Page,
+  options: WindowHarnessNavigationOptions = {},
+): Promise<void> => {
+  try {
+    await page.waitForFunction(
+      ({
+        frameTestId,
+        titleTestId,
+        contentTestId,
+        resizeTestIdPrefix,
+        iconContainerTestId,
+        fixtureErrorTestId,
+      }) => {
+        const frame = document.querySelector(`[data-testid="${frameTestId}"]`);
+        const title = document.querySelector(`[data-testid="${titleTestId}"]`);
+        const content = document.querySelector(`[data-testid="${contentTestId}"]`);
+        const resizeHandle = document.querySelector(`[data-testid^="${resizeTestIdPrefix}"]`);
+        const iconContainer = document.querySelector(`[data-testid="${iconContainerTestId}"]`);
+        const fixtureError = document.querySelector(`[data-testid="${fixtureErrorTestId}"]`);
+
+        return Boolean(
+          (frame && title) ||
+            (frame && content) ||
+            (frame && resizeHandle) ||
+            iconContainer ||
+            fixtureError,
+        );
+      },
+      {
+        frameTestId: WINDOW_FRAME_TEST_ID,
+        titleTestId: WINDOW_TITLE_TEST_ID,
+        contentTestId: WINDOW_CONTENT_TEST_ID,
+        resizeTestIdPrefix: WINDOW_RESIZE_TEST_ID_PREFIX,
+        iconContainerTestId: ICON_CONTAINER_TEST_ID,
+        fixtureErrorTestId: FIXTURE_ERROR_TEST_ID,
+      },
+    );
+  } catch (error) {
+    const fixtureErrorText = await readWindowFixtureErrorText(page);
+
+    if (fixtureErrorText !== null) {
+      throw new Error(`Window harness rendered fixture error: ${fixtureErrorText}`);
+    }
+
+    throw error;
+  }
+
+  const fixtureErrorText = await readWindowFixtureErrorText(page);
+
+  if (fixtureErrorText !== null && options.allowFixtureError !== true) {
+    throw new Error(`Window harness rendered fixture error: ${fixtureErrorText}`);
+  }
+};
+
+const buildWindowFixtureUrl = (
+  selection: WindowHarnessNavigationSelection,
+  path = PLAYWRIGHT_WINDOW_PATH,
+): string => {
+  const searchParams = new URLSearchParams({
+    theme: selection.theme,
+  });
+
+  if (selection.fixture !== undefined) {
+    searchParams.set('fixture', selection.fixture);
+  }
+
+  return `${path}?${searchParams.toString()}`;
+};
+
+const gotoWindowHarness = async (
+  page: Page,
+  selection: WindowHarnessNavigationSelection,
+  options: WindowHarnessNavigationOptions = {},
+): Promise<void> => {
+  const url = buildWindowFixtureUrl(selection, options.path ?? PLAYWRIGHT_WINDOW_PATH);
+  await page.goto(options.baseUrl ? `${options.baseUrl}${url}` : url);
+  await waitForWindowHarness(page, options);
 };
 
 export const gotoWindowFixture = async (page: Page, fixture: string): Promise<void> => {
@@ -172,13 +237,31 @@ export const gotoWindowFixtureAtBaseUrl = async (
   fixture: string,
   baseUrl: string,
 ): Promise<void> => {
-  const searchParams = new URLSearchParams({
-    theme: 'default',
-    fixture,
-  });
+  await gotoWindowHarness(
+    page,
+    {
+      theme: 'default',
+      fixture,
+    },
+    {
+      baseUrl,
+      path,
+    },
+  );
+};
 
-  await page.goto(`${baseUrl}${path}?${searchParams.toString()}`);
-  await waitForWindowHarness(page);
+export const gotoWindowFixtureAllowingError = async (
+  page: Page,
+  fixture: string,
+): Promise<void> => {
+  await gotoWindowHarness(
+    page,
+    {
+      theme: 'default',
+      fixture,
+    },
+    { allowFixtureError: true },
+  );
 };
 
 export type WindowHarnessSelection = {
@@ -190,16 +273,7 @@ export const gotoThemedWindowFixture = async (
   page: Page,
   selection: WindowHarnessSelection,
 ): Promise<void> => {
-  const searchParams = new URLSearchParams({
-    theme: selection.theme,
-  });
-
-  if (selection.fixture !== undefined) {
-    searchParams.set('fixture', selection.fixture);
-  }
-
-  await page.goto(`${PLAYWRIGHT_WINDOW_PATH}?${searchParams.toString()}`);
-  await waitForWindowHarness(page);
+  await gotoWindowHarness(page, selection);
 };
 
 export const readFrameMetrics = async (page: Page): Promise<FrameMetrics> => {

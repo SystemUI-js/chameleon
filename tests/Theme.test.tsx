@@ -1,6 +1,12 @@
 import { render, screen } from '@testing-library/react';
 import '@testing-library/jest-dom';
-import { Theme as PackageEntryTheme, mergeClasses, Theme, useTheme } from '../src';
+import {
+  ResolvedThemeClassName,
+  mergeClasses,
+  Theme as PackageEntryTheme,
+  Theme,
+  useTheme,
+} from '../src';
 
 interface ThemeProbeProps {
   theme?: string;
@@ -24,7 +30,7 @@ describe('Theme', () => {
     const providerWrapper = themeProbe.parentElement as HTMLElement;
 
     expect(PackageEntryTheme).toBe(Theme);
-    expect(themeProbe).toHaveAttribute('data-theme', 'win98');
+    expect(themeProbe).toHaveAttribute('data-theme', 'cm-theme--win98');
     expect(providerWrapper).toHaveClass('cm-theme--win98');
     expect(providerWrapper).not.toHaveClass('win98');
   });
@@ -36,7 +42,7 @@ describe('Theme', () => {
       </Theme>,
     );
 
-    expect(screen.getByTestId('theme-probe')).toHaveAttribute('data-theme', 'winxp');
+    expect(screen.getByTestId('theme-probe')).toHaveAttribute('data-theme', 'cm-theme--winxp');
   });
 
   it('uses explicit theme prop before provider theme', () => {
@@ -46,7 +52,7 @@ describe('Theme', () => {
       </Theme>,
     );
 
-    expect(screen.getByTestId('theme-probe')).toHaveAttribute('data-theme', 'default');
+    expect(screen.getByTestId('theme-probe')).toHaveAttribute('data-theme', 'cm-theme--default');
   });
 
   describe('nested Theme rejection', () => {
@@ -130,13 +136,26 @@ describe('Theme', () => {
       </Theme>,
     );
 
-    expect(screen.getByTestId('theme-probe')).toHaveAttribute('data-theme', 'explicit-override');
+    expect(screen.getByTestId('theme-probe')).toHaveAttribute(
+      'data-theme',
+      'cm-theme--explicit-override',
+    );
   });
 
   it('returns undefined when no explicit theme or provider exists', () => {
     render(<ThemeProbe />);
 
     expect(screen.getByTestId('theme-probe')).not.toHaveAttribute('data-theme');
+  });
+
+  it('normalizes short theme names in shared resolver', () => {
+    render(
+      <ResolvedThemeClassName theme="win98">
+        {(resolvedTheme) => <div data-testid="resolved-theme" data-theme={resolvedTheme} />}
+      </ResolvedThemeClassName>,
+    );
+
+    expect(screen.getByTestId('resolved-theme')).toHaveAttribute('data-theme', 'cm-theme--win98');
   });
 });
 

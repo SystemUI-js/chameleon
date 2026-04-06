@@ -1,9 +1,18 @@
+import React from 'react';
 import { fireEvent, render, screen } from '@testing-library/react';
 import '@testing-library/jest-dom';
 import { readFileSync } from 'node:fs';
 import { join } from 'node:path';
 import { CButton as PackageEntryCButton, Theme } from '../src';
 import { CButton } from '../src/components/Button/Button';
+
+function MenuTriggerProbe({ children }: { children: React.ReactElement }): React.ReactElement {
+  return React.cloneElement(children, {
+    'aria-haspopup': 'menu',
+    'aria-expanded': false,
+    'aria-controls': 'menu-popup',
+  });
+}
 
 const readThemeStyles = (theme: 'win98' | 'winxp'): string =>
   readFileSync(join(process.cwd(), 'src', 'theme', theme, 'styles', 'index.scss'), 'utf8');
@@ -68,6 +77,20 @@ describe('CButton', () => {
     fireEvent.click(button);
 
     expect(handleClick).not.toHaveBeenCalled();
+  });
+
+  it('forwards aria props injected by cloneElement', () => {
+    render(
+      <MenuTriggerProbe>
+        <CButton data-testid="menu-trigger">Open menu</CButton>
+      </MenuTriggerProbe>,
+    );
+
+    const button = screen.getByRole('button', { name: 'Open menu' });
+
+    expect(button).toHaveAttribute('aria-haspopup', 'menu');
+    expect(button).toHaveAttribute('aria-expanded', 'false');
+    expect(button).toHaveAttribute('aria-controls', 'menu-popup');
   });
 
   describe('theme prop', () => {
