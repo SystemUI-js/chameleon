@@ -36,6 +36,7 @@ export function CTab({
 }: CTabProps): React.ReactElement {
   const resolvedTheme = useTheme(theme);
   const instanceId = React.useId().replace(/:/g, '');
+  const tabRefs = React.useRef<Array<HTMLButtonElement | null>>([]);
 
   const tabItems = React.useMemo<readonly CTabItemEntry[]>(() => {
     return React.Children.toArray(children).reduce<CTabItemEntry[]>((items, child) => {
@@ -56,6 +57,54 @@ export function CTab({
   const [activeTabId, setActiveTabId] = React.useState<string | undefined>(undefined);
   const effectiveActiveTabId = activeTabId ?? tabItems[0]?.id;
 
+  const activateTab = React.useCallback(
+    (nextTabId: string): void => {
+      setActiveTabId(nextTabId);
+
+      const nextTabIndex = tabItems.findIndex((item) => item.id === nextTabId);
+      tabRefs.current[nextTabIndex]?.focus();
+    },
+    [tabItems],
+  );
+
+  const moveFocus = React.useCallback(
+    (currentIndex: number, offset: number): void => {
+      if (tabItems.length === 0) {
+        return;
+      }
+
+      const nextIndex = (currentIndex + offset + tabItems.length) % tabItems.length;
+      activateTab(tabItems[nextIndex].id);
+    },
+    [activateTab, tabItems],
+  );
+
+  const handleKeyDown = React.useCallback(
+    (event: React.KeyboardEvent<HTMLButtonElement>, currentIndex: number): void => {
+      switch (event.key) {
+        case 'ArrowLeft':
+        case 'ArrowUp':
+          event.preventDefault();
+          moveFocus(currentIndex, -1);
+          break;
+        case 'ArrowRight':
+        case 'ArrowDown':
+          event.preventDefault();
+          moveFocus(currentIndex, 1);
+          break;
+        case 'Home':
+          event.preventDefault();
+          activateTab(tabItems[0].id);
+          break;
+        case 'End':
+          event.preventDefault();
+          activateTab(tabItems[tabItems.length - 1].id);
+          break;
+      }
+    },
+    [activateTab, moveFocus, tabItems],
+  );
+
   React.useEffect(() => {
     if (tabItems.length === 0) {
       setActiveTabId((current) => (current === undefined ? current : undefined));
@@ -70,7 +119,7 @@ export function CTab({
   return (
     <div className={mergeClasses(['cm-ctab'], resolvedTheme, className)} data-testid={dataTestId}>
       <div role="tablist" className="cm-ctab__list">
-        {tabItems.map((item) => {
+        {tabItems.map((item, index) => {
           const isActive = item.id === effectiveActiveTabId;
           const tabId = `${item.id}-tab`;
           const panelId = `${item.id}-panel`;
@@ -78,6 +127,9 @@ export function CTab({
           return (
             <button
               key={item.id}
+              ref={(element) => {
+                tabRefs.current[index] = element;
+              }}
               id={tabId}
               type="button"
               role="tab"
@@ -89,7 +141,10 @@ export function CTab({
               aria-controls={panelId}
               tabIndex={isActive ? 0 : -1}
               onClick={() => {
-                setActiveTabId(item.id);
+                activateTab(item.id);
+              }}
+              onKeyDown={(event) => {
+                handleKeyDown(event, index);
               }}
             >
               {item.title}

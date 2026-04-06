@@ -93,6 +93,50 @@ describe('CTab', () => {
     expect(firstPanel).toHaveTextContent('First Panel');
   });
 
+  it('supports roving keyboard navigation and focus management', () => {
+    render(
+      <CTab>
+        <CTabItem title="First">
+          <div>First Panel</div>
+        </CTabItem>
+        <CTabItem title="Second">
+          <div>Second Panel</div>
+        </CTabItem>
+        <CTabItem title="Third">
+          <div>Third Panel</div>
+        </CTabItem>
+      </CTab>,
+    );
+
+    const firstTab = screen.getByRole('tab', { name: 'First' });
+    const secondTab = screen.getByRole('tab', { name: 'Second' });
+    const thirdTab = screen.getByRole('tab', { name: 'Third' });
+
+    firstTab.focus();
+    fireEvent.keyDown(firstTab, { key: 'ArrowRight' });
+
+    expect(secondTab).toHaveAttribute('aria-selected', 'true');
+    expect(secondTab).toHaveFocus();
+
+    thirdTab.focus();
+    fireEvent.keyDown(thirdTab, { key: 'ArrowRight' });
+
+    expect(firstTab).toHaveAttribute('aria-selected', 'true');
+    expect(firstTab).toHaveFocus();
+
+    secondTab.focus();
+    fireEvent.keyDown(secondTab, { key: 'Home' });
+
+    expect(firstTab).toHaveAttribute('aria-selected', 'true');
+    expect(firstTab).toHaveFocus();
+
+    firstTab.focus();
+    fireEvent.keyDown(firstTab, { key: 'End' });
+
+    expect(thirdTab).toHaveAttribute('aria-selected', 'true');
+    expect(thirdTab).toHaveFocus();
+  });
+
   it('keeps tab and panel ids unique for distinct special-character keys', () => {
     render(
       <CTab>
