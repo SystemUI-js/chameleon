@@ -5,6 +5,8 @@ export {
   CButton,
   CButtonGroup,
   CButtonSeparator,
+  CIcon,
+  CIconContainer,
   CMenu,
   CRadio,
   CRadioGroup,

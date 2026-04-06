@@ -1,6 +1,6 @@
 .cm-theme--default {
     .cm-window-frame,
-    .cm-window-frame.cm-theme--default {
+    &.cm-window-frame {
         box-sizing: border-box;
         padding: 2px;
         border: 1px solid #7d7d7d;
@@ -12,7 +12,7 @@
     }
 
     .cm-window-preview-frame,
-    .cm-window-preview-frame.cm-theme--default {
+    &.cm-window-preview-frame {
         border: 2px dashed #5f7fab;
         background: transparent;
         pointer-events: none;
@@ -20,7 +20,7 @@
     }
 
     .cm-window,
-    .cm-window.cm-theme--default {
+    &.cm-window {
         box-sizing: border-box;
         display: flex;
         flex-direction: column;
@@ -33,7 +33,7 @@
     }
 
     .cm-window__title-bar,
-    .cm-window__title-bar.cm-theme--default {
+    &.cm-window__title-bar {
         flex-shrink: 0;
         padding: 7px 10px;
         border-bottom: 1px solid rgba(16, 24, 40, 0.22);
@@ -47,12 +47,13 @@
         cursor: grab;
     }
 
-    .cm-window__title-bar:active {
+    .cm-window__title-bar:active,
+    &.cm-window__title-bar:active {
         cursor: grabbing;
     }
 
     .cm-window__title-bar--with-controls,
-    .cm-window__title-bar--with-controls.cm-theme--default {
+    &.cm-window__title-bar--with-controls {
         display: flex;
         align-items: center;
         gap: 10px;
@@ -92,8 +93,15 @@
         text-shadow: 0 1px 0 rgba(0, 0, 0, 0.28);
     }
 
-    .cm-window > :not(.cm-window__title-bar) {
+    .cm-window > :not(.cm-window__title-bar),
+    &.cm-window > :not(.cm-window__title-bar) {
         flex: 1;
+        padding: 12px;
+        background: linear-gradient(180deg, #ffffff 0%, #f3f3f3 100%);
+    }
+
+    .cm-window__body,
+    &.cm-window__body {
         padding: 12px;
         background: linear-gradient(180deg, #ffffff 0%, #f3f3f3 100%);
     }
@@ -211,7 +219,8 @@
 
     &.cm-button:focus-visible,
     .cm-radio__input:focus-visible,
-    .cm-select:focus-visible {
+    .cm-select:focus-visible,
+    &.cm-select:focus-visible {
         outline: 2px solid #4b7bd3;
         outline-offset: 2px;
     }
@@ -305,7 +314,7 @@
     }
 
     .cm-radio,
-    .cm-radio.cm-theme--default {
+    &.cm-radio {
         display: inline-flex;
         align-items: center;
         gap: 8px;
@@ -314,7 +323,7 @@
     }
 
     .cm-radio--disabled,
-    .cm-radio--disabled.cm-theme--default {
+    &.cm-radio--disabled {
         color: #7d8ea3;
         cursor: not-allowed;
     }
@@ -352,7 +361,7 @@
     }
 
     .cm-select,
-    .cm-select.cm-theme--default {
+    &.cm-select {
         min-height: 34px;
         padding: 0 32px 0 10px;
         border: 1px solid #7f91a7;
@@ -377,7 +386,8 @@
         font-size: 13px;
     }
 
-    .cm-select:disabled {
+    .cm-select:disabled,
+    &.cm-select:disabled {
         border-color: #b4c0cf;
         background-color: #edf1f6;
         background-image:

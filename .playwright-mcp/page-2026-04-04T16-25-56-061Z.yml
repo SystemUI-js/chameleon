@@ -1,0 +1,137 @@
+- generic [ref=e3]:
+  - banner [ref=e6]:
+    - heading "Component Catalog" [level=1] [ref=e7]
+    - generic [ref=e9]:
+      - text: Theme
+      - combobox "Theme" [ref=e10]:
+        - option "default" [selected]
+        - option "win98"
+        - option "winxp"
+  - main [ref=e11]:
+    - generic [ref=e12]:
+      - heading "Theme" [level=2] [ref=e13]
+      - generic [ref=e15]:
+        - paragraph [ref=e16]:
+          - strong [ref=e17]: "Theme wrapper:"
+          - text: Wrap any subtree with
+          - code [ref=e18]: <Theme>
+          - text: and set the
+          - code [ref=e19]: name
+          - text: prop to a theme class like
+          - code [ref=e20]: cm-theme--win98
+          - text: .
+        - paragraph [ref=e21]:
+          - strong [ref=e22]: "Nested Theme:"
+          - text: Nesting
+          - code [ref=e23]: <Theme>
+          - text: inside another
+          - code [ref=e24]: <Theme>
+          - text: is not supported. Use a component's
+          - code [ref=e25]: theme
+          - text: prop to override the provider theme for that specific component.
+        - paragraph [ref=e26]:
+          - strong [ref=e27]: "Explicit prop:"
+          - text: A component's own
+          - code [ref=e28]: theme
+          - text: prop takes precedence over any Theme provider in its ancestor chain.
+        - generic [ref=e29]:
+          - button [ref=e31]: Wrapper applies theme
+          - button [ref=e33]: Prop overrides
+      - button "Show code" [ref=e35] [cursor=pointer]
+    - generic [ref=e38]:
+      - generic [ref=e39]:
+        - heading "Button" [level=2] [ref=e40]
+        - generic [ref=e42]:
+          - generic [ref=e43]:
+            - button "Primary action" [ref=e44] [cursor=pointer]
+            - button "Default action" [ref=e45] [cursor=pointer]
+            - button "Ghost action" [ref=e46] [cursor=pointer]
+          - generic [ref=e47]:
+            - button "Disabled default" [disabled] [ref=e48]
+            - button "Disabled primary" [disabled] [ref=e49]
+          - paragraph [ref=e50]: "Primary button clicks: 0"
+        - button "Show code" [ref=e52] [cursor=pointer]
+      - generic [ref=e53]:
+        - heading "RadioGroup" [level=2] [ref=e54]
+        - generic [ref=e56]:
+          - generic [ref=e58]:
+            - generic [ref=e59] [cursor=pointer]:
+              - radio "Apple" [checked] [ref=e60]
+              - generic [ref=e61]: Apple
+            - generic [ref=e62] [cursor=pointer]:
+              - radio "Orange" [ref=e63]
+              - generic [ref=e64]: Orange
+          - generic [ref=e66]:
+            - generic [ref=e67]:
+              - radio "Apple disabled" [checked] [disabled] [ref=e68]
+              - generic [ref=e69]: Apple disabled
+            - generic [ref=e70]:
+              - radio "Orange disabled" [disabled] [ref=e71]
+              - generic [ref=e72]: Orange disabled
+          - paragraph [ref=e73]: "Selected fruit: apple"
+        - button "Show code" [ref=e75] [cursor=pointer]
+      - generic [ref=e76]:
+        - heading "Select" [level=2] [ref=e77]
+        - generic [ref=e79]:
+          - combobox [ref=e80]:
+            - option "Small"
+            - option "Medium" [selected]
+            - option "Large"
+          - combobox [disabled] [ref=e81]:
+            - option "Small"
+            - option "Medium"
+            - option "Large" [selected]
+          - paragraph [ref=e82]: "Selected size: medium"
+        - button "Show code" [ref=e84] [cursor=pointer]
+      - generic [ref=e85]:
+        - heading "Icon" [level=2] [ref=e86]
+        - generic [ref=e88]:
+          - generic [ref=e90]:
+            - button "★ Star" [ref=e91]:
+              - generic [ref=e93]: ★
+              - generic [ref=e94]: Star
+            - button "♥ Heart" [ref=e95]:
+              - generic [ref=e97]: ♥
+              - generic [ref=e98]: Heart
+          - generic [ref=e99]:
+            - generic [ref=e100]: "Active:"
+            - generic [ref=e101]: —
+          - generic [ref=e102]:
+            - generic [ref=e103]: "Open:"
+            - generic [ref=e104]: —
+          - generic [ref=e105]:
+            - generic [ref=e106]: "Context:"
+            - generic [ref=e107]: —
+          - generic [ref=e108]:
+            - generic [ref=e109]: "Coords:"
+            - generic [ref=e110]: item0:10px,10px | item1:60px,10px
+            - button "Refresh" [ref=e111]
+        - button "Show code" [ref=e113] [cursor=pointer]
+      - generic [ref=e114]:
+        - heading "Window" [level=2] [ref=e115]
+        - generic [ref=e120]:
+          - generic [ref=e121]: Sample Window
+          - generic [ref=e122]:
+            - paragraph [ref=e123]: Window content goes here.
+            - paragraph [ref=e124]: Try dragging the title bar.
+        - button "Show code" [ref=e134] [cursor=pointer]
+      - generic [ref=e135]:
+        - heading "Dock" [level=2] [ref=e136]
+        - generic [ref=e140]: Dock content area
+        - button "Show code" [ref=e143] [cursor=pointer]
+      - generic [ref=e144]:
+        - heading "StartBar" [level=2] [ref=e145]
+        - generic [ref=e149]:
+          - button "Start" [ref=e150] [cursor=pointer]
+          - generic [ref=e152]: Application shortcuts
+        - button "Show code" [ref=e154] [cursor=pointer]
+      - generic [ref=e155]:
+        - heading "Grid" [level=2] [ref=e156]
+        - generic [ref=e158]:
+          - generic [ref=e159]: Item 1
+          - generic [ref=e160]: Item 2
+          - generic [ref=e161]: Item 3
+          - generic [ref=e162]: Item 4
+          - generic [ref=e163]: Item 5
+          - generic [ref=e164]: Item 6
+        - button "Show code" [ref=e166] [cursor=pointer]

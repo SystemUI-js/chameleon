@@ -26,8 +26,13 @@ describe('Theme', () => {
       </PackageEntryTheme>,
     );
 
+    const themeProbe = screen.getByTestId('theme-probe');
+    const providerWrapper = themeProbe.parentElement as HTMLElement;
+
     expect(PackageEntryTheme).toBe(Theme);
-    expect(screen.getByTestId('theme-probe')).toHaveAttribute('data-theme', 'cm-theme--win98');
+    expect(themeProbe).toHaveAttribute('data-theme', 'cm-theme--win98');
+    expect(providerWrapper).toHaveClass('cm-theme--win98');
+    expect(providerWrapper).not.toHaveClass('win98');
   });
 
   it('provides theme from provider', () => {

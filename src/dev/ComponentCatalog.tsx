@@ -15,6 +15,7 @@ import {
   CStartBar,
   CGrid,
   CGridItem,
+  CIconContainer,
   type CSelectOption,
   type WindowTitleActionButtonPosition,
   type MenuListItem,
@@ -543,6 +544,146 @@ const GRID_SNIPPET = `<CGrid
   </CGridItem>
 </CGrid>`.trim();
 
+const ICON_SNIPPET = `
+const [activeInfo, setActiveInfo] = React.useState<string | null>(null);
+const [openInfo, setOpenInfo] = React.useState<string | null>(null);
+const [contextInfo, setContextInfo] = React.useState<string | null>(null);
+const [coords, setCoords] = React.useState<Record<string, string>>({});
+
+const readIconPositions = () => {
+  const container = document.querySelector('[data-testid="icon-container"]');
+  if (!container) return;
+  const items = container.querySelectorAll('[data-testid^="icon-item-"]');
+  const newCoords = {};
+  items.forEach((item, i) => {
+    const el = item;
+    newCoords['item' + i] = (el.style.left || '0') + ',' + (el.style.top || '0');
+  });
+  setCoords(newCoords);
+};
+
+React.useEffect(() => { readIconPositions(); }, []);
+
+return (
+  <CIconContainer
+    data-testid="icon-container"
+    iconList={[
+      {
+        icon: <span>★</span>,
+        title: 'Star',
+        position: { x: 10, y: 10 },
+        activeTrigger: 'click',
+        openTrigger: 'click',
+        onActive: (active) => { setActiveInfo(active ? 'Star clicked' : null); readIconPositions(); },
+        onOpen: () => setOpenInfo('Star opened'),
+        onContextMenu: () => setContextInfo('Heart context'),
+      },
+      {
+        icon: <span>♥</span>,
+        title: 'Heart',
+        position: { x: 60, y: 10 },
+        activeTrigger: 'hover',
+        openTrigger: 'doubleClick',
+        onActive: (active) => { setActiveInfo(active ? 'Heart hovered' : null); readIconPositions(); },
+        onOpen: () => setOpenInfo('Heart double-clicked'),
+        onContextMenu: () => setContextInfo('Heart context'),
+      },
+    ]}
+  />
+);
+`.trim();
+
+function IconShowcase(): React.ReactElement {
+  const [activeInfo, setActiveInfo] = React.useState<string | null>(null);
+  const [openInfo, setOpenInfo] = React.useState<string | null>(null);
+  const [contextInfo, setContextInfo] = React.useState<string | null>(null);
+  const [coords, setCoords] = React.useState<Record<string, string>>({});
+
+  const readIconPositions = React.useCallback(() => {
+    const container = document.querySelector('[data-testid="icon-container"]');
+    if (!container) return;
+    const items = container.querySelectorAll('[data-testid^="icon-item-"]');
+    const newCoords: Record<string, string> = {};
+    items.forEach((item, i) => {
+      const el = item as HTMLElement;
+      newCoords[`item${i}`] = `${el.style.left || '0'},${el.style.top || '0'}`;
+    });
+    setCoords(newCoords);
+  }, []);
+
+  React.useEffect(() => {
+    readIconPositions();
+  }, [readIconPositions]);
+
+  return (
+    <ShowcaseSection title="Icon" testId="catalog-section-icon" code={ICON_SNIPPET}>
+      <div className="cm-catalog__stack">
+        <div
+          className="cm-catalog__stage cm-catalog__stage--relative"
+          style={{ minHeight: '80px' }}
+        >
+          <CIconContainer
+            data-testid="icon-container"
+            iconList={[
+              {
+                icon: <span>★</span>,
+                title: 'Star',
+                position: { x: 10, y: 10 },
+                activeTrigger: 'click',
+                openTrigger: 'click',
+                onActive: (active) => {
+                  setActiveInfo(active ? 'Star clicked' : null);
+                  readIconPositions();
+                },
+                onOpen: () => setOpenInfo('Star opened'),
+                onContextMenu: () => setContextInfo('Star context'),
+              },
+              {
+                icon: <span>♥</span>,
+                title: 'Heart',
+                position: { x: 60, y: 10 },
+                activeTrigger: 'hover',
+                openTrigger: 'doubleClick',
+                onActive: (active) => {
+                  setActiveInfo(active ? 'Heart hovered' : null);
+                  readIconPositions();
+                },
+                onOpen: () => setOpenInfo('Heart double-clicked'),
+                onContextMenu: () => setContextInfo('Heart context'),
+              },
+            ]}
+          />
+        </div>
+        <div className="cm-catalog__row">
+          <span className="cm-catalog__label">Active:</span>
+          <span className="cm-catalog__value">{activeInfo ?? '—'}</span>
+        </div>
+        <div className="cm-catalog__row">
+          <span className="cm-catalog__label">Open:</span>
+          <span className="cm-catalog__value">{openInfo ?? '—'}</span>
+        </div>
+        <div className="cm-catalog__row">
+          <span className="cm-catalog__label">Context:</span>
+          <span className="cm-catalog__value">{contextInfo ?? '—'}</span>
+        </div>
+        <div className="cm-catalog__row">
+          <span className="cm-catalog__label">Coords:</span>
+          <span className="cm-catalog__value" data-testid="icon-coords-display">
+            {Object.keys(coords).length > 0
+              ? Object.entries(coords)
+                  .map(([k, v]) => `${k}:${v}`)
+                  .join(' | ')
+              : '—'}
+          </span>
+          <button type="button" data-testid="icon-coords-refresh" onClick={readIconPositions}>
+            Refresh
+          </button>
+        </div>
+      </div>
+    </ShowcaseSection>
+  );
+}
+
 function GridShowcase(): React.ReactElement {
   const GRID: [number, number] = [3, 3];
 
@@ -597,6 +738,7 @@ export function ComponentCatalog({
             <ButtonGroupShowcase />
             <RadioGroupShowcase />
             <SelectShowcase />
+            <IconShowcase />
             <MenuShowcase />
             <WindowShowcase />
             <DockShowcase />

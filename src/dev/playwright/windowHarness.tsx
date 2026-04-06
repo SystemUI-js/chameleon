@@ -1,5 +1,6 @@
 import type { ReactNode } from 'react';
 import { createRoot } from 'react-dom/client';
+import { CIconContainer } from '@/components/Icon/IconContainer';
 import { CWindow } from '@/components/Window/Window';
 import {
   CWindowTitle,
@@ -154,6 +155,26 @@ const renderFixture = (fixture: string): ReactNode => {
           <CWindowTitle>Outline Both</CWindowTitle>
           <div>Outline move + resize content</div>
         </CWindow>
+      );
+    case 'icon-container':
+      return (
+        <div style={{ padding: 24 }}>
+          <CIconContainer
+            iconList={[
+              {
+                icon: <span>First</span>,
+                title: 'First',
+                position: { x: 10, y: 20 },
+              },
+              {
+                icon: <span>Second</span>,
+                title: 'Second',
+                position: { x: 100, y: 120 },
+              },
+            ]}
+            data-testid="icon-container"
+          />
+        </div>
       );
     case 'action-buttons-right':
       return renderActionButtonFixture('Action buttons right');

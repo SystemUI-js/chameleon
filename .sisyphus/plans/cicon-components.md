@@ -94,7 +94,7 @@ Wave 2: 5) drag + long-press integration + teardown safety, 6) exports + catalog
 
 <!-- TASKS_INSERTION_POINT -->
 
-- [ ] 1. 定义共享契约与 Icon 目录骨架
+- [x] 1. 定义共享契约与 Icon 目录骨架
 
   **What to do**: 在 `src/components/Icon/` 下创建 `Icon.tsx`、`IconContainer.tsx`、`index.scss`、`index.ts` 的骨架，并先定义共享类型：`CIconPosition = { x: number; y: number }`、`CIconActiveTrigger = 'click' | 'hover'`、`CIconOpenTrigger = 'click' | 'doubleClick'`、`CIconProps`、`CIconContainerConfig`、`CIconContainerItem`（基于 `CIconProps` 省略 `onDragStart | onDrag | onDragEnd`）。明确容器内部用数组顺序作为单图标拖拽身份，不新增 `id`、不支持重排；同时约定测试/QA 用 `data-testid="icon-container"` 与 `data-testid="icon-item-{index}"`。
   **Must NOT do**: 不提前接入多选/排序能力；不引入额外全局类型文件；不让 `config` 覆盖 iconList 显式值。
@@ -136,7 +136,7 @@ Wave 2: 5) drag + long-press integration + teardown safety, 6) exports + catalog
 
   **Commit**: NO | Message: `feat(icon): define shared icon contracts` | Files: `src/components/Icon/*`
 
-- [ ] 2. 实现 CIcon 渲染表面与主题样式
+- [x] 2. 实现 CIcon 渲染表面与主题样式
 
   **What to do**: 按 `CButton` 的函数组件模式实现 `CIcon`，支持 `icon: React.ReactNode`、`title`、`className`、`theme`、`active`、`position`、`data-testid`，并在 `index.scss` 中建立 `cm-icon` 基类、active 修饰符、图标内容区与标题区 class。`position` 只负责样式定位表达（如 absolute left/top），不在组件内部产生拖拽状态。对 `icon` 不做 URL/SVG 分支限制，直接渲染 ReactNode。
   **Must NOT do**: 不在 `CIcon` 内部创建拖拽实例；不把容器管理逻辑塞进单组件；不使用 CSS-in-JS。
@@ -177,7 +177,7 @@ Wave 2: 5) drag + long-press integration + teardown safety, 6) exports + catalog
 
   **Commit**: NO | Message: `feat(icon): add cicon render surface` | Files: `src/components/Icon/Icon.tsx`, `src/components/Icon/index.scss`, `tests/Icon.test.tsx`
 
-- [ ] 3. 实现 CIcon 的 active / open / contextmenu 触发语义
+- [x] 3. 实现 CIcon 的 active / open / contextmenu 触发语义
 
   **What to do**: 为 `CIcon` 添加事件分发规则：`activeTrigger='click'` 时单击触发 `onActive`，`activeTrigger='hover'` 时 `mouseEnter` 触发 `onActive`；`openTrigger='click'` 时单击触发 `onOpen`，`openTrigger='doubleClick'` 时仅双击触发 `onOpen`；桌面端 `contextmenu` 触发前先执行激活，再回调 `onContextMenu`。所有回调必须只在对应 trigger 下触发一次，且不因 disabled/dragging 状态以外的实现细节重复触发。
   **Must NOT do**: 不在 `CIcon` 单组件里实现触摸长按定时器；不让 `doubleClick` 回退成单击 open；不让 hover 在 mouse leave 时自动清空 active。
@@ -217,7 +217,7 @@ Wave 2: 5) drag + long-press integration + teardown safety, 6) exports + catalog
 
   **Commit**: YES | Message: `feat(icon): add cicon interaction semantics` | Files: `src/components/Icon/Icon.tsx`, `tests/Icon.test.tsx`
 
-- [ ] 4. 实现 CIconContainer 的默认值合并与状态托管
+- [x] 4. 实现 CIconContainer 的默认值合并与状态托管
 
   **What to do**: 实现 `CIconContainer`：接收 `config` 与 `iconList`，以容器内部 state 维护 `activeIndex` 与每项当前位置；渲染时将 `config.position` / `activeTrigger` / `openTrigger` 作为默认值，与单项显式值做“item overrides config” 合并，再把最终 props 下发给 `CIcon`。点击/悬停激活后只更新目标项 active，不影响其他 icon 的位置；右键/长按同样先激活再转发。保持数组顺序稳定映射，不实现重排或 key 迁移逻辑。
   **Must NOT do**: 不把 `config` 当强制覆盖项；不在容器中偷偷维护 open 状态；不让一个 icon 的位置更新污染其他 icon。
@@ -257,7 +257,7 @@ Wave 2: 5) drag + long-press integration + teardown safety, 6) exports + catalog
 
   **Commit**: YES | Message: `feat(icon-container): add managed icon container state` | Files: `src/components/Icon/IconContainer.tsx`, `tests/IconContainer.test.tsx`
 
-- [ ] 5. 集成 multi-drag、触摸长按与卸载清理保护
+- [x] 5. 集成 multi-drag、触摸长按与卸载清理保护
 
   **What to do**: 在 `CIconContainer` 内隔离拖拽集成：为每个 icon root 绑定 `@system-ui-js/multi-drag` 的 `Drag` 实例，拖拽基于容器相对坐标更新目标项 position，并透传 `onDragStart` / `onDrag` / `onDragEnd`。针对库约束补上 React 清理：组件卸载、iconList 缩减、active drag 中止时都必须 `setDisabled()`、解绑 pointer listener、清除长按 timer。触摸端实现自定义 long-press（500ms / 6px 阈值），仅在 `pointerType === 'touch'` 且未触发拖拽时调用 `onContextMenu`；一旦移动超阈值、pointerup、pointercancel 或 unmount，必须取消长按。仅对 icon 可拖拽热点设置最小化 `touch-action: none`，不要扩散到整个容器。
   **Must NOT do**: 不依赖 multi-drag 的私有销毁行为；不把 native context menu 与自定义长按混在一起重复触发；不让 drag/long-press timer 在卸载后继续回调。
@@ -302,7 +302,7 @@ Wave 2: 5) drag + long-press integration + teardown safety, 6) exports + catalog
 
   **Commit**: YES | Message: `feat(icon-container): integrate drag and long press` | Files: `src/components/Icon/IconContainer.tsx`, `tests/IconContainer.test.tsx`, `tests/ui/icon-container.interactions.spec.ts`
 
-- [ ] 6. 接入导出、Catalog 展示与全链路验证
+- [x] 6. 接入导出、Catalog 展示与全链路验证
 
   **What to do**: 将 `CIcon` / `CIconContainer` 接入 `src/components/index.ts` 与 `src/index.ts`；在 `src/dev/ComponentCatalog.tsx` 新增 Icon showcase，展示 click/hover active、click/doubleClick open、右键/触摸长按、拖拽后的坐标更新，并使用前述 `data-testid` 命名供 Playwright 复用。补齐 package entry 测试、catalog 展示测试、Jest 集成测试与 Playwright 交互测试，确保最终命令 `yarn test`、`yarn test:ui`、`yarn lint`、`yarn build` 全通过。
   **Must NOT do**: 不仅在 dev catalog 手工演示而缺少自动化断言；不漏接包入口导出；不引入新的 demo-only 逻辑污染组件 API。

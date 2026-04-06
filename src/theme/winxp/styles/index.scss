@@ -1,8 +1,16 @@
 .cm-theme--winxp {
     .cm-window__title-bar,
-    .cm-window__title-bar.cm-theme--winxp {
+    &.cm-window__title-bar {
         background: #316ac5;
         color: #ffffff;
+    }
+
+    .cm-window-preview-frame,
+    &.cm-window-preview-frame {
+        border: 2px dashed #316ac5;
+        background: transparent;
+        pointer-events: none;
+        box-sizing: border-box;
     }
 
     .cm-window__title-bar--with-controls,
@@ -36,7 +44,13 @@
         margin-right: 2px;
     }
 
-    .cm-window > :not(.cm-window__title-bar) {
+    .cm-window > :not(.cm-window__title-bar),
+    &.cm-window > :not(.cm-window__title-bar) {
+        background: linear-gradient(180deg, #f8fbff 0%, #e7eefb 100%);
+    }
+
+    .cm-window__body,
+    &.cm-window__body {
         background: linear-gradient(180deg, #f8fbff 0%, #e7eefb 100%);
     }
 
@@ -146,7 +160,8 @@
 
     &.cm-button:focus-visible,
     .cm-radio__input:focus-visible,
-    .cm-select:focus-visible {
+    .cm-select:focus-visible,
+    &.cm-select:focus-visible {
         outline: 2px solid #ffb74a;
         outline-offset: 2px;
     }
@@ -229,7 +244,7 @@
     }
 
     .cm-radio,
-    .cm-radio.cm-theme--winxp {
+    &.cm-radio {
         display: inline-flex;
         align-items: center;
         gap: 7px;
@@ -237,7 +252,7 @@
     }
 
     .cm-radio--disabled,
-    .cm-radio--disabled.cm-theme--winxp {
+    &.cm-radio--disabled {
         color: #92a6c6;
         cursor: not-allowed;
     }
@@ -276,7 +291,7 @@
     }
 
     .cm-select,
-    .cm-select.cm-theme--winxp {
+    &.cm-select {
         min-height: 30px;
         padding: 0 32px 0 10px;
         border: 1px solid #4d79bb;
@@ -301,7 +316,8 @@
         font-size: 12px;
     }
 
-    .cm-select:disabled {
+    .cm-select:disabled,
+    &.cm-select:disabled {
         border-color: #9fb8dd;
         background-color: #edf3fb;
         background-image:
@@ -314,13 +330,13 @@
 
     // Start Bar - Windows XP Style
     .cm-start-bar,
-    .cm-start-bar.cm-theme--winxp {
+    &.cm-start-bar {
         background: linear-gradient(180deg, #316ac5 0%, #245595 100%);
         border-top: 1px solid #5a94e4;
     }
 
     .cm-start-bar__button,
-    .cm-start-bar__button.cm-theme--winxp {
+    &.cm-start-bar__button {
         border: 1px solid #1e4f9f;
         border-radius: 999px;
         background: linear-gradient(180deg, #5cb85c 0%, #449d44 50%, #398439 100%);
@@ -331,11 +347,13 @@
         text-shadow: 0 1px 1px rgba(0, 0, 0, 0.3);
     }
 
-    .cm-start-bar__button:hover:not(:disabled) {
+    .cm-start-bar__button:hover:not(:disabled),
+    &.cm-start-bar__button:hover:not(:disabled) {
         background: linear-gradient(180deg, #6ec76e 0%, #53a753 50%, #449444 100%);
     }
 
-    .cm-start-bar__button:active:not(:disabled) {
+    .cm-start-bar__button:active:not(:disabled),
+    &.cm-start-bar__button:active:not(:disabled) {
         background: linear-gradient(180deg, #398439 0%, #449d44 100%);
         box-shadow: inset 0 2px 4px rgba(0, 0, 0, 0.3);
     }

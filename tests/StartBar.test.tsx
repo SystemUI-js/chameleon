@@ -1,7 +1,12 @@
 import { render, screen } from '@testing-library/react';
 import '@testing-library/jest-dom';
+import { readFileSync } from 'node:fs';
+import { join } from 'node:path';
 import { CStartBar as PackageEntryCStartBar, Theme } from '../src';
 import { CStartBar, type CStartBarProps } from '../src/components/StartBar/StartBar';
+
+const readThemeStyles = (theme: 'win98' | 'winxp'): string =>
+  readFileSync(join(process.cwd(), 'src', 'theme', theme, 'styles', 'index.scss'), 'utf8');
 
 describe('CStartBar', () => {
   it('exports CStartBar from package entry', () => {
@@ -197,5 +202,12 @@ describe('CStartBar', () => {
     expect(startBar).toHaveStyle({
       height: '48px',
     });
+  });
+
+  it('keeps start bar theme selectors self-scoped in theme styles', () => {
+    expect(readThemeStyles('win98')).toContain('&.cm-start-bar');
+    expect(readThemeStyles('win98')).toContain('&.cm-start-bar__button');
+    expect(readThemeStyles('winxp')).toContain('&.cm-start-bar');
+    expect(readThemeStyles('winxp')).toContain('&.cm-start-bar__button');
   });
 });

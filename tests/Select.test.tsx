@@ -1,5 +1,7 @@
 import { fireEvent, render, screen } from '@testing-library/react';
 import '@testing-library/jest-dom';
+import { readFileSync } from 'node:fs';
+import { join } from 'node:path';
 import { CSelect as PackageEntryCSelect, Theme } from '../src';
 import { CSelect, type CSelectOption, type CSelectProps } from '../src/components/Select/Select';
 
@@ -8,6 +10,9 @@ const OPTIONS: readonly CSelectOption[] = [
   { label: 'Banana', value: 'banana', disabled: true },
   { label: 'Cherry', value: 'cherry' },
 ];
+
+const readThemeStyles = (theme: 'win98' | 'winxp'): string =>
+  readFileSync(join(process.cwd(), 'src', 'theme', theme, 'styles', 'index.scss'), 'utf8');
 
 describe('CSelect', () => {
   it('exports CSelect from package entry', () => {
@@ -160,6 +165,11 @@ describe('CSelect', () => {
       expect(select).toHaveClass('cm-select');
       expect(select).toHaveClass('cm-theme--win98');
       expect(select).toHaveClass('custom-class');
+    });
+
+    it('keeps select theme selectors self-scoped in theme styles', () => {
+      expect(readThemeStyles('win98')).toContain('&.cm-select');
+      expect(readThemeStyles('winxp')).toContain('&.cm-select');
     });
   });
 });

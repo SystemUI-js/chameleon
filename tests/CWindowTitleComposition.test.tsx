@@ -1,6 +1,8 @@
 import '@testing-library/jest-dom';
 import { fireEvent } from '@testing-library/dom';
 import { act, render } from '@testing-library/react';
+import { readFileSync } from 'node:fs';
+import { join } from 'node:path';
 import React from 'react';
 import { Theme, type WindowTitleActionButtonPosition } from '../src';
 import { CWindow } from '../src/components/Window/Window';
@@ -69,6 +71,9 @@ const getFrameMetrics = (
   width: Number.parseFloat(frame.style.width),
   height: Number.parseFloat(frame.style.height),
 });
+
+const readThemeStyles = (theme: 'default' | 'win98' | 'winxp'): string =>
+  readFileSync(join(process.cwd(), 'src', 'theme', theme, 'styles', 'index.scss'), 'utf8');
 
 class PreviewTestWindow extends CWindow {
   public setPreview(rect: WidgetPreviewRect) {
@@ -256,6 +261,15 @@ describe('CWindow and CWindowTitle composition', () => {
     expect(getByTestId('window-title')).not.toHaveClass('cm-theme--retro');
     expect(getByTestId('window-body')).toHaveClass('cm-window__body', 'cm-theme--classic');
     expect(getByTestId('window-body')).not.toHaveClass('cm-theme--retro');
+  });
+
+  it('keeps window title theme selectors self-scoped in theme styles', () => {
+    expect(readThemeStyles('win98')).toContain('&.cm-window__title-bar');
+    expect(readThemeStyles('win98')).toContain('&.cm-window-preview-frame');
+    expect(readThemeStyles('winxp')).toContain('&.cm-window__title-bar');
+    expect(readThemeStyles('winxp')).toContain('&.cm-window-preview-frame');
+    expect(readThemeStyles('default')).toContain('&.cm-window__title-bar');
+    expect(readThemeStyles('default')).toContain('&.cm-window-preview-frame');
   });
 
   it('keeps the outer frame absolute and places resize handles in an inner wrapper', () => {
@@ -495,6 +509,46 @@ describe('CWindow and CWindowTitle composition', () => {
       height: 160,
     });
   });
+
+  it.each([['cm-theme--win98'], ['cm-theme--winxp']] as const)(
+    'adds %s to outline preview frame before commit',
+    (themeClass) => {
+      const { getByTestId, queryByTestId } = render(
+        <CWindow
+          x={10}
+          y={20}
+          width={240}
+          height={160}
+          theme={themeClass}
+          moveBehavior={WidgetInteractionBehavior.Outline}
+        >
+          <CWindowTitle>Outline themed preview</CWindowTitle>
+        </CWindow>,
+      );
+
+      const title = getByTestId('window-title');
+
+      expect(queryByTestId('window-preview-frame')).not.toBeInTheDocument();
+
+      fireEvent.pointerDown(title, {
+        pointerId: themeClass === 'cm-theme--win98' ? 201 : 202,
+        button: 0,
+        clientX: 50,
+        clientY: 40,
+      });
+
+      fireEvent.pointerMove(document, {
+        pointerId: themeClass === 'cm-theme--win98' ? 201 : 202,
+        clientX: 72,
+        clientY: 68,
+      });
+
+      const previewFrame = getByTestId('window-preview-frame');
+
+      expect(previewFrame).toHaveClass('cm-window-preview-frame', themeClass);
+      expect(previewFrame).not.toHaveClass('cm-theme--default');
+    },
+  );
 
   it('does not commit or render preview on zero-delta outline release', () => {
     const { getByTestId, queryByTestId } = render(
