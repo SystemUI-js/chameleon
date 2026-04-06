@@ -1,10 +1,12 @@
 import { defineConfig } from '@playwright/test';
 
+const isCI = Boolean(process.env.CI || process.env.GITHUB_ACTIONS);
+
 export default defineConfig({
   testDir: 'tests/ui',
-  forbidOnly: !!process.env.CI,
-  retries: process.env.CI ? 2 : 0,
-  workers: process.env.CI ? 1 : undefined,
+  forbidOnly: isCI,
+  retries: isCI ? 2 : 0,
+  workers: isCI ? 1 : undefined,
   reporter: [['list'], ['html', { open: 'never' }]],
   use: {
     baseURL: 'http://127.0.0.1:5673',
@@ -15,7 +17,7 @@ export default defineConfig({
   webServer: {
     command: 'yarn dev',
     url: 'http://127.0.0.1:5673',
-    reuseExistingServer: true,
+    reuseExistingServer: !isCI,
   },
   projects: [
     {
