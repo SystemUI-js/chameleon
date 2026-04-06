@@ -105,6 +105,32 @@ function createPositionUpdater(
   };
 }
 
+function arePositionsEqual(
+  left: CIconPosition | undefined,
+  right: CIconPosition | undefined,
+): boolean {
+  if (left === right) {
+    return true;
+  }
+
+  if (left === undefined || right === undefined) {
+    return false;
+  }
+
+  return left.x === right.x && left.y === right.y;
+}
+
+function arePositionListsEqual(
+  left: readonly (CIconPosition | undefined)[],
+  right: readonly (CIconPosition | undefined)[],
+): boolean {
+  if (left.length !== right.length) {
+    return false;
+  }
+
+  return left.every((position, index) => arePositionsEqual(position, right[index]));
+}
+
 export function CIconContainer({
   iconList,
   config,
@@ -120,12 +146,17 @@ export function CIconContainer({
   const latestIconListRef = React.useRef<readonly CIconContainerRuntimeItem[]>(iconList);
   const latestConfigRef = React.useRef(config);
   const hadExplicitActiveRef = React.useRef(iconList.some((item) => item.active !== undefined));
+  const propPositionsRef = React.useRef<Array<CIconPosition | undefined>>(
+    iconList.map((item) => getMergedPosition(item, config)),
+  );
   const positionsRef = React.useRef<Array<CIconPosition | undefined>>([]);
+  const isActiveControlled = iconList.some((item) => item.active !== undefined);
+  const controlledActiveIndex = isActiveControlled ? getInitialActiveIndex(iconList) : null;
   const [activeIndex, setActiveIndex] = React.useState<number | null>(() =>
     getInitialActiveIndex(iconList),
   );
-  const [positions, setPositions] = React.useState<Array<CIconPosition | undefined>>(() =>
-    iconList.map((item) => getMergedPosition(item, config)),
+  const [positions, setPositions] = React.useState<Array<CIconPosition | undefined>>(
+    () => propPositionsRef.current,
   );
 
   React.useEffect(() => {
@@ -168,31 +199,36 @@ export function CIconContainer({
   );
 
   React.useEffect(() => {
-    setPositions(iconList.map((item) => getMergedPosition(item, config)));
+    const nextPropPositions = iconList.map((item) => getMergedPosition(item, config));
+
+    if (!arePositionListsEqual(propPositionsRef.current, nextPropPositions)) {
+      propPositionsRef.current = nextPropPositions;
+      setPositions(nextPropPositions);
+      return;
+    }
+
+    propPositionsRef.current = nextPropPositions;
   }, [config, iconList]);
 
   React.useEffect(() => {
-    const hasExplicitActive = iconList.some((item) => item.active !== undefined);
     const hadExplicitActive = hadExplicitActiveRef.current;
 
-    setActiveIndex((previousActiveIndex) => {
-      if (hasExplicitActive) {
-        return getInitialActiveIndex(iconList);
-      }
+    if (!isActiveControlled) {
+      setActiveIndex((previousActiveIndex) => {
+        if (hadExplicitActive) {
+          return null;
+        }
 
-      if (hadExplicitActive) {
+        if (previousActiveIndex !== null && previousActiveIndex < iconList.length) {
+          return previousActiveIndex;
+        }
+
         return null;
-      }
+      });
+    }
 
-      if (previousActiveIndex !== null && previousActiveIndex < iconList.length) {
-        return previousActiveIndex;
-      }
-
-      return null;
-    });
-
-    hadExplicitActiveRef.current = hasExplicitActive;
-  }, [iconList]);
+    hadExplicitActiveRef.current = isActiveControlled;
+  }, [iconList.length, isActiveControlled]);
 
   React.useEffect(() => {
     isMountedRef.current = true;
@@ -512,9 +548,14 @@ export function CIconContainer({
         const finalOpenTrigger = item.openTrigger ?? config?.openTrigger;
 
         const handleActive = (nextActive: boolean): void => {
-          setActiveIndex(nextActive ? index : null);
+          if (!isActiveControlled) {
+            setActiveIndex(nextActive ? index : null);
+          }
+
           onActive?.(nextActive);
         };
+
+        const isItemActive = (isActiveControlled ? controlledActiveIndex : activeIndex) === index;
 
         return (
           <div
@@ -539,7 +580,7 @@ export function CIconContainer({
               position={finalPosition}
               activeTrigger={finalActiveTrigger}
               openTrigger={finalOpenTrigger}
-              active={activeIndex === index}
+              active={isItemActive}
               onActive={handleActive}
               onContextMenu={onContextMenu}
             />

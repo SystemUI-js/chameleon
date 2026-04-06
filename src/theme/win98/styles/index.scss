@@ -4,7 +4,7 @@
     font-family: 'Pixelated MS Sans Serif', Arial;
 
     .cm-window-frame,
-    .cm-window-frame.cm-theme--win98 {
+    &.cm-window-frame {
         background: silver;
         box-shadow:
             inset -1px -1px #0a0a0a,
@@ -14,8 +14,16 @@
         padding: 3px;
     }
 
+    .cm-window-preview-frame,
+    &.cm-window-preview-frame {
+        border: 2px dashed navy;
+        background: transparent;
+        pointer-events: none;
+        box-sizing: border-box;
+    }
+
     .cm-window__title-bar,
-    .cm-window__title-bar.cm-theme--win98 {
+    &.cm-window__title-bar {
         align-items: center;
         background: linear-gradient(90deg, navy, #1084d0);
         display: flex;
@@ -34,7 +42,8 @@
         background: #c0c0c0;
     }
 
-    .cm-window__body {
+    .cm-window__body,
+    &.cm-window__body {
         margin: 8px;
     }
 
@@ -94,7 +103,7 @@
     }
 
     .cm-button,
-    .cm-button.cm-theme--win98 {
+    &.cm-button {
         min-width: 75px;
         min-height: 23px;
         padding: 0 12px;
@@ -114,10 +123,12 @@
         text-shadow: 0 0 #222;
     }
 
-    .cm-button:hover:not(:disabled) {
+    .cm-button:hover:not(:disabled),
+    &.cm-button:hover:not(:disabled) {
     }
 
-    .cm-button:active:not(:disabled) {
+    .cm-button:active:not(:disabled),
+    &.cm-button:active:not(:disabled) {
         box-shadow:
             inset -1px -1px #fff,
             inset 1px 1px #0a0a0a,
@@ -126,36 +137,39 @@
         text-shadow: 1px 1px #222;
     }
 
-    .cm-button:focus {
+    .cm-button:focus,
+    &.cm-button:focus {
         outline: 1px dotted #000;
         outline-offset: -4px;
     }
 
     .cm-button--primary,
-    .cm-button--primary.cm-theme--win98 {
+    &.cm-button--primary {
         font-weight: 700;
     }
 
     .cm-button--ghost,
-    .cm-button--ghost.cm-theme--win98 {
+    &.cm-button--ghost {
         background: #d9d9d9;
         box-shadow:
             inset -1px -1px 0 #0a0a0a,
             inset 1px 1px 0 #efefef;
     }
 
-    .cm-button--ghost:active:not(:disabled) {
+    .cm-button--ghost:active:not(:disabled),
+    &.cm-button--ghost:active:not(:disabled) {
         background: #cccccc;
     }
 
-    .cm-button:disabled {
+    .cm-button:disabled,
+    &.cm-button:disabled {
         color: #808080;
         text-shadow: 1px 1px 0 #ffffff;
         cursor: not-allowed;
     }
 
     .cm-radio,
-    .cm-radio.cm-theme--win98 {
+    &.cm-radio {
         display: inline-flex;
         align-items: center;
         gap: 6px;
@@ -163,7 +177,7 @@
     }
 
     .cm-radio--disabled,
-    .cm-radio--disabled.cm-theme--win98 {
+    &.cm-radio--disabled {
         color: #808080;
         cursor: not-allowed;
     }
@@ -202,7 +216,7 @@
     }
 
     .cm-select,
-    .cm-select.cm-theme--win98 {
+    &.cm-select {
         // Win98 field-style: 21px height, inset/sunken border
         min-height: 21px;
         padding: 0 16px 0 4px;
@@ -227,13 +241,15 @@
         line-height: 1;
     }
 
-    .cm-select:focus {
+    .cm-select:focus,
+    &.cm-select:focus {
         // Inner dotted outline for focus (NOT blue bg + white text inversion)
         outline: 1px dotted #000000;
         outline-offset: -4px;
     }
 
-    .cm-select:disabled {
+    .cm-select:disabled,
+    &.cm-select:disabled {
         background-color: #c0c0c0;
         background-image:
             linear-gradient(135deg, transparent 50%, #808080 50%),
@@ -251,13 +267,13 @@
 
     // Start Bar - Windows 98 Classic Style
     .cm-start-bar,
-    .cm-start-bar.cm-theme--win98 {
+    &.cm-start-bar {
         background: #c0c0c0;
         border-top: 1px solid #ffffff;
     }
 
     .cm-start-bar__button,
-    .cm-start-bar__button.cm-theme--win98 {
+    &.cm-start-bar__button {
         border: 2px solid #808080;
         border-top-color: #ffffff;
         border-left-color: #ffffff;
@@ -266,11 +282,13 @@
         color: #000000;
     }
 
-    .cm-start-bar__button:hover:not(:disabled) {
+    .cm-start-bar__button:hover:not(:disabled),
+    &.cm-start-bar__button:hover:not(:disabled) {
         background: #d6d6d6;
     }
 
-    .cm-start-bar__button:active:not(:disabled) {
+    .cm-start-bar__button:active:not(:disabled),
+    &.cm-start-bar__button:active:not(:disabled) {
         border-color: #ffffff;
         border-top-color: #808080;
         border-left-color: #808080;

@@ -314,7 +314,6 @@ describe('CIconContainer', () => {
           icon: <span>First</span>,
           title: 'First',
           position: { x: 10, y: 20 },
-          active: true,
           activeTrigger: 'click',
         },
         {
@@ -330,9 +329,14 @@ describe('CIconContainer', () => {
       const firstItem = screen.getByTestId('icon-item-0');
       const secondItem = screen.getByTestId('icon-item-1');
 
-      expect(firstItem).toHaveClass('cm-icon--active');
+      expect(firstItem).not.toHaveClass('cm-icon--active');
       expect(firstItem).toHaveStyle({ left: '10px', top: '20px' });
       expect(secondItem).toHaveStyle({ left: '100px', top: '200px' });
+
+      fireEvent.click(firstItem);
+
+      expect(firstItem).toHaveClass('cm-icon--active');
+      expect(secondItem).not.toHaveClass('cm-icon--active');
 
       fireEvent.click(secondItem);
 
@@ -372,6 +376,154 @@ describe('CIconContainer', () => {
 
       expect(firstItem).not.toHaveClass('cm-icon--active');
       expect(secondItem).toHaveClass('cm-icon--active');
+    });
+
+    it('preserves dragged positions when parent rerenders with a new iconList reference', () => {
+      const firstIcon = <span>First</span>;
+      const secondIcon = <span>Second</span>;
+      const firstOrder: string[] = [];
+      const secondOrder: string[] = [];
+      const initialIconList: readonly RuntimeIconContainerItem[] = [
+        {
+          icon: firstIcon,
+          title: 'First',
+          position: { x: 10, y: 20 },
+          onDragStart: () => {
+            firstOrder.push('start');
+          },
+          onDrag: () => {
+            firstOrder.push('drag');
+          },
+          onDragEnd: () => {
+            firstOrder.push('end');
+          },
+        },
+        {
+          icon: secondIcon,
+          title: 'Second',
+          position: { x: 100, y: 200 },
+          onDragStart: () => {
+            secondOrder.push('start');
+          },
+          onDrag: () => {
+            secondOrder.push('drag');
+          },
+          onDragEnd: () => {
+            secondOrder.push('end');
+          },
+        },
+      ];
+
+      const rerenderIconList: readonly RuntimeIconContainerItem[] = [
+        {
+          icon: firstIcon,
+          title: 'First',
+          position: { x: 10, y: 20 },
+          onDragStart: () => {
+            firstOrder.push('start');
+          },
+          onDrag: () => {
+            firstOrder.push('drag');
+          },
+          onDragEnd: () => {
+            firstOrder.push('end');
+          },
+        },
+        {
+          icon: secondIcon,
+          title: 'Second',
+          position: { x: 100, y: 200 },
+          onDragStart: () => {
+            secondOrder.push('start');
+          },
+          onDrag: () => {
+            secondOrder.push('drag');
+          },
+          onDragEnd: () => {
+            secondOrder.push('end');
+          },
+        },
+      ];
+
+      const { rerender } = render(<CIconContainer iconList={initialIconList} />);
+
+      const firstItem = screen.getByTestId('icon-item-0');
+      const secondItem = screen.getByTestId('icon-item-1');
+
+      act(() => {
+        multiDragMock.instances[1].emit(DragOperationType.Start);
+        multiDragMock.instances[1].move({ x: 145, y: 255 });
+        multiDragMock.instances[1].end({ x: 145, y: 255 });
+      });
+
+      expect(firstItem).toHaveStyle({ left: '10px', top: '20px' });
+      expect(secondItem).toHaveStyle({ left: '145px', top: '255px' });
+      expect(firstOrder).toEqual([]);
+      expect(secondOrder).toEqual(['start', 'drag', 'end']);
+
+      rerender(<CIconContainer iconList={rerenderIconList} />);
+
+      expect(screen.getByTestId('icon-item-0')).toHaveStyle({ left: '10px', top: '20px' });
+      expect(screen.getByTestId('icon-item-1')).toHaveStyle({ left: '145px', top: '255px' });
+    });
+
+    it('keeps controlled active selection until parent updates props', () => {
+      const firstIcon = <span>First</span>;
+      const secondIcon = <span>Second</span>;
+
+      const { rerender } = render(
+        <CIconContainer
+          iconList={[
+            {
+              icon: firstIcon,
+              title: 'First',
+              active: true,
+              activeTrigger: 'click',
+            },
+            {
+              icon: secondIcon,
+              title: 'Second',
+              active: false,
+              activeTrigger: 'hover',
+            },
+          ]}
+        />,
+      );
+
+      const firstItem = screen.getByTestId('icon-item-0');
+      const secondItem = screen.getByTestId('icon-item-1');
+
+      expect(firstItem).toHaveClass('cm-icon--active');
+      expect(secondItem).not.toHaveClass('cm-icon--active');
+
+      fireEvent.click(secondItem);
+      fireEvent.mouseEnter(secondItem);
+      fireEvent.contextMenu(secondItem);
+
+      expect(firstItem).toHaveClass('cm-icon--active');
+      expect(secondItem).not.toHaveClass('cm-icon--active');
+
+      rerender(
+        <CIconContainer
+          iconList={[
+            {
+              icon: firstIcon,
+              title: 'First',
+              active: false,
+              activeTrigger: 'click',
+            },
+            {
+              icon: secondIcon,
+              title: 'Second',
+              active: true,
+              activeTrigger: 'hover',
+            },
+          ]}
+        />,
+      );
+
+      expect(screen.getByTestId('icon-item-0')).not.toHaveClass('cm-icon--active');
+      expect(screen.getByTestId('icon-item-1')).toHaveClass('cm-icon--active');
     });
 
     it('clears active UI when parent rerenders with no active item', () => {

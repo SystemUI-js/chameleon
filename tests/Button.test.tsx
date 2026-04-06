@@ -1,7 +1,12 @@
 import { fireEvent, render, screen } from '@testing-library/react';
 import '@testing-library/jest-dom';
+import { readFileSync } from 'node:fs';
+import { join } from 'node:path';
 import { CButton as PackageEntryCButton, Theme } from '../src';
 import { CButton } from '../src/components/Button/Button';
+
+const readThemeStyles = (theme: 'win98' | 'winxp'): string =>
+  readFileSync(join(process.cwd(), 'src', 'theme', theme, 'styles', 'index.scss'), 'utf8');
 
 describe('CButton', () => {
   it('exports CButton from package entry', () => {
@@ -116,6 +121,15 @@ describe('CButton', () => {
       expect(button).toHaveClass('cm-button');
       expect(button).toHaveClass('cm-theme--win98');
       expect(button).toHaveClass('custom-class');
+    });
+
+    it('keeps button theme selectors self-scoped in theme styles', () => {
+      expect(readThemeStyles('win98')).toContain('&.cm-button');
+      expect(readThemeStyles('win98')).toContain('&.cm-button--primary');
+      expect(readThemeStyles('win98')).toContain('&.cm-button--ghost');
+      expect(readThemeStyles('winxp')).toContain('&.cm-button');
+      expect(readThemeStyles('winxp')).toContain('&.cm-button--primary');
+      expect(readThemeStyles('winxp')).toContain('&.cm-button--ghost');
     });
   });
 });
