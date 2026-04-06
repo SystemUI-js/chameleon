@@ -80,6 +80,7 @@ Wave 2: green implementation / docs alignment
 - 6. README 对外说明同步
 
 ### Dependency Matrix (full, all tasks)
+
 | Task | Depends On | Blocks |
 |---|---|---|
 | 1 | - | 3 |
@@ -88,6 +89,7 @@ Wave 2: green implementation / docs alignment
 | 4 | - | 5 |
 | 5 | 3, 4 | 6, F1-F4 |
 | 6 | 3, 5 | F1-F4 |
+
 
 ### Agent Dispatch Summary (wave → task count → categories)
 - Wave 1 → 3 tasks → `quick`, `visual-engineering`
@@ -121,7 +123,7 @@ Wave 2: green implementation / docs alignment
   - [ ] 仓库检索 `tests/Theme.test.tsx` 时，不再存在 `uses the nearest nested provider theme` 或等价的“内层 Theme 成功生效”断言描述
 
   **QA Scenarios** (MANDATORY — task incomplete without these):
-  ```
+  ```text
   Scenario: 单层 Theme 与无 provider 语义仍被测试覆盖
     Tool: Bash
     Steps: 运行 `yarn test -- Theme.test.tsx`
@@ -161,7 +163,7 @@ Wave 2: green implementation / docs alignment
   - [ ] `yarn test -- Button.test.tsx` 通过，显式 `theme` prop 覆盖 provider 断言不变
 
   **QA Scenarios** (MANDATORY — task incomplete without these):
-  ```
+  ```text
   Scenario: 显式 theme prop 仍覆盖 provider
     Tool: Bash
     Steps: 运行 `yarn test -- Button.test.tsx` 与 `yarn test -- PublicThemeMatrix.test.tsx`
@@ -201,7 +203,7 @@ Wave 2: green implementation / docs alignment
   - [ ] `yarn lint` 通过，未引入未使用字段或类型问题
 
   **QA Scenarios** (MANDATORY — task incomplete without these):
-  ```
+  ```text
   Scenario: 单层 Theme 仍正常提供 className 与 context
     Tool: Bash
     Steps: 运行 `yarn test -- Theme.test.tsx`
@@ -240,7 +242,7 @@ Wave 2: green implementation / docs alignment
   - [ ] `yarn test:ui --grep "Theme showcase"` 通过，Theme 区块代码面板行为未回归
 
   **QA Scenarios** (MANDATORY — task incomplete without these):
-  ```
+  ```text
   Scenario: Theme 展示区与其余受主题控制区域被结构性隔离
     Tool: Bash
     Steps: 运行 `yarn test -- ComponentCatalog.test.tsx`
@@ -280,7 +282,7 @@ Wave 2: green implementation / docs alignment
   - [ ] `yarn build` 通过，Demo 入口仍可被 Vite 构建
 
   **QA Scenarios** (MANDATORY — task incomplete without these):
-  ```
+  ```text
   Scenario: Theme 展示区不再被外层 Theme 污染
     Tool: Bash
     Steps: 运行 `yarn test -- ComponentCatalog.test.tsx`
@@ -320,7 +322,7 @@ Wave 2: green implementation / docs alignment
   - [ ] `yarn build` 通过，文档改动未影响仓库构建流程
 
   **QA Scenarios** (MANDATORY — task incomplete without these):
-  ```
+  ```text
   Scenario: README 已与新契约对齐
     Tool: Bash
     Steps: 运行 `yarn build`

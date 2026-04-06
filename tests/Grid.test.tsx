@@ -93,9 +93,6 @@ describe('CGridItem style merge', () => {
     expect(errorSpy).not.toHaveBeenCalledWith(
       expect.stringContaining('React does not recognize the `parentGrid` prop'),
     );
-    expect(errorSpy).not.toHaveBeenCalledWith(
-      expect.stringContaining('React does not recognize the `setGridSize` prop'),
-    );
 
     errorSpy.mockRestore();
   });

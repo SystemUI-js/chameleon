@@ -1,6 +1,7 @@
 export * from './Button/Button';
 export * from './Dock/Dock';
 export * from './Grid';
+export * from './Menu/Menu';
 export * from './Radio/Radio';
 export * from './Radio/RadioGroup';
 export * from './Screen/Screen';

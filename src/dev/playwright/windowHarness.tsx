@@ -6,20 +6,9 @@ import {
   type WindowTitleActionButtonPosition,
 } from '@/components/Window/WindowTitle';
 import { WidgetInteractionBehavior } from '@/components/Widget/Widget';
-import { DEV_THEME, DevThemeRoot, type DevThemeId } from '../themeSwitcher';
+import { DevThemeRoot } from '../themeSwitcher';
 import '../styles/catalog.scss';
-
-type HarnessRoute = {
-  theme: DevThemeId;
-  fixture: string;
-};
-
-const DEFAULT_FIXTURE = 'default';
-const DEV_THEME_IDS = Object.values(DEV_THEME);
-
-const isDevThemeId = (value: string | null): value is DevThemeId => {
-  return value !== null && DEV_THEME_IDS.includes(value as DevThemeId);
-};
+import { readHarnessRoute } from './harnessRoute';
 
 const handleWindowActionClick = (): void => {};
 
@@ -72,24 +61,6 @@ const renderActionButtonFixture = (
       <div>Window action controls</div>
     </CWindow>
   );
-};
-
-const readHarnessRoute = (): HarnessRoute => {
-  try {
-    const url = new URL(window.location.href);
-    const fixture = url.searchParams.get('fixture');
-    const theme = url.searchParams.get('theme');
-
-    return {
-      theme: isDevThemeId(theme) ? theme : DEV_THEME.default,
-      fixture: fixture ?? DEFAULT_FIXTURE,
-    };
-  } catch {
-    return {
-      theme: DEV_THEME.default,
-      fixture: DEFAULT_FIXTURE,
-    };
-  }
 };
 
 const renderFixture = (fixture: string): ReactNode => {

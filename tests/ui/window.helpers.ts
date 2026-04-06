@@ -34,37 +34,105 @@ const parsePixelValue = (value: string, property: string): number => {
   return parsed;
 };
 
-const waitForWindowHarness = async (page: Page): Promise<void> => {
-  await page.waitForFunction(
-    ({ frameTestId, titleTestId, contentTestId, resizeTestIdPrefix, fixtureErrorTestId }) => {
-      const frame = document.querySelector(`[data-testid="${frameTestId}"]`);
-      const title = document.querySelector(`[data-testid="${titleTestId}"]`);
-      const content = document.querySelector(`[data-testid="${contentTestId}"]`);
-      const resizeHandle = document.querySelector(`[data-testid^="${resizeTestIdPrefix}"]`);
-      const fixtureError = document.querySelector(`[data-testid="${fixtureErrorTestId}"]`);
+type WindowHarnessNavigationSelection = {
+  theme: DevThemeId;
+  fixture?: string;
+};
 
-      return Boolean(
-        (frame && title) || (frame && content) || (frame && resizeHandle) || fixtureError,
-      );
-    },
-    {
-      frameTestId: WINDOW_FRAME_TEST_ID,
-      titleTestId: WINDOW_TITLE_TEST_ID,
-      contentTestId: WINDOW_CONTENT_TEST_ID,
-      resizeTestIdPrefix: WINDOW_RESIZE_TEST_ID_PREFIX,
-      fixtureErrorTestId: FIXTURE_ERROR_TEST_ID,
-    },
-  );
+type WindowHarnessNavigationOptions = {
+  allowFixtureError?: boolean;
+};
+
+const readWindowFixtureErrorText = async (page: Page): Promise<string | null> => {
+  return page.evaluate((fixtureErrorTestId) => {
+    const fixtureError = document.querySelector<HTMLElement>(
+      `[data-testid="${fixtureErrorTestId}"]`,
+    );
+
+    return fixtureError?.textContent?.trim() ?? null;
+  }, FIXTURE_ERROR_TEST_ID);
+};
+
+const waitForWindowHarness = async (page: Page): Promise<void> => {
+  try {
+    await page.waitForFunction(
+      ({ frameTestId, titleTestId, contentTestId, resizeTestIdPrefix }) => {
+        const frame = document.querySelector(`[data-testid="${frameTestId}"]`);
+        const title = document.querySelector(`[data-testid="${titleTestId}"]`);
+        const content = document.querySelector(`[data-testid="${contentTestId}"]`);
+        const resizeHandle = document.querySelector(`[data-testid^="${resizeTestIdPrefix}"]`);
+
+        return Boolean((frame && title) || (frame && content) || (frame && resizeHandle));
+      },
+      {
+        frameTestId: WINDOW_FRAME_TEST_ID,
+        titleTestId: WINDOW_TITLE_TEST_ID,
+        contentTestId: WINDOW_CONTENT_TEST_ID,
+        resizeTestIdPrefix: WINDOW_RESIZE_TEST_ID_PREFIX,
+      },
+    );
+  } catch (error) {
+    const fixtureErrorText = await readWindowFixtureErrorText(page);
+
+    if (fixtureErrorText !== null) {
+      throw new Error(`Window harness rendered fixture error: ${fixtureErrorText}`);
+    }
+
+    throw error;
+  }
+
+  const fixtureErrorText = await readWindowFixtureErrorText(page);
+
+  if (fixtureErrorText !== null) {
+    throw new Error(`Window harness rendered fixture error: ${fixtureErrorText}`);
+  }
+};
+
+const buildWindowFixtureUrl = (selection: WindowHarnessNavigationSelection): string => {
+  const searchParams = new URLSearchParams({
+    theme: selection.theme,
+  });
+
+  if (selection.fixture !== undefined) {
+    searchParams.set('fixture', selection.fixture);
+  }
+
+  return `${PLAYWRIGHT_WINDOW_PATH}?${searchParams.toString()}`;
+};
+
+const gotoWindowHarness = async (
+  page: Page,
+  selection: WindowHarnessNavigationSelection,
+  options: WindowHarnessNavigationOptions = {},
+): Promise<void> => {
+  await page.goto(buildWindowFixtureUrl(selection));
+
+  if (options.allowFixtureError === true) {
+    return;
+  }
+
+  await waitForWindowHarness(page);
 };
 
 export const gotoWindowFixture = async (page: Page, fixture: string): Promise<void> => {
-  const searchParams = new URLSearchParams({
+  await gotoWindowHarness(page, {
     theme: 'default',
     fixture,
   });
+};
 
-  await page.goto(`${PLAYWRIGHT_WINDOW_PATH}?${searchParams.toString()}`);
-  await waitForWindowHarness(page);
+export const gotoWindowFixtureAllowingError = async (
+  page: Page,
+  fixture: string,
+): Promise<void> => {
+  await gotoWindowHarness(
+    page,
+    {
+      theme: 'default',
+      fixture,
+    },
+    { allowFixtureError: true },
+  );
 };
 
 export type WindowHarnessSelection = {
@@ -76,16 +144,7 @@ export const gotoThemedWindowFixture = async (
   page: Page,
   selection: WindowHarnessSelection,
 ): Promise<void> => {
-  const searchParams = new URLSearchParams({
-    theme: selection.theme,
-  });
-
-  if (selection.fixture !== undefined) {
-    searchParams.set('fixture', selection.fixture);
-  }
-
-  await page.goto(`${PLAYWRIGHT_WINDOW_PATH}?${searchParams.toString()}`);
-  await waitForWindowHarness(page);
+  await gotoWindowHarness(page, selection);
 };
 
 export const readFrameMetrics = async (page: Page): Promise<FrameMetrics> => {

@@ -1,43 +1,14 @@
 import { type ReactNode, useState } from 'react';
 import { createRoot } from 'react-dom/client';
 import { CButton, CRadio, CRadioGroup, CSelect, type CSelectOption } from '@/components';
-import { DEV_THEME, DevThemeRoot, type DevThemeId } from '../themeSwitcher';
-
-type HarnessRoute = {
-  theme: DevThemeId;
-  fixture: string;
-};
-
-const DEFAULT_FIXTURE = 'default';
-const DEV_THEME_IDS = Object.values(DEV_THEME);
-
-const isDevThemeId = (value: string | null): value is DevThemeId => {
-  return value !== null && DEV_THEME_IDS.includes(value as DevThemeId);
-};
+import { DevThemeRoot, type DevThemeId } from '../themeSwitcher';
+import { readHarnessRoute } from './harnessRoute';
 
 const SIZE_OPTIONS: readonly CSelectOption[] = [
   { label: 'Small', value: 'small' },
   { label: 'Medium', value: 'medium' },
   { label: 'Large', value: 'large' },
 ];
-
-const readHarnessRoute = (): HarnessRoute => {
-  try {
-    const url = new URL(window.location.href);
-    const theme = url.searchParams.get('theme');
-    const fixture = url.searchParams.get('fixture');
-
-    return {
-      theme: isDevThemeId(theme) ? theme : DEV_THEME.default,
-      fixture: fixture ?? DEFAULT_FIXTURE,
-    };
-  } catch {
-    return {
-      theme: DEV_THEME.default,
-      fixture: DEFAULT_FIXTURE,
-    };
-  }
-};
 
 interface HarnessLayoutProps {
   readonly children: ReactNode;

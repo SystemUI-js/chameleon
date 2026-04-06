@@ -46,7 +46,7 @@
         flex-direction: column;
         gap: 14px;
         color: #12315f;
-        font-family: 'Tahoma', 'Trebuchet MS', sans-serif;
+        font-family: Tahoma, 'Trebuchet MS', sans-serif;
     }
 
     .cm-common-controls-preview__header {
@@ -291,5 +291,44 @@
     .cm-start-bar__content {
         color: #ffffff;
         font-size: 12px;
+    }
+
+    // Menu - WinXP Theme
+    .cm-menu__popup {
+        border: 1px solid #7da2ce;
+        border-radius: 4px;
+        background: linear-gradient(180deg, #f8fbff 0%, #e7eefb 100%);
+        box-shadow:
+            inset 0 1px 0 rgba(255, 255, 255, 0.95),
+            0 4px 12px rgba(49, 106, 197, 0.2);
+    }
+
+    .cm-menu__list {
+        padding: 4px 0;
+    }
+
+    .cm-menu__item-button {
+        padding: 6px 14px;
+        border: none;
+        border-radius: 0;
+        background: transparent;
+        color: #12315f;
+        font-size: 12px;
+        font-family: 'Tahoma', 'Trebuchet MS', sans-serif;
+        text-align: left;
+    }
+
+    .cm-menu__item-button:hover:not(:disabled) {
+        background: linear-gradient(180deg, #316ac5 0%, #245595 100%);
+        color: #ffffff;
+    }
+
+    .cm-menu__item-button--disabled {
+        color: #92a6c6;
+        cursor: not-allowed;
+    }
+
+    .cm-menu__caret {
+        margin-left: 8px;
     }
 }

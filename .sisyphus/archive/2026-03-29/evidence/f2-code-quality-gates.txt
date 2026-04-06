@@ -1,16 +1,16 @@
 F2 Code Quality Gates
 
-Status: PASS
+Status: FAIL (zero-type-diagnostic gate not met)
 Date: 2026-03-28
 
 Commands
 - yarn lint -> PASS
 - yarn test --runInBand tests/CWindowTitleComposition.test.tsx tests/WindowManager.test.tsx tests/DefaultTheme.test.tsx -> PASS (3 suites, 30 tests)
 - yarn playwright test tests/ui/window.smoke.spec.ts tests/ui/window.move.spec.ts tests/ui/window.resize.spec.ts tests/ui/window.resize-guards.spec.ts -> PASS on rerun (15 tests)
-- yarn build -> PASS (exit 0, dist emitted)
+- yarn build -> EXIT 0 (dist emitted, but quality gate fails while vite:dts TS2533 remains)
 
 Notes
 - Initial Playwright run hit transient ERR_CONNECTION_REFUSED on 2 cases; immediate rerun passed all 15 tests.
-- Build completed successfully but still prints pre-existing vite:dts diagnostic: src/components/Screen/Grid.tsx:31 TS2533 (outside this review scope).
+- Zero-type-diagnostic requirement: quality gate must remain FAIL while vite:dts diagnostic `src/components/Screen/Grid.tsx:31 TS2533` is present, even if `yarn build` exits 0.
 - Anti-pattern grep on reviewed files for TODO|FIXME|as any|@ts-ignore returned 0 matches.
 - lsp_diagnostics on Widget.tsx, Window.tsx, WindowTitle.tsx returned clean.

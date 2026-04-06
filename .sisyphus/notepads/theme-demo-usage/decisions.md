@@ -9,27 +9,27 @@
 ### Verified Semantic Rules (backed by tests + implementation)
 
 #### 1. Theme Wrapper: Context Provider + DOM Wrapper
-**Evidence:** `src/components/Theme/Theme.tsx` lines 24–35
-- `Theme` renders BOTH a `ThemeContext.Provider` (for descendants) AND a `<div className={name}>` wrapper element
+**Evidence:** `src/components/Theme/Theme.tsx` lines 19–35
+- `Theme` renders BOTH a `ThemeContext.Provider` (for descendants) AND a `<div className={finalTheme}>` wrapper element
 - The wrapper div is NOT conditional — it always renders alongside the provider
 - Dev note: This means `Theme` occupies real DOM space, not a transparent wrapper
 
-#### 2. Nested Provider: Nearest/Innermost Wins
-**Evidence:** `tests/Theme.test.tsx` lines 47–57 (test name: "uses the nearest nested provider theme")
-- `<Theme name="win98"><Theme name="winxp"><ThemeProbe /></Theme></Theme>` → probe sees `winxp`
-- Implementation: `src/components/Theme/useTheme.ts` lines 14–22 — explicit theme check first, then falls back to `context.theme`
-- Since `useTheme()` always checks explicit first, the "nearest provider" behavior only matters when NO explicit prop is passed
+#### 2. Nested Provider: Unsupported
+**Evidence:** `tests/Theme.test.tsx` (the `nested Theme rejection` cases), `src/components/Theme/Theme.tsx` (`throw new Error('Nested Theme is not supported')`), and `src/components/Theme/useTheme.ts` (explicit theme still resolves before `context.theme`)
+- `<Theme name="win98"><Theme name="winxp"><ThemeProbe /></Theme></Theme>` now throws `Nested Theme is not supported`
+- Nested `Theme` providers are disallowed regardless of theme name or nesting depth
+- Local overrides should use an explicit component `theme` prop instead of an inner `Theme` provider
 
 #### 3. Explicit `theme` Prop: Wins Over Provider
-**Evidence:** `tests/Theme.test.tsx` lines 37–45 (test name: "uses explicit theme prop before provider theme")
+**Evidence:** `tests/Theme.test.tsx` lines 43–51 (test name: "uses explicit theme prop before provider theme") and `src/components/Theme/useTheme.ts`
 - `<Theme name="win98"><ThemeProbe theme="default" /></Theme>` → probe sees `default`
-- Implementation: `useTheme.ts` lines 14–22 — `explicitTheme` is checked BEFORE context lookup
-- Priority order: explicit prop > nearest provider > outer providers
+- Implementation: `useTheme.ts` checks `explicitTheme` BEFORE context lookup
+- Priority order: explicit prop > provider theme (nested providers are not allowed)
 
 #### 4. Empty/Whitespace Theme: Treated as No Theme
 **Evidence:**
 - `tests/Theme.test.tsx` lines 59–67: `name="   "` → probe has NO `data-theme` attribute
-- `Theme.tsx` lines 14–22 and `useTheme.ts` lines 4–12: `normalizeTheme()` returns `undefined` for empty/whitespace-only strings
+- `src/components/Theme/normalizeThemeClassName.ts` and `src/components/Theme/useTheme.ts`: empty/whitespace-only strings normalize to `undefined`
 
 #### 5. No Provider: Undefined
 **Evidence:** `tests/Theme.test.tsx` lines 69–73
@@ -40,26 +40,25 @@
 ### Recommended Stable Wording / Snippet Ingredients for Showcase
 
 **Rule 1 — Wrapper usage:**
-```
+```tsx
 <Theme name="cm-theme--win98">
   <CButton>Themed Button</CButton>
 </Theme>
 ```
 Describe: "Theme wraps children with a context provider AND a DOM wrapper bearing the theme className."
 
-**Rule 2 — Nested provider precedence:**
-```
+**Rule 2 — Nested providers are disallowed:**
+```tsx
 <Theme name="cm-theme--win98">
-  <CButton>Outer</CButton>
   <Theme name="cm-theme--winxp">
-    <CButton>Inner wins</CButton>
+    <CButton>This throws</CButton>
   </Theme>
 </Theme>
 ```
-Describe: "When Theme components are nested, the innermost (nearest) provider wins for its descendants."
+Describe: "When Theme components are nested, rendering throws `Nested Theme is not supported`."
 
 **Rule 3 — Explicit prop overrides provider:**
-```
+```tsx
 <Theme name="cm-theme--win98">
   <CButton theme="cm-theme--default">I win</CButton>
 </Theme>
@@ -67,7 +66,7 @@ Describe: "When Theme components are nested, the innermost (nearest) provider wi
 Describe: "A component's own `theme` prop always takes precedence over any Theme provider in scope."
 
 **Rule 4 — Empty/whitespace is ignored:**
-```
+```tsx
 <Theme name="   ">
   <CButton>No theme applied</CButton>
 </Theme>

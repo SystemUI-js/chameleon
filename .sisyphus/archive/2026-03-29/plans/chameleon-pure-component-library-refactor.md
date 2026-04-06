@@ -84,6 +84,7 @@ Wave 1: API/theme foundation + source decoupling + demo foundation + harness ref
 Wave 2: docs/changelog + dependency cleanup + end-to-end verification alignment (Tasks 6-8)
 
 ### Dependency Matrix (full, all tasks)
+
 | Task | Depends On | Blocks |
 |---|---|---|
 | 1. Public API reset | - | 2, 3, 4, 6, 7, 8 |
@@ -96,6 +97,7 @@ Wave 2: docs/changelog + dependency cleanup + end-to-end verification alignment 
 | 8. Dependency/build/release cleanup | 1, 2, 3, 5, 6, 7 | Final Verification |
 
 ### Agent Dispatch Summary
+
 | Wave | Task Count | Categories |
 |---|---:|---|
 | Wave 1 | 5 | unspecified-high, visual-engineering |
@@ -140,7 +142,8 @@ Wave 2: docs/changelog + dependency cleanup + end-to-end verification alignment 
   - [ ] `yarn build` completes with the new root exports
 
   **QA Scenarios**:
-  ```
+
+```bash
   Scenario: API surface excludes shell concepts
     Tool: Bash
     Steps: run `grep -R "export .*SystemHost\|export .*WindowManager\|export .*ScreenManager\|export .*system/registry" src/index.ts src/components/index.ts`
@@ -190,7 +193,8 @@ Wave 2: docs/changelog + dependency cleanup + end-to-end verification alignment 
   - [ ] `yarn test -- --runInBand tests/ThemeDefinitions.test.tsx` passes with pure theme definitions
 
   **QA Scenarios**:
-  ```
+
+```bash
   Scenario: Win98 theme class still styles controls through pure theme root
     Tool: Playwright
     Steps: run `yarn test:ui --grep "Win98 controls"`; verify page root uses `.cm-theme--win98` without any `.cm-system--*` selector in DOM assertions
@@ -243,7 +247,8 @@ Wave 2: docs/changelog + dependency cleanup + end-to-end verification alignment 
   - [ ] `yarn test -- --runInBand tests/Grid.test.tsx tests/Dock.test.tsx tests/StartBar.test.tsx` passes after relocation/decoupling
 
   **QA Scenarios**:
-  ```
+
+```bash
   Scenario: standalone window still moves and resizes without manager/screen wrappers
     Tool: Playwright
     Steps: run `yarn test:ui --grep "window"`; use standalone window harness page, drag `[data-testid="window-title"]`, then drag `[data-testid="window-resize-se"]`
@@ -296,7 +301,8 @@ Wave 2: docs/changelog + dependency cleanup + end-to-end verification alignment 
   - [ ] Catalog contains visible sections for Button, Radio, Select, Window, Dock, StartBar, and Grid
 
   **QA Scenarios**:
-  ```
+
+```bash
   Scenario: theme switch preserves interactive demo state
     Tool: Playwright
     Steps: open dev page; click `[data-testid="button-demo-primary"]` twice; select radio `Orange`; set `[data-testid="select-demo-size"]` to `large`; drag `[data-testid="window-title"]` by 40x20; change `[data-testid="catalog-theme-switch"]` from `default` to `win98`
@@ -344,7 +350,8 @@ Wave 2: docs/changelog + dependency cleanup + end-to-end verification alignment 
   - [ ] `yarn test:ui` passes with remaining browser tests covering controls + window + catalog smoke
 
   **QA Scenarios**:
-  ```
+
+```bash
   Scenario: theme-only common controls harness works for Win98 disabled fixture
     Tool: Playwright
     Steps: run `yarn test:ui --grep "Win98 disabled controls"`
@@ -393,7 +400,8 @@ Wave 2: docs/changelog + dependency cleanup + end-to-end verification alignment 
   - [ ] Replacement tests cover: pure theme exports, standalone window pose/resize behavior, Grid relocation, Dock/StartBar rendering
 
   **QA Scenarios**:
-  ```
+
+```bash
   Scenario: obsolete shell tests are fully removed
     Tool: Bash
     Steps: run `grep -R "WindowManager\|SystemHost\|ScreenManager\|SystemTypeSwitch" tests --include='*.test.tsx' --include='*.test.ts'`
@@ -441,7 +449,8 @@ Wave 2: docs/changelog + dependency cleanup + end-to-end verification alignment 
   - [ ] `CHANGELOG.md` includes `[UnReleased]` entry for the breaking change
 
   **QA Scenarios**:
-  ```
+
+```bash
   Scenario: docs contain no removed API names
     Tool: Bash
     Steps: run `grep -R "SystemHost\|systemType\|ScreenManager\|WindowManager\|DEFAULT_THEME_BY_SYSTEM" README.md AGENTS.md CHANGELOG.md`
@@ -489,7 +498,8 @@ Wave 2: docs/changelog + dependency cleanup + end-to-end verification alignment 
   - [ ] No dead source/test files remain under deleted shell namespaces
 
   **QA Scenarios**:
-  ```
+
+```bash
   Scenario: dependency cleanup matches runtime reality
     Tool: Bash
     Steps: run `grep -R "eventemitter3\|multi-drag" src tests package.json`

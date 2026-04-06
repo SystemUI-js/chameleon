@@ -1,4 +1,5 @@
 import React from 'react';
+import { normalizeThemeClassName } from './normalizeThemeClassName';
 
 export interface ThemeContextValue {
   theme: string | undefined;
@@ -15,16 +16,6 @@ export const ThemeContext = React.createContext<ThemeContextValue>({
   hasThemeProvider: false,
 });
 
-function normalizeTheme(theme: string | undefined): string | undefined {
-  if (theme === undefined) {
-    return undefined;
-  }
-
-  const normalizedTheme = theme.trim();
-
-  return normalizedTheme.length > 0 ? normalizedTheme : undefined;
-}
-
 export function Theme({ name, children }: ThemeProps): React.ReactElement {
   const parentContext = React.useContext(ThemeContext);
 
@@ -32,14 +23,15 @@ export function Theme({ name, children }: ThemeProps): React.ReactElement {
     throw new Error('Nested Theme is not supported');
   }
 
+  const finalTheme = React.useMemo(() => normalizeThemeClassName(name), [name]);
   const contextValue = React.useMemo<ThemeContextValue>(
-    () => ({ theme: normalizeTheme(name), hasThemeProvider: true }),
-    [name],
+    () => ({ theme: finalTheme, hasThemeProvider: true }),
+    [finalTheme],
   );
 
   return (
     <ThemeContext.Provider value={contextValue}>
-      <div className={name}>{children}</div>
+      <div className={finalTheme}>{children}</div>
     </ThemeContext.Provider>
   );
 }

@@ -185,7 +185,7 @@
 }
 
 // Grid demo
-.cm-catalog__grid {
+.cm-grid-demo-3x3 {
     display: grid;
     grid-template-rows: repeat(3, 60px);
     grid-template-columns: repeat(3, 1fr);
@@ -193,7 +193,7 @@
     min-height: 200px;
 }
 
-.cm-catalog__grid-item {
+.cm-grid-demo-3x3__item {
     background: var(--cm-color-surface-raised, #f0f0f0);
     border: 1px solid var(--cm-color-border, #ccc);
     border-radius: 4px;
