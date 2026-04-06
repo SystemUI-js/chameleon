@@ -28,6 +28,29 @@ const INTERACTION_MENU_LIST: readonly MenuListItem[] = [
   { id: 'leaf-root', key: 'leaf-root', title: 'Leaf Root' },
 ];
 
+const MIXED_TRIGGER_MENU_LIST: readonly MenuListItem[] = [
+  {
+    id: 'hover-parent',
+    key: 'hover-parent',
+    title: 'Hover Parent',
+    children: [{ id: 'hover-leaf', key: 'hover-leaf', title: 'Hover Leaf' }],
+  },
+  {
+    id: 'sibling-parent',
+    key: 'sibling-parent',
+    title: 'Sibling Parent',
+    children: [{ id: 'sibling-leaf', key: 'sibling-leaf', title: 'Sibling Leaf' }],
+  },
+  {
+    id: 'click-parent',
+    key: 'click-parent',
+    title: 'Click Parent',
+    trigger: 'click',
+    children: [{ id: 'click-leaf', key: 'click-leaf', title: 'Click Leaf' }],
+  },
+  { id: 'mixed-root-leaf', key: 'mixed-root-leaf', title: 'Mixed Root Leaf' },
+];
+
 describe('CMenu', () => {
   it('exports CMenu from package entry', () => {
     render(
@@ -170,6 +193,22 @@ describe('CMenu', () => {
     fireEvent.click(trigger);
     expect(menu).toHaveAttribute('data-menu-state', 'closed');
     expect(screen.queryByTestId('cm-menu-list')).not.toBeInTheDocument();
+  });
+
+  it('click trigger does not open root menu on pointer enter', () => {
+    render(
+      <CMenu menuList={INTERACTION_MENU_LIST} trigger="click" data-testid="menu-click-hover-guard">
+        <button type="button">Open Menu</button>
+      </CMenu>,
+    );
+
+    const menu = screen.getByTestId('menu-click-hover-guard');
+    const trigger = screen.getByRole('button', { name: 'Open Menu' });
+
+    fireEvent.pointerEnter(trigger);
+
+    expect(menu).toHaveAttribute('data-menu-state', 'closed');
+    expect(screen.queryByRole('menu')).not.toBeInTheDocument();
   });
 
   it('hover root trigger still opens on click', () => {
@@ -383,6 +422,119 @@ describe('CMenu', () => {
     fireEvent.click(screen.getByTestId('menu-item-click-parent'));
 
     expect(screen.getByRole('menuitem', { name: 'Click Leaf' })).toBeInTheDocument();
+  });
+
+  it('mixed trigger uses hover for nested parents and switches sibling branches', () => {
+    render(
+      <CMenu menuList={MIXED_TRIGGER_MENU_LIST} trigger="click" data-testid="menu-mixed-trigger">
+        <button type="button">Mixed Menu</button>
+      </CMenu>,
+    );
+
+    fireEvent.click(screen.getByRole('button', { name: 'Mixed Menu' }));
+
+    fireEvent.pointerEnter(screen.getByTestId('menu-item-hover-parent'));
+    expect(screen.getByRole('menuitem', { name: 'Hover Leaf' })).toBeInTheDocument();
+    expect(screen.queryByRole('menuitem', { name: 'Sibling Leaf' })).not.toBeInTheDocument();
+
+    fireEvent.pointerEnter(screen.getByTestId('menu-item-sibling-parent'));
+    expect(screen.getByRole('menuitem', { name: 'Sibling Leaf' })).toBeInTheDocument();
+    expect(screen.queryByRole('menuitem', { name: 'Hover Leaf' })).not.toBeInTheDocument();
+  });
+
+  it('mixed trigger keeps explicit click override for submenu parents', () => {
+    render(
+      <CMenu
+        menuList={MIXED_TRIGGER_MENU_LIST}
+        trigger="click"
+        data-testid="menu-mixed-trigger-override"
+      >
+        <button type="button">Mixed Menu</button>
+      </CMenu>,
+    );
+
+    fireEvent.click(screen.getByRole('button', { name: 'Mixed Menu' }));
+    fireEvent.pointerEnter(screen.getByTestId('menu-item-click-parent'));
+
+    expect(screen.queryByRole('menuitem', { name: 'Click Leaf' })).not.toBeInTheDocument();
+
+    fireEvent.click(screen.getByTestId('menu-item-click-parent'));
+    expect(screen.getByRole('menuitem', { name: 'Click Leaf' })).toBeInTheDocument();
+  });
+
+  it('explicit hover trigger still opens submenu in click root mode', () => {
+    const explicitHoverList: readonly MenuListItem[] = [
+      {
+        id: 'explicit-hover-parent',
+        key: 'explicit-hover-parent',
+        title: 'Explicit Hover Parent',
+        trigger: 'hover',
+        children: [{ id: 'explicit-hover-leaf', key: 'explicit-hover-leaf', title: 'Hover Child' }],
+      },
+    ];
+
+    render(
+      <CMenu menuList={explicitHoverList} trigger="click" data-testid="menu-explicit-hover">
+        <button type="button">Mixed Menu</button>
+      </CMenu>,
+    );
+
+    fireEvent.click(screen.getByRole('button', { name: 'Mixed Menu' }));
+    fireEvent.pointerEnter(screen.getByTestId('menu-item-explicit-hover-parent'));
+
+    expect(screen.getByRole('menuitem', { name: 'Hover Child' })).toBeInTheDocument();
+  });
+
+  it('mixed trigger closes after selecting a leaf from hover-opened submenu', () => {
+    const handleSelect = jest.fn();
+
+    render(
+      <CMenu
+        menuList={MIXED_TRIGGER_MENU_LIST}
+        trigger="click"
+        onSelect={handleSelect}
+        data-testid="menu-mixed-select"
+      >
+        <button type="button">Mixed Menu</button>
+      </CMenu>,
+    );
+
+    const menu = screen.getByTestId('menu-mixed-select');
+
+    fireEvent.click(screen.getByRole('button', { name: 'Mixed Menu' }));
+    fireEvent.pointerEnter(screen.getByTestId('menu-item-hover-parent'));
+    fireEvent.click(screen.getByRole('menuitem', { name: 'Hover Leaf' }));
+
+    expect(handleSelect).toHaveBeenCalledWith({
+      id: 'hover-leaf',
+      key: 'hover-leaf',
+      title: 'Hover Leaf',
+    });
+    expect(menu).toHaveAttribute('data-menu-state', 'closed');
+    expect(screen.queryByTestId('cm-menu-list')).not.toBeInTheDocument();
+  });
+
+  it('mixed trigger closes on outside click after hover-opening a submenu', () => {
+    render(
+      <div>
+        <CMenu menuList={MIXED_TRIGGER_MENU_LIST} trigger="click" data-testid="menu-mixed-outside">
+          <button type="button">Mixed Menu</button>
+        </CMenu>
+        <button type="button">Outside</button>
+      </div>,
+    );
+
+    const menu = screen.getByTestId('menu-mixed-outside');
+
+    fireEvent.click(screen.getByRole('button', { name: 'Mixed Menu' }));
+    fireEvent.pointerEnter(screen.getByTestId('menu-item-hover-parent'));
+
+    expect(screen.getByRole('menuitem', { name: 'Hover Leaf' })).toBeInTheDocument();
+
+    fireEvent.mouseDown(screen.getByRole('button', { name: 'Outside' }));
+
+    expect(menu).toHaveAttribute('data-menu-state', 'closed');
+    expect(screen.queryByRole('menuitem', { name: 'Hover Leaf' })).not.toBeInTheDocument();
   });
 
   it('hover trigger opens and leaving menu tree closes', () => {

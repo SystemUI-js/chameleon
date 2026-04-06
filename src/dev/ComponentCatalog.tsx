@@ -303,15 +303,35 @@ const SAMPLE_MENU_LIST: readonly MenuListItem[] = [
   },
 ];
 
+const MIXED_MENU_LIST: readonly MenuListItem[] = [
+  {
+    id: 'file',
+    key: 'file',
+    title: 'File (hover default)',
+    children: [
+      { id: 'file-new', key: 'file-new', title: 'New' },
+      { id: 'file-open', key: 'file-open', title: 'Open' },
+    ],
+  },
+  {
+    id: 'view',
+    key: 'view',
+    title: 'View (click override)',
+    trigger: 'click',
+    children: [{ id: 'view-zoom', key: 'view-zoom', title: 'Zoom' }],
+  },
+];
+
 const MENU_SNIPPET = `
 const [selectedItem, setSelectedItem] = useState<MenuListItem | null>(null);
 
 return (
   <>
-    <CMenu data-testid="menu-demo" trigger="click" menuList={SAMPLE_MENU_LIST} onSelect={setSelectedItem}>
-      <CButton data-testid="menu-demo-trigger">Menu</CButton>
+    <CMenu data-testid="menu-demo-mixed" trigger="click" menuList={MIXED_MENU_LIST} onSelect={setSelectedItem}>
+      <CButton data-testid="menu-demo-trigger-mixed">Mixed Menu</CButton>
     </CMenu>
 
+    <p>Root opens on click, nested parents default to hover, and explicit item.trigger=&quot;click&quot; still overrides.</p>
     <p>Selected: {selectedItem?.title ?? 'none'}</p>
   </>
 );
@@ -343,6 +363,18 @@ function MenuShowcase(): React.ReactElement {
   return (
     <ShowcaseSection title="Menu" testId="catalog-section-menu" code={MENU_SNIPPET}>
       <div className="cm-catalog__stack">
+        <CMenu
+          data-testid="menu-demo-mixed"
+          trigger="click"
+          menuList={MIXED_MENU_LIST}
+          onSelect={setSelectedItem}
+        >
+          <CButton data-testid="menu-demo-trigger-mixed">Mixed Menu</CButton>
+        </CMenu>
+        <p className="cm-catalog__value">
+          Mixed mode: root opens on click, <strong>File</strong> opens on hover, and{' '}
+          <strong>View</strong> keeps click via <code>item.trigger=&quot;click&quot;</code>.
+        </p>
         <CMenu
           data-testid="menu-demo"
           trigger="click"

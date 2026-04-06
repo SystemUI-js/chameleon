@@ -33,6 +33,25 @@ const MENU_LIST: readonly MenuListItem[] = [
   },
 ];
 
+const MIXED_MENU_LIST: readonly MenuListItem[] = [
+  {
+    id: 'file',
+    key: 'file',
+    title: 'File (hover default)',
+    children: [
+      { id: 'file-new', key: 'file-new', title: 'New' },
+      { id: 'file-open', key: 'file-open', title: 'Open' },
+    ],
+  },
+  {
+    id: 'view',
+    key: 'view',
+    title: 'View (click override)',
+    trigger: 'click',
+    children: [{ id: 'view-zoom', key: 'view-zoom', title: 'Zoom' }],
+  },
+];
+
 const readHarnessRoute = (): HarnessRoute => {
   try {
     const url = new URL(window.location.href);
@@ -106,12 +125,36 @@ const HoverFixture = (): ReactNode => {
   );
 };
 
+const MixedFixture = (): ReactNode => {
+  const [selectedItem, setSelectedItem] = useState<MenuListItem | null>(null);
+
+  return (
+    <HarnessLayout>
+      <CMenu
+        data-testid="menu-demo"
+        trigger="click"
+        menuList={MIXED_MENU_LIST}
+        onSelect={setSelectedItem}
+      >
+        <CButton data-testid="menu-demo-trigger">Mixed Menu</CButton>
+      </CMenu>
+      <p data-testid="menu-selection-value">Selected: {selectedItem?.title ?? 'none'}</p>
+      <p>
+        Default parent branches open on hover after the root click; items with{' '}
+        <code>trigger=&quot;click&quot;</code> still require click.
+      </p>
+    </HarnessLayout>
+  );
+};
+
 const renderFixture = (fixture: string): ReactNode => {
   switch (fixture) {
     case 'click':
       return <ClickFixture />;
     case 'hover':
       return <HoverFixture />;
+    case 'mixed':
+      return <MixedFixture />;
     default:
       return <div data-testid="fixture-error">Unknown fixture: {fixture}</div>;
   }

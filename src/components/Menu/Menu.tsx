@@ -34,7 +34,16 @@ interface TriggerElementProps {
 
 type MenuTriggerMode = 'click' | 'hover';
 
-const DEFAULT_TRIGGER_MODE: MenuTriggerMode = 'click';
+const DEFAULT_ROOT_TRIGGER_MODE: MenuTriggerMode = 'click';
+const DEFAULT_SUBMENU_TRIGGER_MODE: MenuTriggerMode = 'hover';
+
+function resolveRootTriggerMode(trigger: MenuTriggerMode | undefined): MenuTriggerMode {
+  return trigger ?? DEFAULT_ROOT_TRIGGER_MODE;
+}
+
+function resolveParentItemTriggerMode(itemTrigger: MenuTriggerMode | undefined): MenuTriggerMode {
+  return itemTrigger ?? DEFAULT_SUBMENU_TRIGGER_MODE;
+}
 
 function resolveThemeClass(theme: string | undefined): string | undefined {
   if (theme === undefined) {
@@ -59,7 +68,7 @@ export function CMenu({
   const rootRef = React.useRef<HTMLDivElement | null>(null);
   const [isRootOpen, setIsRootOpen] = React.useState(false);
   const [openBranchByDepth, setOpenBranchByDepth] = React.useState<string[]>([]);
-  const rootTriggerMode = trigger ?? DEFAULT_TRIGGER_MODE;
+  const rootTriggerMode = resolveRootTriggerMode(trigger);
 
   React.Children.only(children);
 
@@ -144,7 +153,6 @@ export function CMenu({
   const renderItems = (
     items: readonly MenuListItem[],
     depth: number,
-    parentTrigger: MenuTriggerMode,
     listId: string,
     parentPath = '',
   ): React.ReactElement => {
@@ -159,7 +167,9 @@ export function CMenu({
       >
         {items.map((item) => {
           const isParent = Array.isArray(item.children) && item.children.length > 0;
-          const effectiveTrigger = item.trigger ?? parentTrigger;
+          const effectiveTrigger = isParent
+            ? resolveParentItemTriggerMode(item.trigger)
+            : undefined;
           const isBranchOpen = openBranchByDepth[depth] === item.id;
           const itemPath = parentPath === '' ? item.id : `${parentPath}-${item.id}`;
           const submenuId = `${menuInstanceId}-${itemPath}-submenu`;
@@ -227,13 +237,7 @@ export function CMenu({
               </button>
               {isParent && isBranchOpen ? (
                 <div className="cm-menu__popup cm-menu__submenu">
-                  {renderItems(
-                    item.children ?? [],
-                    depth + 1,
-                    effectiveTrigger,
-                    submenuId,
-                    itemPath,
-                  )}
+                  {renderItems(item.children ?? [], depth + 1, submenuId, itemPath)}
                 </div>
               ) : null}
             </li>
@@ -262,7 +266,7 @@ export function CMenu({
       <div className="cm-menu__trigger">{triggerElement}</div>
       {isRootOpen ? (
         <div className="cm-menu__popup" data-testid="menu-demo-popup">
-          {renderItems(menuList, 0, rootTriggerMode, rootMenuId)}
+          {renderItems(menuList, 0, rootMenuId)}
         </div>
       ) : null}
     </div>
