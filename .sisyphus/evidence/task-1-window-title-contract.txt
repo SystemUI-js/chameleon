@@ -1,0 +1,3 @@
+Command: yarn test -- CWindowTitleComposition.test.tsx
+Result: PASS
+Coverage: 默认传入 actionButton 时渲染 data-testid="window-title-controls"，标题根节点包含 cm-window__title-bar--with-controls，controls 容器包含 cm-window__title-bar__controls--right，DOM 顺序为标题文本在前、controls 在后。

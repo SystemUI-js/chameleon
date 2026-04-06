@@ -1,8 +1,11 @@
 import { expect, test } from '@playwright/test';
 import {
   gotoCommonControlsFixture,
+  gotoDisabledGroupedButtonsFixture,
+  gotoGroupedButtonsFixture,
   gotoWin98CommonControls,
   gotoWin98DisabledCommonControls,
+  gotoWin98GroupedButtons,
   readCommonControlsRadioValue,
 } from './common-controls.helpers';
 
@@ -29,6 +32,91 @@ test('unknown fixture shows explicit error', async ({ page }) => {
 
   await expect(error).toBeVisible();
   await expect(error).toContainText('Unknown fixture:');
+});
+
+test.describe('grouped buttons', () => {
+  test('grouped buttons default theme applies grouped edge styling', async ({ page }) => {
+    await gotoGroupedButtonsFixture(page);
+
+    const firstButton = page.getByTestId('button-group-first');
+    const secondButton = page.getByTestId('button-group-second');
+
+    const firstButtonStyles = await firstButton.evaluate((el) => {
+      const styles = window.getComputedStyle(el);
+
+      return {
+        borderTopRightRadius: styles.borderTopRightRadius,
+        borderBottomRightRadius: styles.borderBottomRightRadius,
+      };
+    });
+    const secondButtonStyles = await secondButton.evaluate((el) => {
+      const styles = window.getComputedStyle(el);
+
+      return {
+        marginLeft: styles.marginLeft,
+      };
+    });
+
+    expect(firstButtonStyles.borderTopRightRadius).toBe('0px');
+    expect(firstButtonStyles.borderBottomRightRadius).toBe('0px');
+    expect(secondButtonStyles.marginLeft).toBe('-1px');
+  });
+
+  test('grouped buttons fixture renders grouped buttons and separators', async ({ page }) => {
+    await gotoGroupedButtonsFixture(page);
+
+    await expect(page.getByTestId('button-group-demo')).toBeVisible();
+    await expect(page.getByTestId('button-group-separator')).toBeVisible();
+    await expect(page.getByTestId('button-group-first')).toHaveClass(/cm-button--group-first/);
+    await expect(page.getByTestId('button-group-second')).toHaveClass(/cm-button--group-last/);
+    await expect(page.getByTestId('button-group-third')).toHaveClass(/cm-button--group-single/);
+    await expect(page.getByTestId('button-group-vertical-separator')).toHaveClass(
+      /cm-button-separator--horizontal/,
+    );
+  });
+
+  test('grouped buttons disabled fixture enforces disabled state', async ({ page }) => {
+    await gotoDisabledGroupedButtonsFixture(page);
+
+    await expect(page.getByTestId('button-group-disabled-first')).toBeDisabled();
+    await expect(page.getByTestId('button-group-disabled-second')).toBeDisabled();
+    await expect(page.getByTestId('button-group-disabled-third')).toBeDisabled();
+    await expect(page.getByTestId('button-group-vertical-disabled-first')).toBeDisabled();
+    await expect(page.getByTestId('button-group-vertical-disabled-second')).toBeDisabled();
+    await expect(page.getByTestId('button-group-vertical-disabled-separator')).toBeVisible();
+    await expect(page.getByTestId('button-group-disabled-separator')).toBeVisible();
+  });
+
+  test('grouped buttons Win98 theme applies grouped edge and separator styling', async ({
+    page,
+  }) => {
+    await gotoWin98GroupedButtons(page);
+
+    const secondButton = page.getByTestId('button-group-second');
+    const separator = page.getByTestId('button-group-separator');
+
+    const secondButtonStyles = await secondButton.evaluate((el) => {
+      const styles = window.getComputedStyle(el);
+
+      return {
+        marginLeft: styles.marginLeft,
+        borderRadius: styles.borderRadius,
+      };
+    });
+    const separatorStyles = await separator.evaluate((el) => {
+      const styles = window.getComputedStyle(el);
+
+      return {
+        backgroundColor: styles.backgroundColor,
+        boxShadow: styles.boxShadow,
+      };
+    });
+
+    expect(secondButtonStyles.marginLeft).toBe('-1px');
+    expect(secondButtonStyles.borderRadius).toBe('0px');
+    expect(separatorStyles.backgroundColor).toMatch(/rgb?\(\s*128,\s*128,\s*128\s*\)|#808080/i);
+    expect(separatorStyles.boxShadow).toContain('rgb(255, 255, 255)');
+  });
 });
 
 test.describe('Win98 controls', () => {

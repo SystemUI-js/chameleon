@@ -1,0 +1,11 @@
+{
+  "command": "npx playwright test tests/ui/window.action-buttons.spec.ts",
+  "result": "PASS",
+  "scenario": "action-buttons-right",
+  "assertions": [
+    "window-title-controls visible",
+    "controls wrapper has cm-window__title-bar__controls--right",
+    "controls bounding box x is greater than title text x",
+    "dragging from window-demo-close keeps frame metrics unchanged"
+  ]
+}

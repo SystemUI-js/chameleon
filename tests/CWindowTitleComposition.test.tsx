@@ -4,7 +4,7 @@ import { act, render } from '@testing-library/react';
 import { readFileSync } from 'node:fs';
 import { join } from 'node:path';
 import React from 'react';
-import { Theme } from '../src';
+import { Theme, type WindowTitleActionButtonPosition } from '../src';
 import { CWindow } from '../src/components/Window/Window';
 import { CWindowBody } from '../src/components/Window/WindowBody';
 import { CWindowTitle } from '../src/components/Window/WindowTitle';
@@ -147,6 +147,76 @@ describe('CWindow and CWindowTitle composition', () => {
     expect(titleText).toHaveTextContent('Composed Title');
   });
 
+  it('does not render title controls when actionButton is omitted', () => {
+    const { getByTestId, queryByTestId } = render(
+      <CWindow>
+        <CWindowTitle>Backward compatible title</CWindowTitle>
+      </CWindow>,
+    );
+
+    expect(getByTestId('window-title-text')).toHaveTextContent('Backward compatible title');
+    expect(queryByTestId('window-title-controls')).not.toBeInTheDocument();
+    expect(getByTestId('window-title')).not.toHaveClass('cm-window__title-bar--with-controls');
+  });
+
+  it('renders actionButton controls on the right by default', () => {
+    const defaultActionButtonPosition: WindowTitleActionButtonPosition = 'right';
+    const { getByTestId } = render(
+      <CWindow>
+        <CWindowTitle
+          actionButton={
+            <button type="button" data-testid="window-title-control-action">
+              ×
+            </button>
+          }
+        >
+          Title with controls
+        </CWindowTitle>
+      </CWindow>,
+    );
+
+    const title = getByTestId('window-title');
+    const titleText = getByTestId('window-title-text');
+    const controls = getByTestId('window-title-controls');
+
+    expect(defaultActionButtonPosition).toBe('right');
+    expect(title).toHaveClass('cm-window__title-bar', 'cm-window__title-bar--with-controls');
+    expect(controls).toHaveClass(
+      'cm-window__title-bar__controls',
+      'cm-window__title-bar__controls--right',
+    );
+    expect(title.firstElementChild).toBe(titleText);
+    expect(title.lastElementChild).toBe(controls);
+  });
+
+  it('renders actionButton controls before the title when position is left', () => {
+    const { getByTestId } = render(
+      <CWindow>
+        <CWindowTitle
+          actionButton={
+            <button type="button" data-testid="window-title-control-left">
+              —
+            </button>
+          }
+          actionButtonPosition="left"
+        >
+          Left controls
+        </CWindowTitle>
+      </CWindow>,
+    );
+
+    const title = getByTestId('window-title');
+    const titleText = getByTestId('window-title-text');
+    const controls = getByTestId('window-title-controls');
+
+    expect(controls).toHaveClass(
+      'cm-window__title-bar__controls',
+      'cm-window__title-bar__controls--left',
+    );
+    expect(title.firstElementChild).toBe(controls);
+    expect(title.lastElementChild).toBe(titleText);
+  });
+
   it('renders composed CWindowBody explicitly and lets callers extend styling with className', () => {
     const { getByTestId } = render(
       <CWindow>
@@ -280,6 +350,62 @@ describe('CWindow and CWindowTitle composition', () => {
     expect(frame.style.left).toBe('30px');
     expect(frame.style.top).toBe('60px');
     expect(title).toHaveClass('cm-window__title-bar', 'cm-theme--xp');
+  });
+
+  it('does not start title drag when pointer interaction begins inside controls', () => {
+    const onPointerDown = jest.fn();
+    const onPointerCancel = jest.fn();
+    const { getByTestId, queryByTestId } = render(
+      <CWindow
+        x={10}
+        y={20}
+        width={240}
+        height={160}
+        moveBehavior={WidgetInteractionBehavior.Outline}
+      >
+        <CWindowTitle
+          actionButton={
+            <button
+              type="button"
+              data-testid="window-title-control-guarded"
+              onPointerDown={onPointerDown}
+              onPointerCancel={onPointerCancel}
+            >
+              □
+            </button>
+          }
+        >
+          Guarded controls
+        </CWindowTitle>
+      </CWindow>,
+    );
+
+    const frame = getByTestId('window-frame');
+    const control = getByTestId('window-title-control-guarded');
+    const title = getByTestId('window-title');
+
+    dragPointer(control, {
+      pointerId: 106,
+      start: { x: 40, y: 40 },
+      end: { x: 80, y: 70 },
+    });
+
+    fireEvent.pointerCancel(control, {
+      pointerId: 106,
+      clientX: 80,
+      clientY: 70,
+    });
+
+    expect(getFrameMetrics(frame)).toEqual({
+      x: 10,
+      y: 20,
+      width: 240,
+      height: 160,
+    });
+    expect(queryByTestId('window-preview-frame')).not.toBeInTheDocument();
+    expect(title).toHaveAttribute('data-testid', 'window-title');
+    expect(onPointerDown).toHaveBeenCalledTimes(1);
+    expect(onPointerCancel).toHaveBeenCalledTimes(1);
   });
 
   it('threads moveBehavior into composed window titles and keeps live move behavior unchanged', () => {

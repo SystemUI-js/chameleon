@@ -1,6 +1,8 @@
 import React from 'react';
 import {
   CButton,
+  CButtonGroup,
+  CButtonSeparator,
   CMenu,
   CRadio,
   CRadioGroup,
@@ -15,6 +17,7 @@ import {
   CGridItem,
   CIconContainer,
   type CSelectOption,
+  type WindowTitleActionButtonPosition,
   type MenuListItem,
   WidgetInteractionBehavior,
 } from '@/components';
@@ -29,6 +32,13 @@ const SIZE_OPTIONS: readonly CSelectOption[] = [
 ];
 
 const GRID_COLUMNS = ['1fr', '1fr', '1fr'];
+const WINDOW_ACTION_BUTTON_POSITIONS = ['left', 'right'] as const;
+
+const isWindowTitleActionButtonPosition = (
+  value: string,
+): value is WindowTitleActionButtonPosition => {
+  return WINDOW_ACTION_BUTTON_POSITIONS.includes(value as WindowTitleActionButtonPosition);
+};
 
 interface ComponentCatalogProps {
   readonly theme: DevThemeId;
@@ -139,6 +149,20 @@ const THEME_SNIPPET = `
 </Theme>
 `.trim();
 
+const BUTTON_GROUP_SNIPPET = `
+<CButtonGroup variant="primary">
+  <CButton>Back</CButton>
+  <CButton>Next</CButton>
+  <CButtonSeparator />
+  <CButton variant="ghost">Cancel</CButton>
+</CButtonGroup>
+
+<CButtonGroup orientation="vertical" disabled>
+  <CButton>Up</CButton>
+  <CButton>Down</CButton>
+</CButtonGroup>
+`.trim();
+
 function ThemeShowcase(): React.ReactElement {
   return (
     <ShowcaseSection title="Theme" testId="catalog-section-theme" code={THEME_SNIPPET}>
@@ -163,6 +187,41 @@ function ThemeShowcase(): React.ReactElement {
           <Theme name="cm-theme--win98">
             <CButton theme="cm-theme--default">Prop overrides</CButton>
           </Theme>
+        </div>
+      </div>
+    </ShowcaseSection>
+  );
+}
+
+function ButtonGroupShowcase(): React.ReactElement {
+  return (
+    <ShowcaseSection
+      title="ButtonGroup"
+      testId="catalog-section-button-group"
+      code={BUTTON_GROUP_SNIPPET}
+    >
+      <div className="cm-catalog__stack">
+        <div className="cm-catalog__row">
+          <CButtonGroup data-testid="button-group-demo-horizontal" variant="primary">
+            <CButton>Back</CButton>
+            <CButton>Next</CButton>
+            <CButtonSeparator />
+            <CButton variant="ghost">Cancel</CButton>
+          </CButtonGroup>
+        </div>
+        <div className="cm-catalog__row">
+          <CButtonGroup data-testid="button-group-demo-vertical" orientation="vertical">
+            <CButton>Top</CButton>
+            <CButton>Middle</CButton>
+            <CButtonSeparator />
+            <CButton>Bottom</CButton>
+          </CButtonGroup>
+          <CButtonGroup data-testid="button-group-demo-disabled" disabled variant="primary">
+            <CButton>Save</CButton>
+            <CButton>Apply</CButton>
+            <CButtonSeparator />
+            <CButton variant="ghost">Reset</CButton>
+          </CButtonGroup>
         </div>
       </div>
     </ShowcaseSection>
@@ -226,6 +285,38 @@ return (
 );
 `.trim();
 
+const SAMPLE_MENU_LIST: readonly MenuListItem[] = [
+  {
+    id: 'file',
+    key: 'file',
+    title: 'File',
+    children: [
+      { id: 'file-new', key: 'file-new', title: 'New' },
+      { id: 'file-open', key: 'file-open', title: 'Open' },
+    ],
+  },
+  {
+    id: 'view',
+    key: 'view',
+    title: 'View',
+    children: [{ id: 'view-zoom', key: 'view-zoom', title: 'Zoom' }],
+  },
+];
+
+const MENU_SNIPPET = `
+const [selectedItem, setSelectedItem] = useState<MenuListItem | null>(null);
+
+return (
+  <>
+    <CMenu data-testid="menu-demo" trigger="click" menuList={SAMPLE_MENU_LIST} onSelect={setSelectedItem}>
+      <CButton data-testid="menu-demo-trigger">Menu</CButton>
+    </CMenu>
+
+    <p>Selected: {selectedItem?.title ?? 'none'}</p>
+  </>
+);
+`.trim();
+
 function SelectShowcase(): React.ReactElement {
   const [selectedSize, setSelectedSize] = React.useState('medium');
 
@@ -246,31 +337,148 @@ function SelectShowcase(): React.ReactElement {
   );
 }
 
-const WINDOW_SNIPPET = `<CWindow x={24} y={24} width={320} height={200}>
-  <CWindowTitle>Sample Window</CWindowTitle>
-  <CWindowBody>
-    <p>Window content goes here.</p>
-    <p>Try dragging the title bar.</p>
-  </CWindowBody>
-</CWindow>`.trim();
+function MenuShowcase(): React.ReactElement {
+  const [selectedItem, setSelectedItem] = React.useState<MenuListItem | null>(null);
+
+  return (
+    <ShowcaseSection title="Menu" testId="catalog-section-menu" code={MENU_SNIPPET}>
+      <div className="cm-catalog__stack">
+        <CMenu
+          data-testid="menu-demo"
+          trigger="click"
+          menuList={SAMPLE_MENU_LIST}
+          onSelect={setSelectedItem}
+        >
+          <CButton data-testid="menu-demo-trigger">Click Menu</CButton>
+        </CMenu>
+        <CMenu
+          data-testid="menu-demo-hover"
+          trigger="hover"
+          menuList={SAMPLE_MENU_LIST}
+          onSelect={setSelectedItem}
+        >
+          <CButton data-testid="menu-demo-trigger-hover">Hover Menu</CButton>
+        </CMenu>
+        <p className="cm-catalog__value">Selected: {selectedItem?.title ?? 'none'}</p>
+      </div>
+    </ShowcaseSection>
+  );
+}
+
+const WINDOW_SNIPPET =
+  `const [actionButtonPosition, setActionButtonPosition] = useState<'left' | 'right'>('right');
+
+const actionButtons = (
+  <div className="cm-catalog__window-actions">
+    <button type="button">—</button>
+    <button type="button">□</button>
+    <button type="button">×</button>
+  </div>
+);
+
+return (
+  <>
+    <CRadioGroup
+      aria-label="Window action button position"
+      name="window-action-button-position"
+      value={actionButtonPosition}
+      onChange={setActionButtonPosition}
+    >
+      <CRadio value="left">Left</CRadio>
+      <CRadio value="right">Right</CRadio>
+    </CRadioGroup>
+
+    <CWindow x={24} y={24} width={300} height={140} resizeBehavior={WidgetInteractionBehavior.Outline}>
+      <CWindowTitle actionButton={actionButtons} actionButtonPosition={actionButtonPosition}>
+        Sample Window
+      </CWindowTitle>
+      <CWindowBody>
+        <p>Window content goes here.</p>
+        <p>Try dragging the title bar.</p>
+      </CWindowBody>
+    </CWindow>
+  </>
+);`.trim();
 
 function WindowShowcase(): React.ReactElement {
+  const [actionButtonPosition, setActionButtonPosition] =
+    React.useState<WindowTitleActionButtonPosition>('right');
+
+  const handleActionButtonPositionChange = React.useCallback((nextValue: string) => {
+    if (isWindowTitleActionButtonPosition(nextValue)) {
+      setActionButtonPosition(nextValue);
+    }
+  }, []);
+
+  const handleWindowActionClick = React.useCallback((): void => {}, []);
+
+  const actionButtons = React.useMemo(
+    () => (
+      <div className="cm-catalog__window-actions">
+        <button
+          type="button"
+          className="cm-catalog__window-action"
+          data-testid="window-demo-minimize"
+          aria-label="Minimize window"
+          onClick={handleWindowActionClick}
+        >
+          —
+        </button>
+        <button
+          type="button"
+          className="cm-catalog__window-action"
+          data-testid="window-demo-maximize"
+          aria-label="Maximize window"
+          onClick={handleWindowActionClick}
+        >
+          □
+        </button>
+        <button
+          type="button"
+          className="cm-catalog__window-action cm-catalog__window-action--close"
+          data-testid="window-demo-close"
+          aria-label="Close window"
+          onClick={handleWindowActionClick}
+        >
+          ×
+        </button>
+      </div>
+    ),
+    [handleWindowActionClick],
+  );
+
   return (
     <ShowcaseSection title="Window" testId="catalog-section-window" code={WINDOW_SNIPPET}>
-      <div className="cm-catalog__stage cm-catalog__stage--relative">
-        <CWindow
-          x={24}
-          y={24}
-          width={300}
-          height={140}
-          resizeBehavior={WidgetInteractionBehavior.Outline}
+      <div className="cm-catalog__stack">
+        <CRadioGroup
+          aria-label="Window action button position"
+          data-testid="window-demo-position"
+          name="window-action-button-position"
+          value={actionButtonPosition}
+          onChange={handleActionButtonPositionChange}
         >
-          <CWindowTitle>Sample Window</CWindowTitle>
-          <CWindowBody>
-            <p>Window content goes here.</p>
-            <p>Try dragging the title bar.</p>
-          </CWindowBody>
-        </CWindow>
+          <div className="cm-catalog__choice-row cm-catalog__window-position-choice-row">
+            <CRadio value="left">Left</CRadio>
+            <CRadio value="right">Right</CRadio>
+          </div>
+        </CRadioGroup>
+        <div className="cm-catalog__stage cm-catalog__stage--relative">
+          <CWindow
+            x={24}
+            y={24}
+            width={300}
+            height={140}
+            resizeBehavior={WidgetInteractionBehavior.Outline}
+          >
+            <CWindowTitle actionButton={actionButtons} actionButtonPosition={actionButtonPosition}>
+              Sample Window
+            </CWindowTitle>
+            <CWindowBody>
+              <p>Window content goes here.</p>
+              <p>Try dragging the title bar.</p>
+            </CWindowBody>
+          </CWindow>
+        </div>
       </div>
     </ShowcaseSection>
   );
@@ -509,59 +717,6 @@ function GridShowcase(): React.ReactElement {
   );
 }
 
-const SAMPLE_MENU_LIST: readonly MenuListItem[] = [
-  { id: 'file', key: 'file', title: 'File' },
-  { id: 'edit', key: 'edit', title: 'Edit' },
-  { id: 'view', key: 'view', title: 'View' },
-];
-
-const MENU_SNIPPET = `
-const [selectedItem, setSelectedItem] = useState<MenuListItem | null>(null);
-
-return (
-  <>
-    <CMenu
-      data-testid="menu-demo"
-      trigger="click"
-      menuList={SAMPLE_MENU_LIST}
-      onSelect={setSelectedItem}
-    >
-      <CButton data-testid="menu-demo-trigger">Menu</CButton>
-    </CMenu>
-
-    <p>Selected: {selectedItem?.title ?? 'none'}</p>
-  </>
-);
-`.trim();
-
-function MenuShowcase(): React.ReactElement {
-  const [selectedItem, setSelectedItem] = React.useState<MenuListItem | null>(null);
-
-  return (
-    <ShowcaseSection title="Menu" testId="catalog-section-menu" code={MENU_SNIPPET}>
-      <div className="cm-catalog__stack">
-        <CMenu
-          data-testid="menu-demo"
-          trigger="click"
-          menuList={SAMPLE_MENU_LIST}
-          onSelect={setSelectedItem}
-        >
-          <CButton data-testid="menu-demo-trigger">Click Menu</CButton>
-        </CMenu>
-        <CMenu
-          data-testid="menu-demo-hover"
-          trigger="hover"
-          menuList={SAMPLE_MENU_LIST}
-          onSelect={setSelectedItem}
-        >
-          <CButton data-testid="menu-demo-trigger-hover">Hover Menu</CButton>
-        </CMenu>
-        <p className="cm-catalog__value">Selected: {selectedItem?.title ?? 'none'}</p>
-      </div>
-    </ShowcaseSection>
-  );
-}
-
 export function ComponentCatalog({
   theme,
   onThemeChange,
@@ -580,6 +735,7 @@ export function ComponentCatalog({
         <DevThemeRoot theme={theme}>
           <div className="cm-catalog__showcase-list">
             <ButtonShowcase />
+            <ButtonGroupShowcase />
             <RadioGroupShowcase />
             <SelectShowcase />
             <IconShowcase />

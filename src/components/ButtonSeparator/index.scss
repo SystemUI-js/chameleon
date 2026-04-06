@@ -1,0 +1,19 @@
+.cm-button-separator {
+    display: block;
+    flex: none;
+    align-self: stretch;
+    box-sizing: border-box;
+}
+
+.cm-button-separator--vertical {
+    width: 1px;
+    min-width: 1px;
+    min-height: 24px;
+}
+
+.cm-button-separator--horizontal {
+    width: 100%;
+    min-width: 24px;
+    height: 1px;
+    min-height: 1px;
+}
