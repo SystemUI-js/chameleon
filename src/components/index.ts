@@ -3,6 +3,7 @@ export * from './ButtonGroup/ButtonGroup';
 export * from './ButtonSeparator/ButtonSeparator';
 export * from './Dock/Dock';
 export * from './Grid';
+export * from './Menu/Menu';
 export * from './Radio/Radio';
 export * from './Radio/RadioGroup';
 export * from './Select/Select';

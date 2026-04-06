@@ -3,6 +3,7 @@ export {
   CButton,
   CButtonGroup,
   CButtonSeparator,
+  CMenu,
   CRadio,
   CRadioGroup,
   CSelect,
