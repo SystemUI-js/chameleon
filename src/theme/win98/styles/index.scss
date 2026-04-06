@@ -93,8 +93,7 @@
         gap: 8px;
     }
 
-    .cm-button,
-    .cm-button.cm-theme--win98 {
+    &.cm-button {
         min-width: 75px;
         min-height: 23px;
         padding: 0 12px;
@@ -114,10 +113,10 @@
         text-shadow: 0 0 #222;
     }
 
-    .cm-button:hover:not(:disabled) {
+    &.cm-button:hover:not(:disabled) {
     }
 
-    .cm-button:active:not(:disabled) {
+    &.cm-button:active:not(:disabled) {
         box-shadow:
             inset -1px -1px #fff,
             inset 1px 1px #0a0a0a,
@@ -126,88 +125,83 @@
         text-shadow: 1px 1px #222;
     }
 
-    .cm-button:focus {
+    &.cm-button:focus {
         outline: 1px dotted #000;
         outline-offset: -4px;
     }
 
-    .cm-button--primary,
-    .cm-button--primary.cm-theme--win98 {
+    &.cm-button--primary {
         font-weight: 700;
     }
 
-    .cm-button--ghost,
-    .cm-button--ghost.cm-theme--win98 {
+    &.cm-button--ghost {
         background: #d9d9d9;
         box-shadow:
             inset -1px -1px 0 #0a0a0a,
             inset 1px 1px 0 #efefef;
     }
 
-    .cm-button--ghost:active:not(:disabled) {
+    &.cm-button--ghost:active:not(:disabled) {
         background: #cccccc;
     }
 
-    .cm-button:disabled {
+    &.cm-button:disabled {
         color: #808080;
         text-shadow: 1px 1px 0 #ffffff;
         cursor: not-allowed;
     }
 
-    .cm-button--grouped {
+    &.cm-button--grouped {
         position: relative;
     }
 
-    .cm-button--grouped:hover:not(:disabled),
-    .cm-button--grouped:focus-visible {
+    &.cm-button--grouped:hover:not(:disabled),
+    &.cm-button--grouped:focus-visible {
         z-index: 1;
     }
 
-    .cm-button--group-horizontal.cm-button--group-first {
+    &.cm-button--group-horizontal.cm-button--group-first {
         border-top-right-radius: 0;
         border-bottom-right-radius: 0;
     }
 
-    .cm-button--group-horizontal.cm-button--group-middle {
+    &.cm-button--group-horizontal.cm-button--group-middle {
         margin-left: -1px;
         border-radius: 0;
     }
 
-    .cm-button--group-horizontal.cm-button--group-last {
+    &.cm-button--group-horizontal.cm-button--group-last {
         margin-left: -1px;
         border-top-left-radius: 0;
         border-bottom-left-radius: 0;
     }
 
-    .cm-button--group-vertical.cm-button--group-first {
+    &.cm-button--group-vertical.cm-button--group-first {
         border-bottom-right-radius: 0;
         border-bottom-left-radius: 0;
     }
 
-    .cm-button--group-vertical.cm-button--group-middle {
+    &.cm-button--group-vertical.cm-button--group-middle {
         margin-top: -1px;
         border-radius: 0;
     }
 
-    .cm-button--group-vertical.cm-button--group-last {
+    &.cm-button--group-vertical.cm-button--group-last {
         margin-top: -1px;
         border-top-left-radius: 0;
         border-top-right-radius: 0;
     }
 
-    .cm-button-separator,
-    .cm-button-separator.cm-theme--win98 {
+    &.cm-button-separator {
         background-color: #808080;
     }
 
-    .cm-button-separator--vertical,
-    .cm-button-separator--vertical.cm-theme--win98 {
+    &.cm-button-separator--vertical {
         margin: 0 6px;
         box-shadow: 1px 0 0 #ffffff;
     }
 
-    .cm-button-separator--horizontal,
-    .cm-button-separator--horizontal.cm-theme--win98 {
+    &.cm-button-separator--horizontal {
         margin: 6px 0;
         box-shadow: 0 1px 0 #ffffff;
     }

@@ -1,5 +1,8 @@
+import { readFileSync } from 'node:fs';
+import { resolve } from 'node:path';
 import { fireEvent, render, screen } from '@testing-library/react';
 import '@testing-library/jest-dom';
+import { compileString } from 'sass';
 import {
   CButton,
   CButtonGroup as PackageEntryCButtonGroup,
@@ -9,7 +12,42 @@ import {
 import { CButtonGroup } from '../src/components/ButtonGroup/ButtonGroup';
 import { CButtonSeparator } from '../src/components/ButtonSeparator/ButtonSeparator';
 
+const themeStylePaths = [
+  'src/theme/default/styles/index.scss',
+  'src/theme/win98/styles/index.scss',
+  'src/theme/winxp/styles/index.scss',
+];
+
+let compiledThemeStyleElement: HTMLStyleElement | undefined;
+let compiledThemeCss = '';
+
+function ensureCompiledThemeStyles(): void {
+  if (compiledThemeStyleElement !== undefined) {
+    return;
+  }
+
+  compiledThemeCss = compileString(
+    themeStylePaths
+      .map((relativePath) => readFileSync(resolve(process.cwd(), relativePath), 'utf8'))
+      .join('\n'),
+  ).css;
+
+  compiledThemeStyleElement = document.createElement('style');
+  compiledThemeStyleElement.textContent = compiledThemeCss;
+  document.head.appendChild(compiledThemeStyleElement);
+}
+
 describe('CButtonGroup and CButtonSeparator', () => {
+  beforeAll(() => {
+    ensureCompiledThemeStyles();
+  });
+
+  afterAll(() => {
+    compiledThemeStyleElement?.remove();
+    compiledThemeStyleElement = undefined;
+    compiledThemeCss = '';
+  });
+
   it('exports CButtonGroup from package entry', () => {
     render(
       <PackageEntryCButtonGroup data-testid="button-group-package-entry">
@@ -238,6 +276,58 @@ describe('CButtonGroup and CButtonSeparator', () => {
     expect(screen.getByTestId('preserved-child-theme')).toHaveClass('child-class');
     expect(screen.getByTestId('preserved-child-theme')).toHaveClass('cm-button--primary');
     expect(screen.getByTestId('preserved-child-theme')).toHaveClass('cm-button--grouped');
+  });
+
+  it('applies theme styles when the button carries the theme class itself', () => {
+    render(
+      <CButton data-testid="self-themed-button" theme="cm-theme--win98">
+        One
+      </CButton>,
+    );
+
+    const buttonStyles = window.getComputedStyle(screen.getByTestId('self-themed-button'));
+
+    expect(buttonStyles.minHeight).toBe('23px');
+    expect(buttonStyles.borderRadius).toBe('0');
+  });
+
+  it('lets child button and separator theme styles override the group theme styles regardless of theme order', () => {
+    render(
+      <CButtonGroup theme="cm-theme--win98">
+        <CButton data-testid="group-themed-button">One</CButton>
+        <CButton data-testid="child-themed-button" theme="cm-theme--default">
+          Two
+        </CButton>
+        <CButtonSeparator data-testid="group-themed-separator" />
+        <CButtonSeparator data-testid="child-themed-separator" theme="cm-theme--default" />
+      </CButtonGroup>,
+    );
+
+    const inheritedButtonStyles = window.getComputedStyle(
+      screen.getByTestId('group-themed-button'),
+    );
+    const overriddenButtonStyles = window.getComputedStyle(
+      screen.getByTestId('child-themed-button'),
+    );
+    const inheritedSeparatorStyles = window.getComputedStyle(
+      screen.getByTestId('group-themed-separator'),
+    );
+    const overriddenSeparatorStyles = window.getComputedStyle(
+      screen.getByTestId('child-themed-separator'),
+    );
+
+    expect(inheritedButtonStyles.minHeight).toBe('23px');
+    expect(inheritedButtonStyles.borderRadius).toBe('0');
+    expect(overriddenButtonStyles.minHeight).toBe('32px');
+    expect(overriddenButtonStyles.borderRadius).toBe('4px');
+    expect(inheritedSeparatorStyles.marginLeft).toBe('6px');
+    expect(overriddenSeparatorStyles.marginLeft).toBe('8px');
+  });
+
+  it('emits grouped focus-visible selectors for self-themed buttons', () => {
+    expect(compiledThemeCss).toContain('.cm-theme--default.cm-button--grouped:focus-visible');
+    expect(compiledThemeCss).toContain('.cm-theme--win98.cm-button--grouped:focus-visible');
+    expect(compiledThemeCss).toContain('.cm-theme--winxp.cm-button--grouped:focus-visible');
   });
 
   it('inherits group theme when child theme is blank', () => {
