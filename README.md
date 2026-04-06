@@ -93,11 +93,17 @@ import { CButton } from '@system-ui-js/chameleon';
 
 ### 主题定义
 
-库默认导出三套主题定义：
+库默认导出三套兼容旧系统 API 的主题定义：
 
-- `defaultThemeDefinition` → `className: 'cm-theme--default'`
-- `win98ThemeDefinition` → `className: 'cm-theme--win98'`
-- `winXpThemeDefinition` → `className: 'cm-theme--winxp'`
+- `defaultThemeDefinition` → `systemType: 'default'`, `className: 'cm-theme--default'`
+- `win98ThemeDefinition` → `systemType: 'windows'`, `className: 'cm-theme--win98'`
+- `winXpThemeDefinition` → `systemType: 'windows'`, `className: 'cm-theme--winxp'`
+
+如果你需要不带 `systemType` 的纯主题定义，也可以使用：
+
+- `pureDefaultThemeDefinition`
+- `pureWin98ThemeDefinition`
+- `pureWinXpThemeDefinition`
 
 ## Window Component
 

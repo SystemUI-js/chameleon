@@ -340,6 +340,8 @@ describe('CWindow and CWindowTitle composition', () => {
   });
 
   it('does not start title drag when pointer interaction begins inside controls', () => {
+    const onPointerDown = jest.fn();
+    const onPointerCancel = jest.fn();
     const { getByTestId, queryByTestId } = render(
       <CWindow
         x={10}
@@ -350,7 +352,12 @@ describe('CWindow and CWindowTitle composition', () => {
       >
         <CWindowTitle
           actionButton={
-            <button type="button" data-testid="window-title-control-guarded">
+            <button
+              type="button"
+              data-testid="window-title-control-guarded"
+              onPointerDown={onPointerDown}
+              onPointerCancel={onPointerCancel}
+            >
               □
             </button>
           }
@@ -370,6 +377,12 @@ describe('CWindow and CWindowTitle composition', () => {
       end: { x: 80, y: 70 },
     });
 
+    fireEvent.pointerCancel(control, {
+      pointerId: 106,
+      clientX: 80,
+      clientY: 70,
+    });
+
     expect(getFrameMetrics(frame)).toEqual({
       x: 10,
       y: 20,
@@ -378,6 +391,8 @@ describe('CWindow and CWindowTitle composition', () => {
     });
     expect(queryByTestId('window-preview-frame')).not.toBeInTheDocument();
     expect(title).toHaveAttribute('data-testid', 'window-title');
+    expect(onPointerDown).toHaveBeenCalledTimes(1);
+    expect(onPointerCancel).toHaveBeenCalledTimes(1);
   });
 
   it('threads moveBehavior into composed window titles and keeps live move behavior unchanged', () => {

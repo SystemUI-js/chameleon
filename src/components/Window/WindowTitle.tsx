@@ -32,11 +32,13 @@ export const WindowTitleBarText: React.FC<WindowTitleBarTextProps> = ({ children
 
 export class CWindowTitle extends React.Component<CWindowTitleProps> {
   protected readonly titleRef = React.createRef<HTMLDivElement>();
+  protected readonly controlsRef = React.createRef<HTMLDivElement>();
   private drag?: Drag;
   private isDragActive = false;
   private dragStartPosition?: WindowPosition;
   private pendingOutlinePosition?: WindowPosition;
   private outlineDragCancelled = false;
+  private suppressDragSession = false;
 
   public componentDidMount(): void {
     this.isDragActive = true;
@@ -89,10 +91,26 @@ export class CWindowTitle extends React.Component<CWindowTitleProps> {
     this.resetDragState();
   }
 
+  private isEventWithinControls(target: EventTarget | null): boolean {
+    const controls = this.controlsRef.current;
+
+    return controls !== null && target instanceof Node && controls.contains(target);
+  }
+
   private handlePointerDown = (event: React.PointerEvent<HTMLDivElement>): void => {
     if (event.button !== 0) {
       return;
     }
+
+    if (this.isEventWithinControls(event.target)) {
+      this.suppressDragSession = true;
+      this.outlineDragCancelled = false;
+      this.resetDragState();
+      this.props.onWindowMovePreviewClear?.();
+      return;
+    }
+
+    this.suppressDragSession = false;
 
     const pose = this.getEffectivePose(event.currentTarget);
     const { position } = pose;
@@ -111,17 +129,20 @@ export class CWindowTitle extends React.Component<CWindowTitleProps> {
     }
   };
 
-  private handlePointerCancel = (): void => {
+  private handlePointerCancel = (event: React.PointerEvent<HTMLDivElement>): void => {
+    if (this.suppressDragSession || this.isEventWithinControls(event.target)) {
+      this.suppressDragSession = false;
+      this.outlineDragCancelled = false;
+      this.resetDragState();
+      this.props.onWindowMovePreviewClear?.();
+      return;
+    }
+
     this.cancelOutlineDrag();
   };
 
-  private handleControlsPointerEventCapture = (event: React.PointerEvent<HTMLDivElement>): void => {
-    event.nativeEvent.stopImmediatePropagation();
-    event.stopPropagation();
-  };
-
   private handleDragPose(pose: Partial<Pose>): void {
-    if (!this.isDragActive) {
+    if (!this.isDragActive || this.suppressDragSession) {
       return;
     }
 
@@ -142,6 +163,14 @@ export class CWindowTitle extends React.Component<CWindowTitleProps> {
 
   private handleDragEnd(pose: Partial<Pose>): void {
     if (!this.isDragActive) {
+      return;
+    }
+
+    if (this.suppressDragSession) {
+      this.suppressDragSession = false;
+      this.outlineDragCancelled = false;
+      this.resetDragState();
+      this.props.onWindowMovePreviewClear?.();
       return;
     }
 
@@ -206,13 +235,12 @@ export class CWindowTitle extends React.Component<CWindowTitleProps> {
     );
     const controls = hasActionButton ? (
       <div
+        ref={this.controlsRef}
         data-testid="window-title-controls"
         className={mergeClasses([
           'cm-window__title-bar__controls',
           `cm-window__title-bar__controls--${actionButtonPosition}`,
         ])}
-        onPointerDownCapture={this.handleControlsPointerEventCapture}
-        onPointerCancelCapture={this.handleControlsPointerEventCapture}
       >
         {this.props.actionButton}
       </div>
