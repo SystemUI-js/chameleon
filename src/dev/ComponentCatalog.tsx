@@ -1,6 +1,8 @@
 import React from 'react';
 import {
   CButton,
+  CButtonGroup,
+  CButtonSeparator,
   CMenu,
   CRadio,
   CRadioGroup,
@@ -146,6 +148,20 @@ const THEME_SNIPPET = `
 </Theme>
 `.trim();
 
+const BUTTON_GROUP_SNIPPET = `
+<CButtonGroup variant="primary">
+  <CButton>Back</CButton>
+  <CButton>Next</CButton>
+  <CButtonSeparator />
+  <CButton variant="ghost">Cancel</CButton>
+</CButtonGroup>
+
+<CButtonGroup orientation="vertical" disabled>
+  <CButton>Up</CButton>
+  <CButton>Down</CButton>
+</CButtonGroup>
+`.trim();
+
 function ThemeShowcase(): React.ReactElement {
   return (
     <ShowcaseSection title="Theme" testId="catalog-section-theme" code={THEME_SNIPPET}>
@@ -170,6 +186,41 @@ function ThemeShowcase(): React.ReactElement {
           <Theme name="cm-theme--win98">
             <CButton theme="cm-theme--default">Prop overrides</CButton>
           </Theme>
+        </div>
+      </div>
+    </ShowcaseSection>
+  );
+}
+
+function ButtonGroupShowcase(): React.ReactElement {
+  return (
+    <ShowcaseSection
+      title="ButtonGroup"
+      testId="catalog-section-button-group"
+      code={BUTTON_GROUP_SNIPPET}
+    >
+      <div className="cm-catalog__stack">
+        <div className="cm-catalog__row">
+          <CButtonGroup data-testid="button-group-demo-horizontal" variant="primary">
+            <CButton>Back</CButton>
+            <CButton>Next</CButton>
+            <CButtonSeparator />
+            <CButton variant="ghost">Cancel</CButton>
+          </CButtonGroup>
+        </div>
+        <div className="cm-catalog__row">
+          <CButtonGroup data-testid="button-group-demo-vertical" orientation="vertical">
+            <CButton>Top</CButton>
+            <CButton>Middle</CButton>
+            <CButtonSeparator />
+            <CButton>Bottom</CButton>
+          </CButtonGroup>
+          <CButtonGroup data-testid="button-group-demo-disabled" disabled variant="primary">
+            <CButton>Save</CButton>
+            <CButton>Apply</CButton>
+            <CButtonSeparator />
+            <CButton variant="ghost">Reset</CButton>
+          </CButtonGroup>
         </div>
       </div>
     </ShowcaseSection>
@@ -233,6 +284,38 @@ return (
 );
 `.trim();
 
+const SAMPLE_MENU_LIST: readonly MenuListItem[] = [
+  {
+    id: 'file',
+    key: 'file',
+    title: 'File',
+    children: [
+      { id: 'file-new', key: 'file-new', title: 'New' },
+      { id: 'file-open', key: 'file-open', title: 'Open' },
+    ],
+  },
+  {
+    id: 'view',
+    key: 'view',
+    title: 'View',
+    children: [{ id: 'view-zoom', key: 'view-zoom', title: 'Zoom' }],
+  },
+];
+
+const MENU_SNIPPET = `
+const [selectedItem, setSelectedItem] = useState<MenuListItem | null>(null);
+
+return (
+  <>
+    <CMenu data-testid="menu-demo" trigger="click" menuList={SAMPLE_MENU_LIST} onSelect={setSelectedItem}>
+      <CButton data-testid="menu-demo-trigger">Menu</CButton>
+    </CMenu>
+
+    <p>Selected: {selectedItem?.title ?? 'none'}</p>
+  </>
+);
+`.trim();
+
 function SelectShowcase(): React.ReactElement {
   const [selectedSize, setSelectedSize] = React.useState('medium');
 
@@ -248,6 +331,34 @@ function SelectShowcase(): React.ReactElement {
         />
         <CSelect name="size-disabled" value="large" options={SIZE_OPTIONS} disabled />
         <p className="cm-catalog__value">Selected size: {selectedSize}</p>
+      </div>
+    </ShowcaseSection>
+  );
+}
+
+function MenuShowcase(): React.ReactElement {
+  const [selectedItem, setSelectedItem] = React.useState<MenuListItem | null>(null);
+
+  return (
+    <ShowcaseSection title="Menu" testId="catalog-section-menu" code={MENU_SNIPPET}>
+      <div className="cm-catalog__stack">
+        <CMenu
+          data-testid="menu-demo"
+          trigger="click"
+          menuList={SAMPLE_MENU_LIST}
+          onSelect={setSelectedItem}
+        >
+          <CButton data-testid="menu-demo-trigger">Click Menu</CButton>
+        </CMenu>
+        <CMenu
+          data-testid="menu-demo-hover"
+          trigger="hover"
+          menuList={SAMPLE_MENU_LIST}
+          onSelect={setSelectedItem}
+        >
+          <CButton data-testid="menu-demo-trigger-hover">Hover Menu</CButton>
+        </CMenu>
+        <p className="cm-catalog__value">Selected: {selectedItem?.title ?? 'none'}</p>
       </div>
     </ShowcaseSection>
   );
@@ -465,59 +576,6 @@ function GridShowcase(): React.ReactElement {
   );
 }
 
-const SAMPLE_MENU_LIST: readonly MenuListItem[] = [
-  { id: 'file', key: 'file', title: 'File' },
-  { id: 'edit', key: 'edit', title: 'Edit' },
-  { id: 'view', key: 'view', title: 'View' },
-];
-
-const MENU_SNIPPET = `
-const [selectedItem, setSelectedItem] = useState<MenuListItem | null>(null);
-
-return (
-  <>
-    <CMenu
-      data-testid="menu-demo"
-      trigger="click"
-      menuList={SAMPLE_MENU_LIST}
-      onSelect={setSelectedItem}
-    >
-      <CButton data-testid="menu-demo-trigger">Menu</CButton>
-    </CMenu>
-
-    <p>Selected: {selectedItem?.title ?? 'none'}</p>
-  </>
-);
-`.trim();
-
-function MenuShowcase(): React.ReactElement {
-  const [selectedItem, setSelectedItem] = React.useState<MenuListItem | null>(null);
-
-  return (
-    <ShowcaseSection title="Menu" testId="catalog-section-menu" code={MENU_SNIPPET}>
-      <div className="cm-catalog__stack">
-        <CMenu
-          data-testid="menu-demo"
-          trigger="click"
-          menuList={SAMPLE_MENU_LIST}
-          onSelect={setSelectedItem}
-        >
-          <CButton data-testid="menu-demo-trigger">Click Menu</CButton>
-        </CMenu>
-        <CMenu
-          data-testid="menu-demo-hover"
-          trigger="hover"
-          menuList={SAMPLE_MENU_LIST}
-          onSelect={setSelectedItem}
-        >
-          <CButton data-testid="menu-demo-trigger-hover">Hover Menu</CButton>
-        </CMenu>
-        <p className="cm-catalog__value">Selected: {selectedItem?.title ?? 'none'}</p>
-      </div>
-    </ShowcaseSection>
-  );
-}
-
 export function ComponentCatalog({
   theme,
   onThemeChange,
@@ -536,6 +594,7 @@ export function ComponentCatalog({
         <DevThemeRoot theme={theme}>
           <div className="cm-catalog__showcase-list">
             <ButtonShowcase />
+            <ButtonGroupShowcase />
             <RadioGroupShowcase />
             <SelectShowcase />
             <MenuShowcase />

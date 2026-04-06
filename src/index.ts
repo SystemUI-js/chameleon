@@ -1,7 +1,16 @@
 import { SYSTEM_TYPE, THEME, resolveThemeDefinition } from './system/registry';
 
 export * from './components';
-export { CButton, CMenu, CRadio, CRadioGroup, CSelect, Theme } from './components';
+export {
+  CButton,
+  CButtonGroup,
+  CButtonSeparator,
+  CMenu,
+  CRadio,
+  CRadioGroup,
+  CSelect,
+  Theme,
+} from './components';
 export * from './system/registry';
 export * from './system/SystemHost';
 export type {

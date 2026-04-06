@@ -1,0 +1,13 @@
+.cm-button-group {
+    display: inline-flex;
+    max-width: 100%;
+    align-items: stretch;
+}
+
+.cm-button-group--horizontal {
+    flex-direction: row;
+}
+
+.cm-button-group--vertical {
+    flex-direction: column;
+}
