@@ -440,6 +440,48 @@ describe('CMenu', () => {
     expect(screen.getByRole('menuitem', { name: 'Click Leaf' })).toBeInTheDocument();
   });
 
+  it('inherits click trigger through deeper submenu branches', () => {
+    const deepInheritedTriggerList: readonly MenuListItem[] = [
+      {
+        id: 'root-parent',
+        key: 'root-parent',
+        title: 'Root Parent',
+        children: [
+          {
+            id: 'click-parent',
+            key: 'click-parent',
+            title: 'Click Parent',
+            trigger: 'click',
+            children: [
+              {
+                id: 'deep-parent',
+                key: 'deep-parent',
+                title: 'Deep Parent',
+                children: [{ id: 'deep-leaf', key: 'deep-leaf', title: 'Deep Leaf' }],
+              },
+            ],
+          },
+        ],
+      },
+    ];
+
+    render(
+      <CMenu menuList={deepInheritedTriggerList} trigger="click" data-testid="menu-deep-inherited">
+        <button type="button">Deep Menu</button>
+      </CMenu>,
+    );
+
+    fireEvent.click(screen.getByRole('button', { name: 'Deep Menu' }));
+    fireEvent.click(screen.getByTestId('menu-item-root-parent'));
+    fireEvent.click(screen.getByTestId('menu-item-click-parent'));
+
+    fireEvent.pointerEnter(screen.getByTestId('menu-item-deep-parent'));
+    expect(screen.queryByRole('menuitem', { name: 'Deep Leaf' })).not.toBeInTheDocument();
+
+    fireEvent.click(screen.getByTestId('menu-item-deep-parent'));
+    expect(screen.getByRole('menuitem', { name: 'Deep Leaf' })).toBeInTheDocument();
+  });
+
   it('mixed trigger uses hover for nested parents and switches sibling branches', () => {
     render(
       <CMenu menuList={MIXED_TRIGGER_MENU_LIST} trigger="click" data-testid="menu-mixed-trigger">

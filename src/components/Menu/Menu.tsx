@@ -155,6 +155,7 @@ export function CMenu({
     depth: number,
     listId: string,
     parentPath = '',
+    parentTrigger?: MenuTriggerMode,
   ): React.ReactElement => {
     const menuRole: React.AriaRole = 'menu';
 
@@ -169,7 +170,7 @@ export function CMenu({
         {items.map((item) => {
           const isParent = Array.isArray(item.children) && item.children.length > 0;
           const effectiveTrigger = isParent
-            ? resolveParentItemTriggerMode(item.trigger)
+            ? resolveParentItemTriggerMode(item.trigger ?? parentTrigger)
             : undefined;
           const isBranchOpen = openBranchByDepth[depth] === item.id;
           const itemPath = parentPath === '' ? item.id : `${parentPath}-${item.id}`;
@@ -238,7 +239,13 @@ export function CMenu({
               </button>
               {isParent && isBranchOpen ? (
                 <div className="cm-menu__popup cm-menu__submenu">
-                  {renderItems(item.children ?? [], depth + 1, submenuId, itemPath)}
+                  {renderItems(
+                    item.children ?? [],
+                    depth + 1,
+                    submenuId,
+                    itemPath,
+                    effectiveTrigger,
+                  )}
                 </div>
               ) : null}
             </li>
