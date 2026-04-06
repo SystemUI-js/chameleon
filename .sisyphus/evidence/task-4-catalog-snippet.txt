@@ -1,0 +1,3 @@
+Source: src/dev/ComponentCatalog.tsx
+Result: PASS
+Coverage: WINDOW_SNIPPET 与 WindowShowcase 均展示 actionButton、actionButtonPosition、CRadioGroup 左右切换，以及三按钮插槽示例。

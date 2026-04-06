@@ -58,6 +58,12 @@
         gap: 10px;
     }
 
+    .cm-window__title-bar--with-controls .cm-window__title-bar__text,
+    .cm-window__title-bar--with-controls.cm-theme--default .cm-window__title-bar__text {
+        flex: 1 1 auto;
+        min-width: 0;
+    }
+
     .cm-window__title-bar__text {
         flex-shrink: 0;
     }
@@ -66,7 +72,17 @@
         display: flex;
         align-items: center;
         gap: 6px;
+        flex-shrink: 0;
+    }
+
+    .cm-window__title-bar__controls--right,
+    .cm-window__title-bar__controls--right.cm-theme--default {
         margin-left: auto;
+    }
+
+    .cm-window__title-bar__controls--left,
+    .cm-window__title-bar__controls--left.cm-theme--default {
+        margin-right: 2px;
     }
 
     .cm-window__title-bar__label {

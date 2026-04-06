@@ -1,10 +1,67 @@
 import type { ReactNode } from 'react';
 import { createRoot } from 'react-dom/client';
 import { CWindow } from '@/components/Window/Window';
-import { CWindowTitle } from '@/components/Window/WindowTitle';
+import {
+  CWindowTitle,
+  type WindowTitleActionButtonPosition,
+} from '@/components/Window/WindowTitle';
 import { WidgetInteractionBehavior } from '@/components/Widget/Widget';
 import { DevThemeRoot } from '../themeSwitcher';
+import '../styles/catalog.scss';
 import { readHarnessRoute } from './harnessRoute';
+
+const handleWindowActionClick = (): void => {};
+
+const renderWindowActionButtons = (): ReactNode => {
+  return (
+    <div className="cm-catalog__window-actions">
+      <button
+        type="button"
+        className="cm-catalog__window-action"
+        data-testid="window-demo-minimize"
+        aria-label="Minimize window"
+        onClick={handleWindowActionClick}
+      >
+        —
+      </button>
+      <button
+        type="button"
+        className="cm-catalog__window-action"
+        data-testid="window-demo-maximize"
+        aria-label="Maximize window"
+        onClick={handleWindowActionClick}
+      >
+        □
+      </button>
+      <button
+        type="button"
+        className="cm-catalog__window-action cm-catalog__window-action--close"
+        data-testid="window-demo-close"
+        aria-label="Close window"
+        onClick={handleWindowActionClick}
+      >
+        ×
+      </button>
+    </div>
+  );
+};
+
+const renderActionButtonFixture = (
+  title: string,
+  actionButtonPosition?: WindowTitleActionButtonPosition,
+): ReactNode => {
+  return (
+    <CWindow x={10} y={20} width={240} height={160}>
+      <CWindowTitle
+        actionButton={renderWindowActionButtons()}
+        actionButtonPosition={actionButtonPosition}
+      >
+        {title}
+      </CWindowTitle>
+      <div>Window action controls</div>
+    </CWindow>
+  );
+};
 
 const renderFixture = (fixture: string): ReactNode => {
   switch (fixture) {
@@ -98,6 +155,10 @@ const renderFixture = (fixture: string): ReactNode => {
           <div>Outline move + resize content</div>
         </CWindow>
       );
+    case 'action-buttons-right':
+      return renderActionButtonFixture('Action buttons right');
+    case 'action-buttons-left':
+      return renderActionButtonFixture('Action buttons left', 'left');
     default:
       return <div data-testid="fixture-error">Unknown fixture: {fixture}</div>;
   }

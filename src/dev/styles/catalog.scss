@@ -122,6 +122,45 @@
     position: relative;
 }
 
+.cm-catalog__window-position-choice-row {
+    gap: 12px;
+}
+
+.cm-catalog__window-actions {
+    display: inline-flex;
+    align-items: center;
+    gap: 4px;
+}
+
+.cm-catalog__window-action {
+    width: 20px;
+    height: 20px;
+    padding: 0;
+    border: 1px solid rgba(255, 255, 255, 0.55);
+    border-radius: 3px;
+    background: rgba(255, 255, 255, 0.18);
+    color: inherit;
+    font: inherit;
+    line-height: 1;
+    display: inline-flex;
+    align-items: center;
+    justify-content: center;
+    cursor: pointer;
+}
+
+.cm-catalog__window-action:hover {
+    background: rgba(255, 255, 255, 0.28);
+}
+
+.cm-catalog__window-action:focus-visible {
+    outline: 2px solid rgba(255, 255, 255, 0.92);
+    outline-offset: 1px;
+}
+
+.cm-catalog__window-action--close {
+    color: #ffe2e2;
+}
+
 // Dock demo
 .cm-catalog__dock {
     width: 100%;
