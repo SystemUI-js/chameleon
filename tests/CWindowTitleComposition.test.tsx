@@ -978,52 +978,64 @@ describe('CWindow and CWindowTitle composition', () => {
   });
 
   it('tears down an active outline resize safely on unmount without leaking preview', () => {
-    const { getByTestId, queryByTestId, unmount } = render(
-      <CWindow
-        x={15}
-        y={25}
-        width={240}
-        height={160}
-        resizeBehavior={WidgetInteractionBehavior.Outline}
-      >
-        <CWindowTitle>Resize unmount safety</CWindowTitle>
-      </CWindow>,
-    );
+    const consoleError = jest.spyOn(console, 'error').mockImplementation(() => {});
 
-    const eastHandle = getByTestId('window-resize-e');
+    try {
+      const { getByTestId, queryByTestId, unmount } = render(
+        <CWindow
+          x={15}
+          y={25}
+          width={240}
+          height={160}
+          resizeBehavior={WidgetInteractionBehavior.Outline}
+        >
+          <CWindowTitle>Resize unmount safety</CWindowTitle>
+        </CWindow>,
+      );
 
-    fireEvent.pointerDown(eastHandle, {
-      pointerId: 304,
-      button: 0,
-      clientX: 255,
-      clientY: 100,
-    });
+      const eastHandle = getByTestId('window-resize-e');
 
-    fireEvent.pointerMove(document, {
-      pointerId: 304,
-      clientX: 295,
-      clientY: 100,
-    });
+      fireEvent.pointerDown(eastHandle, {
+        pointerId: 304,
+        button: 0,
+        clientX: 255,
+        clientY: 100,
+      });
 
-    expect(queryByTestId('window-preview-frame')).toBeInTheDocument();
-
-    unmount();
-
-    expect(document.querySelector('[data-testid="window-preview-frame"]')).not.toBeInTheDocument();
-
-    expect(() => {
       fireEvent.pointerMove(document, {
         pointerId: 304,
         clientX: 295,
         clientY: 100,
       });
 
-      fireEvent.pointerUp(document, {
-        pointerId: 304,
-        clientX: 295,
-        clientY: 100,
-      });
-    }).not.toThrow();
+      expect(queryByTestId('window-preview-frame')).toBeInTheDocument();
+
+      unmount();
+
+      expect(
+        document.querySelector('[data-testid="window-preview-frame"]'),
+      ).not.toBeInTheDocument();
+
+      expect(() => {
+        fireEvent.pointerMove(document, {
+          pointerId: 304,
+          clientX: 295,
+          clientY: 100,
+        });
+
+        fireEvent.pointerUp(document, {
+          pointerId: 304,
+          clientX: 295,
+          clientY: 100,
+        });
+      }).not.toThrow();
+
+      expect(consoleError.mock.calls.flat().join(' ')).not.toContain(
+        "Can't perform a React state update on an unmounted component",
+      );
+    } finally {
+      consoleError.mockRestore();
+    }
   });
 
   it('renders preview frame when preview is active with outline behavior while real frame remains', () => {

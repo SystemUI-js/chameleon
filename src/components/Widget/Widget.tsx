@@ -133,6 +133,7 @@ export class CWidget<TState extends WidgetState = WidgetState> extends React.Com
   declare public context: ThemeContextValue;
 
   public readonly uuid = generateUUID();
+  private isUnmounting = false;
   private readonly resizeHandleRefs: Record<ResizeDirection, React.RefObject<HTMLDivElement>> = {
     n: React.createRef<HTMLDivElement>(),
     s: React.createRef<HTMLDivElement>(),
@@ -175,6 +176,7 @@ export class CWidget<TState extends WidgetState = WidgetState> extends React.Com
   }
 
   public componentWillUnmount(): void {
+    this.isUnmounting = true;
     this.cleanupResizeDrags();
   }
 
@@ -674,7 +676,10 @@ export class CWidget<TState extends WidgetState = WidgetState> extends React.Com
     this.resizeStartByDirection.clear();
     this.pendingResizeRectByDirection.clear();
     this.cancelledResizeDirections.clear();
-    this.clearResizePreview();
+
+    if (!this.isUnmounting) {
+      this.clearResizePreview();
+    }
 
     RESIZE_DIRECTIONS.forEach((direction) => {
       const handle = this.resizeHandleRefs[direction].current;
