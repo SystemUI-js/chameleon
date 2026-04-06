@@ -413,6 +413,23 @@ describe('CMenu', () => {
     expect(screen.getByRole('menuitem', { name: 'Hover Leaf' })).toBeInTheDocument();
   });
 
+  it('hover parent click does not close hover-opened submenu', () => {
+    render(
+      <CMenu menuList={MIXED_TRIGGER_MENU_LIST} trigger="click" data-testid="menu-hover-stable">
+        <button type="button">Hover Root</button>
+      </CMenu>,
+    );
+
+    fireEvent.click(screen.getByRole('button', { name: 'Hover Root' }));
+    fireEvent.pointerEnter(screen.getByTestId('menu-item-hover-parent'));
+
+    expect(screen.getByRole('menuitem', { name: 'Hover Leaf' })).toBeInTheDocument();
+
+    fireEvent.click(screen.getByTestId('menu-item-hover-parent'));
+
+    expect(screen.getByRole('menuitem', { name: 'Hover Leaf' })).toBeInTheDocument();
+  });
+
   it('explicit item trigger overrides parent trigger', () => {
     const overrideTriggerList: readonly MenuListItem[] = [
       {

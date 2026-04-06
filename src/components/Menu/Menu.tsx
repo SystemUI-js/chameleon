@@ -181,6 +181,14 @@ export function CMenu({
               return;
             }
 
+            if (effectiveTrigger === 'hover') {
+              if (!isBranchOpen) {
+                openBranchAtDepth(depth, item.id);
+              }
+
+              return;
+            }
+
             toggleBranchAtDepth(depth, item.id);
           };
 
