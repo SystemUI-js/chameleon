@@ -5,8 +5,8 @@ import {
   CMenu as PackageEntryCMenu,
   Theme,
   type CMenuProps,
-  type CMenuTrigger,
   type MenuListItem,
+  type CMenuTrigger,
 } from '../src';
 import { CMenu } from '../src/components/Menu/Menu';
 
@@ -104,6 +104,22 @@ describe('CMenu', () => {
     expect(menu).toBeInTheDocument();
     expect(menu).toHaveClass('cm-menu');
     expect(menu).toHaveAttribute('data-menu-state', 'closed');
+  });
+
+  it('renders the root trigger as a direct child without wrapper', () => {
+    render(
+      <CMenu menuList={SAMPLE_MENU_LIST} data-testid="menu-direct-trigger">
+        <button type="button" data-testid="menu-direct-trigger-button">
+          Trigger
+        </button>
+      </CMenu>,
+    );
+
+    const menu = screen.getByTestId('menu-direct-trigger');
+    const trigger = screen.getByTestId('menu-direct-trigger-button');
+
+    expect(trigger.parentElement).toBe(menu);
+    expect(menu.querySelector('.cm-menu__trigger')).not.toBeInTheDocument();
   });
 
   it('applies theme class from explicit theme prop', () => {

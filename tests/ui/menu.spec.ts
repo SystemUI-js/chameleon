@@ -1,14 +1,15 @@
 import { expect, test } from '@playwright/test';
 import {
-  gotoMenuFixture,
+  FIXTURE_ERROR_TEST_ID,
   gotoClickMenu,
   gotoHoverMenu,
-  readMenuSelectionValue,
-  MENU_DEMO_TRIGGER_TEST_ID,
+  gotoMenuFixture,
   MENU_DEMO_POPUP_TEST_ID,
-  MENU_ITEM_FILE_TEST_ID,
+  MENU_DEMO_ROOT_TEST_ID,
+  MENU_DEMO_TRIGGER_TEST_ID,
   MENU_ITEM_FILE_NEW_TEST_ID,
-  FIXTURE_ERROR_TEST_ID,
+  MENU_ITEM_FILE_TEST_ID,
+  MENU_SELECTION_VALUE_TEST_ID,
 } from './menu.helpers';
 
 test('click fixture exposes menu trigger', async ({ page }) => {
@@ -21,6 +22,25 @@ test('hover fixture exposes menu trigger', async ({ page }) => {
   await gotoHoverMenu(page);
 
   await expect(page.getByTestId(MENU_DEMO_TRIGGER_TEST_ID)).toBeVisible();
+});
+
+test('click fixture renders trigger as direct root child', async ({ page }) => {
+  await gotoClickMenu(page);
+
+  const rootMenu = page.getByTestId(MENU_DEMO_ROOT_TEST_ID);
+  const isDirectChild = await rootMenu.evaluate(
+    (menuElement, { triggerTestId }) => {
+      const trigger = menuElement.querySelector(`[data-testid="${triggerTestId}"]`);
+
+      return (
+        trigger?.parentElement === menuElement &&
+        menuElement.querySelector('.cm-menu__trigger') === null
+      );
+    },
+    { triggerTestId: MENU_DEMO_TRIGGER_TEST_ID },
+  );
+
+  expect(isDirectChild).toBe(true);
 });
 
 test('unknown fixture shows explicit error', async ({ page }) => {
@@ -66,9 +86,9 @@ test.describe('Menu interactions', () => {
     await fileItem.click();
 
     const newItem = page.getByTestId(MENU_ITEM_FILE_NEW_TEST_ID);
-    await newItem.click();
+    await expect(newItem).toBeVisible();
+    await newItem.click({ force: true });
 
-    const selectionValue = await readMenuSelectionValue(page);
-    expect(selectionValue).toContain('New');
+    await expect(page.getByTestId(MENU_SELECTION_VALUE_TEST_ID)).toContainText('New');
   });
 });

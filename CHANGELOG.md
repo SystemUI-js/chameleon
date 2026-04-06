@@ -1,5 +1,9 @@
 ### [UnReleased]
 
+- **Breaking:** 移除 `CMenu` 根触发器 `.cm-menu__trigger` 包裹节点
+  - 根触发元素现在直接作为 `.cm-menu` 的一级子节点渲染，组件不再额外插入中间 wrapper DOM
+  - 保持 click / hover 打开语义、ARIA 注入与外部点击关闭逻辑不变，但依赖 `.cm-menu__trigger` class 或 DOM 层级的样式/选择器需要迁移
+
 - **Feature:** 优化 `CMenu` 混合触发模式默认行为
   - 根触发器保持 `click` / `hover` 配置语义，根菜单通过 `click` 打开时，未显式声明的父级子菜单现在默认改为 `hover` 展开
   - 保留 `item.trigger` 的最高优先级，可通过 `item.trigger='click'` 为特定分支维持旧的点击展开行为，作为兼容迁移方式

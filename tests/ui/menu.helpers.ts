@@ -2,6 +2,7 @@ import type { Page } from '@playwright/test';
 import type { DevThemeId } from '@/dev/themeSwitcher';
 
 const PLAYWRIGHT_MENU_PATH = '/playwright-menu.html';
+const MENU_DEMO_ROOT_TEST_ID = 'menu-demo';
 const MENU_DEMO_TRIGGER_TEST_ID = 'menu-demo-trigger';
 const MENU_DEMO_POPUP_TEST_ID = 'menu-demo-popup';
 const MENU_ITEM_FILE_TEST_ID = 'menu-item-file';
@@ -77,13 +78,14 @@ export const readMenuSelectionValue = async (page: Page): Promise<string | null>
 };
 
 export {
-  MENU_DEMO_TRIGGER_TEST_ID,
+  FIXTURE_ERROR_TEST_ID,
   MENU_DEMO_POPUP_TEST_ID,
-  MENU_ITEM_FILE_TEST_ID,
+  MENU_DEMO_ROOT_TEST_ID,
+  MENU_DEMO_TRIGGER_TEST_ID,
   MENU_ITEM_FILE_NEW_TEST_ID,
   MENU_ITEM_FILE_OPEN_TEST_ID,
+  MENU_ITEM_FILE_TEST_ID,
   MENU_ITEM_VIEW_TEST_ID,
   MENU_ITEM_VIEW_ZOOM_TEST_ID,
   MENU_SELECTION_VALUE_TEST_ID,
-  FIXTURE_ERROR_TEST_ID,
 };

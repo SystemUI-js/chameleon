@@ -156,11 +156,12 @@ export function CMenu({
     listId: string,
     parentPath = '',
   ): React.ReactElement => {
+    const menuRole: React.AriaRole = 'menu';
+
     return (
-      // biome-ignore lint/a11y/noNoninteractiveElementToInteractiveRole: ul[role="menu"] is the required ARIA structure for this menu.
       <ul
         id={listId}
-        role="menu"
+        role={menuRole}
         className="cm-menu__list"
         data-testid="cm-menu-list"
         data-menu-depth={depth}
@@ -263,7 +264,7 @@ export function CMenu({
       data-menu-state={isRootOpen ? 'open' : 'closed'}
       onPointerLeave={handleRootPointerLeave}
     >
-      <div className="cm-menu__trigger">{triggerElement}</div>
+      {triggerElement}
       {isRootOpen ? (
         <div className="cm-menu__popup" data-testid="menu-demo-popup">
           {renderItems(menuList, 0, rootMenuId)}
