@@ -1,5 +1,10 @@
 ### [UnReleased]
 
+- **Feature:** 新增 `CMenu` 组件并完成发布级集成
+  - 支持根触发模式 `click` / `hover`，并在子菜单层级中继承或按项覆盖触发方式
+  - 支持基于递归 `menuList` 数据的多级菜单渲染，保持叶子节点选择回调与整树关闭行为
+  - 补充并对齐 Jest + Playwright 覆盖，验证导出面、交互行为与 UI 夹具选择器契约
+
 - **Breaking:** 重构为纯组件库，移除系统导向 API
   - 移除 ThemeContext、systemType、SystemHost、WindowManager、ScreenManager
   - 主题现在通过 CSS 变量直接应用，不依赖系统注册

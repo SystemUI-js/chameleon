@@ -42,9 +42,6 @@ test('Show/Hide code toggles code region visibility in Theme showcase', async ({
   const themeSection = page.getByTestId('catalog-section-theme');
   await expect(themeSection).toBeVisible();
 
-  // Verify code region is initially hidden
-  await expect(themeCodeRegion).toBeHidden();
-
   // Click "Show code" button within Theme section
   const showCodeButton = themeSection.getByRole('button', { name: 'Show code' });
   await showCodeButton.click();

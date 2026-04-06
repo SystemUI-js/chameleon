@@ -1,5 +1,5 @@
 import type React from 'react';
-import { CWidget, type CWidgetProps } from '../Widget/Widget';
+import { CWidget, type CWidgetProps, type WidgetState } from '../Widget/Widget';
 import { getDockEdgeStyle, getDockFrameClassName, getDockFrameStyle } from './dockLayout';
 import './index.scss';
 
@@ -30,24 +30,27 @@ type CDockHeightProps =
 
 export type CDockProps = CDockBaseProps & CDockHeightProps;
 
-type DockState = {
+type DockState = WidgetState & {
   resolvedPosition: DockPosition;
   resolvedHeight?: number;
 };
 
-export class CDock extends CWidget {
+export class CDock extends CWidget<DockState> {
   declare public props: CDockProps;
-  public state: DockState;
+  declare public state: DockState;
 
   public constructor(props: CDockProps) {
     super(props);
     this.state = {
+      ...this.state,
       resolvedPosition: props.position ?? props.defaultPosition ?? 'top',
       resolvedHeight: props.height ?? props.defaultHeight,
     };
   }
 
   public componentDidUpdate(prevProps: CDockProps): void {
+    super.componentDidUpdate(prevProps);
+
     if (prevProps.position !== this.props.position || prevProps.height !== this.props.height) {
       this.setState({
         resolvedPosition: this.props.position ?? this.state.resolvedPosition,

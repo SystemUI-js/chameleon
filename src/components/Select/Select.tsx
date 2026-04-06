@@ -1,5 +1,6 @@
 import type React from 'react';
 import { mergeClasses } from '../Theme/mergeClasses';
+import { normalizeThemeClassName } from '../Theme/normalizeThemeClassName';
 import { useTheme } from '../Theme/useTheme';
 import './index.scss';
 
@@ -24,13 +25,6 @@ export interface CSelectProps {
   'data-testid'?: string;
 }
 
-function resolveThemeClass(theme: string | undefined): string | undefined {
-  if (theme === undefined) {
-    return undefined;
-  }
-  return theme.startsWith('cm-theme--') ? theme : `cm-theme--${theme}`;
-}
-
 export function CSelect({
   options,
   value,
@@ -45,7 +39,7 @@ export function CSelect({
   'aria-label': ariaLabel,
   'data-testid': dataTestId,
 }: CSelectProps): React.ReactElement {
-  const resolvedTheme = resolveThemeClass(useTheme(theme));
+  const resolvedTheme = normalizeThemeClassName(useTheme(theme));
   const baseClasses = ['cm-select'];
   const isControlled = value !== undefined;
   let resolvedDefaultValue: string | undefined;

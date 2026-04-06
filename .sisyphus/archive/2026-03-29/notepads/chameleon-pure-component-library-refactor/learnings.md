@@ -6,5 +6,5 @@
 - 2026-03-29: `CGrid` / `CGridItem` 已从 `src/components/Screen/Grid.tsx` 迁移到 `src/components/Grid/Grid.tsx`，组件总出口与 `tests/Grid.test.tsx` 已同步到新路径。
 - 2026-03-29: 删除 `src/system/`、`WindowManager`、`Screen`、`ScreenManager` 与相关 shell 测试后，dev/playwright 入口改为纯 `theme` 根包装，`yarn build` 可直接通过。
 
-8. - 2026-03-29: 重建 dev demo 为主题化组件目录。创建 `src/dev/ComponentCatalog.tsx`，包含 Button、RadioGroup、Select、Window、Dock、StartBar、Grid 展示区。主题切换状态由 ComponentCatalog 内部管理，交互状态在切换主题时保留。
-9. - 2026-03-29: `CGridItem` 组件需要 `parentGrid` 属性，类型为 `[number, number]`。
+- 2026-03-29: 重建 dev demo 为主题化组件目录。创建 `src/dev/ComponentCatalog.tsx`，包含 Button、RadioGroup、Select、Window、Dock、StartBar、Grid 展示区。主题切换状态由 ComponentCatalog 内部管理，交互状态在切换主题时保留。
+- 2026-03-29: `CGridItem` 组件需要 `parentGrid` 属性，类型为 `[number, number]`。

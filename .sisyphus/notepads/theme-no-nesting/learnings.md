@@ -193,39 +193,39 @@ yarn test:ui --grep "Theme showcase"
 ### 核心文件清单
 
 #### 实现文件
-- `/Users/zhangxiao/frontend/SysUI/chameleon/src/components/Theme/Theme.tsx`
+- `src/components/Theme/Theme.tsx`
   - 行 3-5: `ThemeContextValue` 当前仅含 `theme: string | undefined`
   - 行 12: `ThemeContext = React.createContext<ThemeContextValue>({ theme: undefined })`
   - 行 14-22: `normalizeTheme()` 将空白字符串转换为 `undefined`
   - 行 24-34: `Theme` 组件渲染函数，无嵌套检测
 
-- `/Users/zhangxiao/frontend/SysUI/chameleon/src/components/Theme/useTheme.ts`
+- `src/components/Theme/useTheme.ts`
   - 行 14-22: `useTheme(theme?: string)` 实现显式 prop 优先逻辑
   - 行 18-20: `if (explicitTheme !== undefined) return explicitTheme` 明确优先
   - 行 22: 回退到 `context.theme`
 
 #### 测试文件
-- `/Users/zhangxiao/frontend/SysUI/chameleon/tests/Theme.test.tsx`
+- `tests/Theme.test.tsx`
   - **行 47-57: 必须替换** — `it('uses the nearest nested provider theme')` 旧契约断言
   - **行 59-67: 必须保留** — `it('does not inject a theme for empty provider values')` 空白 provider 边界
   - **行 69-73: 必须保留** — `it('returns undefined when no explicit theme or provider exists')` 无 provider 边界
   - 行 37-45: `it('uses explicit theme prop before provider theme')` 显式 prop 优先 → 必须保留
 
-- `/Users/zhangxiao/frontend/SysUI/chameleon/tests/Button.test.tsx`
+- `tests/Button.test.tsx`
   - 行 68-119: `describe('theme prop')` 整体必须保留，不能修改
 
-- `/Users/zhangxiao/frontend/SysUI/chameleon/tests/PublicThemeMatrix.test.tsx`
+- `tests/PublicThemeMatrix.test.tsx`
   - 行 39-151: `describe('public component theme matrix')` 整体必须保留
 
 #### 消费 Theme 的组件（回归保护目标）
-- `/Users/zhangxiao/frontend/SysUI/chameleon/src/components/Button/Button.tsx` — 行 37: `useTheme(theme)`
-- `/Users/zhangxiao/frontend/SysUI/chameleon/src/components/Select/Select.tsx` — 行 48: `useTheme(theme)`
-- `/Users/zhangxiao/frontend/SysUI/chameleon/src/components/Radio/RadioGroup.tsx` — 行 48: `useTheme(theme)`
-- `/Users/zhangxiao/frontend/SysUI/chameleon/src/components/Radio/Radio.tsx` — 行 32: `useTheme(theme)`
-- `/Users/zhangxiao/frontend/SysUI/chameleon/src/components/Widget/Widget.tsx` — 行 93: `contextType = ThemeContext`，行 248-256: `getTheme()`
+- `src/components/Button/Button.tsx` — 行 37: `useTheme(theme)`
+- `src/components/Select/Select.tsx` — 行 48: `useTheme(theme)`
+- `src/components/Radio/RadioGroup.tsx` — 行 48: `useTheme(theme)`
+- `src/components/Radio/Radio.tsx` — 行 32: `useTheme(theme)`
+- `src/components/Widget/Widget.tsx` — 行 93: `contextType = ThemeContext`，行 248-256: `getTheme()`
 
 #### Demo 文件
-- `/Users/zhangxiao/frontend/SysUI/chameleon/src/dev/ComponentCatalog.tsx`
+- `src/dev/ComponentCatalog.tsx`
   - 行 126-143: `THEME_SNIPPET` 包含嵌套示例与 "Inner wins" 文案 → 任务 5 需删除
   - 行 162-173: `ThemeShowcase` 渲染在 `DevThemeRoot` 内 → 任务 5 需隔离
 

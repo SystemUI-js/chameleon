@@ -1,5 +1,6 @@
 import React from 'react';
 import { mergeClasses } from '../Theme/mergeClasses';
+import { normalizeThemeClassName } from '../Theme/normalizeThemeClassName';
 import { useTheme } from '../Theme/useTheme';
 import { RadioGroupContext } from './RadioGroup';
 import './index.scss';
@@ -13,14 +14,6 @@ export interface CRadioProps {
   'data-testid'?: string;
 }
 
-function resolveThemeClass(theme: string | undefined): string | undefined {
-  if (theme === undefined) {
-    return undefined;
-  }
-
-  return theme.startsWith('cm-theme--') ? theme : `cm-theme--${theme}`;
-}
-
 export function CRadio({
   value,
   disabled = false,
@@ -29,7 +22,7 @@ export function CRadio({
   theme,
   'data-testid': dataTestId,
 }: CRadioProps): React.ReactElement {
-  const resolvedTheme = resolveThemeClass(useTheme(theme));
+  const resolvedTheme = normalizeThemeClassName(useTheme(theme));
   const groupContext = React.useContext(RadioGroupContext);
 
   if (groupContext === null) {

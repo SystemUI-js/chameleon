@@ -87,6 +87,7 @@ Wave 3: test suite surface cleanup + release notes
 - Task 8 changelog update and final package-surface check prep
 
 ### Dependency Matrix (full, all tasks)
+
 | Task | Depends On | Blocks |
 |---|---|---|
 | 1 | none | 4, 8 |
@@ -131,7 +132,8 @@ Wave 3: test suite surface cleanup + release notes
   - [ ] `src/components/index.ts` 不再包含 `./Window/WindowManager`
 
   **QA Scenarios** (MANDATORY — task incomplete without these):
-  ```
+
+  ```text
   Scenario: Root exports no longer expose removed APIs
     Tool: Bash
     Steps: Run a repository content search for `SystemHost|SYSTEM_TYPE|THEME|defaultThemeDefinition|win98ThemeDefinition|winXpThemeDefinition` scoped to `src/index.ts` and `src/components/index.ts`.
@@ -172,7 +174,8 @@ Wave 3: test suite surface cleanup + release notes
   - [ ] 仓库运行时代码中不再存在对 `CWindowManager`、`SystemHost`、`resolveThemeDefinition`、`resolveSystemTypeDefinition` 的 import/export 引用
 
   **QA Scenarios** (MANDATORY — task incomplete without these):
-  ```
+
+  ```text
   Scenario: Deleted source files are absent
     Tool: Bash
     Steps: List `src/components/Window` and `src/system` and verify `WindowManager.tsx` plus all former system files are absent.
@@ -213,7 +216,8 @@ Wave 3: test suite surface cleanup + release notes
   - [ ] 仓库内不再存在 `ThemeDefinition` 从 `@/system/types` 导入的语句
 
   **QA Scenarios** (MANDATORY — task incomplete without these):
-  ```
+
+  ```text
   Scenario: Theme-definition modules are removed without deleting styles
     Tool: Bash
     Steps: Verify `src/theme/default/index.tsx`, `src/theme/win98/index.tsx`, and `src/theme/winxp/index.tsx` are absent while each corresponding `src/theme/*/styles` directory still exists.
@@ -253,7 +257,8 @@ Wave 3: test suite surface cleanup + release notes
   - [ ] `yarn dev` 启动后，根页面能直接渲染 `CommonControlsPreview`，不再依赖 window body 容器出现后再二次挂载
 
   **QA Scenarios** (MANDATORY — task incomplete without these):
-  ```
+
+  ```text
   Scenario: Dev entry boots without system shell
     Tool: Playwright
     Steps: Start `yarn dev`, open the root preview page, and assert `button-demo-primary`, `radio-demo-fruit`, and `select-demo-size` are visible without interacting with any system/theme controls.
@@ -296,7 +301,8 @@ Wave 3: test suite surface cleanup + release notes
   - [ ] `playwright-window.html?fixture=default` 与 `playwright-common-controls.html?fixture=default|disabled` 仍能正确加载
 
   **QA Scenarios** (MANDATORY — task incomplete without these):
-  ```
+
+  ```text
   Scenario: Fixture-only Playwright harness still serves window fixtures
     Tool: Playwright
     Steps: Open `/playwright-window.html?fixture=default`, assert `window-frame`, `window-title`, and `window-content` are visible; then open `?fixture=drag-only` and assert no resize handles are exposed.
@@ -338,7 +344,8 @@ Wave 3: test suite surface cleanup + release notes
   - [ ] 若 `tests/helpers/systemSession.fixture.tsx` 无剩余引用，则一并删除；否则保留且无死字段导致 lint/test 失败
 
   **QA Scenarios** (MANDATORY — task incomplete without these):
-  ```
+
+  ```text
   Scenario: Removed Jest suites no longer exist while unrelated suites remain
     Tool: Bash
     Steps: Verify the listed removal-target test files are absent and confirm `tests/ScreenManager.test.tsx`, `tests/CWindowTitleComposition.test.tsx`, and `tests/Button.test.tsx` still exist.
@@ -380,7 +387,8 @@ Wave 3: test suite surface cleanup + release notes
   - [ ] `yarn test:ui` 至少仍执行一组 fixture window 用例和一组 common-controls 用例
 
   **QA Scenarios** (MANDATORY — task incomplete without these):
-  ```
+
+  ```text
   Scenario: Remaining Playwright specs use fixture-only navigation
     Tool: Bash
     Steps: Search `tests/ui/*.spec.ts` for `gotoWindowSelection`, `switchWindowSelection`, `gotoWin98CommonControls`, and `gotoWin98DisabledCommonControls`, then inspect remaining specs for `gotoWindowFixture` or `gotoCommonControlsFixture` usage.
@@ -420,7 +428,8 @@ Wave 3: test suite surface cleanup + release notes
   - [ ] 全量验证前的仓库搜索不再发现已知残留 system/window-manager 运行时代码引用
 
   **QA Scenarios** (MANDATORY — task incomplete without these):
-  ```
+
+  ```text
   Scenario: Changelog documents the breaking surface accurately
     Tool: Bash
     Steps: Read the `[UnReleased]` section and compare it against actual removed exports/files (`src/system/**`, `SystemHost`, system registry/types, `CWindowManager`, dev themeSwitcher/harness routes).
@@ -452,13 +461,15 @@ Wave 3: test suite surface cleanup + release notes
   - [ ] 若 REJECTED，必须列出具体偏离的任务编号与文件路径
 
   **QA Scenarios**:
-  ```
+
+  ```text
   Scenario: Oracle verifies plan fidelity
     Tool: task(subagent_type="oracle")
     Steps: Submit the completed diff plus `.sisyphus/plans/remove-system-window-manager.md` to oracle and ask for a plan-compliance audit covering Tasks 1-8, preserved components, and declared exclusions.
     Expected: Oracle returns APPROVED, or returns a file-specific rejection list that must be fixed before completion.
     Evidence: .sisyphus/evidence/f1-plan-compliance.md
   ```
+
 - [ ] F2. Code Quality Review — unspecified-high
 
   **What to do**: 让独立 reviewer 审核删除后的代码质量，重点检查死引用、错误保留、误删、类型残留、以及仅为过测试而引入的脆弱逻辑。
@@ -471,13 +482,15 @@ Wave 3: test suite surface cleanup + release notes
   - [ ] 所有高严重度问题已修复或不存在
 
   **QA Scenarios**:
-  ```
+
+  ```text
   Scenario: Independent quality review on cleanup diff
     Tool: task(category="unspecified-high")
     Steps: Provide the final diff and ask for a code-quality review focused on cleanup correctness, dead code, type safety, and accidental scope expansion.
     Expected: Reviewer returns APPROVED with no high-severity findings.
     Evidence: .sisyphus/evidence/f2-code-quality.md
   ```
+
 - [ ] F3. Real Manual QA — unspecified-high (+ playwright if UI)
 
   **What to do**: 运行完整 agent-executed 回归，覆盖 lint、Jest、Playwright、build、pack，以及 dev preview 与 fixture 页面关键路径。
@@ -490,7 +503,8 @@ Wave 3: test suite surface cleanup + release notes
   - [ ] dev preview 与保留的 fixture 页面可被浏览器验证
 
   **QA Scenarios**:
-  ```
+
+  ```text
   Scenario: Full automated regression sweep
     Tool: Bash
     Steps: Run `yarn lint && yarn test --runInBand && yarn test:ui && yarn build && npm pack --dry-run`.
@@ -503,6 +517,7 @@ Wave 3: test suite surface cleanup + release notes
     Expected: All retained browser surfaces load without system/theme routing.
     Evidence: .sisyphus/evidence/f3-browser-regression.txt
   ```
+
 - [ ] F4. Scope Fidelity Check — deep
 
   **What to do**: 让 `deep` reviewer 检查最终结果是否严格符合用户原始诉求，没有遗漏“相关依赖、测试用例”，也没有扩展到不必要的大范围重构。
@@ -515,7 +530,8 @@ Wave 3: test suite surface cleanup + release notes
   - [ ] 若发现范围偏差，输出具体文件与修正建议
 
   **QA Scenarios**:
-  ```
+
+  ```text
   Scenario: Deep scope fidelity audit
     Tool: task(category="deep")
     Steps: Provide the original request, confirmed decisions, and final diff; ask the reviewer to verify that all related dependencies/tests were removed while unrelated primitives/components were preserved.

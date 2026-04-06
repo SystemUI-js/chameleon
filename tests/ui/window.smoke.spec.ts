@@ -1,5 +1,9 @@
 import { expect, test } from '@playwright/test';
-import { gotoWindowFixture, readFrameMetrics } from './window.helpers';
+import {
+  gotoWindowFixture,
+  gotoWindowFixtureAllowingError,
+  readFrameMetrics,
+} from './window.helpers';
 
 test('default fixture exposes baseline metrics', async ({ page }) => {
   await gotoWindowFixture(page, 'default');
@@ -16,7 +20,7 @@ test('default fixture exposes baseline metrics', async ({ page }) => {
 });
 
 test('unknown fixture shows explicit error', async ({ page }) => {
-  await gotoWindowFixture(page, 'unknown-mode');
+  await gotoWindowFixtureAllowingError(page, 'unknown-mode');
 
   const error = page.getByTestId('fixture-error');
 

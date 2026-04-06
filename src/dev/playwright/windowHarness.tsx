@@ -3,37 +3,8 @@ import { createRoot } from 'react-dom/client';
 import { CWindow } from '@/components/Window/Window';
 import { CWindowTitle } from '@/components/Window/WindowTitle';
 import { WidgetInteractionBehavior } from '@/components/Widget/Widget';
-import { DEV_THEME, DevThemeRoot, type DevThemeId } from '../themeSwitcher';
-
-type HarnessRoute = {
-  theme: DevThemeId;
-  fixture: string;
-};
-
-const DEFAULT_FIXTURE = 'default';
-const DEV_THEME_IDS = Object.values(DEV_THEME);
-
-const isDevThemeId = (value: string | null): value is DevThemeId => {
-  return value !== null && DEV_THEME_IDS.includes(value as DevThemeId);
-};
-
-const readHarnessRoute = (): HarnessRoute => {
-  try {
-    const url = new URL(window.location.href);
-    const fixture = url.searchParams.get('fixture');
-    const theme = url.searchParams.get('theme');
-
-    return {
-      theme: isDevThemeId(theme) ? theme : DEV_THEME.default,
-      fixture: fixture ?? DEFAULT_FIXTURE,
-    };
-  } catch {
-    return {
-      theme: DEV_THEME.default,
-      fixture: DEFAULT_FIXTURE,
-    };
-  }
-};
+import { DevThemeRoot } from '../themeSwitcher';
+import { readHarnessRoute } from './harnessRoute';
 
 const renderFixture = (fixture: string): ReactNode => {
   switch (fixture) {
