@@ -339,6 +339,53 @@
         cursor: not-allowed;
     }
 
+    // Tab - Win98 Theme
+    .cm-ctab,
+    &.cm-ctab {
+        border: 2px solid;
+        border-color: #808080 #ffffff #ffffff #808080;
+        background: silver;
+        box-shadow:
+            inset -1px -1px 0 #0a0a0a,
+            inset 1px 1px 0 #dfdfdf,
+            inset -2px -2px grey,
+            inset 2px 2px #fff;
+    }
+
+    .cm-ctab__list {
+        padding: 4px 4px 0;
+    }
+
+    .cm-ctab__tab {
+        min-height: 23px;
+        padding: 0 12px;
+        border: 2px solid;
+        border-color: #ffffff #808080 #808080 #ffffff;
+        border-bottom: none;
+        background: silver;
+        color: #000000;
+        font-size: 11px;
+        font-family: 'MS Sans Serif', Tahoma, sans-serif;
+    }
+
+    .cm-ctab__tab:hover:not(:disabled):not(.cm-ctab__tab--active) {
+        background: #d7d7d7;
+    }
+
+    .cm-ctab__tab--active {
+        margin-bottom: -2px;
+        background: #ffffff;
+        font-weight: 700;
+    }
+
+    .cm-ctab__panel {
+        padding: 10px 12px;
+        border: 2px solid;
+        border-color: #808080 #ffffff #ffffff #808080;
+        background: #ffffff;
+        color: #000000;
+    }
+
     // Start Bar - Windows 98 Classic Style
     .cm-start-bar,
     &.cm-start-bar {

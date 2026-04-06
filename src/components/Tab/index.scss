@@ -1,0 +1,25 @@
+.cm-ctab {
+    box-sizing: border-box;
+    display: flex;
+    flex-direction: column;
+    gap: 8px;
+}
+
+.cm-ctab__list {
+    display: flex;
+    align-items: flex-end;
+    gap: 4px;
+}
+
+.cm-ctab__tab {
+    position: relative;
+    cursor: pointer;
+}
+
+.cm-ctab__tab--active {
+    cursor: default;
+}
+
+.cm-ctab__panel {
+    min-width: 0;
+}

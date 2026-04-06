@@ -3,27 +3,29 @@ import {
   CButton,
   CButtonGroup,
   CButtonSeparator,
+  CDock,
+  CGrid,
+  CGridItem,
+  CIconContainer,
   CMenu,
   CRadio,
   CRadioGroup,
   CSelect,
-  CWindow,
-  CWindowTitle,
-  CWindowBody,
-  Theme,
-  CDock,
   CStartBar,
-  CGrid,
-  CGridItem,
-  CIconContainer,
+  CTab,
+  CTabItem,
+  CWindow,
+  CWindowBody,
+  CWindowTitle,
+  Theme,
   type CSelectOption,
-  type WindowTitleActionButtonPosition,
   type MenuListItem,
+  type WindowTitleActionButtonPosition,
   WidgetInteractionBehavior,
 } from '@/components';
-import { DEV_THEME, DevThemeRoot, type DevThemeId } from './themeSwitcher';
 import { ShowcaseCodeDisclosure } from './ShowcaseCodeDisclosure';
 import './styles/catalog.scss';
+import { DEV_THEME, DevThemeRoot, type DevThemeId } from './themeSwitcher';
 
 const SIZE_OPTIONS: readonly CSelectOption[] = [
   { label: 'Small', value: 'small' },
@@ -317,6 +319,21 @@ return (
 );
 `.trim();
 
+const TAB_SNIPPET = `
+<CTab>
+  <CTabItem key="overview" title="Overview">
+    <p>Use arrow keys, Home, and End to move between tabs.</p>
+    <p>Panels preserve semantic tab roles and active state automatically.</p>
+  </CTabItem>
+  <CTabItem key="details" title="Details">
+    <p>Each tab panel can render any React content.</p>
+  </CTabItem>
+  <CTabItem key="notes" title="Notes">
+    <p>CTab manages focus and selection internally.</p>
+  </CTabItem>
+</CTab>
+`.trim();
+
 function SelectShowcase(): React.ReactElement {
   const [selectedSize, setSelectedSize] = React.useState('medium');
 
@@ -333,6 +350,33 @@ function SelectShowcase(): React.ReactElement {
         <CSelect name="size-disabled" value="large" options={SIZE_OPTIONS} disabled />
         <p className="cm-catalog__value">Selected size: {selectedSize}</p>
       </div>
+    </ShowcaseSection>
+  );
+}
+
+function TabShowcase(): React.ReactElement {
+  return (
+    <ShowcaseSection title="Tab" testId="catalog-section-tab" code={TAB_SNIPPET}>
+      <CTab data-testid="tab-demo">
+        <CTabItem key="overview" title="Overview">
+          <div className="cm-catalog__stack">
+            <p>Use arrow keys, Home, and End to move between tabs.</p>
+            <p>Panels preserve semantic tab roles and active state automatically.</p>
+          </div>
+        </CTabItem>
+        <CTabItem key="details" title="Details">
+          <div className="cm-catalog__stack">
+            <p>Each tab panel can render any React content.</p>
+            <p>Try switching tabs with mouse or keyboard.</p>
+          </div>
+        </CTabItem>
+        <CTabItem key="notes" title="Notes">
+          <div className="cm-catalog__stack">
+            <p>CTab manages focus and selection internally.</p>
+            <p>Use keyed items for stable tab and panel identifiers.</p>
+          </div>
+        </CTabItem>
+      </CTab>
     </ShowcaseSection>
   );
 }
@@ -738,6 +782,7 @@ export function ComponentCatalog({
             <ButtonGroupShowcase />
             <RadioGroupShowcase />
             <SelectShowcase />
+            <TabShowcase />
             <IconShowcase />
             <MenuShowcase />
             <WindowShowcase />
