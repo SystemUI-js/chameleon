@@ -3,6 +3,7 @@ import {
   CButton,
   CButtonGroup,
   CButtonSeparator,
+  CSplitArea,
   CDock,
   CGrid,
   CGridItem,
@@ -163,6 +164,30 @@ const BUTTON_GROUP_SNIPPET = `
   <CButton>Up</CButton>
   <CButton>Down</CButton>
 </CButtonGroup>
+`.trim();
+
+const SPLIT_AREA_SNIPPET = `
+const [showInspector, setShowInspector] = useState(true);
+
+return (
+  <>
+    <CButton onClick={() => setShowInspector((visible) => !visible)}>
+      {showInspector ? 'Hide inspector' : 'Restore inspector'}
+    </CButton>
+
+    <CSplitArea direction="horizontal" separatorMovable className="workspace-layout">
+      <section>Explorer</section>
+      <CSplitArea direction="vertical" separatorMovable>
+        <section>Editor</section>
+        <CSplitArea direction="horizontal" separatorMovable>
+          <section>Preview</section>
+          <section>Console</section>
+        </CSplitArea>
+      </CSplitArea>
+      {showInspector ? <section>Inspector</section> : null}
+    </CSplitArea>
+  </>
+);
 `.trim();
 
 function ThemeShowcase(): React.ReactElement {
@@ -793,6 +818,83 @@ function GridShowcase(): React.ReactElement {
   );
 }
 
+function SplitAreaShowcase(): React.ReactElement {
+  const [showInspector, setShowInspector] = React.useState(true);
+
+  return (
+    <ShowcaseSection
+      title="SplitArea"
+      testId="catalog-section-split-area"
+      code={SPLIT_AREA_SNIPPET}
+    >
+      <div className="cm-catalog__stack">
+        <div className="cm-catalog__row">
+          <CButton
+            data-testid="split-area-demo-toggle"
+            onClick={() => setShowInspector((visible) => !visible)}
+          >
+            {showInspector ? '隐藏右侧区域' : '恢复右侧区域'}
+          </CButton>
+          <span className="cm-catalog__value" data-testid="split-area-demo-status">
+            {showInspector ? '当前为三栏布局' : '当前为双栏布局'}
+          </span>
+        </div>
+
+        <div className="cm-split-area-demo-shell">
+          <CSplitArea
+            data-testid="split-area-demo-root"
+            direction="horizontal"
+            separatorMovable
+            className="cm-split-area-demo"
+          >
+            <section className="cm-split-area-demo__panel cm-split-area-demo__panel--sidebar">
+              <h3 className="cm-split-area-demo__title">Explorer</h3>
+              <p className="cm-split-area-demo__text">导航区保持横向分割中的左侧面板。</p>
+            </section>
+
+            <CSplitArea
+              direction="vertical"
+              separatorMovable
+              className="cm-split-area-demo__nested"
+            >
+              <section className="cm-split-area-demo__panel cm-split-area-demo__panel--editor">
+                <h3 className="cm-split-area-demo__title">Editor</h3>
+                <p className="cm-split-area-demo__text">
+                  中间区域再按纵向拆分，模拟编辑器与输出区。
+                </p>
+              </section>
+
+              <CSplitArea
+                direction="horizontal"
+                separatorMovable
+                className="cm-split-area-demo__nested"
+              >
+                <section className="cm-split-area-demo__panel cm-split-area-demo__panel--preview">
+                  <h3 className="cm-split-area-demo__title">Preview</h3>
+                  <p className="cm-split-area-demo__text">横向嵌套区域可继续拖动调整。</p>
+                </section>
+                <section className="cm-split-area-demo__panel cm-split-area-demo__panel--console">
+                  <h3 className="cm-split-area-demo__title">Console</h3>
+                  <p className="cm-split-area-demo__text">分割线支持拖动，方便观察比例变化。</p>
+                </section>
+              </CSplitArea>
+            </CSplitArea>
+
+            {showInspector ? (
+              <section className="cm-split-area-demo__panel cm-split-area-demo__panel--inspector">
+                <h3 className="cm-split-area-demo__title">Inspector</h3>
+                <p className="cm-split-area-demo__text">
+                  点击按钮后该区域会被移除，并触发布局重算。
+                </p>
+              </section>
+            ) : null}
+          </CSplitArea>
+        </div>
+      </div>
+    </ShowcaseSection>
+  );
+}
+
 export function ComponentCatalog({
   theme,
   onThemeChange,
@@ -820,6 +922,7 @@ export function ComponentCatalog({
             <WindowShowcase />
             <DockShowcase />
             <StartBarShowcase />
+            <SplitAreaShowcase />
             <GridShowcase />
           </div>
         </DevThemeRoot>
