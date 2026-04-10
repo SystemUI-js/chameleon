@@ -23,11 +23,12 @@ type SplitAreaItem = {
 type DragSession = {
   readonly separatorIndex: number;
   readonly startRatios: number[];
-  readonly containerSize: number;
+  readonly availableSize: number;
   readonly startPosition: number;
 };
 
 const MIN_PANEL_SIZE_PX = 48;
+const SEPARATOR_SIZE_PX = 8;
 
 function createEqualRatios(count: number): number[] {
   if (count <= 0) {
@@ -110,13 +111,21 @@ function clamp(value: number, min: number, max: number): number {
   return Math.min(Math.max(value, min), max);
 }
 
+function getAvailablePanelSize(totalSize: number, itemCount: number): number {
+  if (itemCount <= 0) {
+    return 0;
+  }
+
+  return Math.max(totalSize - (itemCount - 1) * SEPARATOR_SIZE_PX, 0);
+}
+
 function getUpdatedRatiosFromDelta(
   ratios: readonly number[],
   separatorIndex: number,
-  containerSize: number,
+  availableSize: number,
   delta: number,
 ): number[] {
-  if (containerSize <= 0 || separatorIndex < 0 || separatorIndex >= ratios.length - 1) {
+  if (availableSize <= 0 || separatorIndex < 0 || separatorIndex >= ratios.length - 1) {
     return normalizeRatios(ratios);
   }
 
@@ -124,8 +133,8 @@ function getUpdatedRatiosFromDelta(
   const leftRatio = nextRatios[separatorIndex] ?? 0;
   const rightRatio = nextRatios[separatorIndex + 1] ?? 0;
   const pairRatio = leftRatio + rightRatio;
-  const minRatio = Math.min(MIN_PANEL_SIZE_PX / containerSize, pairRatio / 2);
-  const leftNextRatio = clamp(leftRatio + delta / containerSize, minRatio, pairRatio - minRatio);
+  const minRatio = Math.min(MIN_PANEL_SIZE_PX / availableSize, pairRatio / 2);
+  const leftNextRatio = clamp(leftRatio + delta / availableSize, minRatio, pairRatio - minRatio);
 
   nextRatios[separatorIndex] = leftNextRatio;
   nextRatios[separatorIndex + 1] = pairRatio - leftNextRatio;
@@ -185,7 +194,10 @@ export function CSplitArea({
         dragSessionRef.current = {
           separatorIndex,
           startRatios: [...ratiosRef.current],
-          containerSize: getPrimarySize(containerElement.getBoundingClientRect(), direction),
+          availableSize: getAvailablePanelSize(
+            getPrimarySize(containerElement.getBoundingClientRect(), direction),
+            items.length,
+          ),
           startPosition: getPrimaryPosition(separatorElement.getBoundingClientRect(), direction),
         } satisfies DragSession;
       };
@@ -216,7 +228,7 @@ export function CSplitArea({
             getUpdatedRatiosFromDelta(
               dragSession.startRatios,
               separatorIndex,
-              dragSession.containerSize,
+              dragSession.availableSize,
               delta,
             ),
           );
@@ -236,7 +248,7 @@ export function CSplitArea({
             getUpdatedRatiosFromDelta(
               dragSession.startRatios,
               separatorIndex,
-              dragSession.containerSize,
+              dragSession.availableSize,
               delta,
             ),
           );
@@ -262,7 +274,7 @@ export function CSplitArea({
         instance.drag.setDisabled();
       });
     };
-  }, [direction, items.length, separatorMovable]);
+  }, [direction, items, separatorMovable]);
 
   return (
     <ResolvedThemeClassName theme={theme}>
@@ -283,8 +295,9 @@ export function CSplitArea({
         >
           {items.map((item, index) => {
             const ratio = normalizedRatios[index] ?? 0;
+            const totalSeparatorSize = Math.max(items.length - 1, 0) * SEPARATOR_SIZE_PX;
             const panelStyle = {
-              flex: `0 0 ${ratio * 100}%`,
+              flex: `0 0 calc((100% - ${totalSeparatorSize}px) * ${ratio})`,
             } satisfies React.CSSProperties;
 
             return (

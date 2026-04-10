@@ -228,21 +228,44 @@ describe('CSplitArea', () => {
     expect(panels).toHaveLength(2);
     expect(multiDragMock.instances).toHaveLength(1);
 
-    mockElementRect(root, { left: 0, top: 0, width: 400, height: 240 });
-    mockElementRect(separator as HTMLElement, { left: 196, top: 0, width: 8, height: 240 });
+    mockElementRect(root, { left: 0, top: 0, width: 408, height: 240 });
+    mockElementRect(separator as HTMLElement, { left: 200, top: 0, width: 8, height: 240 });
 
-    expect(panels[0]).toHaveStyle({ flex: '0 0 50%' });
-    expect(panels[1]).toHaveStyle({ flex: '0 0 50%' });
+    expect(panels[0]).toHaveStyle({ flex: '0 0 calc((100% - 8px) * 0.5)' });
+    expect(panels[1]).toHaveStyle({ flex: '0 0 calc((100% - 8px) * 0.5)' });
 
     act(() => {
       fireEvent.pointerDown(separator as HTMLElement, { button: 0 });
-      multiDragMock.instances[0]?.move({ x: 256, y: 0 });
-      multiDragMock.instances[0]?.end({ x: 256, y: 0 });
+      multiDragMock.instances[0]?.move({ x: 260, y: 0 });
+      multiDragMock.instances[0]?.end({ x: 260, y: 0 });
     });
 
     const resizedPanels = root.querySelectorAll<HTMLElement>('[data-split-area-panel]');
 
-    expect(resizedPanels[0]).toHaveStyle({ flex: '0 0 65%' });
-    expect(resizedPanels[1]).toHaveStyle({ flex: '0 0 35%' });
+    expect(resizedPanels[0]).toHaveStyle({ flex: '0 0 calc((100% - 8px) * 0.65)' });
+    expect(resizedPanels[1]).toHaveStyle({ flex: '0 0 calc((100% - 8px) * 0.35)' });
+  });
+
+  it('rebinds drag instances when children are replaced with the same count', () => {
+    const { rerender } = render(
+      <CSplitArea separatorMovable>
+        <div key="left">Left</div>
+        <div key="right">Right</div>
+      </CSplitArea>,
+    );
+
+    expect(multiDragMock.instances).toHaveLength(1);
+    expect(multiDragMock.instances[0]?.disabled).toBe(false);
+
+    rerender(
+      <CSplitArea separatorMovable>
+        <div key="preview">Preview</div>
+        <div key="console">Console</div>
+      </CSplitArea>,
+    );
+
+    expect(multiDragMock.instances).toHaveLength(2);
+    expect(multiDragMock.instances[0]?.disabled).toBe(true);
+    expect(multiDragMock.instances[1]?.disabled).toBe(false);
   });
 });
