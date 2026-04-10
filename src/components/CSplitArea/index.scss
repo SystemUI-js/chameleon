@@ -1,0 +1,68 @@
+.cm-split-area {
+    display: flex;
+    width: 100%;
+    height: 100%;
+    min-width: 0;
+    min-height: 0;
+    overflow: hidden;
+}
+
+.cm-split-area--horizontal {
+    flex-direction: row;
+}
+
+.cm-split-area--vertical {
+    flex-direction: column;
+}
+
+.cm-split-area__panel {
+    min-width: 0;
+    min-height: 0;
+    overflow: hidden;
+    display: flex;
+}
+
+.cm-split-area__separator {
+    flex: 0 0 auto;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    background: var(--cm-color-border-light, rgba(0, 0, 0, 0.08));
+    transition: background-color 120ms ease;
+    touch-action: none;
+    user-select: none;
+}
+
+.cm-split-area__separator--horizontal {
+    width: 8px;
+    cursor: col-resize;
+}
+
+.cm-split-area__separator--vertical {
+    height: 8px;
+    cursor: row-resize;
+}
+
+.cm-split-area__separator--static {
+    cursor: default;
+}
+
+.cm-split-area__separator--movable:hover {
+    background: var(--cm-color-border, rgba(0, 0, 0, 0.18));
+}
+
+.cm-split-area__separator-handle {
+    display: block;
+    border-radius: 999px;
+    background: var(--cm-color-text-muted, rgba(0, 0, 0, 0.3));
+}
+
+.cm-split-area__separator--horizontal .cm-split-area__separator-handle {
+    width: 2px;
+    height: 32px;
+}
+
+.cm-split-area__separator--vertical .cm-split-area__separator-handle {
+    width: 32px;
+    height: 2px;
+}

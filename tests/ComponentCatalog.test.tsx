@@ -3,6 +3,11 @@ import '@testing-library/jest-dom';
 import { ComponentCatalog } from '../src/dev/ComponentCatalog';
 import { DEV_THEME } from '../src/dev/themeSwitcher';
 
+function getOuterSplitAreaPanelCount(root: HTMLElement): number {
+  return Array.from(root.children).filter((child) => child.hasAttribute('data-split-area-panel'))
+    .length;
+}
+
 describe('ComponentCatalog', () => {
   it('renders baseline catalog with default theme', () => {
     render(<ComponentCatalog theme={DEV_THEME.default} onThemeChange={() => {}} />);
@@ -263,6 +268,40 @@ describe('ComponentCatalog', () => {
       expect(activeLabel).toBeInTheDocument();
       expect(openLabel).toBeInTheDocument();
       expect(contextLabel).toBeInTheDocument();
+    });
+  });
+
+  describe('SplitArea showcase section', () => {
+    it('renders split area showcase section with toggle controls', () => {
+      render(<ComponentCatalog theme={DEV_THEME.default} onThemeChange={() => {}} />);
+
+      const splitAreaSection = screen.getByTestId('catalog-section-split-area');
+
+      expect(splitAreaSection).toBeInTheDocument();
+      expect(within(splitAreaSection).getByTestId('split-area-demo-root')).toBeInTheDocument();
+      expect(within(splitAreaSection).getByTestId('split-area-demo-toggle')).toBeInTheDocument();
+      expect(within(splitAreaSection).getByTestId('split-area-demo-status')).toHaveTextContent(
+        '当前为三栏布局',
+      );
+    });
+
+    it('updates split area demo status and outer panel count after toggle', () => {
+      render(<ComponentCatalog theme={DEV_THEME.default} onThemeChange={() => {}} />);
+
+      const splitAreaSection = screen.getByTestId('catalog-section-split-area');
+      const toggleButton = within(splitAreaSection).getByTestId('split-area-demo-toggle');
+      const status = within(splitAreaSection).getByTestId('split-area-demo-status');
+      const root = within(splitAreaSection).getByTestId('split-area-demo-root');
+
+      expect(getOuterSplitAreaPanelCount(root)).toBe(3);
+      expect(status).toHaveTextContent('当前为三栏布局');
+
+      act(() => {
+        toggleButton.click();
+      });
+
+      expect(getOuterSplitAreaPanelCount(root)).toBe(2);
+      expect(status).toHaveTextContent('当前为双栏布局');
     });
   });
 });

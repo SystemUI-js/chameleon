@@ -1,5 +1,10 @@
 ### [UnReleased]
 
+- **Feature:** 新增 `CSplitArea` 连续分割布局组件
+  - 支持按子节点顺序生成连续区域，并提供 `horizontal` / `vertical` 两种分割方向
+  - 支持通过 `separatorMovable` 启用分割线拖动，实时调整相邻区域尺寸
+  - 支持嵌套布局、子区域动态移除后的连续重排，并补充公共导出、开发示例与测试覆盖
+
 - **Breaking:** 移除 `CMenu` 根触发器 `.cm-menu__trigger` 包裹节点
   - 根触发元素现在直接作为 `.cm-menu` 的一级子节点渲染，组件不再额外插入中间 wrapper DOM
   - 保持 click / hover 打开语义、ARIA 注入与外部点击关闭逻辑不变，但依赖 `.cm-menu__trigger` class 或 DOM 层级的样式/选择器需要迁移
