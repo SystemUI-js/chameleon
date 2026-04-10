@@ -1,4 +1,4 @@
-### [UnReleased]
+### [0.2.0] (2026-04-10)
 
 - **Feature:** 新增 `CSplitArea` 连续分割布局组件
   - 支持按子节点顺序生成连续区域，并提供 `horizontal` / `vertical` 两种分割方向
