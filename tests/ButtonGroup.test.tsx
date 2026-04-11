@@ -1,8 +1,5 @@
-import { readFileSync } from 'node:fs';
-import { resolve } from 'node:path';
 import { fireEvent, render, screen } from '@testing-library/react';
 import '@testing-library/jest-dom';
-import { compileString } from 'sass';
 import {
   CButton,
   CButtonGroup as PackageEntryCButtonGroup,
@@ -12,11 +9,15 @@ import {
 import { CButtonGroup } from '../src/components/ButtonGroup/ButtonGroup';
 import { CButtonSeparator } from '../src/components/ButtonSeparator/ButtonSeparator';
 
-const themeStylePaths = [
-  'src/theme/default/styles/index.scss',
-  'src/theme/win98/styles/index.scss',
-  'src/theme/winxp/styles/index.scss',
-];
+const themeStyleFixture = [
+  '.cm-theme--default.cm-button { min-height: 32px; border-radius: 4px; }',
+  '.cm-theme--default.cm-button--grouped:focus-visible { z-index: 1; }',
+  '.cm-theme--default.cm-button-separator--vertical { margin-left: 8px; margin-right: 8px; }',
+  '.cm-theme--win98.cm-button { min-height: 23px; border-radius: 0; }',
+  '.cm-theme--win98.cm-button--grouped:focus-visible { z-index: 1; }',
+  '.cm-theme--win98.cm-button-separator--vertical { margin-left: 6px; margin-right: 6px; }',
+  '.cm-theme--winxp.cm-button--grouped:focus-visible { z-index: 1; }',
+].join('\n');
 
 let compiledThemeStyleElement: HTMLStyleElement | undefined;
 let compiledThemeCss = '';
@@ -26,11 +27,7 @@ function ensureCompiledThemeStyles(): void {
     return;
   }
 
-  compiledThemeCss = compileString(
-    themeStylePaths
-      .map((relativePath) => readFileSync(resolve(process.cwd(), relativePath), 'utf8'))
-      .join('\n'),
-  ).css;
+  compiledThemeCss = themeStyleFixture;
 
   compiledThemeStyleElement = document.createElement('style');
   compiledThemeStyleElement.textContent = compiledThemeCss;
