@@ -9,6 +9,7 @@ export type CButtonType = 'button' | 'submit' | 'reset';
 
 export interface CButtonProps extends Omit<React.ButtonHTMLAttributes<HTMLButtonElement>, 'type'> {
   variant?: CButtonVariant;
+  compact?: boolean;
   type?: CButtonType;
   disabled?: boolean;
   onClick?: React.MouseEventHandler<HTMLButtonElement>;
@@ -21,6 +22,7 @@ export interface CButtonProps extends Omit<React.ButtonHTMLAttributes<HTMLButton
 export function CButton({
   children,
   variant = 'default',
+  compact = false,
   type = 'button',
   disabled,
   onClick,
@@ -35,6 +37,10 @@ export function CButton({
 
   if (variant !== 'default') {
     baseClasses.push(`cm-button--${variant}`);
+  }
+
+  if (compact) {
+    baseClasses.push('cm-button--compact');
   }
 
   return (

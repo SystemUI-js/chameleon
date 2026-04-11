@@ -26,6 +26,8 @@ export interface CWidgetResizeOptions {
 export interface CWidgetProps extends WidgetLayoutProps {
   children?: React.ReactNode;
   theme?: string;
+  active?: boolean;
+  onActive?: (active: boolean) => void;
   resizable?: boolean;
   moveBehavior?: WidgetInteractionBehavior;
   resizeBehavior?: WidgetInteractionBehavior;
@@ -122,6 +124,7 @@ type WidgetFrameMoveHandleProps = {
 };
 
 export interface WidgetState extends WidgetFrameState {
+  active: boolean;
   preview: WidgetPreviewState;
 }
 
@@ -166,6 +169,7 @@ export class CWidget<TState extends WidgetState = WidgetState> extends React.Com
 
   public componentDidUpdate(prevProps: Readonly<CWidgetProps>): void {
     this.syncControlledFrameProps(prevProps);
+    this.syncControlledActiveProp(prevProps);
 
     if (
       prevProps.resizable !== this.props.resizable ||
@@ -206,9 +210,14 @@ export class CWidget<TState extends WidgetState = WidgetState> extends React.Com
     };
   }
 
+  protected static getInitialActiveState(props: CWidgetProps): boolean {
+    return props.active ?? true;
+  }
+
   protected static getInitialState(props: CWidgetProps): WidgetState {
     return {
       ...CWidget.getInitialFrameState(props),
+      active: CWidget.getInitialActiveState(props),
       preview: CWidget.getInitialPreviewState(props),
     };
   }
@@ -282,6 +291,19 @@ export class CWidget<TState extends WidgetState = WidgetState> extends React.Com
     }
   }
 
+  protected syncControlledActiveProp(prevProps: Readonly<CWidgetProps>): void {
+    if (this.props.active === undefined || prevProps.active === this.props.active) {
+      return;
+    }
+
+    if (this.state.active !== this.props.active) {
+      this.setState((prevState) => ({
+        ...prevState,
+        active: this.props.active ?? prevState.active,
+      }));
+    }
+  }
+
   protected getFrameState(): WidgetFrameState {
     const { x, y, width, height } = this.state;
 
@@ -303,6 +325,29 @@ export class CWidget<TState extends WidgetState = WidgetState> extends React.Com
 
   protected getPreviewState(): WidgetPreviewState {
     return this.state.preview;
+  }
+
+  protected isWidgetActiveControlled(): boolean {
+    return this.props.active !== undefined;
+  }
+
+  protected getWidgetActive(): boolean {
+    return this.props.active ?? this.state.active;
+  }
+
+  protected setWidgetActive(nextActive: boolean): void {
+    if (this.getWidgetActive() === nextActive) {
+      return;
+    }
+
+    if (!this.isWidgetActiveControlled()) {
+      this.setState((prevState) => ({
+        ...prevState,
+        active: nextActive,
+      }));
+    }
+
+    this.props.onActive?.(nextActive);
   }
 
   protected getPreviewBehavior(source: WidgetPreviewSource): WidgetInteractionBehavior {
@@ -348,6 +393,10 @@ export class CWidget<TState extends WidgetState = WidgetState> extends React.Com
       rect: null,
     });
   }
+
+  protected handleFramePointerDown = (): void => {
+    this.setWidgetActive(true);
+  };
 
   protected areFrameStatesEqual(left: WidgetFrameState, right: WidgetFrameState): boolean {
     return (
@@ -771,13 +820,20 @@ export class CWidget<TState extends WidgetState = WidgetState> extends React.Com
     };
 
     const preview = this.renderPreviewFrame(options);
+    const frameClassName = this.mergeThemeClassName(
+      [options?.className, this.getWidgetActive() ? 'cm-widget--active' : undefined]
+        .filter((className): className is string => Boolean(className))
+        .join(' '),
+      options?.theme,
+    );
 
     return (
       <>
         <div
           data-testid={options?.testId ?? 'widget-frame'}
-          className={this.mergeThemeClassName(options?.className, options?.theme)}
+          className={frameClassName}
           style={frameStyle}
+          onPointerDown={this.handleFramePointerDown}
         >
           {content}
         </div>
