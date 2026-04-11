@@ -1,8 +1,8 @@
-import React from 'react';
-import { fireEvent, render, screen } from '@testing-library/react';
-import '@testing-library/jest-dom';
 import { readFileSync } from 'node:fs';
 import { join } from 'node:path';
+import '@testing-library/jest-dom';
+import { fireEvent, render, screen } from '@testing-library/react';
+import React from 'react';
 import { CButton as PackageEntryCButton, Theme } from '../src';
 import { CButton } from '../src/components/Button/Button';
 
@@ -59,6 +59,46 @@ describe('CButton', () => {
     rerender(<CButton variant="ghost">Ghost</CButton>);
 
     expect(screen.getByRole('button', { name: 'Ghost' })).toHaveClass('cm-button--ghost');
+  });
+
+  it('adds compact class only when compact is enabled', () => {
+    const { rerender } = render(<CButton>Default</CButton>);
+
+    const button = screen.getByRole('button', { name: 'Default' });
+
+    expect(button).toHaveClass('cm-button');
+    expect(button).not.toHaveClass('cm-button--compact');
+
+    rerender(<CButton compact>Compact</CButton>);
+
+    expect(screen.getByRole('button', { name: 'Compact' })).toHaveClass(
+      'cm-button',
+      'cm-button--compact',
+    );
+  });
+
+  it('keeps compact combinable with existing variants', () => {
+    render(
+      <>
+        <CButton compact variant="primary">
+          Compact Primary
+        </CButton>
+        <CButton compact variant="ghost">
+          Compact Ghost
+        </CButton>
+      </>,
+    );
+
+    expect(screen.getByRole('button', { name: 'Compact Primary' })).toHaveClass(
+      'cm-button',
+      'cm-button--primary',
+      'cm-button--compact',
+    );
+    expect(screen.getByRole('button', { name: 'Compact Ghost' })).toHaveClass(
+      'cm-button',
+      'cm-button--ghost',
+      'cm-button--compact',
+    );
   });
 
   it('passes disabled through and blocks clicks', () => {

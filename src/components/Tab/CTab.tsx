@@ -36,7 +36,7 @@ export function CTab({
 }: CTabProps): React.ReactElement {
   const resolvedTheme = useTheme(theme);
   const instanceId = React.useId().replace(/:/g, '');
-  const tabRefs = React.useRef<Array<HTMLButtonElement | null>>([]);
+  const tabRefs = React.useRef<Array<HTMLLIElement | null>>([]);
 
   const tabItems = React.useMemo<readonly CTabItemEntry[]>(() => {
     return React.Children.toArray(children).reduce<CTabItemEntry[]>((items, child) => {
@@ -82,7 +82,7 @@ export function CTab({
   );
 
   const handleKeyDown = React.useCallback(
-    (event: React.KeyboardEvent<HTMLButtonElement>, currentIndex: number): void => {
+    (event: React.KeyboardEvent<HTMLLIElement>, currentIndex: number): void => {
       switch (event.key) {
         case 'ArrowLeft':
         case 'ArrowUp':
@@ -120,20 +120,19 @@ export function CTab({
 
   return (
     <div className={mergeClasses(['cm-ctab'], resolvedTheme, className)} data-testid={dataTestId}>
-      <div role="tablist" className="cm-ctab__list">
+      <ul role="tablist" className="cm-ctab__list">
         {tabItems.map((item, index) => {
           const isActive = item.id === effectiveActiveTabId;
           const tabId = `${item.id}-tab`;
           const panelId = `${item.id}-panel`;
 
           return (
-            <button
+            <li
               key={item.id}
               ref={(element) => {
                 tabRefs.current[index] = element;
               }}
               id={tabId}
-              type="button"
               role="tab"
               className={mergeClasses(
                 ['cm-ctab__tab'],
@@ -149,11 +148,11 @@ export function CTab({
                 handleKeyDown(event, index);
               }}
             >
-              {item.title}
-            </button>
+              <span>{item.title}</span>
+            </li>
           );
         })}
-      </div>
+      </ul>
 
       {tabItems.map((item) => {
         const isActive = item.id === effectiveActiveTabId;

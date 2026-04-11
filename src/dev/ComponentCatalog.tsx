@@ -516,33 +516,33 @@ function WindowShowcase(): React.ReactElement {
   const actionButtons = React.useMemo(
     () => (
       <div className="cm-catalog__window-actions">
-        <button
-          type="button"
+        <CButton
           className="cm-catalog__window-action"
           data-testid="window-demo-minimize"
           aria-label="Minimize window"
+          compact
           onClick={handleWindowActionClick}
         >
-          —
-        </button>
-        <button
-          type="button"
+          _
+        </CButton>
+        <CButton
           className="cm-catalog__window-action"
           data-testid="window-demo-maximize"
           aria-label="Maximize window"
+          compact
           onClick={handleWindowActionClick}
         >
           □
-        </button>
-        <button
-          type="button"
+        </CButton>
+        <CButton
           className="cm-catalog__window-action cm-catalog__window-action--close"
           data-testid="window-demo-close"
           aria-label="Close window"
+          compact
           onClick={handleWindowActionClick}
         >
           ×
-        </button>
+        </CButton>
       </div>
     ),
     [handleWindowActionClick],

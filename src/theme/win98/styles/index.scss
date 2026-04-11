@@ -1,7 +1,18 @@
+@use './radio-bg.scss' as radio;
+@use './select-bg.scss' as select;
+
 .cm-theme--win98 {
     font-size: 11px;
     -webkit-font-smoothing: none;
     font-family: 'Pixelated MS Sans Serif', Arial, sans-serif;
+
+    :disabled, :disabled+.cm-radio__label, input[readonly], input[readonly]+.cm-radio__label, :disabled+.cm-radio__label {
+        color: grey;
+    }
+
+    :disabled+.cm-radio__label, button:disabled, input[type=reset]:disabled, input[type=submit]:disabled {
+        text-shadow: 1px 1px 0 #fff;
+    }
 
     .cm-window-frame,
     &.cm-window-frame {
@@ -32,7 +43,6 @@
 
         .cm-window__title-bar__text {
             color: #fff;
-            font-weight: 700;
             letter-spacing: 0;
             margin-right: 24px;
         }
@@ -66,6 +76,12 @@
     .cm-window__title-bar__controls--left,
     .cm-window__title-bar__controls--left.cm-theme--win98 {
         margin-right: 4px;
+    }
+
+    .cm-catalog__window-actions {
+        .cm-button:focus {
+            outline: none;
+        }
     }
 
     .cm-window__content {
@@ -104,7 +120,6 @@
     .cm-common-controls-preview__panel-title {
         margin: 0;
         font-size: 12px;
-        font-weight: 700;
     }
 
     .cm-common-controls-preview__grid {
@@ -147,6 +162,13 @@
         box-sizing: border-box;
         color: transparent;
         text-shadow: 0 0 #222;
+        &--compact {
+            min-width: auto;
+            min-height: auto;
+            width: 16px;
+            height: 14px;
+            padding: 0;
+        }
     }
 
     &.cm-button:hover:not(:disabled) {
@@ -167,7 +189,6 @@
     }
 
     &.cm-button--primary {
-        font-weight: 700;
     }
 
     &.cm-button--ghost {
@@ -247,79 +268,81 @@
         display: inline-flex;
         align-items: center;
         gap: 6px;
-        cursor: pointer;
     }
 
     .cm-radio--disabled,
     &.cm-radio--disabled {
-        color: #808080;
         cursor: not-allowed;
     }
 
     .cm-radio__input {
-        width: 12px;
-        height: 12px;
-        margin: 0;
         appearance: none;
-        border: 1px solid #000000;
-        border-radius: 999px;
-        background: #ffffff;
-        box-shadow:
-            inset 1px 1px 0 #808080,
-            inset -1px -1px 0 #dfdfdf;
-        cursor: inherit;
-    }
-
-    .cm-radio__input:checked {
-        background: radial-gradient(circle at center, #000000 0 35%, #ffffff 36% 100%);
-    }
-
-    .cm-radio__input:focus-visible {
-        outline: 1px dotted #000000;
-        outline-offset: 2px;
-    }
-
-    .cm-radio__input:disabled {
-        background: #c0c0c0;
-        box-shadow: inset 1px 1px 0 #808080;
+        opacity: 0;
+        pointer-events: none;
+        &:checked + .cm-radio__label:after {
+            background: radio.$win98-radio-checked-background;
+        }
+        &:active + .cm-radio__label:before {
+            background: radio.$win98-radio-active-background;
+        }
+        &:disabled + .cm-radio__label:before {
+            background: radio.$win98-radio-disabled-background;
+        }
+        &:disabled:checked + .cm-radio__label:after {
+            background: radio.$win98-radio-checked-disabled-background;
+        }
+        &:focus + .cm-radio__label {
+            outline: 1px dotted #000;
+        }
     }
 
     .cm-radio__label {
-        font-size: 11px;
-        line-height: 1.2;
+        line-height: 13px;
+        position: relative;
+        &:before {
+            content: '';
+            background: radio.$win98-radio-background;
+            display: inline-block;
+            height: 12px;
+            left: -18px;
+            margin-right: 6px;
+            position: absolute;
+            top: 0;
+            width: 12px;
+        }
+        &:after {
+            content: '';
+            display: block;
+            height: 4px;
+            left: -14px;
+            position: absolute;
+            top: 4px;
+            width: 4px;
+        }
     }
 
     .cm-select,
     &.cm-select {
-        // Win98 field-style: 21px height, inset/sunken border
-        min-height: 21px;
-        padding: 0 16px 0 4px;
-        border: 2px solid;
-        border-color: #808080 #ffffff #ffffff #808080;
-        border-radius: 0;
         appearance: none;
-        background-color: #ffffff;
-        // Win98 arrow: pure CSS black down-arrow using gradients
-        background-image:
-            linear-gradient(135deg, transparent 50%, #000000 50%),
-            linear-gradient(225deg, transparent 50%, #000000 50%);
-        background-position:
-            calc(100% - 6px) 50%,
-            calc(100% - 11px) 50%;
-        background-size:
-            5px 5px,
-            5px 5px;
+        border: 0;
+        background: select.$win98-select-background;
+        background-position: top 2px right 2px;
         background-repeat: no-repeat;
-        color: #000000;
-        font-size: 11px;
-        line-height: 1;
-    }
-
-    .cm-select:focus,
-    &.cm-select:focus {
-        // Inner dotted outline for focus (NOT blue bg + white text inversion)
-        outline: 1px dotted #000000;
-        outline-offset: -4px;
+        border-radius: 0;
+        padding-right: 32px;
+        position: relative;
+        height: 21px;
+        box-shadow: inset -1px -1px #fff, inset 1px 1px grey, inset -2px -2px #dfdfdf, inset 2px 2px #0a0a0a;
+        box-sizing: border-box;
+        padding: 3px 4px;
+        &:active {
+            background-image: select.$win98-select-active-background;
+        }
+        &:focus {
+            background-color: navy;
+            color: #fff;
+            outline: none;
+        }
     }
 
     .cm-select:disabled,
@@ -342,48 +365,49 @@
     // Tab - Win98 Theme
     .cm-ctab,
     &.cm-ctab {
-        border: 2px solid;
-        border-color: #808080 #ffffff #ffffff #808080;
-        background: silver;
-        box-shadow:
-            inset -1px -1px 0 #0a0a0a,
-            inset 1px 1px 0 #dfdfdf,
-            inset -2px -2px grey,
-            inset 2px 2px #fff;
+
     }
 
     .cm-ctab__list {
-        padding: 4px 4px 0;
+        display: flex;
+        list-style-type: none;
+        margin: 0 0 -2px;
+        padding-left: 3px;
+        position: relative;
+        text-indent: 0;
+        gap: 0;
+        align-items: inherit;
     }
 
     .cm-ctab__tab {
-        min-height: 23px;
-        padding: 0 12px;
-        border: 2px solid;
-        border-color: #ffffff #808080 #808080 #ffffff;
-        border-bottom: none;
-        background: silver;
-        color: #000000;
-        font-size: 11px;
-        font-family: 'MS Sans Serif', Tahoma, sans-serif;
-    }
-
-    .cm-ctab__tab:hover:not(:disabled):not(.cm-ctab__tab--active) {
-        background: #d7d7d7;
-    }
-
-    .cm-ctab__tab--active {
-        margin-bottom: -2px;
-        background: #ffffff;
-        font-weight: 700;
+        border-top-left-radius: 3px;
+        border-top-right-radius: 3px;
+        box-shadow: inset -1px 0 #0a0a0a, inset 1px 1px #dfdfdf, inset -2px 0 grey, inset 2px 2px #fff;
+        z-index: 1;
+        appearance: none;
+        cursor: default;
+        & > span {
+            color: #222;
+            display: block;
+            margin: 6px;
+            text-decoration: none;
+        }
+        &--active {
+            background-color: silver;
+            margin-left: -3px;
+            margin-top: -2px;
+            padding-bottom: 2px;
+            position: relative;
+            z-index: 8;
+        }
     }
 
     .cm-ctab__panel {
-        padding: 10px 12px;
-        border: 2px solid;
-        border-color: #808080 #ffffff #ffffff #808080;
-        background: #ffffff;
-        color: #000000;
+        background: silver;
+        box-shadow: inset -1px -1px #0a0a0a, inset 1px 1px #dfdfdf, inset -2px -2px grey, inset 2px 2px #fff;
+        padding: 3px;
+        margin-top: -8px;
+        z-index: 2;
     }
 
     // Start Bar - Windows 98 Classic Style
