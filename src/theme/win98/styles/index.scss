@@ -1,16 +1,20 @@
-@use './radio-bg.scss' as radio;
-@use './select-bg.scss' as select;
-
 .cm-theme--win98 {
     font-size: 11px;
     -webkit-font-smoothing: none;
     font-family: 'Pixelated MS Sans Serif', Arial, sans-serif;
 
-    :disabled, :disabled+.cm-radio__label, input[readonly], input[readonly]+.cm-radio__label, :disabled+.cm-radio__label {
+    :disabled,
+    :disabled + .cm-radio__label,
+    input[readonly],
+    input[readonly] + .cm-radio__label,
+    :disabled + .cm-radio__label {
         color: grey;
     }
 
-    :disabled+.cm-radio__label, button:disabled, input[type=reset]:disabled, input[type=submit]:disabled {
+    :disabled + .cm-radio__label,
+    button:disabled,
+    input[type='reset']:disabled,
+    input[type='submit']:disabled {
         text-shadow: 1px 1px 0 #fff;
     }
 
@@ -268,81 +272,76 @@
         display: inline-flex;
         align-items: center;
         gap: 6px;
+        cursor: pointer;
     }
 
     .cm-radio--disabled,
     &.cm-radio--disabled {
+        color: #808080;
         cursor: not-allowed;
     }
 
     .cm-radio__input {
+        width: 12px;
+        height: 12px;
+        margin: 0;
         appearance: none;
-        opacity: 0;
-        pointer-events: none;
-        &:checked + .cm-radio__label:after {
-            background: radio.$win98-radio-checked-background;
-        }
-        &:active + .cm-radio__label:before {
-            background: radio.$win98-radio-active-background;
-        }
-        &:disabled + .cm-radio__label:before {
-            background: radio.$win98-radio-disabled-background;
-        }
-        &:disabled:checked + .cm-radio__label:after {
-            background: radio.$win98-radio-checked-disabled-background;
-        }
-        &:focus + .cm-radio__label {
-            outline: 1px dotted #000;
-        }
+        border: 1px solid #000000;
+        border-radius: 999px;
+        background: #ffffff;
+        box-shadow:
+            inset 1px 1px 0 #808080,
+            inset -1px -1px 0 #dfdfdf;
+        cursor: inherit;
+    }
+
+    .cm-radio__input:checked {
+        background: radial-gradient(circle at center, #000000 0 35%, #ffffff 36% 100%);
+    }
+
+    .cm-radio__input:focus-visible {
+        outline: 1px dotted #000000;
+        outline-offset: 2px;
+    }
+
+    .cm-radio__input:disabled {
+        background: #c0c0c0;
+        box-shadow: inset 1px 1px 0 #808080;
     }
 
     .cm-radio__label {
-        line-height: 13px;
-        position: relative;
-        &:before {
-            content: '';
-            background: radio.$win98-radio-background;
-            display: inline-block;
-            height: 12px;
-            left: -18px;
-            margin-right: 6px;
-            position: absolute;
-            top: 0;
-            width: 12px;
-        }
-        &:after {
-            content: '';
-            display: block;
-            height: 4px;
-            left: -14px;
-            position: absolute;
-            top: 4px;
-            width: 4px;
-        }
+        font-size: 11px;
+        line-height: 1.2;
     }
 
     .cm-select,
     &.cm-select {
-        appearance: none;
-        border: 0;
-        background: select.$win98-select-background;
-        background-position: top 2px right 2px;
-        background-repeat: no-repeat;
+        min-height: 21px;
+        padding: 0 16px 0 4px;
+        border: 2px solid;
+        border-color: #808080 #ffffff #ffffff #808080;
         border-radius: 0;
-        padding-right: 32px;
-        position: relative;
-        height: 21px;
-        box-shadow: inset -1px -1px #fff, inset 1px 1px grey, inset -2px -2px #dfdfdf, inset 2px 2px #0a0a0a;
-        box-sizing: border-box;
-        padding: 3px 4px;
-        &:active {
-            background-image: select.$win98-select-active-background;
-        }
-        &:focus {
-            background-color: navy;
-            color: #fff;
-            outline: none;
-        }
+        appearance: none;
+        background-color: #ffffff;
+        background-image:
+            linear-gradient(135deg, transparent 50%, #000000 50%),
+            linear-gradient(225deg, transparent 50%, #000000 50%);
+        background-position:
+            calc(100% - 6px) 50%,
+            calc(100% - 11px) 50%;
+        background-size:
+            5px 5px,
+            5px 5px;
+        background-repeat: no-repeat;
+        color: #000000;
+        font-size: 11px;
+        line-height: 1;
+    }
+
+    .cm-select:focus,
+    &.cm-select:focus {
+        outline: 1px dotted #000000;
+        outline-offset: -4px;
     }
 
     .cm-select:disabled,
@@ -365,7 +364,6 @@
     // Tab - Win98 Theme
     .cm-ctab,
     &.cm-ctab {
-
     }
 
     .cm-ctab__list {
@@ -382,7 +380,11 @@
     .cm-ctab__tab {
         border-top-left-radius: 3px;
         border-top-right-radius: 3px;
-        box-shadow: inset -1px 0 #0a0a0a, inset 1px 1px #dfdfdf, inset -2px 0 grey, inset 2px 2px #fff;
+        box-shadow:
+            inset -1px 0 #0a0a0a,
+            inset 1px 1px #dfdfdf,
+            inset -2px 0 grey,
+            inset 2px 2px #fff;
         z-index: 1;
         appearance: none;
         cursor: default;
@@ -404,7 +406,11 @@
 
     .cm-ctab__panel {
         background: silver;
-        box-shadow: inset -1px -1px #0a0a0a, inset 1px 1px #dfdfdf, inset -2px -2px grey, inset 2px 2px #fff;
+        box-shadow:
+            inset -1px -1px #0a0a0a,
+            inset 1px 1px #dfdfdf,
+            inset -2px -2px grey,
+            inset 2px 2px #fff;
         padding: 3px;
         margin-top: -8px;
         z-index: 2;
