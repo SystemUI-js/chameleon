@@ -3,13 +3,15 @@ import { render, screen } from '@testing-library/react';
 import {
   CScreen,
   CScreenManager,
+  CStatusBar,
+  CStatusBarItem,
   CWindow,
   CWindowManager,
   CWindowTitle,
   DEFAULT_SYSTEM_TYPE,
   SYSTEM_TYPE,
-  SystemHost,
   THEME,
+  SystemHost,
   resolveThemeDefinition,
 } from '../src';
 
@@ -18,6 +20,8 @@ describe('legacy public exports compatibility', () => {
     expect(CWindowManager).toBeDefined();
     expect(CScreen).toBeDefined();
     expect(CScreenManager).toBeDefined();
+    expect(CStatusBar).toBeDefined();
+    expect(CStatusBarItem).toBeDefined();
     expect(SystemHost).toBeDefined();
     expect(DEFAULT_SYSTEM_TYPE).toBe(SYSTEM_TYPE.default);
     expect(THEME.win98).toBe('win98');
@@ -60,5 +64,16 @@ describe('legacy public exports compatibility', () => {
 
     expect(screen.getByTestId('screen-root')).toBeInTheDocument();
     expect(screen.getByTestId('window-title-text')).toHaveTextContent('Managed Window');
+  });
+
+  it('lets consumers render status bar components from the package entry', () => {
+    render(
+      <CStatusBar data-testid="legacy-status-bar">
+        <CStatusBarItem>Ready</CStatusBarItem>
+      </CStatusBar>,
+    );
+
+    expect(screen.getByTestId('legacy-status-bar')).toHaveClass('cm-status-bar');
+    expect(screen.getByText('Ready')).toHaveClass('cm-status-bar__item');
   });
 });
