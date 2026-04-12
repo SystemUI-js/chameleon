@@ -108,6 +108,34 @@
     font-family: monospace;
 }
 
+.cm-catalog__slider-shell {
+    width: min(320px, 100%);
+    padding: 12px 16px;
+    border: 1px solid var(--cm-color-border, #ccc);
+    border-radius: 6px;
+    background: var(--cm-color-surface-raised, #f5f5f5);
+    box-sizing: border-box;
+}
+
+.cm-catalog__slider-presets {
+    display: flex;
+    gap: 8px;
+    flex-wrap: wrap;
+}
+
+.cm-catalog__slider-track {
+    height: 6px;
+}
+
+.cm-catalog__slider-fill {
+    background: var(--cm-color-primary, #2563eb);
+}
+
+.cm-catalog__slider-thumb {
+    width: 18px;
+    height: 18px;
+}
+
 // Stage for window/dock/startbar demos
 .cm-catalog__stage {
     min-height: 200px;

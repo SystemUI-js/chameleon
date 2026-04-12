@@ -3,6 +3,7 @@ import {
   CButton,
   CButtonGroup,
   CButtonSeparator,
+  CSlider,
   CSplitArea,
   CDock,
   CGrid,
@@ -312,6 +313,18 @@ return (
 );
 `.trim();
 
+const CSLIDER_SNIPPET = `
+const [volume, setVolume] = useState(40);
+
+return (
+  <>
+    <CSlider min={0} max={100} step={5} value={volume} onChange={setVolume} />
+
+    <p>Volume: {volume}</p>
+  </>
+);
+`.trim();
+
 const SAMPLE_MENU_LIST: readonly MenuListItem[] = [
   {
     id: 'file',
@@ -394,6 +407,46 @@ function SelectShowcase(): React.ReactElement {
         />
         <CSelect name="size-disabled" value="large" options={SIZE_OPTIONS} disabled />
         <p className="cm-catalog__value">Selected size: {selectedSize}</p>
+      </div>
+    </ShowcaseSection>
+  );
+}
+
+function SliderShowcase(): React.ReactElement {
+  const [volume, setVolume] = React.useState(40);
+
+  return (
+    <ShowcaseSection title="Slider" testId="catalog-section-slider" code={CSLIDER_SNIPPET}>
+      <div className="cm-catalog__stack">
+        <div className="cm-catalog__slider-shell">
+          <CSlider
+            data-testid="slider-demo"
+            min={0}
+            max={100}
+            step={5}
+            value={volume}
+            onChange={setVolume}
+            classNames={{
+              track: 'cm-catalog__slider-track',
+              fill: 'cm-catalog__slider-fill',
+              thumb: 'cm-catalog__slider-thumb',
+            }}
+          />
+        </div>
+        <p className="cm-catalog__value" data-testid="slider-demo-value">
+          Volume: {volume}
+        </p>
+        <div className="cm-catalog__slider-presets">
+          <CButton data-testid="slider-demo-min" compact onClick={() => setVolume(0)}>
+            Min
+          </CButton>
+          <CButton data-testid="slider-demo-mid" compact onClick={() => setVolume(50)}>
+            Mid
+          </CButton>
+          <CButton data-testid="slider-demo-max" compact onClick={() => setVolume(100)}>
+            Max
+          </CButton>
+        </div>
       </div>
     </ShowcaseSection>
   );
@@ -916,6 +969,7 @@ export function ComponentCatalog({
             <ButtonGroupShowcase />
             <RadioGroupShowcase />
             <SelectShowcase />
+            <SliderShowcase />
             <TabShowcase />
             <IconShowcase />
             <MenuShowcase />
