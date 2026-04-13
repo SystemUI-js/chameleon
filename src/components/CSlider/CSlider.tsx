@@ -157,8 +157,10 @@ export function CSlider({
   const dragSessionIdRef = React.useRef(0);
   const latestDragValueRef = React.useRef<{ sessionId: number; value: number } | null>(null);
   const normalizedValueRef = React.useRef(normalizedValue);
+  const onChangeRef = React.useRef(onChange);
 
   normalizedValueRef.current = normalizedValue;
+  onChangeRef.current = onChange;
 
   const emitChange = React.useCallback(
     (nextValue: number, dragSessionId?: number) => {
@@ -184,9 +186,9 @@ export function CSlider({
         };
       }
 
-      onChange?.(constrainedValue);
+      onChangeRef.current?.(constrainedValue);
     },
-    [onChange, range],
+    [range],
   );
 
   const handleThumbKeyDown = React.useCallback(

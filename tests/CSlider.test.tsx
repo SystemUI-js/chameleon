@@ -160,6 +160,24 @@ function ControlledSlider({
   );
 }
 
+function InlineControlledSlider({
+  initialValue = 20,
+  step = 10,
+}: Omit<ControlledSliderProps, 'onChange'>): React.ReactElement {
+  const [value, setValue] = React.useState(initialValue);
+
+  return (
+    <CSlider
+      data-testid="inline-controlled-slider"
+      min={0}
+      max={100}
+      step={step}
+      value={value}
+      onChange={(nextValue) => setValue(nextValue)}
+    />
+  );
+}
+
 describe('CSlider', () => {
   beforeEach(() => {
     multiDragMock.instances.length = 0;
@@ -243,6 +261,32 @@ describe('CSlider', () => {
 
     expect(handleChange).toHaveBeenLastCalledWith(80);
     expect(fill).toHaveStyle({ width: '80%' });
+  });
+
+  it('keeps dragging after the first update with an inline controlled onChange', () => {
+    render(<InlineControlledSlider />);
+
+    const { track, thumb, fill } = getSliderElements('inline-controlled-slider');
+
+    expect(multiDragMock.instances).toHaveLength(1);
+
+    mockElementRect(track, { left: 100, top: 0, width: 200, height: 4 });
+    mockElementRect(thumb, { left: 132, top: -6, width: 16, height: 16 });
+
+    act(() => {
+      fireEvent.pointerDown(thumb, { button: 0 });
+      multiDragMock.instances[0]?.move({ x: 172, y: -6 });
+    });
+
+    expect(fill).toHaveStyle({ width: '40%' });
+    expect(multiDragMock.instances).toHaveLength(1);
+
+    act(() => {
+      multiDragMock.instances[0]?.move({ x: 212, y: -6 });
+    });
+
+    expect(multiDragMock.instances[0]?.disabled).toBe(false);
+    expect(fill).toHaveStyle({ width: '60%' });
   });
 
   it('does not create interactions when disabled', () => {
