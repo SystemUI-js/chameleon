@@ -94,6 +94,16 @@ function getValuePrecision(range: SliderRange): number {
   );
 }
 
+function toScaledInteger(value: number, precision: number): number {
+  if (precision <= 0) {
+    return Math.round(value);
+  }
+
+  const factor = 10 ** precision;
+
+  return Math.round(value * factor);
+}
+
 function normalizeSliderValue(value: number, range: SliderRange): number {
   const safeValue = Number.isFinite(value) ? value : range.min;
   const clampedValue = clamp(safeValue, range.min, range.max);
@@ -102,9 +112,13 @@ function normalizeSliderValue(value: number, range: SliderRange): number {
     return clampedValue;
   }
 
-  const alignedStepCount = Math.round((clampedValue - range.min) / range.step);
   const precision = getValuePrecision(range);
-  const alignedValue = range.min + alignedStepCount * range.step;
+  const factor = 10 ** precision;
+  const scaledMin = toScaledInteger(range.min, precision);
+  const scaledStep = toScaledInteger(range.step, precision);
+  const scaledClampedValue = toScaledInteger(clampedValue, precision);
+  const alignedStepCount = Math.round((scaledClampedValue - scaledMin) / scaledStep);
+  const alignedValue = (scaledMin + alignedStepCount * scaledStep) / factor;
 
   return clamp(roundToPrecision(alignedValue, precision), range.min, range.max);
 }
@@ -114,7 +128,10 @@ function valueToPercent(value: number, range: SliderRange): number {
     return 0;
   }
 
-  return ((normalizeSliderValue(value, range) - range.min) / (range.max - range.min)) * 100;
+  return roundToPrecision(
+    ((normalizeSliderValue(value, range) - range.min) / (range.max - range.min)) * 100,
+    Math.max(getValuePrecision(range) + 2, 4),
+  );
 }
 
 function clientXToValue(clientX: number, trackRect: DOMRect, range: SliderRange): number {

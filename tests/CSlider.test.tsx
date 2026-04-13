@@ -178,6 +178,21 @@ function InlineControlledSlider({
   );
 }
 
+function DecimalControlledSlider(): React.ReactElement {
+  const [value, setValue] = React.useState(0.2);
+
+  return (
+    <CSlider
+      data-testid="decimal-controlled-slider"
+      min={0.1}
+      max={0.5}
+      step={0.1}
+      value={value}
+      onChange={setValue}
+    />
+  );
+}
+
 describe('CSlider', () => {
   beforeEach(() => {
     multiDragMock.instances.length = 0;
@@ -232,6 +247,42 @@ describe('CSlider', () => {
 
     expect(fill).toHaveStyle({ width: '75%' });
     expect(thumb).toHaveStyle({ left: '75%' });
+  });
+
+  it('keeps decimal step alignment stable across external values and interactions', () => {
+    const { rerender } = render(
+      <CSlider data-testid="slider-decimal-step" min={0.1} max={0.5} step={0.1} value={0.35} />,
+    );
+
+    let slider = getSliderElements('slider-decimal-step');
+
+    expect(slider.fill).toHaveStyle({ width: '75%' });
+    expect(slider.thumb).toHaveStyle({ left: '75%' });
+
+    multiDragMock.instances.length = 0;
+    rerender(<DecimalControlledSlider />);
+
+    slider = getSliderElements('decimal-controlled-slider');
+
+    expect(multiDragMock.instances).toHaveLength(1);
+
+    mockElementRect(slider.track, { left: 100, top: 0, width: 200, height: 4 });
+    mockElementRect(slider.thumb, { left: 142, top: -6, width: 16, height: 16 });
+
+    act(() => {
+      fireEvent.pointerDown(slider.track, { button: 0, clientX: 225 });
+    });
+
+    expect(slider.fill).toHaveStyle({ width: '75%' });
+    expect(slider.thumb).toHaveStyle({ left: '75%' });
+
+    act(() => {
+      fireEvent.pointerDown(slider.thumb, { button: 0 });
+      multiDragMock.instances.at(-1)?.move({ x: 217, y: -6 });
+    });
+
+    expect(slider.fill).toHaveStyle({ width: '75%' });
+    expect(slider.thumb).toHaveStyle({ left: '75%' });
   });
 
   it('updates value consistently for track press and thumb drag', () => {
