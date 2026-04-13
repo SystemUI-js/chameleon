@@ -271,4 +271,67 @@ describe('CSlider', () => {
     expect(multiDragMock.instances).toHaveLength(0);
     expect(handleChange).not.toHaveBeenCalled();
   });
+
+  it('re-emits the same candidate value when the controlled value stays unchanged', () => {
+    const handleChange = jest.fn<void, [number]>();
+
+    render(
+      <CSlider
+        data-testid="slider-retry"
+        min={0}
+        max={100}
+        step={20}
+        value={20}
+        onChange={handleChange}
+      />,
+    );
+
+    const { track } = getSliderElements('slider-retry');
+
+    mockElementRect(track, { left: 100, top: 0, width: 200, height: 4 });
+
+    act(() => {
+      fireEvent.pointerDown(track, { button: 0, clientX: 176 });
+      fireEvent.pointerDown(track, { button: 0, clientX: 176 });
+    });
+
+    expect(handleChange).toHaveBeenCalledTimes(2);
+    expect(handleChange).toHaveBeenNthCalledWith(1, 40);
+    expect(handleChange).toHaveBeenNthCalledWith(2, 40);
+  });
+
+  it('exposes slider semantics and supports keyboard interaction', () => {
+    const handleChange = jest.fn<void, [number]>();
+
+    render(
+      <CSlider
+        data-testid="slider-accessible"
+        min={0}
+        max={100}
+        step={10}
+        value={50}
+        aria-label="Volume"
+        onChange={handleChange}
+      />,
+    );
+
+    const { thumb } = getSliderElements('slider-accessible');
+
+    expect(thumb).toHaveAttribute('role', 'slider');
+    expect(thumb).toHaveAttribute('tabindex', '0');
+    expect(thumb).toHaveAttribute('aria-label', 'Volume');
+    expect(thumb).toHaveAttribute('aria-valuemin', '0');
+    expect(thumb).toHaveAttribute('aria-valuemax', '100');
+    expect(thumb).toHaveAttribute('aria-valuenow', '50');
+
+    act(() => {
+      fireEvent.keyDown(thumb, { key: 'ArrowRight' });
+      fireEvent.keyDown(thumb, { key: 'Home' });
+      fireEvent.keyDown(thumb, { key: 'End' });
+    });
+
+    expect(handleChange).toHaveBeenNthCalledWith(1, 60);
+    expect(handleChange).toHaveBeenNthCalledWith(2, 0);
+    expect(handleChange).toHaveBeenNthCalledWith(3, 100);
+  });
 });

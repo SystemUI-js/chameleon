@@ -18,6 +18,9 @@ export interface CSliderProps {
   readonly step?: number;
   readonly disabled?: boolean;
   readonly onChange?: (value: number) => void;
+  readonly 'aria-label'?: string;
+  readonly 'aria-labelledby'?: string;
+  readonly 'aria-valuetext'?: string;
   readonly className?: string;
   readonly classNames?: CSliderClassNames;
   readonly theme?: string;
@@ -32,6 +35,7 @@ type SliderRange = {
 };
 
 type DragSession = {
+  readonly id: number;
   readonly trackRect: DOMRect;
   readonly thumbWidth: number;
 };
@@ -131,6 +135,9 @@ export function CSlider({
   step,
   disabled = false,
   onChange,
+  'aria-label': ariaLabel,
+  'aria-labelledby': ariaLabelledBy,
+  'aria-valuetext': ariaValueText,
   className,
   classNames,
   theme,
@@ -147,24 +154,82 @@ export function CSlider({
   const trackRef = React.useRef<HTMLDivElement | null>(null);
   const thumbRef = React.useRef<HTMLDivElement | null>(null);
   const dragSessionRef = React.useRef<DragSession | null>(null);
-  const latestValueRef = React.useRef(normalizedValue);
+  const dragSessionIdRef = React.useRef(0);
+  const latestDragValueRef = React.useRef<{ sessionId: number; value: number } | null>(null);
+  const normalizedValueRef = React.useRef(normalizedValue);
 
-  React.useEffect(() => {
-    latestValueRef.current = normalizedValue;
-  }, [normalizedValue]);
+  normalizedValueRef.current = normalizedValue;
 
   const emitChange = React.useCallback(
-    (nextValue: number) => {
+    (nextValue: number, dragSessionId?: number) => {
       const constrainedValue = normalizeSliderValue(nextValue, range);
 
-      if (latestValueRef.current === constrainedValue) {
+      if (normalizedValueRef.current === constrainedValue) {
         return;
       }
 
-      latestValueRef.current = constrainedValue;
+      if (dragSessionId !== undefined) {
+        const latestDragValue = latestDragValueRef.current;
+
+        if (
+          latestDragValue?.sessionId === dragSessionId &&
+          latestDragValue.value === constrainedValue
+        ) {
+          return;
+        }
+
+        latestDragValueRef.current = {
+          sessionId: dragSessionId,
+          value: constrainedValue,
+        };
+      }
+
       onChange?.(constrainedValue);
     },
     [onChange, range],
+  );
+
+  const handleThumbKeyDown = React.useCallback(
+    (event: React.KeyboardEvent<HTMLDivElement>) => {
+      if (disabled) {
+        return;
+      }
+
+      const keyboardStep = range.step ?? 1;
+      const pageStep =
+        range.step !== undefined ? range.step * 10 : Math.max((range.max - range.min) / 10, 1);
+
+      let nextValue: number | null = null;
+
+      switch (event.key) {
+        case 'ArrowLeft':
+        case 'ArrowDown':
+          nextValue = normalizedValue - keyboardStep;
+          break;
+        case 'ArrowRight':
+        case 'ArrowUp':
+          nextValue = normalizedValue + keyboardStep;
+          break;
+        case 'Home':
+          nextValue = range.min;
+          break;
+        case 'End':
+          nextValue = range.max;
+          break;
+        case 'PageDown':
+          nextValue = normalizedValue - pageStep;
+          break;
+        case 'PageUp':
+          nextValue = normalizedValue + pageStep;
+          break;
+        default:
+          return;
+      }
+
+      event.preventDefault();
+      emitChange(nextValue);
+    },
+    [disabled, emitChange, normalizedValue, range],
   );
 
   React.useEffect(() => {
@@ -186,8 +251,13 @@ export function CSlider({
       }
 
       const thumbRect = thumbElement.getBoundingClientRect();
+      const nextSessionId = dragSessionIdRef.current + 1;
+
+      dragSessionIdRef.current = nextSessionId;
+      latestDragValueRef.current = null;
 
       dragSessionRef.current = {
+        id: nextSessionId,
         trackRect: trackElement.getBoundingClientRect(),
         thumbWidth: thumbRect.width,
       } satisfies DragSession;
@@ -218,12 +288,14 @@ export function CSlider({
             dragSession.trackRect,
             range,
           ),
+          dragSession.id,
         );
       },
       setPoseOnEnd: (_element, pose) => {
         const dragSession = dragSessionRef.current;
 
         if (!dragSession || !pose.position) {
+          latestDragValueRef.current = null;
           dragSessionRef.current = null;
           return;
         }
@@ -234,12 +306,15 @@ export function CSlider({
             dragSession.trackRect,
             range,
           ),
+          dragSession.id,
         );
+        latestDragValueRef.current = null;
         dragSessionRef.current = null;
       },
     });
 
     return () => {
+      latestDragValueRef.current = null;
       dragSessionRef.current = null;
       thumbElement.removeEventListener('pointerdown', handlePointerDown);
       drag.setDisabled();
@@ -259,6 +334,7 @@ export function CSlider({
       }
 
       emitChange(clientXToValue(event.clientX, trackElement.getBoundingClientRect(), range));
+      thumbRef.current?.focus();
     },
     [disabled, emitChange, range],
   );
@@ -294,9 +370,19 @@ export function CSlider({
         />
         <div
           ref={thumbRef}
-          aria-hidden="true"
+          role="slider"
+          aria-disabled={disabled || undefined}
+          aria-label={ariaLabel}
+          aria-labelledby={ariaLabelledBy}
+          aria-orientation="horizontal"
+          aria-valuemax={range.max}
+          aria-valuemin={range.min}
+          aria-valuenow={normalizedValue}
+          aria-valuetext={ariaValueText}
           className={mergeClasses(['cm-cslider__thumb'], undefined, classNames?.thumb)}
           data-slider-thumb="true"
+          tabIndex={disabled ? -1 : 0}
+          onKeyDown={handleThumbKeyDown}
           style={thumbStyle}
         />
       </div>
