@@ -44,8 +44,8 @@
         margin-right: 2px;
     }
 
-    .cm-window > :not(.cm-window__title-bar),
-    &.cm-window > :not(.cm-window__title-bar) {
+    .cm-window > :not(.cm-window__title-bar):not(.cm-status-bar),
+    &.cm-window > :not(.cm-window__title-bar):not(.cm-status-bar) {
         background: linear-gradient(180deg, #f8fbff 0%, #e7eefb 100%);
     }
 

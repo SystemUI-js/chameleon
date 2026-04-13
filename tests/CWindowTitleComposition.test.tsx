@@ -304,6 +304,15 @@ describe('CWindow and CWindowTitle composition', () => {
     expect(readThemeStyles('default')).toContain('&.cm-window-preview-frame');
   });
 
+  it('keeps composed status bars out of window body theme selectors', () => {
+    expect(readThemeStyles('default')).toContain(
+      '.cm-window > :not(.cm-window__title-bar):not(.cm-status-bar)',
+    );
+    expect(readThemeStyles('winxp')).toContain(
+      '.cm-window > :not(.cm-window__title-bar):not(.cm-status-bar)',
+    );
+  });
+
   it('keeps the outer frame absolute and places resize handles in an inner wrapper', () => {
     const { getByTestId } = render(
       <CWindow x={10} y={20} width={240} height={160}>
