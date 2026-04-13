@@ -136,6 +136,37 @@
     height: 18px;
 }
 
+.cm-catalog__scroll-area {
+    width: min(360px, 100%);
+    height: 196px;
+}
+
+.cm-catalog__scroll-area-content {
+    display: flex;
+    flex-direction: column;
+    gap: 8px;
+}
+
+.cm-catalog__scroll-entry {
+    padding: 10px 12px;
+    border: 1px solid var(--cm-color-border, #ccc);
+    border-radius: 4px;
+    background: var(--cm-color-surface, #fff);
+}
+
+.cm-catalog__scroll-entry-title {
+    margin: 0 0 4px;
+    font-size: 13px;
+    font-weight: 600;
+}
+
+.cm-catalog__scroll-entry-detail {
+    margin: 0;
+    font-size: 12px;
+    line-height: 1.5;
+    color: var(--cm-color-text-muted, #666);
+}
+
 // Stage for window/dock/startbar demos
 .cm-catalog__stage {
     min-height: 200px;

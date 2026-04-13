@@ -186,6 +186,33 @@
         gap: 10px;
     }
 
+    .cm-scroll-area,
+    &.cm-scroll-area {
+        padding: 10px;
+        border: 1px solid #b8b8b8;
+        border-radius: 6px;
+        background: linear-gradient(180deg, #ffffff 0%, #f1f4f8 100%);
+        color: #1f1f1f;
+        box-shadow:
+            inset 1px 1px 0 rgba(255, 255, 255, 0.9),
+            inset -1px -1px 0 rgba(72, 96, 127, 0.12);
+        scrollbar-color: #8aa7d3 #edf2f8;
+    }
+
+    .cm-scroll-area:focus-visible,
+    &.cm-scroll-area:focus-visible,
+    .cm-scroll-area.cm-theme--default:focus-visible {
+        outline: 2px solid #4b7bd3;
+        outline-offset: 2px;
+    }
+
+    .cm-scroll-area__content,
+    &.cm-scroll-area__content {
+        display: flex;
+        flex-direction: column;
+        gap: 8px;
+    }
+
     &.cm-button {
         min-height: 32px;
         padding: 0 14px;

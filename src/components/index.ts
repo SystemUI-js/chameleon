@@ -13,6 +13,7 @@ export * from './Radio/Radio';
 export * from './Radio/RadioGroup';
 export * from './Screen/Screen';
 export * from './Screen/ScreenManager';
+export * from './ScrollArea';
 export * from './Select/Select';
 export * from './StatusBar';
 export * from './StartBar/StartBar';

@@ -12,6 +12,7 @@ import {
   CMenu,
   CRadio,
   CRadioGroup,
+  CScrollArea,
   CSelect,
   CStatusBar,
   CStatusBarItem,
@@ -327,6 +328,44 @@ return (
 );
 `.trim();
 
+const SCROLL_AREA_SNIPPET = `
+<CScrollArea aria-label="Activity feed" style={{ height: 180 }}>
+  {activityItems.map((item) => (
+    <article key={item.title}>
+      <strong>{item.title}</strong>
+      <p>{item.detail}</p>
+    </article>
+  ))}
+</CScrollArea>
+`.trim();
+
+const SCROLL_AREA_ACTIVITY_ITEMS = [
+  {
+    title: 'Build completed',
+    detail: 'Library bundle emitted successfully and source maps were updated.',
+  },
+  {
+    title: 'QA snapshot queued',
+    detail: 'Visual regression capture is waiting for the Windows XP theme pass.',
+  },
+  {
+    title: 'Theme audit note',
+    detail: 'Win98 scrollbar contrast needs a quick check against disabled surfaces.',
+  },
+  {
+    title: 'Docs sync',
+    detail: 'Component catalog examples were refreshed for keyboard and screen reader hints.',
+  },
+  {
+    title: 'Release reminder',
+    detail: 'Add the component to the next changelog entry before pushing the release branch.',
+  },
+  {
+    title: 'Follow-up task',
+    detail: 'Consider adding optional scrollbar size tokens if more skins arrive later.',
+  },
+] as const;
+
 const SAMPLE_MENU_LIST: readonly MenuListItem[] = [
   {
     id: 'file',
@@ -449,6 +488,35 @@ function SliderShowcase(): React.ReactElement {
             Max
           </CButton>
         </div>
+      </div>
+    </ShowcaseSection>
+  );
+}
+
+function ScrollAreaShowcase(): React.ReactElement {
+  return (
+    <ShowcaseSection
+      title="ScrollArea"
+      testId="catalog-section-scroll-area"
+      code={SCROLL_AREA_SNIPPET}
+    >
+      <div className="cm-catalog__stack">
+        <CScrollArea
+          aria-label="Activity feed"
+          data-testid="scroll-area-demo"
+          className="cm-catalog__scroll-area"
+          contentClassName="cm-catalog__scroll-area-content"
+        >
+          {SCROLL_AREA_ACTIVITY_ITEMS.map((item) => (
+            <article key={item.title} className="cm-catalog__scroll-entry">
+              <h3 className="cm-catalog__scroll-entry-title">{item.title}</h3>
+              <p className="cm-catalog__scroll-entry-detail">{item.detail}</p>
+            </article>
+          ))}
+        </CScrollArea>
+        <p className="cm-catalog__value">
+          Focus the area and use wheel, trackpad, or keyboard to scroll.
+        </p>
       </div>
     </ShowcaseSection>
   );
@@ -980,6 +1048,7 @@ export function ComponentCatalog({
             <RadioGroupShowcase />
             <SelectShowcase />
             <SliderShowcase />
+            <ScrollAreaShowcase />
             <TabShowcase />
             <IconShowcase />
             <MenuShowcase />
