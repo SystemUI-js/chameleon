@@ -1,4 +1,4 @@
-import type React from 'react';
+import React from 'react';
 import { mergeClasses } from '../Theme/mergeClasses';
 import { useTheme } from '../Theme/useTheme';
 import './index.scss';
