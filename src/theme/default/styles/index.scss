@@ -93,8 +93,8 @@
         text-shadow: 0 1px 0 rgba(0, 0, 0, 0.28);
     }
 
-    .cm-window > :not(.cm-window__title-bar),
-    &.cm-window > :not(.cm-window__title-bar) {
+    .cm-window > :not(.cm-window__title-bar):not(.cm-status-bar),
+    &.cm-window > :not(.cm-window__title-bar):not(.cm-status-bar) {
         flex: 1;
         padding: 12px;
         background: linear-gradient(180deg, #ffffff 0%, #f3f3f3 100%);

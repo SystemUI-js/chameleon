@@ -4,7 +4,7 @@ import { act, render } from '@testing-library/react';
 import { readFileSync } from 'node:fs';
 import { join } from 'node:path';
 import React from 'react';
-import { Theme, type WindowTitleActionButtonPosition } from '../src';
+import { CStatusBar, CStatusBarItem, Theme, type WindowTitleActionButtonPosition } from '../src';
 import { CWindow } from '../src/components/Window/Window';
 import { CWindowBody } from '../src/components/Window/WindowBody';
 import { CWindowTitle } from '../src/components/Window/WindowTitle';
@@ -131,6 +131,38 @@ describe('CWindow and CWindowTitle composition', () => {
     );
 
     expect(queryByTestId('window-title')).not.toBeInTheDocument();
+  });
+
+  it('does not implicitly render a status bar when consumer does not compose it', () => {
+    const { container } = render(
+      <CWindow>
+        <div data-testid="window-body">body</div>
+      </CWindow>,
+    );
+
+    expect(container.querySelector('.cm-status-bar')).not.toBeInTheDocument();
+  });
+
+  it('renders a composed status bar in declaration order without dedicated window API', () => {
+    const { getByTestId } = render(
+      <CWindow>
+        <CWindowTitle>Window With Status</CWindowTitle>
+        <CWindowBody>Body content</CWindowBody>
+        <CStatusBar data-testid="window-status-bar">
+          <CStatusBarItem>Ready</CStatusBarItem>
+        </CStatusBar>
+      </CWindow>,
+    );
+
+    const content = getByTestId('window-content');
+    const title = getByTestId('window-title');
+    const body = getByTestId('window-body');
+    const statusBar = getByTestId('window-status-bar');
+
+    expect(content.children[0]).toBe(title);
+    expect(content.children[1]).toBe(body);
+    expect(content.children[2]).toBe(statusBar);
+    expect(statusBar).toHaveTextContent('Ready');
   });
 
   it('renders composed CWindowTitle content explicitly', () => {
@@ -270,6 +302,15 @@ describe('CWindow and CWindowTitle composition', () => {
     expect(readThemeStyles('winxp')).toContain('&.cm-window-preview-frame');
     expect(readThemeStyles('default')).toContain('&.cm-window__title-bar');
     expect(readThemeStyles('default')).toContain('&.cm-window-preview-frame');
+  });
+
+  it('keeps composed status bars out of window body theme selectors', () => {
+    expect(readThemeStyles('default')).toContain(
+      '.cm-window > :not(.cm-window__title-bar):not(.cm-status-bar)',
+    );
+    expect(readThemeStyles('winxp')).toContain(
+      '.cm-window > :not(.cm-window__title-bar):not(.cm-status-bar)',
+    );
   });
 
   it('keeps the outer frame absolute and places resize handles in an inner wrapper', () => {

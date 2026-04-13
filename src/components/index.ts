@@ -14,6 +14,7 @@ export * from './Radio/RadioGroup';
 export * from './Screen/Screen';
 export * from './Screen/ScreenManager';
 export * from './Select/Select';
+export * from './StatusBar';
 export * from './StartBar/StartBar';
 export * from './Theme';
 export * from './Widget/Widget';

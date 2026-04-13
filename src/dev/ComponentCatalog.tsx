@@ -13,6 +13,8 @@ import {
   CRadio,
   CRadioGroup,
   CSelect,
+  CStatusBar,
+  CStatusBarItem,
   CStartBar,
   CTab,
   CTabItem,
@@ -550,6 +552,10 @@ return (
         <p>Window content goes here.</p>
         <p>Try dragging the title bar.</p>
       </CWindowBody>
+      <CStatusBar>
+        <CStatusBarItem>Ready</CStatusBarItem>
+        <CStatusBarItem>Line 12, Column 4</CStatusBarItem>
+      </CStatusBar>
     </CWindow>
   </>
 );`.trim();
@@ -631,6 +637,10 @@ function WindowShowcase(): React.ReactElement {
               <p>Window content goes here.</p>
               <p>Try dragging the title bar.</p>
             </CWindowBody>
+            <CStatusBar>
+              <CStatusBarItem>Ready</CStatusBarItem>
+              <CStatusBarItem>Line 12, Column 4</CStatusBarItem>
+            </CStatusBar>
           </CWindow>
         </div>
       </div>
