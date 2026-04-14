@@ -145,6 +145,30 @@ function clientXToValue(clientX: number, trackRect: DOMRect, range: SliderRange)
   return normalizeSliderValue(value, range);
 }
 
+function getDefaultKeyboardStep(span: number, precision: number): number {
+  if (span <= 0) {
+    return 0;
+  }
+
+  if (span < 1) {
+    return roundToPrecision(span / 100, precision);
+  }
+
+  return 1;
+}
+
+function getDefaultPageStep(span: number, precision: number): number {
+  if (span <= 0) {
+    return 0;
+  }
+
+  if (span < 1) {
+    return roundToPrecision(span / 10, precision);
+  }
+
+  return Math.max(span / 10, 1);
+}
+
 export function CSlider({
   min = 0,
   max = 100,
@@ -216,14 +240,8 @@ export function CSlider({
 
       const span = range.max - range.min;
       const continuousPrecision = Math.max(getValuePrecision(range) + 2, 2);
-      const defaultKeyboardStep =
-        span <= 0 ? 0 : span < 1 ? roundToPrecision(span / 100, continuousPrecision) : 1;
-      const defaultPageStep =
-        span <= 0
-          ? 0
-          : span < 1
-            ? roundToPrecision(span / 10, continuousPrecision)
-            : Math.max(span / 10, 1);
+      const defaultKeyboardStep = getDefaultKeyboardStep(span, continuousPrecision);
+      const defaultPageStep = getDefaultPageStep(span, continuousPrecision);
       const keyboardStep = range.step ?? defaultKeyboardStep;
       const pageStep = range.step !== undefined ? range.step * 10 : defaultPageStep;
       const offsetValue = (delta: number): number =>
