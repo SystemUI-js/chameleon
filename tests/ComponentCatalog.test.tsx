@@ -1,4 +1,4 @@
-import { render, screen, within, act } from '@testing-library/react';
+import { act, render, screen, within } from '@testing-library/react';
 import '@testing-library/jest-dom';
 import { ComponentCatalog } from '../src/dev/ComponentCatalog';
 import { DEV_THEME } from '../src/dev/themeSwitcher';
@@ -51,6 +51,15 @@ describe('ComponentCatalog', () => {
 
     const selectSection = screen.getByTestId('catalog-section-select');
     const showCodeButton = within(selectSection).getByRole('button', { name: 'Show code' });
+    expect(showCodeButton).toBeInTheDocument();
+    expect(showCodeButton).toHaveAttribute('aria-expanded', 'false');
+  });
+
+  it('Checkbox section exposes a Show code button', () => {
+    render(<ComponentCatalog theme={DEV_THEME.default} onThemeChange={() => {}} />);
+
+    const checkboxSection = screen.getByTestId('catalog-section-checkbox');
+    const showCodeButton = within(checkboxSection).getByRole('button', { name: 'Show code' });
     expect(showCodeButton).toBeInTheDocument();
     expect(showCodeButton).toHaveAttribute('aria-expanded', 'false');
   });
@@ -141,6 +150,14 @@ describe('ComponentCatalog', () => {
     expect(buttonShowCode).toHaveAttribute('aria-expanded', 'true');
     expect(radioShowCode).toHaveAttribute('aria-expanded', 'false');
     expect(selectShowCode).toHaveAttribute('aria-expanded', 'false');
+  });
+
+  it('Checkbox section renders live checked state text', () => {
+    render(<ComponentCatalog theme={DEV_THEME.default} onThemeChange={() => {}} />);
+
+    const checkboxSection = screen.getByTestId('catalog-section-checkbox');
+    expect(within(checkboxSection).getByTestId('checkbox-demo-notifications')).toBeChecked();
+    expect(within(checkboxSection).getByText('Notifications enabled: Yes')).toBeInTheDocument();
   });
 
   it('Window section exposes a Show code button', () => {

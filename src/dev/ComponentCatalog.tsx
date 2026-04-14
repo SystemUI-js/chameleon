@@ -3,7 +3,7 @@ import {
   CButton,
   CButtonGroup,
   CButtonSeparator,
-  CSplitArea,
+  CCheckbox,
   CDock,
   CGrid,
   CGridItem,
@@ -15,6 +15,7 @@ import {
   CStatusBar,
   CStatusBarItem,
   CStartBar,
+  CSplitArea,
   CTab,
   CTabItem,
   CWindow,
@@ -272,6 +273,22 @@ return (
 );
 `.trim();
 
+const CHECKBOX_SNIPPET = `
+const [notificationsEnabled, setNotificationsEnabled] = useState(true);
+
+return (
+  <>
+    <CCheckbox checked={notificationsEnabled} onChange={setNotificationsEnabled}>
+      Enable notifications
+    </CCheckbox>
+    <CCheckbox defaultChecked>Auto-save drafts</CCheckbox>
+    <CCheckbox disabled>Disabled setting</CCheckbox>
+
+    <p>Notifications enabled: {notificationsEnabled ? 'Yes' : 'No'}</p>
+  </>
+);
+`.trim();
+
 function RadioGroupShowcase(): React.ReactElement {
   const [selectedFruit, setSelectedFruit] = React.useState('apple');
 
@@ -297,6 +314,29 @@ function RadioGroupShowcase(): React.ReactElement {
           </div>
         </CRadioGroup>
         <p className="cm-catalog__value">Selected fruit: {selectedFruit}</p>
+      </div>
+    </ShowcaseSection>
+  );
+}
+
+function CheckboxShowcase(): React.ReactElement {
+  const [notificationsEnabled, setNotificationsEnabled] = React.useState(true);
+
+  return (
+    <ShowcaseSection title="Checkbox" testId="catalog-section-checkbox" code={CHECKBOX_SNIPPET}>
+      <div className="cm-catalog__stack">
+        <CCheckbox
+          checked={notificationsEnabled}
+          data-testid="checkbox-demo-notifications"
+          onChange={setNotificationsEnabled}
+        >
+          Enable notifications
+        </CCheckbox>
+        <CCheckbox defaultChecked>Auto-save drafts</CCheckbox>
+        <CCheckbox disabled>Disabled setting</CCheckbox>
+        <p className="cm-catalog__value">
+          Notifications enabled: {notificationsEnabled ? 'Yes' : 'No'}
+        </p>
       </div>
     </ShowcaseSection>
   );
@@ -925,6 +965,7 @@ export function ComponentCatalog({
             <ButtonShowcase />
             <ButtonGroupShowcase />
             <RadioGroupShowcase />
+            <CheckboxShowcase />
             <SelectShowcase />
             <TabShowcase />
             <IconShowcase />
