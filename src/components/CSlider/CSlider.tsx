@@ -214,20 +214,31 @@ export function CSlider({
         return;
       }
 
-      const keyboardStep = range.step ?? 1;
-      const pageStep =
-        range.step !== undefined ? range.step * 10 : Math.max((range.max - range.min) / 10, 1);
+      const span = range.max - range.min;
+      const continuousPrecision = Math.max(getValuePrecision(range) + 2, 2);
+      const defaultKeyboardStep =
+        span <= 0 ? 0 : span < 1 ? roundToPrecision(span / 100, continuousPrecision) : 1;
+      const defaultPageStep =
+        span <= 0
+          ? 0
+          : span < 1
+            ? roundToPrecision(span / 10, continuousPrecision)
+            : Math.max(span / 10, 1);
+      const keyboardStep = range.step ?? defaultKeyboardStep;
+      const pageStep = range.step !== undefined ? range.step * 10 : defaultPageStep;
+      const offsetValue = (delta: number): number =>
+        roundToPrecision(normalizedValue + delta, continuousPrecision);
 
       let nextValue: number | null = null;
 
       switch (event.key) {
         case 'ArrowLeft':
         case 'ArrowDown':
-          nextValue = normalizedValue - keyboardStep;
+          nextValue = offsetValue(-keyboardStep);
           break;
         case 'ArrowRight':
         case 'ArrowUp':
-          nextValue = normalizedValue + keyboardStep;
+          nextValue = offsetValue(keyboardStep);
           break;
         case 'Home':
           nextValue = range.min;
@@ -236,10 +247,10 @@ export function CSlider({
           nextValue = range.max;
           break;
         case 'PageDown':
-          nextValue = normalizedValue - pageStep;
+          nextValue = offsetValue(-pageStep);
           break;
         case 'PageUp':
-          nextValue = normalizedValue + pageStep;
+          nextValue = offsetValue(pageStep);
           break;
         default:
           return;

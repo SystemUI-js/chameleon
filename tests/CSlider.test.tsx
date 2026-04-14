@@ -193,6 +193,21 @@ function DecimalControlledSlider(): React.ReactElement {
   );
 }
 
+function FractionalKeyboardSlider(): React.ReactElement {
+  const [value, setValue] = React.useState(0.2);
+
+  return (
+    <CSlider
+      data-testid="fractional-keyboard-slider"
+      min={0}
+      max={0.5}
+      value={value}
+      aria-label="Fine volume"
+      onChange={setValue}
+    />
+  );
+}
+
 describe('CSlider', () => {
   beforeEach(() => {
     multiDragMock.instances.length = 0;
@@ -428,5 +443,25 @@ describe('CSlider', () => {
     expect(handleChange).toHaveBeenNthCalledWith(1, 60);
     expect(handleChange).toHaveBeenNthCalledWith(2, 0);
     expect(handleChange).toHaveBeenNthCalledWith(3, 100);
+  });
+
+  it('supports fine-grained keyboard adjustment on fractional ranges without step', () => {
+    render(<FractionalKeyboardSlider />);
+
+    const { thumb } = getSliderElements('fractional-keyboard-slider');
+
+    expect(thumb).toHaveAttribute('aria-valuenow', '0.2');
+
+    act(() => {
+      fireEvent.keyDown(thumb, { key: 'ArrowRight' });
+    });
+
+    expect(thumb).toHaveAttribute('aria-valuenow', '0.205');
+
+    act(() => {
+      fireEvent.keyDown(thumb, { key: 'PageUp' });
+    });
+
+    expect(thumb).toHaveAttribute('aria-valuenow', '0.255');
   });
 });
