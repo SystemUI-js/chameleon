@@ -55,6 +55,24 @@ describe('ComponentCatalog', () => {
     expect(showCodeButton).toHaveAttribute('aria-expanded', 'false');
   });
 
+  it('Slider section exposes a Show code button', () => {
+    render(<ComponentCatalog theme={DEV_THEME.default} onThemeChange={() => {}} />);
+
+    const sliderSection = screen.getByTestId('catalog-section-slider');
+    const showCodeButton = within(sliderSection).getByRole('button', { name: 'Show code' });
+    expect(showCodeButton).toBeInTheDocument();
+    expect(showCodeButton).toHaveAttribute('aria-expanded', 'false');
+  });
+
+  it('ScrollArea section exposes a Show code button', () => {
+    render(<ComponentCatalog theme={DEV_THEME.default} onThemeChange={() => {}} />);
+
+    const scrollAreaSection = screen.getByTestId('catalog-section-scroll-area');
+    const showCodeButton = within(scrollAreaSection).getByRole('button', { name: 'Show code' });
+    expect(showCodeButton).toBeInTheDocument();
+    expect(showCodeButton).toHaveAttribute('aria-expanded', 'false');
+  });
+
   it('Theme section exposes a Show code button', () => {
     render(<ComponentCatalog theme={DEV_THEME.default} onThemeChange={() => {}} />);
 
@@ -209,6 +227,31 @@ describe('ComponentCatalog', () => {
     expect(showCodeButton).toHaveAttribute('aria-expanded', 'true');
     const codeElement = within(gridSection).getByText(/CGrid/);
     expect(codeElement).toBeInTheDocument();
+  });
+
+  it('renders slider showcase and updates preset value text', () => {
+    render(<ComponentCatalog theme={DEV_THEME.default} onThemeChange={() => {}} />);
+
+    const sliderSection = screen.getByTestId('catalog-section-slider');
+    expect(within(sliderSection).getByTestId('slider-demo')).toBeInTheDocument();
+    expect(within(sliderSection).getByTestId('slider-demo-value')).toHaveTextContent('Volume: 40');
+
+    act(() => {
+      within(sliderSection).getByTestId('slider-demo-max').click();
+    });
+
+    expect(within(sliderSection).getByTestId('slider-demo-value')).toHaveTextContent('Volume: 100');
+  });
+
+  it('renders scroll area showcase with stable test ids and accessibility label', () => {
+    render(<ComponentCatalog theme={DEV_THEME.default} onThemeChange={() => {}} />);
+
+    const scrollAreaSection = screen.getByTestId('catalog-section-scroll-area');
+    const scrollArea = within(scrollAreaSection).getByTestId('scroll-area-demo');
+
+    expect(scrollArea).toBeInTheDocument();
+    expect(scrollArea).toHaveAttribute('aria-label', 'Activity feed');
+    expect(within(scrollAreaSection).getAllByRole('article')).toHaveLength(6);
   });
 
   describe('Theme showcase isolation boundary', () => {

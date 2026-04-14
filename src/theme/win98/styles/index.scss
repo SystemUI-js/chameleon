@@ -151,6 +151,32 @@
         gap: 8px;
     }
 
+    .cm-scroll-area,
+    &.cm-scroll-area {
+        padding: 6px;
+        background: #c0c0c0;
+        box-shadow:
+            inset -1px -1px #0a0a0a,
+            inset 1px 1px #ffffff,
+            inset -2px -2px #808080,
+            inset 2px 2px #dfdfdf;
+        scrollbar-color: #808080 #c0c0c0;
+    }
+
+    .cm-scroll-area:focus,
+    &.cm-scroll-area:focus,
+    .cm-scroll-area.cm-theme--win98:focus {
+        outline: 1px dotted #000000;
+        outline-offset: 2px;
+    }
+
+    .cm-scroll-area__content,
+    &.cm-scroll-area__content {
+        display: flex;
+        flex-direction: column;
+        gap: 6px;
+    }
+
     &.cm-button {
         min-width: 75px;
         min-height: 23px;

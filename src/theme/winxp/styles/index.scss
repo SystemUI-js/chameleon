@@ -134,6 +134,32 @@
         gap: 10px;
     }
 
+    .cm-scroll-area,
+    &.cm-scroll-area {
+        padding: 8px;
+        border: 1px solid #7da2ce;
+        border-radius: 8px;
+        background: linear-gradient(180deg, #ffffff 0%, #dce8f8 100%);
+        box-shadow:
+            inset 0 1px 0 rgba(255, 255, 255, 0.95),
+            0 1px 2px rgba(49, 106, 197, 0.16);
+        scrollbar-color: #7da2ce #edf4fd;
+    }
+
+    .cm-scroll-area:focus-visible,
+    &.cm-scroll-area:focus-visible,
+    .cm-scroll-area.cm-theme--winxp:focus-visible {
+        outline: 2px solid #ffb74a;
+        outline-offset: 2px;
+    }
+
+    .cm-scroll-area__content,
+    &.cm-scroll-area__content {
+        display: flex;
+        flex-direction: column;
+        gap: 8px;
+    }
+
     &.cm-button {
         min-height: 28px;
         padding: 0 14px;

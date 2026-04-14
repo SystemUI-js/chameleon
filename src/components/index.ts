@@ -1,6 +1,7 @@
 export * from './Button/Button';
 export * from './ButtonGroup/ButtonGroup';
 export * from './ButtonSeparator/ButtonSeparator';
+export * from './CSlider';
 export * from './CSplitArea';
 export * from './Dock/Dock';
 export * from './Grid';
@@ -12,6 +13,7 @@ export * from './Radio/Radio';
 export * from './Radio/RadioGroup';
 export * from './Screen/Screen';
 export * from './Screen/ScreenManager';
+export * from './ScrollArea';
 export * from './Select/Select';
 export * from './StatusBar';
 export * from './StartBar/StartBar';
