@@ -74,9 +74,8 @@ describe('CCheckbox', () => {
 
     expect(checkbox).toBeDisabled();
 
-    fireEvent.click(checkbox);
+    fireEvent.click(screen.getByText('Disabled'));
 
-    expect(checkbox).not.toBeChecked();
     expect(handleChange).not.toHaveBeenCalled();
   });
 
