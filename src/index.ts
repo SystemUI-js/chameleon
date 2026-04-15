@@ -6,6 +6,7 @@ export {
   CButtonGroup,
   CButtonSeparator,
   CCheckbox,
+  CSlider,
   CSplitArea,
   CIcon,
   CIconContainer,
