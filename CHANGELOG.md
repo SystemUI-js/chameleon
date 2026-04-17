@@ -1,3 +1,10 @@
+## [UnReleased]
+
+- **Breaking:** 移除 legacy system shell / registry 公共 API
+  - 包入口不再导出 `SystemHost`、`SYSTEM_TYPE`、`THEME`、`DEFAULT_SYSTEM_TYPE`、`DEFAULT_THEME_BY_SYSTEM`、`SYSTEM_THEME_MATRIX`、`resolveSystemTypeDefinition`、`assertValidSystemThemeSelection`、`resolveThemeDefinition` 及关联类型
+  - `defaultThemeDefinition`、`win98ThemeDefinition`、`winXpThemeDefinition` 改为直接导出 `src/theme/*` 中的 canonical theme definition，不再包含 system registry 派生的 `systemType` 元数据
+  - 迁移：删除对 legacy system layer 的导入，改为直接使用组件级 API、`Theme` 以及包入口提供的纯主题定义导出
+
 ### [0.2.0] (2026-04-10)
 
 - **Feature:** 新增 `CSplitArea` 连续分割布局组件

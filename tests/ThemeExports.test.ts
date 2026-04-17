@@ -1,26 +1,18 @@
 import { defaultThemeDefinition, win98ThemeDefinition, winXpThemeDefinition } from '../src';
+import { defaultThemeDefinition as directDefaultThemeDefinition } from '../src/theme/default';
+import { win98ThemeDefinition as directWin98ThemeDefinition } from '../src/theme/win98';
+import { winXpThemeDefinition as directWinXpThemeDefinition } from '../src/theme/winxp';
 
 describe('theme exports', () => {
-  it('exports legacy-compatible system theme definitions from the package entry', () => {
-    expect(defaultThemeDefinition).toEqual({
-      id: 'default',
-      label: 'Default',
-      systemType: 'default',
-      className: 'cm-theme--default',
-    });
+  it('re-exports canonical theme definitions from the package entry', () => {
+    expect(defaultThemeDefinition).toBe(directDefaultThemeDefinition);
+    expect(win98ThemeDefinition).toBe(directWin98ThemeDefinition);
+    expect(winXpThemeDefinition).toBe(directWinXpThemeDefinition);
+  });
 
-    expect(win98ThemeDefinition).toEqual({
-      id: 'win98',
-      label: 'Windows 98',
-      systemType: 'windows',
-      className: 'cm-theme--win98',
-    });
-
-    expect(winXpThemeDefinition).toEqual({
-      id: 'winxp',
-      label: 'Windows XP',
-      systemType: 'windows',
-      className: 'cm-theme--winxp',
-    });
+  it('does not expose legacy system metadata on package theme definitions', () => {
+    expect(defaultThemeDefinition).not.toHaveProperty('systemType');
+    expect(win98ThemeDefinition).not.toHaveProperty('systemType');
+    expect(winXpThemeDefinition).not.toHaveProperty('systemType');
   });
 });
