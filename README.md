@@ -29,48 +29,68 @@ Chameleon
 
 发布与使用
 
-- 作为库发布后，以 `@system-ui-js/chameleon` 安装并在代码中导入组件使用。
+- 作为库发布后，以 `@system-ui-js/chameleon` 安装并按入口职责导入。
 
 ```bash
 yarn add @system-ui-js/chameleon
 ```
 
+## React Native 优先入口
+
+React Native 多拖拽能力通过显式入口提供：
+
 ```tsx
-import { CButton, CRadio, CRadioGroup, CSelect } from '@system-ui-js/chameleon';
+import {
+  createReactNativeMultiDrag,
+  useReactNativeMultiDrag,
+} from '@system-ui-js/chameleon/react-native-multi-drag';
 
-const sizeOptions = [
-  { label: 'Small', value: 'small' },
-  { label: 'Medium', value: 'medium' },
-  { label: 'Large', value: 'large' },
-] as const;
+const drag = createReactNativeMultiDrag({
+  initialTargets: [{ targetId: 'card-1', layout: { x: 0, y: 0, width: 120, height: 48 } }],
+});
 
-export function Demo() {
-  return (
-    <>
-      <CButton>Default</CButton>
-      <CButton variant="primary">Primary</CButton>
-
-      <CRadioGroup name="fruit" defaultValue="apple">
-        <CRadio value="apple">Apple</CRadio>
-        <CRadio value="orange">Orange</CRadio>
-      </CRadioGroup>
-
-      <CSelect options={sizeOptions} placeholder="Select a size" />
-    </>
-  );
-}
+drag.adapter.beginGesture({
+  pointerId: 1,
+  point: { x: 12, y: 20 },
+  timestamp: Date.now(),
+  targetId: 'card-1',
+});
 ```
+
+- 公开契约只暴露会话、位移、布局测量、元数据与结束结果
+- 不依赖 `HTMLElement`、`DOMRect`、`PointerEvent`、`document`、`window`
+- 适合由 React Native responder / gesture handler / 自定义手势层做输入适配
+
+## 根入口与 legacy web 过渡面
+
+根入口现在面向：
+
+- 纯主题定义：`defaultThemeDefinition`、`win98ThemeDefinition`、`winXpThemeDefinition`
+- legacy web 过渡导出：`legacyWeb`
+
+```tsx
+import { legacyWeb } from '@system-ui-js/chameleon';
+// 或显式使用子路径：@system-ui-js/chameleon/legacy-web
+
+const { CButton, CSelect, Theme } = legacyWeb;
+```
+
+> 兼容性说明：根入口仍保留现有 web 组件的直接导出，但这些导出现在属于 **legacy / 过渡能力**，不再代表默认平台方向。新的 React Native 能力请始终通过 `@system-ui-js/chameleon/react-native-multi-drag` 导入。
 
 ## Theming
 
 Chameleon 通过 `Theme` 组件和组件的 `theme` prop 提供主题化能力。
 
+> `Theme` 组件属于 legacy web 能力；纯主题 definition 仍可从根入口直接导入。
+
 ### Theme 组件
 
-从包入口导入 `Theme`，使用 `name` 属性指定主题（接受完整 className）：
+从 legacy web 入口导入 `Theme`，使用 `name` 属性指定主题（接受完整 className）：
 
 ```tsx
-import { CButton, Theme } from '@system-ui-js/chameleon';
+import { legacyWeb } from '@system-ui-js/chameleon';
+
+const { CButton, Theme } = legacyWeb;
 
 <Theme name="cm-theme--win98">
   <CButton>Themed Button</CButton>
@@ -86,7 +106,9 @@ import { CButton, Theme } from '@system-ui-js/chameleon';
 组件支持 `theme?: string` prop，接受完整 className：
 
 ```tsx
-import { CButton } from '@system-ui-js/chameleon';
+import { legacyWeb } from '@system-ui-js/chameleon';
+
+const { CButton } = legacyWeb;
 
 <CButton theme="cm-theme--win98">Win98 Button</CButton>;
 ```
@@ -105,9 +127,18 @@ import { CButton } from '@system-ui-js/chameleon';
 - `pureWin98ThemeDefinition`
 - `pureWinXpThemeDefinition`
 
+## Breaking change / migration
+
+- React Native 拖拽能力改为显式入口：`@system-ui-js/chameleon/react-native-multi-drag`
+- 根入口不再被视为默认 web 组件库入口；web-only 能力属于 legacy 过渡范围
+- 推荐将面向浏览器的导入逐步迁移到 `@system-ui-js/chameleon/legacy-web` 或 `legacyWeb.*`
+- 旧的 `@system-ui-js/multi-drag` 依赖已移除，仓库内部 web 拖拽适配改为基于 `@system-ui-js/multi-drag-core`
+
 ## Window Component
 
 `CWindow` 是一个可拖拽、可缩放的独立窗口组件，不依赖任何系统管理器。
+
+> `CWindow` / `CWindowTitle` 属于 legacy web 过渡能力。
 
 `CWindow` 不会隐式注入标题栏，使用时需要显式组合 `CWindowTitle`。
 

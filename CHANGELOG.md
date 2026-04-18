@@ -1,5 +1,12 @@
 ## [UnReleased]
 
+- **Breaking:** 引入 React Native 优先拖拽入口，并将 web 拖拽能力收敛为 legacy 过渡面
+  - 新增显式入口 `@system-ui-js/chameleon/react-native-multi-drag`，导出基于 `@system-ui-js/multi-drag-core` 的会话控制器、native adapter 与 hook facade
+  - 包入口新增 `legacyWeb` 命名空间与 `@system-ui-js/chameleon/legacy-web` 子路径，用于承接现有 web-only 组件能力
+  - 根入口语义调整为平台无关 theme definition + 受控过渡导出集合，不再代表默认 web/DOM 入口
+  - 仓库内部移除对 `@system-ui-js/multi-drag` 的依赖，legacy web 拖拽适配改为基于 `@system-ui-js/multi-drag-core`
+  - 迁移：React Native 场景请改为显式导入 `@system-ui-js/chameleon/react-native-multi-drag`；浏览器组件请逐步迁移到 `@system-ui-js/chameleon/legacy-web` 或 `legacyWeb.*`
+
 - **Breaking:** 移除 legacy system shell / registry 公共 API
   - 包入口不再导出 `SystemHost`、`SYSTEM_TYPE`、`THEME`、`DEFAULT_SYSTEM_TYPE`、`DEFAULT_THEME_BY_SYSTEM`、`SYSTEM_THEME_MATRIX`、`resolveSystemTypeDefinition`、`assertValidSystemThemeSelection`、`resolveThemeDefinition` 及关联类型
   - `defaultThemeDefinition`、`win98ThemeDefinition`、`winXpThemeDefinition` 改为直接导出 `src/theme/*` 中的 canonical theme definition，不再包含 system registry 派生的 `systemType` 元数据

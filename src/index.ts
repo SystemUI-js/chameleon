@@ -1,21 +1,8 @@
-export * from './components';
-export {
-  CButton,
-  CButtonGroup,
-  CButtonSeparator,
-  CCheckbox,
-  CSlider,
-  CSplitArea,
-  CIcon,
-  CIconContainer,
-  CMenu,
-  CTab,
-  CTabItem,
-  CRadio,
-  CRadioGroup,
-  CSelect,
-  Theme,
-} from './components';
+/**
+ * @deprecated Web-first 组件导出属于过渡公开面，优先使用显式平台入口。
+ */
+export * from './legacy-web';
+export * as legacyWeb from './legacy-web';
 export type { ThemeDefinition as PureThemeDefinition, ThemeId as PureThemeId } from './theme/types';
 export {
   defaultThemeDefinition,

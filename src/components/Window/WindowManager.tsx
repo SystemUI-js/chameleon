@@ -1,4 +1,5 @@
 import React from 'react';
+import { View } from 'react-native';
 import { isManagedConstructor } from '../Manager/isManagedConstructor';
 import { CWidget } from '../Widget/Widget';
 
@@ -22,52 +23,14 @@ export class CWindowManager extends React.Component<CWindowManagerProps> {
     }
   }
 
-  public addWindow(windowCtor: typeof CWidget): void {
-    if (!this.isWindowConstructor(windowCtor)) {
-      return;
-    }
-
-    if (this.registerWindowConstructor(windowCtor)) {
-      this.forceUpdate();
-    }
-  }
-
   private registerChildren(children: React.ReactNode): void {
-    let hasNewRegistration = false;
-    let hasElementUpdate = false;
-
     React.Children.forEach(children, (child) => {
-      if (!React.isValidElement(child)) {
-        return;
-      }
-
+      if (!React.isValidElement(child)) return;
       if (this.isWindowConstructor(child.type)) {
-        hasElementUpdate = this.registerWindowElement(child.type, child) || hasElementUpdate;
-        hasNewRegistration = this.registerWindowConstructor(child.type) || hasNewRegistration;
+        this.registeredWindowElements.set(child.type, child);
+        this.registeredWindowConstructors.add(child.type);
       }
     });
-
-    if (hasNewRegistration || hasElementUpdate) {
-      this.forceUpdate();
-    }
-  }
-
-  private registerWindowElement(
-    windowCtor: WindowConstructor,
-    element: React.ReactElement,
-  ): boolean {
-    const previousElement = this.registeredWindowElements.get(windowCtor);
-    this.registeredWindowElements.set(windowCtor, element);
-
-    return previousElement !== element;
-  }
-
-  private registerWindowConstructor(windowCtor: WindowConstructor): boolean {
-    const previousSize = this.registeredWindowConstructors.size;
-
-    this.registeredWindowConstructors.add(windowCtor);
-
-    return this.registeredWindowConstructors.size !== previousSize;
   }
 
   private isWindowConstructor(candidate: unknown): candidate is WindowConstructor {
@@ -75,22 +38,13 @@ export class CWindowManager extends React.Component<CWindowManagerProps> {
   }
 
   public render(): React.ReactElement {
-    const registeredWindows = Array.from(this.registeredWindowConstructors);
-
     return (
-      <div>{registeredWindows.map((WindowCtor) => this.renderRegisteredWindow(WindowCtor))}</div>
+      <View>
+        {Array.from(this.registeredWindowConstructors).map(
+          (WindowCtor) =>
+            this.registeredWindowElements.get(WindowCtor) ?? <WindowCtor key={WindowCtor.name} />,
+        )}
+      </View>
     );
-  }
-
-  private renderRegisteredWindow(WindowCtor: WindowConstructor): React.ReactElement {
-    const element = this.registeredWindowElements.get(WindowCtor);
-
-    if (element) {
-      return React.cloneElement(element, {
-        key: WindowCtor.name,
-      });
-    }
-
-    return <WindowCtor key={WindowCtor.name} />;
   }
 }

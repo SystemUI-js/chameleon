@@ -1,11 +1,8 @@
-import type React from 'react';
-import { getDockEdgeStyle, getDockFrameClassName, getDockFrameStyle } from '../Dock/dockLayout';
+import React from 'react';
+import { Pressable, Text, View } from 'react-native';
 import { CWidget, type CWidgetProps, type WidgetState } from '../Widget/Widget';
-import './index.scss';
 
-type StartBarState = WidgetState & {
-  resolvedHeight?: number;
-};
+type StartBarState = WidgetState & { resolvedHeight?: number };
 
 export interface CStartBarProps extends Omit<CWidgetProps, 'x' | 'y' | 'width'> {
   children?: React.ReactNode;
@@ -26,51 +23,28 @@ export class CStartBar extends CWidget<StartBarState> {
 
   public constructor(props: CStartBarProps) {
     super(props);
-    this.state = {
-      ...this.state,
-      resolvedHeight: props.height ?? props.defaultHeight,
-    };
+    this.state = { ...this.state, resolvedHeight: props.height ?? props.defaultHeight };
   }
 
   public componentDidUpdate(prevProps: CStartBarProps): void {
     super.componentDidUpdate(prevProps);
-
     if (prevProps.height !== this.props.height) {
-      this.setState({
-        resolvedHeight: this.props.height ?? this.state.resolvedHeight,
-      });
+      this.setState((current) => ({
+        ...current,
+        resolvedHeight: this.props.height ?? current.resolvedHeight,
+      }));
     }
   }
 
   public render(): React.ReactElement {
-    const { resolvedHeight } = this.state;
-    const gapStart = this.props.gapStart ?? 0;
-    const gapEnd = this.props.gapEnd ?? 0;
-    const startLabel = this.props.startLabel ?? 'Start';
-
-    const effectiveHeight = resolvedHeight ?? 30;
-
-    const dockEdgeStyle = getDockEdgeStyle('bottom', gapStart, gapEnd, effectiveHeight);
-
-    const baseClassName = getDockFrameClassName('bottom', this.props.className);
-    const frameClassName = this.mergeThemeClassName(
-      baseClassName.replace('cm-dock', 'cm-start-bar'),
-      this.props.theme,
-    );
-
-    const frameStyle = getDockFrameStyle(dockEdgeStyle, this.props.style);
-
     const testId = this.props['data-testid'] ?? 'start-bar';
-
     return (
-      <div data-testid={testId} className={frameClassName} style={frameStyle}>
-        <button type="button" data-testid={`${testId}-button`} className="cm-start-bar__button">
-          {startLabel}
-        </button>
-        <div data-testid={`${testId}-content`} className="cm-start-bar__content">
-          {this.props.children}
-        </div>
-      </div>
+      <View testID={testId}>
+        <Pressable testID={`${testId}-button`}>
+          <Text>{this.props.startLabel ?? 'Start'}</Text>
+        </Pressable>
+        <View testID={`${testId}-content`}>{this.props.children}</View>
+      </View>
     );
   }
 }
