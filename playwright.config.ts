@@ -15,7 +15,7 @@ export default defineConfig({
     video: 'retain-on-failure',
   },
   webServer: {
-    command: 'yarn dev',
+    command: 'yarn dev:ui',
     url: 'http://127.0.0.1:5673',
     reuseExistingServer: !isCI,
   },

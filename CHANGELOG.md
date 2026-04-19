@@ -5,6 +5,7 @@
   - 移除 `CStartBar` 的未使用导入，并修正 `react-native-web` Pressable shim 中 `type` / `_type` 变量引用错误，恢复构建期声明生成
   - 恢复 `CMenu` 的外部点击关闭能力，并同步补齐 `Widget` / `Window` / `WindowTitle` 主题类名透传、`Pressable` mock 语义及相关单测，恢复 CI 单元测试通过
   - 为 `CSplitArea` 面板恢复 `data-split-area-panel` 标记，修复 `ComponentCatalog` 展示用例中的外层面板计数断言
+  - 为 Playwright 的 Expo WebServer 补充按需预构建启动脚本，避免干净 CI 环境因缺失 `dist/` 导致 `package.json.main` 入口不可解析
 
 - **Fix:** 补齐 Radio 在 Expo 宿主层级下的主题选择器
   - default / win98 / winxp 三套主题新增同层级宿主场景所需的 `&.cm-radio:focus-visible .cm-radio__input` 选择器

@@ -20,6 +20,7 @@
   ],
   "scripts": {
     "dev": "expo start --web --localhost --port 5673",
+    "dev:ui": "test -f dist/chameleon.umd.cjs || yarn build; expo start --web --localhost --port 5673",
     "build": "vite build",
     "preview": "vite preview",
     "lint": "eslint \"{src,tests}/**/*.{ts,tsx}\"",
