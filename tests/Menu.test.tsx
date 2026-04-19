@@ -298,7 +298,7 @@ describe('CMenu', () => {
     fireEvent.click(trigger);
     expect(menu).toHaveAttribute('data-menu-state', 'open');
 
-    fireEvent.mouseDown(outside);
+    fireEvent.blur(trigger, { relatedTarget: outside });
     expect(menu).toHaveAttribute('data-menu-state', 'closed');
     expect(screen.queryByTestId('cm-menu-list')).not.toBeInTheDocument();
   });
@@ -600,13 +600,15 @@ describe('CMenu', () => {
     );
 
     const menu = screen.getByTestId('menu-mixed-outside');
+    const trigger = screen.getByRole('button', { name: 'Mixed Menu' });
+    const outside = screen.getByRole('button', { name: 'Outside' });
 
-    fireEvent.click(screen.getByRole('button', { name: 'Mixed Menu' }));
+    fireEvent.click(trigger);
     fireEvent.pointerEnter(screen.getByTestId('menu-item-hover-parent'));
 
     expect(screen.getByRole('menuitem', { name: 'Hover Leaf' })).toBeInTheDocument();
 
-    fireEvent.mouseDown(screen.getByRole('button', { name: 'Outside' }));
+    fireEvent.blur(trigger, { relatedTarget: outside });
 
     expect(menu).toHaveAttribute('data-menu-state', 'closed');
     expect(screen.queryByRole('menuitem', { name: 'Hover Leaf' })).not.toBeInTheDocument();

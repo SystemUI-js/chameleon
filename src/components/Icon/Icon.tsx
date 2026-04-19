@@ -1,5 +1,5 @@
 import type React from 'react';
-import { Pressable, Text, View } from 'react-native';
+import { Pressable, Text, View, type StyleProp, type ViewStyle } from 'react-native';
 import { mergeClasses } from '../Theme/mergeClasses';
 import { resolveThemeClassName } from '../Theme/themeName';
 import { useTheme } from '../Theme/useTheme';
@@ -24,7 +24,7 @@ export interface CIconProps {
   onActive?: (active: boolean) => void;
   activeTrigger?: CIconActiveTrigger;
   position?: CIconPosition;
-  onContextMenu?: (event: React.MouseEvent) => void;
+  onContextMenu?: React.ComponentProps<typeof Pressable>['onContextMenu'];
   onOpen?: () => void;
   openTrigger?: CIconOpenTrigger;
   className?: string;
@@ -53,7 +53,7 @@ export function CIcon({
     baseClasses.push('cm-icon--active');
   }
 
-  const inlineStyle: React.CSSProperties = {};
+  const inlineStyle: ViewStyle = {};
   if (position !== undefined) {
     inlineStyle.position = 'absolute';
     inlineStyle.left = position.x;
@@ -65,7 +65,7 @@ export function CIcon({
   const shouldHandleMouseEnter = activeTrigger === 'hover';
   const shouldHandleContextMenu = onActive !== undefined || onContextMenu !== undefined;
 
-  const handleClick = (): void => {
+  const handlePress = (): void => {
     if (activeTrigger === 'click') {
       onActive?.(true);
     }
@@ -87,7 +87,9 @@ export function CIcon({
     }
   };
 
-  const handleContextMenu = (event: React.MouseEvent<HTMLElement>): void => {
+  const handleContextMenu: NonNullable<React.ComponentProps<typeof Pressable>['onContextMenu']> = (
+    event,
+  ): void => {
     onActive?.(true);
     onContextMenu?.(event);
   };
@@ -95,10 +97,10 @@ export function CIcon({
   return (
     <Pressable
       className={mergeClasses(baseClasses, resolvedTheme, className)}
-      style={position !== undefined ? inlineStyle : undefined}
+      style={position !== undefined ? (inlineStyle as StyleProp<ViewStyle>) : undefined}
       testID={dataTestId}
       type="button"
-      onClick={shouldHandleClick ? handleClick : undefined}
+      onPress={shouldHandleClick ? handlePress : undefined}
       onDoubleClick={shouldHandleDoubleClick ? handleDoubleClick : undefined}
       onMouseEnter={shouldHandleMouseEnter ? handleMouseEnter : undefined}
       onContextMenu={shouldHandleContextMenu ? handleContextMenu : undefined}

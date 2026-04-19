@@ -1,5 +1,5 @@
 import React from 'react';
-import { Pressable, View } from 'react-native';
+import { View } from 'react-native';
 import {
   CIcon,
   type CIconActiveTrigger,
@@ -56,24 +56,24 @@ export function CIconContainer({
         const position = getMergedPosition(item, config);
         const isActive = index === activeIndex;
         const key = item['data-testid'] ?? `icon-item-${index}`;
+        const resolvedActiveTrigger = item.activeTrigger ?? config?.activeTrigger ?? 'click';
+        const resolvedOpenTrigger = item.openTrigger ?? config?.openTrigger;
 
         return (
-          <Pressable
-            key={key}
-            testID={`icon-slot-${index}`}
-            onPress={() => {
-              const nextActive = !isActive;
-              setActiveIndex(nextActive ? index : null);
-              onActive?.(nextActive);
-            }}
-          >
+          <View key={key} testID={`icon-slot-${index}`}>
             <CIcon
               {...restItemProps}
               data-testid={`icon-item-${index}`}
               position={position}
               active={isActive}
+              activeTrigger={resolvedActiveTrigger}
+              openTrigger={resolvedOpenTrigger}
+              onActive={(nextActive) => {
+                setActiveIndex(nextActive ? index : null);
+                onActive?.(nextActive);
+              }}
             />
-          </Pressable>
+          </View>
         );
       })}
     </View>

@@ -22,7 +22,7 @@ describe('CIconContainer', () => {
     render(
       <CIconContainer iconList={[{ title: 'A', icon: <span>A</span>, onActive: handleActive }]} />,
     );
-    fireEvent.click(screen.getByTestId('icon-slot-0'));
+    fireEvent.click(screen.getByTestId('icon-item-0'));
     expect(handleActive).toHaveBeenCalledWith(true);
   });
 });

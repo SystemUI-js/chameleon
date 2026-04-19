@@ -37,7 +37,7 @@ export function CTab({
 }: CTabProps): React.ReactElement {
   const resolvedTheme = useTheme(theme);
   const instanceId = React.useId().replace(/:/g, '');
-  const tabRefs = React.useRef<Array<HTMLButtonElement | null>>([]);
+  const tabRefs = React.useRef<Array<React.ElementRef<typeof Pressable> | null>>([]);
 
   const tabItems = React.useMemo<readonly CTabItemEntry[]>(() => {
     return React.Children.toArray(children).reduce<CTabItemEntry[]>((items, child) => {
