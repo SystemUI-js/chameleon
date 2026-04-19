@@ -318,16 +318,19 @@
         cursor: inherit;
     }
 
-    .cm-radio--checked .cm-radio__input {
+    .cm-radio--checked .cm-radio__input,
+    &.cm-radio--checked .cm-radio__input {
         background: radial-gradient(circle at center, #000000 0 35%, #ffffff 36% 100%);
     }
 
-    .cm-radio:focus-visible .cm-radio__input {
+    .cm-radio:focus-visible .cm-radio__input,
+    &.cm-radio:focus-visible .cm-radio__input {
         outline: 1px dotted #000000;
         outline-offset: 2px;
     }
 
-    .cm-radio--disabled .cm-radio__input {
+    .cm-radio--disabled .cm-radio__input,
+    &.cm-radio--disabled .cm-radio__input {
         background: #c0c0c0;
         box-shadow: inset 1px 1px 0 #808080;
     }

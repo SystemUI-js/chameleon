@@ -1,5 +1,9 @@
 ## [UnReleased]
 
+- **Fix:** 补齐 Radio 在 Expo 宿主层级下的主题选择器
+  - default / win98 / winxp 三套主题新增同层级宿主场景所需的 `&.cm-radio:focus-visible .cm-radio__input` 选择器
+  - 补齐 `&.cm-radio--checked .cm-radio__input` 与 `&.cm-radio--disabled .cm-radio__input`，确保选中与禁用态在 React Native 宿主渲染下继续命中
+
 - **Feature:** 建立 Expo Web 预览与导出基线
   - 默认 `yarn dev` 切换为 Expo Web 预览，并新增根入口、Expo 配置、Metro CSS 支持与路径分发壳
   - 保留 `yarn build` 的 Vite 库构建能力，新增 `yarn build:web` 用于导出 Expo Web 静态预览产物，`yarn dev:vite` 用于兼容旧 HTML harness

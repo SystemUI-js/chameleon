@@ -246,6 +246,7 @@
 
     &.cm-button:focus-visible,
     .cm-radio:focus-visible .cm-radio__input,
+    &.cm-radio:focus-visible .cm-radio__input,
     .cm-select:focus-visible,
     &.cm-select:focus-visible {
         outline: 2px solid #4b7bd3;
@@ -366,7 +367,8 @@
         flex-shrink: 0;
     }
 
-    .cm-radio--checked .cm-radio__input {
+    .cm-radio--checked .cm-radio__input,
+    &.cm-radio--checked .cm-radio__input {
         border-color: #3d6bbd;
         background: radial-gradient(
             circle at center,
@@ -376,7 +378,8 @@
         );
     }
 
-    .cm-radio--disabled .cm-radio__input {
+    .cm-radio--disabled .cm-radio__input,
+    &.cm-radio--disabled .cm-radio__input {
         border-color: #b4c0cf;
         background: #edf1f6;
     }
