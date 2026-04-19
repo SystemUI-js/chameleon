@@ -5,7 +5,7 @@ import {
   CButtonGroup as PackageEntryCButtonGroup,
   CButtonSeparator as PackageEntryCButtonSeparator,
   Theme,
-} from '../src';
+} from '../src/legacy-web';
 import { CButtonGroup } from '../src/components/ButtonGroup/ButtonGroup';
 import { CButtonSeparator } from '../src/components/ButtonSeparator/ButtonSeparator';
 

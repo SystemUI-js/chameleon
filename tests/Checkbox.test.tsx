@@ -1,6 +1,6 @@
 import '@testing-library/jest-dom';
 import { fireEvent, render, screen } from '@testing-library/react';
-import { CCheckbox as PackageEntryCCheckbox, Theme } from '../src';
+import { CCheckbox as PackageEntryCCheckbox, Theme } from '../src/legacy-web';
 import { CCheckbox } from '../src/components/Checkbox/Checkbox';
 
 describe('CCheckbox', () => {

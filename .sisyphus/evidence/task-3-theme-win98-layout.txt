@@ -1,3 +1,0 @@
-Source: src/theme/win98/styles/index.scss
-Result: PASS
-Coverage: .cm-window__title-bar--with-controls 将布局改为 justify-content:flex-start + gap，left/right modifier 分别通过 margin-right / margin-left 控制位置，不再依赖全局 space-between 强制右推。

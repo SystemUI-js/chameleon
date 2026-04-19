@@ -6,7 +6,7 @@ import {
   Theme as PackageEntryTheme,
   Theme,
   useTheme,
-} from '../src';
+} from '../src/legacy-web';
 
 interface ThemeProbeProps {
   theme?: string;

@@ -4,14 +4,24 @@
   "private": true,
   "description": "React 组件库 - Chameleon",
   "type": "module",
-  "main": "dist/chameleon.umd.cjs",
+  "main": "dist/chameleon.cjs",
   "module": "dist/chameleon.es.js",
   "types": "dist/index.d.ts",
   "exports": {
     ".": {
       "import": "./dist/chameleon.es.js",
-      "require": "./dist/chameleon.umd.cjs",
+      "require": "./dist/chameleon.cjs",
       "types": "./dist/index.d.ts"
+    },
+    "./react-native-multi-drag": {
+      "import": "./dist/react-native-multi-drag.es.js",
+      "require": "./dist/react-native-multi-drag.cjs",
+      "types": "./dist/react-native-multi-drag/index.d.ts"
+    },
+    "./legacy-web": {
+      "import": "./dist/legacy-web.es.js",
+      "require": "./dist/legacy-web.cjs",
+      "types": "./dist/legacy-web.d.ts"
     }
   },
   "sideEffects": false,
@@ -32,7 +42,8 @@
   },
   "peerDependencies": {
     "react": "^18.2.0 || ^19.0.0",
-    "react-dom": "^18.2.0 || ^19.0.0"
+    "react-dom": "^18.2.0 || ^19.0.0",
+    "react-native": ">=0.74"
   },
   "devDependencies": {
     "@eslint/js": "^9.39.2",
@@ -73,6 +84,6 @@
   },
   "packageManager": "yarn@1.22.22",
   "dependencies": {
-    "@system-ui-js/multi-drag": "^0.2.7"
+    "@system-ui-js/multi-drag-core": "^0.3.0"
   }
 }

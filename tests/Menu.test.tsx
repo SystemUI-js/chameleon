@@ -7,7 +7,7 @@ import {
   type CMenuProps,
   type MenuListItem,
   type CMenuTrigger,
-} from '../src';
+} from '../src/legacy-web';
 import { CMenu } from '../src/components/Menu/Menu';
 
 const SAMPLE_MENU_LIST: readonly MenuListItem[] = [

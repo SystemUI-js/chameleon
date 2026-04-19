@@ -1,7 +1,5 @@
-import type React from 'react';
+import React from 'react';
 import { CWidget, type CWidgetProps, type WidgetState } from '../Widget/Widget';
-import { getDockEdgeStyle, getDockFrameClassName, getDockFrameStyle } from './dockLayout';
-import './index.scss';
 
 export type DockPosition = 'top' | 'right' | 'bottom' | 'left';
 
@@ -19,21 +17,12 @@ interface CDockBaseProps extends CWidgetProps {
 }
 
 type CDockHeightProps =
-  | {
-      height: number;
-      defaultHeight?: number;
-    }
-  | {
-      height?: number;
-      defaultHeight: number;
-    };
+  | { height: number; defaultHeight?: number }
+  | { height?: number; defaultHeight: number };
 
 export type CDockProps = CDockBaseProps & CDockHeightProps;
 
-type DockState = WidgetState & {
-  resolvedPosition: DockPosition;
-  resolvedHeight?: number;
-};
+type DockState = WidgetState & { resolvedPosition: DockPosition; resolvedHeight?: number };
 
 export class CDock extends CWidget<DockState> {
   declare public props: CDockProps;
@@ -50,35 +39,20 @@ export class CDock extends CWidget<DockState> {
 
   public componentDidUpdate(prevProps: CDockProps): void {
     super.componentDidUpdate(prevProps);
-
     if (prevProps.position !== this.props.position || prevProps.height !== this.props.height) {
-      this.setState({
-        resolvedPosition: this.props.position ?? this.state.resolvedPosition,
-        resolvedHeight: this.props.height ?? this.state.resolvedHeight,
-      });
+      this.setState((current) => ({
+        ...current,
+        resolvedPosition: this.props.position ?? current.resolvedPosition,
+        resolvedHeight: this.props.height ?? current.resolvedHeight,
+      }));
     }
   }
 
-  public render() {
-    const { resolvedPosition, resolvedHeight } = this.state;
-    const gapStart = this.props.gapStart ?? 0;
-    const gapEnd = this.props.gapEnd ?? 0;
-    const dockEdgeStyle = getDockEdgeStyle(resolvedPosition, gapStart, gapEnd, resolvedHeight);
-
-    const frameClassName = this.mergeThemeClassName(
-      getDockFrameClassName(resolvedPosition, this.props.className),
-      this.props.theme,
-    );
-
+  public render(): React.ReactElement {
     return this.renderFrame(
       this.props.children,
       {},
-      {
-        className: frameClassName,
-        theme: this.props.theme,
-        style: getDockFrameStyle(dockEdgeStyle, this.props.style),
-        testId: this.props['data-testid'] ?? 'dock-frame',
-      },
+      { testId: this.props['data-testid'] ?? 'dock-frame' },
     );
   }
 }

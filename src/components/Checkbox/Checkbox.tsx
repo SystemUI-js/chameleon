@@ -1,4 +1,5 @@
 import React from 'react';
+import { Pressable, Text, View } from 'react-native';
 import { mergeClasses } from '../Theme/mergeClasses';
 import { normalizeThemeClassName } from '../Theme/normalizeThemeClassName';
 import { useTheme } from '../Theme/useTheme';
@@ -43,8 +44,8 @@ export function CCheckbox({
     baseClasses.push('cm-checkbox--disabled');
   }
 
-  const handleChange = (event: React.ChangeEvent<HTMLInputElement>): void => {
-    const nextChecked = event.target.checked;
+  const handleToggle = (): void => {
+    const nextChecked = !isChecked;
 
     if (!isControlled) {
       setUncontrolledChecked(nextChecked);
@@ -54,17 +55,18 @@ export function CCheckbox({
   };
 
   return (
-    <label className={mergeClasses(baseClasses, resolvedTheme, className)}>
-      <input
+    <View className={mergeClasses(baseClasses, resolvedTheme, className)}>
+      <Pressable
         {...inputProps}
-        checked={isChecked}
+        testID={dataTestId}
+        role="checkbox"
+        aria-checked={isChecked}
         className="cm-checkbox__input"
-        data-testid={dataTestId}
         disabled={disabled}
-        onChange={handleChange}
-        type="checkbox"
-      />
-      <span className="cm-checkbox__label">{content}</span>
-    </label>
+        onClick={handleToggle}
+      >
+        <Text className="cm-checkbox__label">{content}</Text>
+      </Pressable>
+    </View>
   );
 }

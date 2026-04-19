@@ -1,3 +1,0 @@
-Command: grep cm-window__title-bar__controls--left|cm-window__title-bar__controls--right in src/theme/**/index.scss
-Result: PASS
-Coverage: default、win98、winxp 三个 theme 文件均包含左右 controls modifier。

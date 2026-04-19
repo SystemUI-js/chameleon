@@ -1,7 +1,11 @@
 import '@testing-library/jest-dom';
 import { fireEvent, render, screen } from '@testing-library/react';
 import React from 'react';
-import { CTab as PackageEntryCTab, CTabItem as PackageEntryCTabItem, type CTabProps } from '../src';
+import {
+  CTab as PackageEntryCTab,
+  CTabItem as PackageEntryCTabItem,
+  type CTabProps,
+} from '../src/legacy-web';
 import { CTab } from '../src/components/Tab/CTab';
 import { CTabItem, type CTabItemProps } from '../src/components/Tab/CTabItem';
 

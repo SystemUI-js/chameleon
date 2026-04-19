@@ -1,4 +1,5 @@
-import type React from 'react';
+import React from 'react';
+import { View } from 'react-native';
 import { mergeClasses } from '../Theme/mergeClasses';
 import { normalizeThemeClassName } from '../Theme/normalizeThemeClassName';
 import { useTheme } from '../Theme/useTheme';
@@ -42,42 +43,48 @@ export function CSelect({
   const resolvedTheme = normalizeThemeClassName(useTheme(theme));
   const baseClasses = ['cm-select'];
   const isControlled = value !== undefined;
-  let resolvedDefaultValue: string | undefined;
+  const [uncontrolledValue, setUncontrolledValue] = React.useState(
+    defaultValue ?? (placeholder ? '' : undefined),
+  );
+  const selectedValue = isControlled ? value : uncontrolledValue;
 
-  if (!isControlled) {
-    resolvedDefaultValue = defaultValue ?? (placeholder ? '' : undefined);
-  }
+  const handleChange: React.ChangeEventHandler<HTMLElement> = (event): void => {
+    const nextValue = event.target.value;
 
-  const handleChange = (event: React.ChangeEvent<HTMLSelectElement>): void => {
-    onChange?.(event.target.value);
+    if (!isControlled) {
+      setUncontrolledValue(nextValue);
+    }
+
+    onChange?.(nextValue);
   };
 
   return (
-    <select
+    <View
       name={name}
+      role="combobox"
       disabled={disabled}
       required={required}
-      value={isControlled ? value : undefined}
-      defaultValue={resolvedDefaultValue}
+      value={selectedValue}
       onChange={handleChange}
       className={mergeClasses(baseClasses, resolvedTheme, className)}
       aria-label={ariaLabel}
-      data-testid={dataTestId}
+      testID={dataTestId}
     >
       {placeholder ? (
-        <option value="" disabled>
+        <View role="option" value="" disabled hidden={selectedValue !== ''}>
           {placeholder}
-        </option>
+        </View>
       ) : null}
       {options.map((option) => (
-        <option
+        <View
           key={`${option.label}-${option.value}`}
+          role="option"
           value={option.value}
           disabled={option.disabled}
         >
           {option.label}
-        </option>
+        </View>
       ))}
-    </select>
+    </View>
   );
 }

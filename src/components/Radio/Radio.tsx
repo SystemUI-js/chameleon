@@ -1,4 +1,5 @@
 import React from 'react';
+import { Pressable, Text, View } from 'react-native';
 import { mergeClasses } from '../Theme/mergeClasses';
 import { normalizeThemeClassName } from '../Theme/normalizeThemeClassName';
 import { useTheme } from '../Theme/useTheme';
@@ -38,26 +39,27 @@ export function CRadio({
     classNames.push('cm-radio--disabled');
   }
 
-  const handleChange = (event: React.ChangeEvent<HTMLInputElement>): void => {
-    if (event.target.checked) {
+  const handleChange = (): void => {
+    if (!isDisabled && !isChecked) {
       groupContext.onRadioChange(value);
     }
   };
 
   return (
-    <label className={mergeClasses(classNames, resolvedTheme)}>
-      <input
-        checked={isChecked}
+    <View className={mergeClasses(classNames, resolvedTheme)}>
+      <Pressable
         className="cm-radio__input"
-        data-testid={dataTestId}
+        testID={dataTestId}
+        role="radio"
+        aria-checked={isChecked}
         disabled={isDisabled}
         name={groupContext.name}
-        onChange={handleChange}
+        onClick={handleChange}
         required={groupContext.required}
-        type="radio"
         value={value}
-      />
-      <span className="cm-radio__label">{content}</span>
-    </label>
+      >
+        <Text className="cm-radio__label">{content}</Text>
+      </Pressable>
+    </View>
   );
 }

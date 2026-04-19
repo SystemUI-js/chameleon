@@ -1,4 +1,5 @@
 import React from 'react';
+import { View } from 'react-native';
 import { mergeClasses } from '../Theme/mergeClasses';
 import { normalizeThemeClassName } from '../Theme/normalizeThemeClassName';
 import { useTheme } from '../Theme/useTheme';
@@ -81,9 +82,9 @@ export function CRadioGroup({
 
   return (
     <RadioGroupContext.Provider value={contextValue}>
-      <div className={mergeClasses(baseClasses, resolvedTheme, className)} data-testid={dataTestId}>
+      <View className={mergeClasses(baseClasses, resolvedTheme, className)} testID={dataTestId}>
         {children}
-      </div>
+      </View>
     </RadioGroupContext.Provider>
   );
 }

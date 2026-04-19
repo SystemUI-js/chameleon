@@ -14,6 +14,7 @@ export default defineConfig({
     dts({
       entryRoot: 'src',
       outDir: 'dist',
+      include: ['src'],
       insertTypesEntry: true,
       tsconfigPath: './tsconfig.json',
     }),
@@ -24,17 +25,29 @@ export default defineConfig({
   },
   build: {
     lib: {
-      entry: 'src/index.ts',
-      name: 'Chameleon',
-      fileName: (format) => (format === 'es' ? 'chameleon.es.js' : 'chameleon.umd.cjs'),
-      formats: ['es', 'umd'],
+      entry: {
+        index: 'src/index.ts',
+        'react-native-multi-drag': 'src/react-native-multi-drag/index.ts',
+        'legacy-web': 'src/legacy-web.ts',
+      },
+      fileName: (format, entryName) => {
+        const suffix = format === 'es' ? 'es.js' : 'cjs';
+
+        if (entryName === 'index') {
+          return `chameleon.${suffix}`;
+        }
+
+        return `${entryName}.${suffix}`;
+      },
+      formats: ['es', 'cjs'],
     },
     rollupOptions: {
-      external: ['react', 'react-dom'],
+      external: ['react', 'react-dom', 'react-native'],
       output: {
         globals: {
           react: 'React',
           'react-dom': 'ReactDOM',
+          'react-native': 'ReactNative',
         },
       },
     },
