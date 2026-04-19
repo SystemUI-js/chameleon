@@ -44,6 +44,7 @@ export function CSplitArea({
           <React.Fragment key={key}>
             <View
               testID={`${dataTestId ?? 'split-area'}-panel-${index}`}
+              data-split-area-panel="true"
               style={{ flex: ratios[index] ?? 0 }}
             >
               {item}
