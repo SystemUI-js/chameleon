@@ -3,7 +3,7 @@ import { join } from 'node:path';
 import '@testing-library/jest-dom';
 import { fireEvent, render, screen } from '@testing-library/react';
 import React from 'react';
-import { CButton as PackageEntryCButton, Theme } from '../src';
+import { CButton as PackageEntryCButton, Theme } from '../src/legacy-web';
 import { CButton } from '../src/components/Button/Button';
 
 function MenuTriggerProbe({ children }: { children: React.ReactElement }): React.ReactElement {

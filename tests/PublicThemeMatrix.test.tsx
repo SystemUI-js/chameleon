@@ -1,7 +1,7 @@
 import '@testing-library/jest-dom';
 import { render, screen } from '@testing-library/react';
 import React from 'react';
-import { CDock, CStartBar, CWidget, CWindow, CWindowTitle } from '../src';
+import { CDock, CStartBar, CWidget, CWindow, CWindowTitle } from '../src/legacy-web';
 
 describe('RN-hosted component chain', () => {
   it('renders dock, start bar, widget and window without DOM-only assumptions', () => {

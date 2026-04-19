@@ -1,7 +1,7 @@
 import '@testing-library/jest-dom';
 import { fireEvent, render, screen } from '@testing-library/react';
 import type React from 'react';
-import { CIcon as PackageEntryCIcon, Theme } from '../src';
+import { CIcon as PackageEntryCIcon, Theme } from '../src/legacy-web';
 import { CIcon, type CIconProps } from '../src/components/Icon/Icon';
 
 describe('CIcon', () => {

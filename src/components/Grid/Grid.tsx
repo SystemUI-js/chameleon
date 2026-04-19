@@ -1,4 +1,5 @@
 import React from 'react';
+import { View } from 'react-native';
 import { mergeClasses, ResolvedThemeClassName } from '../Theme';
 import './index.scss';
 
@@ -39,7 +40,7 @@ export class CGrid extends React.Component<Props, State> {
     return (
       <ResolvedThemeClassName theme={this.props.theme}>
         {(theme) => (
-          <div
+          <View
             className={mergeClasses(['cm-grid'], theme, this.props.className)}
             style={{
               ...this.props.style,
@@ -48,7 +49,7 @@ export class CGrid extends React.Component<Props, State> {
             }}
           >
             {children}
-          </div>
+          </View>
         )}
       </ResolvedThemeClassName>
     );
@@ -79,7 +80,7 @@ export class CGridItem extends React.Component<GridItemProps> {
     return (
       <ResolvedThemeClassName theme={this.props.theme}>
         {(theme) => (
-          <div
+          <View
             className={mergeClasses(['cm-grid-item'], theme, this.props.className)}
             style={{
               ...this.props.style,
@@ -90,7 +91,7 @@ export class CGridItem extends React.Component<GridItemProps> {
             }}
           >
             {this.props.children}
-          </div>
+          </View>
         )}
       </ResolvedThemeClassName>
     );

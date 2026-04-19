@@ -1,7 +1,7 @@
 import '@testing-library/jest-dom';
 import { fireEvent, render, screen } from '@testing-library/react';
 import React from 'react';
-import { CSlider as PackageEntryCSlider } from '../src';
+import { CSlider as PackageEntryCSlider } from '../src/legacy-web';
 import { CSlider } from '../src/components/CSlider';
 
 function ControlledSlider(): React.ReactElement {

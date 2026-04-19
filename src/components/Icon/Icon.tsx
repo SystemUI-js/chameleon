@@ -1,4 +1,5 @@
 import type React from 'react';
+import { Text, View } from 'react-native';
 import { mergeClasses } from '../Theme/mergeClasses';
 import { resolveThemeClassName } from '../Theme/themeName';
 import { useTheme } from '../Theme/useTheme';
@@ -86,15 +87,16 @@ export function CIcon({
     }
   };
 
-  const handleContextMenu = (event: React.MouseEvent<HTMLButtonElement>): void => {
+  const handleContextMenu = (event: React.MouseEvent<HTMLElement>): void => {
     onActive?.(true);
     onContextMenu?.(event);
   };
 
   return (
-    <button
-      type="button"
-      data-testid={dataTestId}
+    <View
+      testID={dataTestId}
+      role="button"
+      tabIndex={0}
       className={mergeClasses(baseClasses, resolvedTheme, className)}
       style={position !== undefined ? inlineStyle : undefined}
       onClick={shouldHandleClick ? handleClick : undefined}
@@ -102,8 +104,8 @@ export function CIcon({
       onMouseEnter={shouldHandleMouseEnter ? handleMouseEnter : undefined}
       onContextMenu={shouldHandleContextMenu ? handleContextMenu : undefined}
     >
-      <span className="cm-icon__content">{icon}</span>
-      {title !== undefined && <span className="cm-icon__title">{title}</span>}
-    </button>
+      <View className="cm-icon__content">{icon}</View>
+      {title !== undefined && <Text className="cm-icon__title">{title}</Text>}
+    </View>
   );
 }

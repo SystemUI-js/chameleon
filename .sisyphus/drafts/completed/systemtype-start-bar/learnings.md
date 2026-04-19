@@ -1,7 +1,0 @@
-- 2026-03-26: Playwright 开始栏覆盖复用 `gotoWindowSelection` 进入 `windows/win98`，再用 `switchWindowSelection` 顺序切到 `windows/winxp` 与 `default/default`，可以在同一页面内稳定验证系统/主题切换。
-- 2026-03-26: 开始栏背景差异用 `locator.evaluate()` + `getComputedStyle()` 读取 `backgroundColor` 与 `backgroundImage` 最稳；`win98` 可断言灰底 `rgb(192, 192, 192)`，`winxp` 用 `linear-gradient` 差异避免快照脆弱性。
-- 2026-03-26: F3 完整验证套件（Jest、Playwright、lint、build、`rg` 产物校验）在 `feature/screen-desktop-layout` 分支全部以退出码 `0` 通过，可作为该变更的 release-gate 证据。
-- 2026-03-26: `CStartBarProps` 若直接 `extends CWidgetProps`，会把 `x`/`y`/`width` 一并暴露为公开 API；做接口收敛审查时必须把继承链上的布局属性也算进组件对外表面。
-- 2026-03-26: 范围守卫关键词扫描若使用 `pin` 裸词会误命中 `typing`，执行结果需结合上下文判断是否为真实 shell 功能引入。
-- 2026-03-26: F1 审计显示“行为测试全绿”不等于“计划合规”；像 `SystemHost` / `registry` / `types` / `themeSwitcher` 这类禁改文件，必须结合 `git diff main...HEAD` 单独核对。
-- 2026-03-26: Start Bar 主题样式若在主题文件中写入 `min-height`、`padding`、`margin`、`font-size`，会被判定为把基础布局混入皮肤层，不能算满足 skin-only acceptance。

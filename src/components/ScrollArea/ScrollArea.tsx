@@ -1,4 +1,5 @@
 import type React from 'react';
+import { View } from 'react-native';
 import { mergeClasses } from '../Theme/mergeClasses';
 import { normalizeThemeClassName } from '../Theme/normalizeThemeClassName';
 import { useTheme } from '../Theme/useTheme';
@@ -47,20 +48,20 @@ export function CScrollArea({
   const resolvedTabIndex = resolveDefaultTabIndex(tabIndex, overflowX, overflowY);
 
   return (
-    <div
+    <View
       {...divProps}
+      testID={dataTestId}
       className={mergeClasses(['cm-scroll-area'], resolvedTheme, className)}
       style={{ ...style, overflowX, overflowY }}
       tabIndex={resolvedTabIndex}
-      data-testid={dataTestId}
     >
-      <div
+      <View
         className={mergeClasses(['cm-scroll-area__content'], undefined, contentClassName)}
         style={contentStyle}
         data-scroll-area-content="true"
       >
         {children}
-      </div>
-    </div>
+      </View>
+    </View>
   );
 }

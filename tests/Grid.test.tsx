@@ -1,6 +1,6 @@
 import { render } from '@testing-library/react';
 import '@testing-library/jest-dom';
-import { Theme } from '../src';
+import { Theme } from '../src/legacy-web';
 import { CGrid, CGridItem } from '../src/components/Grid/Grid';
 
 describe('CGridItem style merge', () => {

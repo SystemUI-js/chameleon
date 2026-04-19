@@ -1,6 +1,6 @@
 import '@testing-library/jest-dom';
 import { render, screen } from '@testing-library/react';
-import { CStatusBar, CStatusBarItem } from '../src';
+import { CStatusBar, CStatusBarItem } from '../src/legacy-web';
 
 describe('CStatusBar', () => {
   it('renders items in a horizontal container', () => {

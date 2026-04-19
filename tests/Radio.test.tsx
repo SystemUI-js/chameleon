@@ -4,7 +4,7 @@ import {
   CRadio as PackageEntryCRadio,
   CRadioGroup as PackageEntryCRadioGroup,
   Theme,
-} from '../src';
+} from '../src/legacy-web';
 import { CRadio } from '../src/components/Radio/Radio';
 import { CRadioGroup } from '../src/components/Radio/RadioGroup';
 

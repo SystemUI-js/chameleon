@@ -75,7 +75,7 @@ import { legacyWeb } from '@system-ui-js/chameleon';
 const { CButton, CSelect, Theme } = legacyWeb;
 ```
 
-> 兼容性说明：根入口仍保留现有 web 组件的直接导出，但这些导出现在属于 **legacy / 过渡能力**，不再代表默认平台方向。新的 React Native 能力请始终通过 `@system-ui-js/chameleon/react-native-multi-drag` 导入。
+> 兼容性说明：根入口不再直接导出 `CButton`、`Theme`、`CWindow` 等 web-only 组件。浏览器组件请通过 `@system-ui-js/chameleon/legacy-web` 或 `legacyWeb.*` 使用；新的 React Native 能力请始终通过 `@system-ui-js/chameleon/react-native-multi-drag` 导入。
 
 ## Theming
 
@@ -130,7 +130,7 @@ const { CButton } = legacyWeb;
 ## Breaking change / migration
 
 - React Native 拖拽能力改为显式入口：`@system-ui-js/chameleon/react-native-multi-drag`
-- 根入口不再被视为默认 web 组件库入口；web-only 能力属于 legacy 过渡范围
+- 根入口不再被视为默认 web 组件库入口，也不再直接导出 web-only 组件名；这些能力属于 legacy 过渡范围
 - 推荐将面向浏览器的导入逐步迁移到 `@system-ui-js/chameleon/legacy-web` 或 `legacyWeb.*`
 - 旧的 `@system-ui-js/multi-drag` 依赖已移除，仓库内部 web 拖拽适配改为基于 `@system-ui-js/multi-drag-core`
 
@@ -143,7 +143,7 @@ const { CButton } = legacyWeb;
 `CWindow` 不会隐式注入标题栏，使用时需要显式组合 `CWindowTitle`。
 
 ```tsx
-import { CWindow, CWindowTitle } from '@system-ui-js/chameleon';
+import { CWindow, CWindowTitle } from '@system-ui-js/chameleon/legacy-web';
 
 <CWindow x={24} y={24} width={320} height={220}>
   <CWindowTitle>My Window</CWindowTitle>

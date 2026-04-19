@@ -4,8 +4,24 @@
   - 新增显式入口 `@system-ui-js/chameleon/react-native-multi-drag`，导出基于 `@system-ui-js/multi-drag-core` 的会话控制器、native adapter 与 hook facade
   - 包入口新增 `legacyWeb` 命名空间与 `@system-ui-js/chameleon/legacy-web` 子路径，用于承接现有 web-only 组件能力
   - 根入口语义调整为平台无关 theme definition + 受控过渡导出集合，不再代表默认 web/DOM 入口
+  - 根入口移除 `CButton`、`Theme`、`CWindow` 等 legacy web 组件的直接导出，浏览器组件需改为通过 `legacyWeb.*` 或 `@system-ui-js/chameleon/legacy-web` 导入
   - 仓库内部移除对 `@system-ui-js/multi-drag` 的依赖，legacy web 拖拽适配改为基于 `@system-ui-js/multi-drag-core`
   - 迁移：React Native 场景请改为显式导入 `@system-ui-js/chameleon/react-native-multi-drag`；浏览器组件请逐步迁移到 `@system-ui-js/chameleon/legacy-web` 或 `legacyWeb.*`
+
+- **Feature:** 继续将基础控件切到 React Native 原生宿主
+  - `CButton`、`CButtonGroup`、`CButtonSeparator`、`CCheckbox`、`CIcon` 源码改为基于 `react-native` 原生组件实现
+  - 扩展本地 `react-native` 类型声明和 Jest mock，保持 legacy web 过渡面的角色、ARIA、className 与事件语义可验证
+  - 消除 `IconContainer` 组合 `CIcon` 时的嵌套 button 测试告警
+
+- **Feature:** 继续将单选/状态栏/滚动容器切到 React Native 原生宿主
+  - `CRadio`、`CRadioGroup`、`CStatusBar`、`CStatusBarItem`、`CScrollArea` 源码改为基于 `react-native` 原生组件实现
+  - 扩展本地 `react-native` 类型声明和 Jest mock，补齐 radio / scroll / data 属性的过渡期 interop 语义
+  - 保持受控/非受控单选组、状态栏组合和滚动区域测试契约不变
+
+- **Feature:** 继续将选择器/菜单/布局/标签页切到 React Native 原生宿主
+  - `CSelect`、`CMenu`、`CGrid`、`CGridItem`、`CScreen`、`CTab` 源码改为基于 `react-native` 原生组件实现
+  - 扩展本地 `react-native` 类型声明和 Jest mock，补齐 ref、change、pointer、键盘、ARIA 与 data 属性的过渡期 interop 能力
+  - 保持菜单树、标签页切换、网格布局和选择器测试契约可验证
 
 - **Breaking:** 移除 legacy system shell / registry 公共 API
   - 包入口不再导出 `SystemHost`、`SYSTEM_TYPE`、`THEME`、`DEFAULT_SYSTEM_TYPE`、`DEFAULT_THEME_BY_SYSTEM`、`SYSTEM_THEME_MATRIX`、`resolveSystemTypeDefinition`、`assertValidSystemThemeSelection`、`resolveThemeDefinition` 及关联类型

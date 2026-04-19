@@ -2,7 +2,7 @@ import { fireEvent, render, screen } from '@testing-library/react';
 import '@testing-library/jest-dom';
 import { readFileSync } from 'node:fs';
 import { join } from 'node:path';
-import { CSelect as PackageEntryCSelect, Theme } from '../src';
+import { CSelect as PackageEntryCSelect, Theme } from '../src/legacy-web';
 import { CSelect, type CSelectOption, type CSelectProps } from '../src/components/Select/Select';
 
 const OPTIONS: readonly CSelectOption[] = [

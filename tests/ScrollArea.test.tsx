@@ -1,6 +1,6 @@
 import '@testing-library/jest-dom';
 import { fireEvent, render, screen } from '@testing-library/react';
-import { CScrollArea as PackageEntryCScrollArea, type CScrollAreaProps } from '../src';
+import { CScrollArea as PackageEntryCScrollArea, type CScrollAreaProps } from '../src/legacy-web';
 import { CScrollArea } from '../src/components/ScrollArea';
 
 function getScrollAreaContent(testId: string): HTMLElement {

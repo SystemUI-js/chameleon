@@ -1,4 +1,5 @@
 import type React from 'react';
+import { View } from 'react-native';
 import { mergeClasses } from '../Theme/mergeClasses';
 import { useTheme } from '../Theme/useTheme';
 import './index.scss';
@@ -16,8 +17,12 @@ export function CStatusBarItem({
   const resolvedTheme = useTheme(theme);
 
   return (
-    <div {...restProps} className={mergeClasses(['cm-status-bar__item'], resolvedTheme, className)}>
+    <View
+      {...restProps}
+      className={mergeClasses(['cm-status-bar__item'], resolvedTheme, className)}
+      testID={restProps['data-testid'] as string | undefined}
+    >
       {children}
-    </div>
+    </View>
   );
 }
