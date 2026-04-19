@@ -38,8 +38,9 @@ export class CStartBar extends CWidget<StartBarState> {
 
   public render(): React.ReactElement {
     const testId = this.props['data-testid'] ?? 'start-bar';
+    const rootClassName = this.mergeThemeClassName(this.props.className, this.props.theme);
     return (
-      <View testID={testId}>
+      <View testID={testId} className={rootClassName}>
         <Pressable testID={`${testId}-button`}>
           <Text>{this.props.startLabel ?? 'Start'}</Text>
         </Pressable>

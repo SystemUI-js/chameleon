@@ -2,7 +2,8 @@
 
 import React from 'react';
 
-type StyleValue = React.CSSProperties | readonly StyleValue[] | null | undefined;
+type FlatStyle = React.CSSProperties;
+type StyleValue = FlatStyle | readonly StyleValue[] | null | undefined;
 
 type AccessibilityState = {
   checked?: boolean;
@@ -27,7 +28,9 @@ type PressableProps = BaseProps & {
   type?: 'button' | 'submit' | 'reset';
 };
 
-function flattenStyle(style: StyleValue): React.CSSProperties | undefined {
+type DomProps = React.HTMLAttributes<HTMLElement> & Record<string, unknown>;
+
+function flattenStyle(style: StyleValue): FlatStyle | undefined {
   if (style == null) {
     return undefined;
   }
@@ -44,7 +47,7 @@ function flattenStyle(style: StyleValue): React.CSSProperties | undefined {
     }, {});
   }
 
-  return style;
+  return style as FlatStyle;
 }
 
 function extractDomProps({
@@ -55,8 +58,8 @@ function extractDomProps({
   style,
   testID,
   ...restProps
-}: BaseProps): React.HTMLAttributes<HTMLElement> {
-  const domProps: React.HTMLAttributes<HTMLElement> = {
+}: BaseProps): DomProps {
+  const domProps: DomProps = {
     ...restProps,
     style: flattenStyle(style),
   };
@@ -88,32 +91,53 @@ function extractDomProps({
   return domProps;
 }
 
-export function View(props: BaseProps): React.ReactElement {
-  return <div {...extractDomProps(props)}>{props.children}</div>;
-}
+export const View = React.forwardRef<HTMLElement, BaseProps>(function View(props, ref) {
+  return (
+    <div ref={ref as React.Ref<HTMLDivElement>} {...extractDomProps(props)}>
+      {props.children}
+    </div>
+  );
+});
 
-export function Text(props: BaseProps): React.ReactElement {
-  return <span {...extractDomProps(props)}>{props.children}</span>;
-}
+export const Text = React.forwardRef<HTMLElement, BaseProps>(function Text(props, ref) {
+  return (
+    <span ref={ref as React.Ref<HTMLSpanElement>} {...extractDomProps(props)}>
+      {props.children}
+    </span>
+  );
+});
 
-export function Pressable({
-  disabled = false,
-  onClick,
-  onKeyDown,
-  onKeyUp,
-  onPress,
-  onPressIn,
-  onPressOut,
-  type: _type,
-  ...props
-}: PressableProps): React.ReactElement {
+export const Pressable = React.forwardRef<HTMLElement, PressableProps>(function Pressable(
+  {
+    disabled = false,
+    onClick,
+    onKeyDown,
+    onKeyUp,
+    onPress,
+    onPressIn,
+    onPressOut,
+    type: _type,
+    ...props
+  },
+  ref,
+) {
   const domProps = extractDomProps(props);
+  const role = domProps.role;
+  const shouldUseNativeButton =
+    _type !== undefined ||
+    role === 'button' ||
+    role === 'checkbox' ||
+    role === 'radio' ||
+    role === 'option' ||
+    role === 'combobox' ||
+    role === 'menuitem' ||
+    role === 'tab';
 
-  if (domProps.role === undefined) {
+  if (!shouldUseNativeButton && domProps.role === undefined) {
     domProps.role = 'button';
   }
 
-  if (domProps.tabIndex === undefined) {
+  if (!shouldUseNativeButton && domProps.tabIndex === undefined) {
     domProps.tabIndex = disabled ? -1 : 0;
   }
 
@@ -121,60 +145,86 @@ export function Pressable({
     domProps['aria-disabled'] = true;
   }
 
+  const sharedHandlers = {
+    onClick: (event: React.MouseEvent<HTMLElement>) => {
+      if (disabled) {
+        event.preventDefault();
+        return;
+      }
+
+      onClick?.(event);
+      onPress?.();
+    },
+    onKeyDown: (event: React.KeyboardEvent<HTMLElement>) => {
+      onKeyDown?.(event);
+
+      if (disabled) {
+        return;
+      }
+
+      if (event.key === ' ' || event.key === 'Enter') {
+        event.preventDefault();
+        onPressIn?.();
+      }
+    },
+    onKeyUp: (event: React.KeyboardEvent<HTMLElement>) => {
+      onKeyUp?.(event);
+
+      if (disabled) {
+        return;
+      }
+
+      if (event.key === ' ' || event.key === 'Enter') {
+        event.preventDefault();
+        onPressOut?.();
+        onPress?.();
+      }
+    },
+    onMouseDown: () => {
+      if (!disabled) {
+        onPressIn?.();
+      }
+    },
+    onMouseUp: () => {
+      if (!disabled) {
+        onPressOut?.();
+      }
+    },
+  };
+
+  if (shouldUseNativeButton) {
+    return (
+      <button
+        ref={ref as React.Ref<HTMLButtonElement>}
+        {...(domProps as React.ButtonHTMLAttributes<HTMLButtonElement>)}
+        type={_type ?? 'button'}
+        disabled={disabled}
+        onClick={sharedHandlers.onClick as React.MouseEventHandler<HTMLButtonElement>}
+        onKeyDown={sharedHandlers.onKeyDown as React.KeyboardEventHandler<HTMLButtonElement>}
+        onKeyUp={sharedHandlers.onKeyUp as React.KeyboardEventHandler<HTMLButtonElement>}
+        onMouseDown={sharedHandlers.onMouseDown}
+        onMouseUp={sharedHandlers.onMouseUp}
+      >
+        {props.children}
+      </button>
+    );
+  }
+
   return (
     /* biome-ignore lint/a11y/noStaticElementInteractions: DOM shim intentionally makes div interactive */
-    /* biome-ignore lint/a11y/useKeyWithClickEvents: shim adds explicit keyboard activation handling below */
     <div
+      ref={ref as React.Ref<HTMLDivElement>}
       {...domProps}
-      onClick={(event) => {
-        if (disabled) {
-          event.preventDefault();
-          return;
-        }
-
-        onClick?.(event);
-        onPress?.();
-      }}
-      onKeyDown={(event) => {
-        onKeyDown?.(event);
-
-        if (disabled) {
-          return;
-        }
-
-        if (event.key === ' ' || event.key === 'Enter') {
-          event.preventDefault();
-          onPressIn?.();
-        }
-      }}
-      onKeyUp={(event) => {
-        onKeyUp?.(event);
-
-        if (disabled) {
-          return;
-        }
-
-        if (event.key === ' ' || event.key === 'Enter') {
-          event.preventDefault();
-          onPressOut?.();
-          onPress?.();
-        }
-      }}
-      onMouseDown={() => {
-        if (!disabled) {
-          onPressIn?.();
-        }
-      }}
-      onMouseUp={() => {
-        if (!disabled) {
-          onPressOut?.();
-        }
-      }}
+      onClick={sharedHandlers.onClick}
+      onKeyDown={sharedHandlers.onKeyDown}
+      onKeyUp={sharedHandlers.onKeyUp}
+      onMouseDown={sharedHandlers.onMouseDown}
+      onMouseUp={sharedHandlers.onMouseUp}
     >
       {props.children}
     </div>
   );
-}
+});
 
 export const StyleSheet = {
   create<T extends Record<string, unknown>>(styles: T): T {
