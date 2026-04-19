@@ -84,38 +84,6 @@ const waitForGroupedButtonsHarness = async (
   );
 };
 
-const waitForWin98ThemedControls = async (page: Page): Promise<void> => {
-  await page.waitForFunction(
-    ({ buttonTestId, radioGroupTestId, selectTestId, fixtureErrorTestId }) => {
-      const button = document.querySelector(`[data-testid="${buttonTestId}"]`);
-      const radioGroup = document.querySelector(`[data-testid="${radioGroupTestId}"]`);
-      const select = document.querySelector(`[data-testid="${selectTestId}"]`);
-      const fixtureError = document.querySelector(`[data-testid="${fixtureErrorTestId}"]`);
-
-      if (fixtureError) {
-        return true;
-      }
-
-      const hasReadyRadioControl =
-        radioGroup instanceof HTMLElement &&
-        radioGroup.querySelector('[role="radio"], input[type="radio"]') !== null;
-      const hasReadySelectControl =
-        select instanceof HTMLElement &&
-        (select.getAttribute('role') === 'combobox' || select instanceof HTMLSelectElement);
-
-      return Boolean(
-        button instanceof HTMLElement && hasReadyRadioControl && hasReadySelectControl,
-      );
-    },
-    {
-      buttonTestId: BUTTON_TEST_ID,
-      radioGroupTestId: RADIO_GROUP_TEST_ID,
-      selectTestId: SELECT_TEST_ID,
-      fixtureErrorTestId: FIXTURE_ERROR_TEST_ID,
-    },
-  );
-};
-
 export const gotoCommonControlsFixture = async (page: Page, fixture: string): Promise<void> => {
   const searchParams = new URLSearchParams({
     theme: 'default',
@@ -182,7 +150,7 @@ export const gotoThemedCommonControls = async (
     return;
   }
 
-  await waitForWin98ThemedControls(page);
+  await waitForStandardControlsHarness(page);
   await page.locator(`.cm-theme--${selection.theme}`).first().waitFor({ state: 'attached' });
 };
 
