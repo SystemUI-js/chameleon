@@ -25,12 +25,15 @@ const waitForStandardControlsHarness = async (page: Page): Promise<void> => {
         return true;
       }
 
+      const hasReadyRadioControl =
+        radioGroup instanceof HTMLElement &&
+        radioGroup.querySelector('[role="radio"], input[type="radio"]') !== null;
+      const hasReadySelectControl =
+        select instanceof HTMLElement &&
+        (select.getAttribute('role') === 'combobox' || select instanceof HTMLSelectElement);
+
       return Boolean(
-        button instanceof HTMLElement &&
-          radioGroup instanceof HTMLElement &&
-          radioGroup.querySelector('[role="radio"]') !== null &&
-          select instanceof HTMLElement &&
-          select.getAttribute('role') === 'combobox',
+        button instanceof HTMLElement && hasReadyRadioControl && hasReadySelectControl,
       );
     },
     {
@@ -83,23 +86,32 @@ const waitForGroupedButtonsHarness = async (
 
 const waitForWin98ThemedControls = async (page: Page): Promise<void> => {
   await page.waitForFunction(
-    ({ buttonTestId, radioGroupTestId, selectTestId }) => {
+    ({ buttonTestId, radioGroupTestId, selectTestId, fixtureErrorTestId }) => {
       const button = document.querySelector(`[data-testid="${buttonTestId}"]`);
       const radioGroup = document.querySelector(`[data-testid="${radioGroupTestId}"]`);
       const select = document.querySelector(`[data-testid="${selectTestId}"]`);
+      const fixtureError = document.querySelector(`[data-testid="${fixtureErrorTestId}"]`);
+
+      if (fixtureError) {
+        return true;
+      }
+
+      const hasReadyRadioControl =
+        radioGroup instanceof HTMLElement &&
+        radioGroup.querySelector('[role="radio"], input[type="radio"]') !== null;
+      const hasReadySelectControl =
+        select instanceof HTMLElement &&
+        (select.getAttribute('role') === 'combobox' || select instanceof HTMLSelectElement);
 
       return Boolean(
-        button instanceof HTMLElement &&
-          radioGroup instanceof HTMLElement &&
-          radioGroup.querySelector('[role="radio"]') !== null &&
-          select instanceof HTMLElement &&
-          select.getAttribute('role') === 'combobox',
+        button instanceof HTMLElement && hasReadyRadioControl && hasReadySelectControl,
       );
     },
     {
       buttonTestId: BUTTON_TEST_ID,
       radioGroupTestId: RADIO_GROUP_TEST_ID,
       selectTestId: SELECT_TEST_ID,
+      fixtureErrorTestId: FIXTURE_ERROR_TEST_ID,
     },
   );
 };
@@ -203,19 +215,35 @@ export const gotoWin98GroupedButtons = async (page: Page): Promise<void> => {
 export const readCommonControlsRadioValue = async (page: Page): Promise<string | null> => {
   return page.getByTestId(RADIO_GROUP_TEST_ID).evaluate((element) => {
     const checkedRadio = element.querySelector<HTMLElement>('[role="radio"][aria-checked="true"]');
-    const textValue = checkedRadio?.textContent?.trim();
+
+    if (checkedRadio instanceof HTMLElement) {
+      const textValue = checkedRadio.textContent?.trim();
+
+      return (
+        checkedRadio.getAttribute('data-value') ??
+        checkedRadio.getAttribute('value') ??
+        (textValue ? textValue.toLowerCase() : null) ??
+        null
+      );
+    }
+
+    const checkedNativeRadio = element.querySelector<HTMLInputElement>(
+      'input[type="radio"]:checked',
+    );
+    const nativeLabelText = checkedNativeRadio?.closest('label')?.textContent?.trim();
 
     return (
-      checkedRadio?.getAttribute('data-value') ??
-      checkedRadio?.getAttribute('value') ??
-      (textValue ? textValue.toLowerCase() : null) ??
-      null
+      checkedNativeRadio?.value ?? (nativeLabelText ? nativeLabelText.toLowerCase() : null) ?? null
     );
   });
 };
 
 export const readCommonControlsSelectValue = async (page: Page): Promise<string | null> => {
   return page.getByTestId(SELECT_TEST_ID).evaluate((element) => {
+    if (element instanceof HTMLSelectElement) {
+      return element.value || null;
+    }
+
     const dataValue = element.getAttribute('data-value');
 
     if (dataValue !== null) {

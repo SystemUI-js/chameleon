@@ -210,7 +210,7 @@ test.describe('Win98 controls', () => {
       const radioApple = page.locator('[data-testid="radio-demo-fruit"] .cm-radio').first();
       const radioInput = radioApple.locator('.cm-radio__input');
 
-      await expect(radioApple).toHaveClass(/cm-radio--checked/);
+      await expect(radioInput).toBeChecked();
 
       const backgroundImage = await radioInput.evaluate((el) => {
         const styles = window.getComputedStyle(el);
