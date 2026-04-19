@@ -26,10 +26,11 @@ const waitForStandardControlsHarness = async (page: Page): Promise<void> => {
       }
 
       return Boolean(
-        button instanceof HTMLButtonElement &&
+        button instanceof HTMLElement &&
           radioGroup instanceof HTMLElement &&
-          radioGroup.querySelector('input[type="radio"]') !== null &&
-          select instanceof HTMLSelectElement,
+          radioGroup.querySelector('[role="radio"]') !== null &&
+          select instanceof HTMLElement &&
+          select.getAttribute('role') === 'combobox',
       );
     },
     {
@@ -66,7 +67,7 @@ const waitForGroupedButtonsHarness = async (
 
       return (
         group instanceof HTMLElement &&
-        group.querySelector('button') !== null &&
+        group.querySelector('[data-testid]') !== null &&
         separator instanceof HTMLElement &&
         secondaryGroup
       );
@@ -88,10 +89,11 @@ const waitForWin98ThemedControls = async (page: Page): Promise<void> => {
       const select = document.querySelector(`[data-testid="${selectTestId}"]`);
 
       return Boolean(
-        button instanceof HTMLButtonElement &&
+        button instanceof HTMLElement &&
           radioGroup instanceof HTMLElement &&
-          radioGroup.querySelector('input[type="radio"]') !== null &&
-          select instanceof HTMLSelectElement,
+          radioGroup.querySelector('[role="radio"]') !== null &&
+          select instanceof HTMLElement &&
+          select.getAttribute('role') === 'combobox',
       );
     },
     {
@@ -200,8 +202,28 @@ export const gotoWin98GroupedButtons = async (page: Page): Promise<void> => {
 
 export const readCommonControlsRadioValue = async (page: Page): Promise<string | null> => {
   return page.getByTestId(RADIO_GROUP_TEST_ID).evaluate((element) => {
-    const checkedRadio = element.querySelector<HTMLInputElement>('input[type="radio"]:checked');
+    const checkedRadio = element.querySelector<HTMLElement>('[role="radio"][aria-checked="true"]');
+    const textValue = checkedRadio?.textContent?.trim();
 
-    return checkedRadio?.value ?? null;
+    return (
+      checkedRadio?.getAttribute('data-value') ??
+      checkedRadio?.getAttribute('value') ??
+      (textValue ? textValue.toLowerCase() : null) ??
+      null
+    );
+  });
+};
+
+export const readCommonControlsSelectValue = async (page: Page): Promise<string | null> => {
+  return page.getByTestId(SELECT_TEST_ID).evaluate((element) => {
+    const dataValue = element.getAttribute('data-value');
+
+    if (dataValue !== null) {
+      return dataValue;
+    }
+
+    const textValue = element.textContent?.replace('▾', '').trim();
+
+    return textValue ? textValue.toLowerCase() : null;
   });
 };

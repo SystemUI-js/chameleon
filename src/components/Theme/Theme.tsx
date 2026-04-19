@@ -1,4 +1,5 @@
 import React from 'react';
+import { View } from 'react-native';
 import { normalizeThemeClassName } from './normalizeThemeClassName';
 
 export interface ThemeContextValue {
@@ -31,7 +32,7 @@ export function Theme({ name, children }: ThemeProps): React.ReactElement {
 
   return (
     <ThemeContext.Provider value={contextValue}>
-      <div className={finalTheme}>{children}</div>
+      <View className={finalTheme}>{children}</View>
     </ThemeContext.Provider>
   );
 }

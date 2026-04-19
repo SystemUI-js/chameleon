@@ -1,4 +1,5 @@
 import React from 'react';
+import { View } from 'react-native';
 import { CButton, type CButtonProps, type CButtonVariant } from '../Button/Button';
 import {
   CButtonSeparator,
@@ -164,8 +165,8 @@ export function CButtonGroup({
   const baseClasses = ['cm-button-group', `cm-button-group--${orientation}`];
 
   return (
-    <div className={mergeClasses(baseClasses, resolvedTheme, className)} data-testid={dataTestId}>
+    <View className={mergeClasses(baseClasses, resolvedTheme, className)} testID={dataTestId}>
       {renderedChildren}
-    </div>
+    </View>
   );
 }

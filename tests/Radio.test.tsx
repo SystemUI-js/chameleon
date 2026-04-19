@@ -42,7 +42,7 @@ describe('CRadioGroup', () => {
     expect(screen.getByTestId('radio-group')).toHaveClass('cm-radio-group');
     expect(screen.getByTestId('radio-apple')).toHaveAttribute('name', 'fruit');
     expect(screen.getByTestId('radio-orange')).toHaveAttribute('name', 'fruit');
-    expect(screen.queryByRole('radiogroup')).not.toBeInTheDocument();
+    expect(screen.getByRole('radiogroup')).toBeInTheDocument();
   });
 
   it('initializes uncontrolled state from defaultValue and ignores later defaultValue changes', () => {
@@ -135,7 +135,7 @@ describe('CRadioGroup', () => {
       </CRadioGroup>,
     );
 
-    const disabledRadio = screen.getByRole('radio', { name: 'Disabled' }) as HTMLInputElement;
+    const disabledRadio = screen.getByRole('radio', { name: 'Disabled' });
 
     expect(disabledRadio).toBeDisabled();
 
@@ -151,12 +151,8 @@ describe('CRadioGroup', () => {
       </CRadioGroup>,
     );
 
-    const groupDisabledEnabledRadio = screen.getByRole('radio', {
-      name: 'Enabled',
-    }) as HTMLInputElement;
-    const groupDisabledDisabledRadio = screen.getByRole('radio', {
-      name: 'Disabled',
-    }) as HTMLInputElement;
+    const groupDisabledEnabledRadio = screen.getByRole('radio', { name: 'Enabled' });
+    const groupDisabledDisabledRadio = screen.getByRole('radio', { name: 'Disabled' });
 
     expect(groupDisabledEnabledRadio).toBeDisabled();
     expect(groupDisabledDisabledRadio).toBeDisabled();

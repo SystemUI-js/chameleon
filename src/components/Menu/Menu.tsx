@@ -1,4 +1,5 @@
 import React from 'react';
+import { Pressable, Text, View } from 'react-native';
 import { mergeClasses } from '../Theme/mergeClasses';
 import { useTheme } from '../Theme/useTheme';
 import './index.scss';
@@ -160,11 +161,11 @@ export function CMenu({
     const menuRole: React.AriaRole = 'menu';
 
     return (
-      <ul
+      <View
         id={listId}
         role={menuRole}
         className="cm-menu__list"
-        data-testid="cm-menu-list"
+        testID="cm-menu-list"
         data-menu-depth={depth}
       >
         {items.map((item) => {
@@ -210,7 +211,7 @@ export function CMenu({
           };
 
           return (
-            <li
+            <View
               key={item.id}
               role="none"
               className={mergeClasses(
@@ -221,8 +222,7 @@ export function CMenu({
                 ].filter((c): c is string => c !== undefined),
               )}
             >
-              <button
-                type="button"
+              <Pressable
                 role="menuitem"
                 className={mergeClasses(
                   [
@@ -231,7 +231,7 @@ export function CMenu({
                   ],
                   item.disabled ? 'cm-menu__item-button--disabled' : undefined,
                 )}
-                data-testid={`menu-item-${item.id}`}
+                testID={`menu-item-${item.id}`}
                 data-menu-item-id={item.id}
                 data-menu-item-key={item.key}
                 data-menu-item-type={isParent ? 'parent' : 'leaf'}
@@ -242,11 +242,11 @@ export function CMenu({
                 onClick={isParent ? handleParentClick : handleLeafClick}
                 onPointerEnter={isParent ? handleParentPointerEnter : undefined}
               >
-                {item.title}
-                {isParent && <span className="cm-menu__caret">▸</span>}
-              </button>
+                <Text>{item.title}</Text>
+                {isParent ? <Text className="cm-menu__caret">▸</Text> : null}
+              </Pressable>
               {isParent && isBranchOpen ? (
-                <div className="cm-menu__popup cm-menu__submenu">
+                <View className="cm-menu__popup cm-menu__submenu">
                   {renderItems(
                     item.children ?? [],
                     depth + 1,
@@ -254,12 +254,12 @@ export function CMenu({
                     itemPath,
                     effectiveTrigger,
                   )}
-                </div>
+                </View>
               ) : null}
-            </li>
+            </View>
           );
         })}
-      </ul>
+      </View>
     );
   };
 
@@ -272,19 +272,19 @@ export function CMenu({
   });
 
   return (
-    <div
+    <View
       ref={rootRef}
       className={mergeClasses(baseClasses, resolvedTheme, className)}
-      data-testid={dataTestId}
+      testID={dataTestId}
       data-menu-state={isRootOpen ? 'open' : 'closed'}
       onPointerLeave={handleRootPointerLeave}
     >
       {triggerElement}
       {isRootOpen ? (
-        <div className="cm-menu__popup" data-testid="menu-demo-popup">
+        <View className="cm-menu__popup" testID="menu-demo-popup">
           {renderItems(menuList, 0, rootMenuId)}
-        </div>
+        </View>
       ) : null}
-    </div>
+    </View>
   );
 }

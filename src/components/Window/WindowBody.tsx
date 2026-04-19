@@ -1,4 +1,5 @@
 import React from 'react';
+import { View } from 'react-native';
 import { ResolvedThemeClassName } from '../Theme';
 
 export interface CWindowBodyProps {
@@ -20,9 +21,9 @@ export class CWindowBody extends React.Component<CWindowBodyProps> {
     return (
       <ResolvedThemeClassName theme={this.props.theme}>
         {(theme) => (
-          <div data-testid="window-body" className={this.getClassName(theme)}>
+          <View testID="window-body" className={this.getClassName(theme)}>
             {this.props.children}
-          </div>
+          </View>
         )}
       </ResolvedThemeClassName>
     );

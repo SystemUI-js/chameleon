@@ -1,4 +1,4 @@
-import type React from 'react';
+import type { StyleProp, ViewStyle } from 'react-native';
 import type { DockPosition } from './Dock';
 
 export function getDockEdgeStyle(
@@ -6,7 +6,7 @@ export function getDockEdgeStyle(
   gapStart: number,
   gapEnd: number,
   thickness?: number,
-): React.CSSProperties {
+): ViewStyle {
   switch (resolvedPosition) {
     case 'top':
       return {
@@ -50,10 +50,12 @@ export function getDockFrameClassName(resolvedPosition: DockPosition, className?
 }
 
 export function getDockFrameStyle(
-  dockEdgeStyle: React.CSSProperties,
-  propsStyle?: React.CSSProperties,
-): React.CSSProperties {
-  const visualStyle = { ...(propsStyle ?? {}) };
+  dockEdgeStyle: ViewStyle,
+  propsStyle?: StyleProp<ViewStyle>,
+): ViewStyle {
+  const visualStyle = Array.isArray(propsStyle)
+    ? Object.assign({}, ...propsStyle.filter((entry): entry is ViewStyle => entry != null))
+    : { ...(propsStyle ?? {}) };
 
   delete visualStyle.position;
   delete visualStyle.top;

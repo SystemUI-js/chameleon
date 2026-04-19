@@ -1,9 +1,10 @@
 import type React from 'react';
+import { View, type ViewProps } from 'react-native';
 import { mergeClasses } from '../Theme/mergeClasses';
 import { useTheme } from '../Theme/useTheme';
 import './index.scss';
 
-export interface CStatusBarProps extends React.HTMLAttributes<HTMLDivElement> {
+export interface CStatusBarProps extends ViewProps {
   theme?: string;
 }
 
@@ -16,8 +17,8 @@ export function CStatusBar({
   const resolvedTheme = useTheme(theme);
 
   return (
-    <div {...restProps} className={mergeClasses(['cm-status-bar'], resolvedTheme, className)}>
+    <View {...restProps} className={mergeClasses(['cm-status-bar'], resolvedTheme, className)}>
       {children}
-    </div>
+    </View>
   );
 }

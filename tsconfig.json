@@ -3,11 +3,13 @@
     "forceConsistentCasingInFileNames": true,
     "target": "ES2022",
     "useDefineForClassFields": true,
-    "lib": ["ES2022", "DOM", "DOM.Iterable"],
+    "lib": [
+      "ES2022",
+      "DOM",
+      "DOM.Iterable"
+    ],
     "module": "ESNext",
     "skipLibCheck": true,
-
-    /* Bundler mode */
     "moduleResolution": "bundler",
     "allowImportingTsExtensions": true,
     "resolveJsonModule": true,
@@ -17,22 +19,29 @@
     "declaration": true,
     "declarationMap": true,
     "sourceMap": true,
-
-    /* Linting */
     "strict": true,
     "noUnusedLocals": true,
     "noUnusedParameters": true,
     "noFallthroughCasesInSwitch": true,
-
-    /* Path alias */
     "baseUrl": ".",
     "paths": {
-      "@/*": ["./src/*"]
+      "@/*": [
+        "./src/*"
+      ]
     },
-
-    /* esModuleInterop */
     "esModuleInterop": true
   },
-  "include": ["src", "tests", "vite.config.ts", "jest.config.ts"],
-  "exclude": ["dist", "node_modules"]
+  "include": [
+    "src",
+    "tests",
+    "App.tsx",
+    "index.ts",
+    "vite.config.ts",
+    "jest.config.ts"
+  ],
+  "exclude": [
+    "dist",
+    "node_modules"
+  ],
+  "extends": "expo/tsconfig.base"
 }

@@ -1,19 +1,9 @@
 import { type ReactNode, useState } from 'react';
-import { createRoot } from 'react-dom/client';
 import { CButton, CMenu, type MenuListItem } from '@/components';
-import { DEV_THEME, DevThemeRoot, type DevThemeId } from '../themeSwitcher';
-
-type HarnessRoute = {
-  theme: DevThemeId;
-  fixture: string;
-};
+import { DevThemeRoot, type DevThemeId } from '../themeSwitcher';
+import { readHarnessRoute } from './harnessRoute';
 
 const DEFAULT_FIXTURE = 'click';
-const DEV_THEME_IDS = Object.values(DEV_THEME);
-
-const isDevThemeId = (value: string | null): value is DevThemeId => {
-  return value !== null && DEV_THEME_IDS.includes(value as DevThemeId);
-};
 
 const MENU_LIST: readonly MenuListItem[] = [
   {
@@ -52,29 +42,11 @@ const MIXED_MENU_LIST: readonly MenuListItem[] = [
   },
 ];
 
-const readHarnessRoute = (): HarnessRoute => {
-  try {
-    const url = new URL(window.location.href);
-    const theme = url.searchParams.get('theme');
-    const fixture = url.searchParams.get('fixture');
-
-    return {
-      theme: isDevThemeId(theme) ? theme : DEV_THEME.default,
-      fixture: fixture ?? DEFAULT_FIXTURE,
-    };
-  } catch {
-    return {
-      theme: DEV_THEME.default,
-      fixture: DEFAULT_FIXTURE,
-    };
-  }
-};
-
 interface HarnessLayoutProps {
   readonly children: ReactNode;
 }
 
-const HarnessLayout = ({ children }: HarnessLayoutProps): ReactNode => {
+const HarnessLayout = ({ children }: HarnessLayoutProps): JSX.Element => {
   return (
     <main
       style={{
@@ -89,7 +61,7 @@ const HarnessLayout = ({ children }: HarnessLayoutProps): ReactNode => {
   );
 };
 
-const ClickFixture = (): ReactNode => {
+const ClickFixture = (): JSX.Element => {
   const [selectedItem, setSelectedItem] = useState<MenuListItem | null>(null);
 
   return (
@@ -107,7 +79,7 @@ const ClickFixture = (): ReactNode => {
   );
 };
 
-const HoverFixture = (): ReactNode => {
+const HoverFixture = (): JSX.Element => {
   const [selectedItem, setSelectedItem] = useState<MenuListItem | null>(null);
 
   return (
@@ -125,7 +97,7 @@ const HoverFixture = (): ReactNode => {
   );
 };
 
-const MixedFixture = (): ReactNode => {
+const MixedFixture = (): JSX.Element => {
   const [selectedItem, setSelectedItem] = useState<MenuListItem | null>(null);
 
   return (
@@ -147,7 +119,7 @@ const MixedFixture = (): ReactNode => {
   );
 };
 
-const renderFixture = (fixture: string): ReactNode => {
+const renderFixture = (fixture: string): JSX.Element => {
   switch (fixture) {
     case 'click':
       return <ClickFixture />;
@@ -165,7 +137,7 @@ interface ThemedFixtureContainerProps {
   readonly fixture: string;
 }
 
-const ThemedFixtureContainer = ({ theme, fixture }: ThemedFixtureContainerProps): ReactNode => {
+const ThemedFixtureContainer = ({ theme, fixture }: ThemedFixtureContainerProps): JSX.Element => {
   return (
     <DevThemeRoot theme={theme}>
       <div style={{ padding: '24px' }}>{renderFixture(fixture)}</div>
@@ -173,15 +145,9 @@ const ThemedFixtureContainer = ({ theme, fixture }: ThemedFixtureContainerProps)
   );
 };
 
-const App = (): ReactNode => {
+export const MenuHarnessApp = (): JSX.Element => {
   const route = readHarnessRoute();
+  const fixture = route.fixture === 'default' ? DEFAULT_FIXTURE : route.fixture;
 
-  return <ThemedFixtureContainer theme={route.theme} fixture={route.fixture} />;
+  return <ThemedFixtureContainer theme={route.theme} fixture={fixture} />;
 };
-
-const container = document.getElementById('root');
-
-if (container) {
-  const root = createRoot(container);
-  root.render(<App />);
-}

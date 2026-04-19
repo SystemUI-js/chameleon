@@ -3,6 +3,9 @@
     align-items: center;
     gap: 0.375rem;
     cursor: pointer;
+    border: none;
+    background: transparent;
+    padding: 0;
 }
 
 .cm-checkbox--disabled {
@@ -12,6 +15,17 @@
 
 .cm-checkbox__input {
     margin: 0;
+}
+
+.cm-checkbox__indicator {
+    width: 1rem;
+    height: 1rem;
+    flex-shrink: 0;
+    border: 1px solid currentColor;
+}
+
+.cm-checkbox--checked .cm-checkbox__indicator {
+    background: currentColor;
 }
 
 .cm-checkbox__label {

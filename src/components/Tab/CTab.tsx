@@ -1,4 +1,5 @@
 import React from 'react';
+import { Pressable, Text, View } from 'react-native';
 import { mergeClasses } from '../Theme/mergeClasses';
 import { useTheme } from '../Theme/useTheme';
 import { CTabItem, type CTabItemProps } from './CTabItem';
@@ -36,7 +37,7 @@ export function CTab({
 }: CTabProps): React.ReactElement {
   const resolvedTheme = useTheme(theme);
   const instanceId = React.useId().replace(/:/g, '');
-  const tabRefs = React.useRef<Array<HTMLLIElement | null>>([]);
+  const tabRefs = React.useRef<Array<HTMLButtonElement | null>>([]);
 
   const tabItems = React.useMemo<readonly CTabItemEntry[]>(() => {
     return React.Children.toArray(children).reduce<CTabItemEntry[]>((items, child) => {
@@ -82,7 +83,7 @@ export function CTab({
   );
 
   const handleKeyDown = React.useCallback(
-    (event: React.KeyboardEvent<HTMLLIElement>, currentIndex: number): void => {
+    (event: React.KeyboardEvent<HTMLElement>, currentIndex: number): void => {
       switch (event.key) {
         case 'ArrowLeft':
         case 'ArrowUp':
@@ -119,15 +120,15 @@ export function CTab({
   }, [activeTabId, tabItems]);
 
   return (
-    <div className={mergeClasses(['cm-ctab'], resolvedTheme, className)} data-testid={dataTestId}>
-      <ul role="tablist" className="cm-ctab__list">
+    <View className={mergeClasses(['cm-ctab'], resolvedTheme, className)} testID={dataTestId}>
+      <View role="tablist" className="cm-ctab__list">
         {tabItems.map((item, index) => {
           const isActive = item.id === effectiveActiveTabId;
           const tabId = `${item.id}-tab`;
           const panelId = `${item.id}-panel`;
 
           return (
-            <li
+            <Pressable
               key={item.id}
               ref={(element) => {
                 tabRefs.current[index] = element;
@@ -148,11 +149,11 @@ export function CTab({
                 handleKeyDown(event, index);
               }}
             >
-              <span>{item.title}</span>
-            </li>
+              <Text>{item.title}</Text>
+            </Pressable>
           );
         })}
-      </ul>
+      </View>
 
       {tabItems.map((item) => {
         const isActive = item.id === effectiveActiveTabId;
@@ -160,7 +161,7 @@ export function CTab({
         const panelId = `${item.id}-panel`;
 
         return (
-          <div
+          <View
             key={item.id}
             id={panelId}
             role="tabpanel"
@@ -169,9 +170,9 @@ export function CTab({
             hidden={!isActive}
           >
             {item.content}
-          </div>
+          </View>
         );
       })}
-    </div>
+    </View>
   );
 }
