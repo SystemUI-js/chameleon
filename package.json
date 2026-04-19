@@ -28,7 +28,7 @@
     "format": "prettier --write .",
     "test": "jest",
     "test:watch": "jest --watch",
-    "test:ui": "playwright test --config=playwright.config.ts --pass-with-no-tests",
+    "test:ui": "playwright test --config=playwright.config.ts --pass-with-no-tests --no-sandbox",
     "test:ui:headed": "playwright test --config=playwright.config.ts --headed --pass-with-no-tests",
     "dev:vite": "vite",
     "build:web": "expo export --platform web --output-dir dist-web"
