@@ -13,6 +13,9 @@ export default defineConfig({
     trace: 'retain-on-failure',
     screenshot: 'only-on-failure',
     video: 'retain-on-failure',
+    launchOptions: {
+      args: ['--no-sandbox', '--disabled-setuid-sandbox']
+    }
   },
   webServer: {
     command: 'yarn dev:ui',
