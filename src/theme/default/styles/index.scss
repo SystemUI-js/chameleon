@@ -245,7 +245,7 @@
     }
 
     &.cm-button:focus-visible,
-    .cm-radio__input:focus-visible,
+    .cm-radio:focus-visible .cm-radio__input,
     .cm-select:focus-visible,
     &.cm-select:focus-visible {
         outline: 2px solid #4b7bd3;

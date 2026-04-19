@@ -50,25 +50,23 @@ export function CRadio({
   };
 
   return (
-    <View className={mergeClasses(classNames, resolvedTheme)}>
-      <Pressable
-        role="radio"
-        accessibilityRole="radio"
-        accessibilityState={{ checked: isChecked, disabled: isDisabled }}
-        aria-checked={isChecked}
-        aria-disabled={isDisabled}
-        data-value={value}
-        name={groupContext.name}
-        value={value}
-        required={groupContext.required}
-        className="cm-radio__input"
-        testID={dataTestId}
-        disabled={isDisabled}
-        onPress={handlePress}
-      >
-        <View aria-hidden="true" className="cm-radio__indicator" />
-        {content !== undefined ? <Text className="cm-radio__label">{content}</Text> : null}
-      </Pressable>
-    </View>
+    <Pressable
+      role="radio"
+      accessibilityRole="radio"
+      accessibilityState={{ checked: isChecked, disabled: isDisabled }}
+      aria-checked={isChecked}
+      aria-disabled={isDisabled}
+      data-value={value}
+      name={groupContext.name}
+      value={value}
+      required={groupContext.required}
+      className={mergeClasses(classNames, resolvedTheme)}
+      testID={dataTestId}
+      disabled={isDisabled}
+      onPress={handlePress}
+    >
+      <View aria-hidden="true" className="cm-radio__input" />
+      {content !== undefined ? <Text className="cm-radio__label">{content}</Text> : null}
+    </Pressable>
   );
 }

@@ -248,9 +248,10 @@ test.describe('Win98 controls', () => {
     });
 
     test('has focus outline', async ({ page }) => {
-      const radioInput = page.locator('[data-testid="radio-demo-fruit"] .cm-radio__input').first();
+      const radioRoot = page.locator('[data-testid="radio-demo-fruit"] .cm-radio').first();
+      const radioInput = radioRoot.locator('.cm-radio__input');
 
-      await radioInput.focus();
+      await radioRoot.focus();
 
       const outline = await radioInput.evaluate((el) => {
         const styles = window.getComputedStyle(el);

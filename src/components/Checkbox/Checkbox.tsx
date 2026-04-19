@@ -85,32 +85,30 @@ export function CCheckbox({
   };
 
   return (
-    <View className={mergeClasses(baseClasses, resolvedTheme, className)}>
-      <Pressable
-        id={id}
-        name={name}
-        value={value}
-        required={required}
-        role="checkbox"
-        accessibilityRole="checkbox"
-        accessibilityState={{ checked: isChecked, disabled }}
-        aria-checked={isChecked}
-        aria-disabled={disabled}
-        aria-label={ariaLabel}
-        tabIndex={tabIndex}
-        title={title}
-        className="cm-checkbox__input"
-        testID={dataTestId}
-        disabled={disabled}
-        onBlur={onBlur}
-        onClick={handleClick}
-        onPress={handlePress}
-        onFocus={onFocus}
-        onKeyDown={onKeyDown}
-      >
-        <View aria-hidden="true" className="cm-checkbox__indicator" />
-        {content !== undefined ? <Text className="cm-checkbox__label">{content}</Text> : null}
-      </Pressable>
-    </View>
+    <Pressable
+      id={id}
+      name={name}
+      value={value}
+      required={required}
+      role="checkbox"
+      accessibilityRole="checkbox"
+      accessibilityState={{ checked: isChecked, disabled }}
+      aria-checked={isChecked}
+      aria-disabled={disabled}
+      aria-label={ariaLabel}
+      tabIndex={tabIndex}
+      title={title}
+      className={mergeClasses(baseClasses, resolvedTheme, className)}
+      testID={dataTestId}
+      disabled={disabled}
+      onBlur={onBlur}
+      onClick={handleClick}
+      onPress={handlePress}
+      onFocus={onFocus}
+      onKeyDown={onKeyDown}
+    >
+      <View aria-hidden="true" className="cm-checkbox__input" />
+      {content !== undefined ? <Text className="cm-checkbox__label">{content}</Text> : null}
+    </Pressable>
   );
 }

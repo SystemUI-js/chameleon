@@ -322,7 +322,7 @@
         background: radial-gradient(circle at center, #000000 0 35%, #ffffff 36% 100%);
     }
 
-    .cm-radio__input:focus-visible {
+    .cm-radio:focus-visible .cm-radio__input {
         outline: 1px dotted #000000;
         outline-offset: 2px;
     }

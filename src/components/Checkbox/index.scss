@@ -15,16 +15,13 @@
 
 .cm-checkbox__input {
     margin: 0;
-}
-
-.cm-checkbox__indicator {
     width: 1rem;
     height: 1rem;
     flex-shrink: 0;
     border: 1px solid currentColor;
 }
 
-.cm-checkbox--checked .cm-checkbox__indicator {
+.cm-checkbox--checked .cm-checkbox__input {
     background: currentColor;
 }
 
