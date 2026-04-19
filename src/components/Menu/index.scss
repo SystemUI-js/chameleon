@@ -3,6 +3,22 @@
     display: inline-block;
 }
 
+.cm-menu--open {
+    z-index: 1001;
+}
+
+.cm-menu__backdrop {
+    position: fixed;
+    inset: 0;
+    z-index: 1000;
+    background: transparent;
+}
+
+.cm-menu__backdrop-fill {
+    width: 100%;
+    height: 100%;
+}
+
 .cm-menu__popup {
     position: absolute;
     top: 100%;

@@ -25,6 +25,8 @@ export interface CMenuProps {
   'data-testid'?: string;
 }
 
+const MENU_BACKDROP_TEST_ID = 'cm-menu-backdrop';
+
 interface TriggerElementProps {
   onClick?: React.MouseEventHandler<Element>;
   onPointerEnter?: React.PointerEventHandler<Element>;
@@ -177,10 +179,10 @@ export function CMenu({
   const baseClasses = ['cm-menu'];
   const menuInstanceId = React.useId().replace(/:/g, '');
   const rootMenuId = `${menuInstanceId}-menu`;
-  const rootRef = React.useRef<HTMLElement | null>(null);
   const [isRootOpen, setIsRootOpen] = React.useState(false);
   const [openBranchByDepth, setOpenBranchByDepth] = React.useState<string[]>([]);
   const rootTriggerMode = resolveRootTriggerMode(trigger);
+  const shouldRenderBackdrop = isRootOpen && rootTriggerMode === 'click';
 
   React.Children.only(children);
 
@@ -253,32 +255,6 @@ export function CMenu({
 
     closeAllMenus();
   };
-
-  React.useEffect(() => {
-    if (!isRootOpen) {
-      return undefined;
-    }
-
-    const handleDocumentMouseDown = (event: MouseEvent): void => {
-      const rootElement = rootRef.current;
-
-      if (rootElement === null) {
-        return;
-      }
-
-      if (event.target instanceof Node && rootElement.contains(event.target)) {
-        return;
-      }
-
-      closeAllMenus();
-    };
-
-    document.addEventListener('mousedown', handleDocumentMouseDown);
-
-    return () => {
-      document.removeEventListener('mousedown', handleDocumentMouseDown);
-    };
-  }, [closeAllMenus, isRootOpen]);
 
   const handleParentItemClick = React.useCallback(
     ({
@@ -438,20 +414,36 @@ export function CMenu({
   });
 
   return (
-    <View
-      ref={rootRef}
-      className={mergeClasses(baseClasses, resolvedTheme, className)}
-      testID={dataTestId}
-      data-menu-state={isRootOpen ? 'open' : 'closed'}
-      onBlur={handleRootBlur}
-      onPointerLeave={handleRootPointerLeave}
-    >
-      {triggerElement}
-      {isRootOpen ? (
-        <View className="cm-menu__popup" testID="menu-demo-popup">
-          {renderItems(menuList, 0, rootMenuId)}
-        </View>
+    <>
+      {shouldRenderBackdrop ? (
+        <Pressable
+          className="cm-menu__backdrop"
+          data-testid={MENU_BACKDROP_TEST_ID}
+          testID={MENU_BACKDROP_TEST_ID}
+          onClick={closeAllMenus}
+          onPress={closeAllMenus}
+        >
+          <View className="cm-menu__backdrop-fill" />
+        </Pressable>
       ) : null}
-    </View>
+      <View
+        className={mergeClasses(
+          isRootOpen ? [...baseClasses, 'cm-menu--open'] : baseClasses,
+          resolvedTheme,
+          className,
+        )}
+        testID={dataTestId}
+        data-menu-state={isRootOpen ? 'open' : 'closed'}
+        onBlur={handleRootBlur}
+        onPointerLeave={handleRootPointerLeave}
+      >
+        {triggerElement}
+        {isRootOpen ? (
+          <View className="cm-menu__popup" testID="menu-demo-popup">
+            {renderItems(menuList, 0, rootMenuId)}
+          </View>
+        ) : null}
+      </View>
+    </>
   );
 }
