@@ -177,6 +177,7 @@ export function CMenu({
   const baseClasses = ['cm-menu'];
   const menuInstanceId = React.useId().replace(/:/g, '');
   const rootMenuId = `${menuInstanceId}-menu`;
+  const rootRef = React.useRef<HTMLElement | null>(null);
   const [isRootOpen, setIsRootOpen] = React.useState(false);
   const [openBranchByDepth, setOpenBranchByDepth] = React.useState<string[]>([]);
   const rootTriggerMode = resolveRootTriggerMode(trigger);
@@ -252,6 +253,32 @@ export function CMenu({
 
     closeAllMenus();
   };
+
+  React.useEffect(() => {
+    if (!isRootOpen) {
+      return undefined;
+    }
+
+    const handleDocumentMouseDown = (event: MouseEvent): void => {
+      const rootElement = rootRef.current;
+
+      if (rootElement === null) {
+        return;
+      }
+
+      if (event.target instanceof Node && rootElement.contains(event.target)) {
+        return;
+      }
+
+      closeAllMenus();
+    };
+
+    document.addEventListener('mousedown', handleDocumentMouseDown);
+
+    return () => {
+      document.removeEventListener('mousedown', handleDocumentMouseDown);
+    };
+  }, [closeAllMenus, isRootOpen]);
 
   const handleParentItemClick = React.useCallback(
     ({
@@ -412,6 +439,7 @@ export function CMenu({
 
   return (
     <View
+      ref={rootRef}
       className={mergeClasses(baseClasses, resolvedTheme, className)}
       testID={dataTestId}
       data-menu-state={isRootOpen ? 'open' : 'closed'}

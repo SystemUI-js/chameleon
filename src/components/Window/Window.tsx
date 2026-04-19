@@ -39,15 +39,18 @@ export class CWindow extends CWidget {
 
   public render(): React.ReactElement {
     const frame = this.getFrameState();
+    const contentThemeClassName = this.mergeThemeClassName(undefined, this.props.theme);
     const content = (
-      <View testID="window-content">
+      <View testID="window-content" className={contentThemeClassName}>
         {this.mapComposedChildren()}
         {this.renderResizeHandles()}
       </View>
     );
 
     return this.renderFrame(
-      <View testID="window-inner">{content}</View>,
+      <View testID="window-inner" className={contentThemeClassName}>
+        {content}
+      </View>,
       { x: frame.x, y: frame.y, width: frame.width, height: frame.height },
       { testId: 'window-frame' },
     );

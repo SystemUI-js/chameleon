@@ -250,6 +250,7 @@ export class CWidget<TState extends WidgetState = WidgetState> extends React.Com
 
   protected renderPreviewFrame(options?: WidgetFrameOptions): React.ReactNode {
     const preview = this.getPreviewState();
+    const resolvedTheme = options?.theme ?? this.props.theme;
 
     if (!preview.active || !preview.rect) {
       return null;
@@ -258,7 +259,7 @@ export class CWidget<TState extends WidgetState = WidgetState> extends React.Com
     return (
       <View
         testID="widget-preview-frame"
-        accessibilityLabel={this.mergeThemeClassName(options?.className, options?.theme)}
+        className={this.mergeThemeClassName(options?.className, resolvedTheme)}
         style={this.getPreviewFrameStyle(preview.rect)}
       />
     );
@@ -270,12 +271,13 @@ export class CWidget<TState extends WidgetState = WidgetState> extends React.Com
     options?: WidgetFrameOptions,
   ): React.ReactElement {
     const frame = layout ? { ...this.getFrameState(), ...layout } : this.getFrameState();
+    const resolvedTheme = options?.theme ?? this.props.theme;
 
     return (
       <>
         <Pressable
           testID={options?.testId ?? 'widget-frame'}
-          accessibilityLabel={this.mergeThemeClassName(options?.className, options?.theme)}
+          className={this.mergeThemeClassName(options?.className, resolvedTheme)}
           onPressIn={() => {
             if (!this.getWidgetActive()) {
               this.setWidgetActive(true);

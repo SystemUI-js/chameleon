@@ -1,6 +1,8 @@
 import React from 'react';
 import { Pressable, Text, View, type StyleProp, type ViewStyle } from 'react-native';
 import { WidgetInteractionBehavior, type WidgetFrameMovePosition } from '../Widget/Widget';
+import { mergeClasses } from '../Theme/mergeClasses';
+import { normalizeThemeClassName } from '../Theme/normalizeThemeClassName';
 
 export type WindowPosition = WidgetFrameMovePosition;
 export type WindowTitleActionButtonPosition = 'left' | 'right';
@@ -46,6 +48,7 @@ export class CWindowTitle extends React.Component<CWindowTitleProps> {
   };
 
   public render(): React.ReactElement {
+    const resolvedTheme = normalizeThemeClassName(this.props.theme);
     const hasActionButton = React.Children.count(this.props.actionButton) > 0;
     const titleContent =
       React.Children.count(this.props.children) === 1 &&
@@ -64,6 +67,7 @@ export class CWindowTitle extends React.Component<CWindowTitleProps> {
         onPressIn={this.handlePressIn}
         onPress={this.handlePress}
         style={this.props.style}
+        className={mergeClasses(['cm-window-title'], resolvedTheme, this.props.className)}
       >
         <View>
           {this.props.actionButtonPosition === 'left' ? (

@@ -11,7 +11,7 @@ declare module 'react-native' {
     tabIndex?: number;
     title?: string;
     name?: string;
-    value?: string | number;
+    value?: string | number | readonly string[];
     disabled?: boolean;
     required?: boolean;
     'aria-label'?: string;
@@ -37,6 +37,7 @@ declare module 'react-native' {
     onFocus?: React.FocusEventHandler<HTMLElement>;
     onBlur?: React.FocusEventHandler<HTMLElement>;
     onKeyDown?: React.KeyboardEventHandler<HTMLElement>;
+    onKeyUp?: React.KeyboardEventHandler<HTMLElement>;
     onContextMenu?: React.MouseEventHandler<HTMLElement>;
     onDoubleClick?: React.MouseEventHandler<HTMLElement>;
     onScroll?: React.UIEventHandler<HTMLElement>;
@@ -76,7 +77,7 @@ declare module 'react-native' {
   export const View: React.ForwardRefExoticComponent<ViewProps & React.RefAttributes<HTMLElement>>;
   export const Text: React.ForwardRefExoticComponent<TextProps & React.RefAttributes<HTMLElement>>;
   export const Pressable: React.ForwardRefExoticComponent<
-    PressableProps & React.RefAttributes<HTMLButtonElement>
+    PressableProps & React.RefAttributes<HTMLElement>
   >;
   export const StyleSheet: {
     create<T extends Record<string, ViewStyle | TextStyle>>(styles: T): T;

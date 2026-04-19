@@ -47,6 +47,7 @@ type BaseProps = {
   onFocus?: React.FocusEventHandler<HTMLElement>;
   onBlur?: React.FocusEventHandler<HTMLElement>;
   onKeyDown?: React.KeyboardEventHandler<HTMLElement>;
+  onKeyUp?: React.KeyboardEventHandler<HTMLElement>;
   onContextMenu?: React.MouseEventHandler<HTMLElement>;
   onDoubleClick?: React.MouseEventHandler<HTMLElement>;
   onScroll?: React.UIEventHandler<HTMLElement>;
@@ -162,35 +163,119 @@ export const Text = React.forwardRef<HTMLElement, BaseProps>(function Text(props
   );
 });
 
-export const Pressable = React.forwardRef<HTMLButtonElement, PressableProps>(
+export const Pressable = React.forwardRef<HTMLElement, PressableProps>(
   function Pressable(props, ref) {
-    return (
-      <button
-        ref={ref}
-        type={props.type ?? 'button'}
-        {...toTestProps(props)}
-        disabled={props.disabled ?? props.accessibilityState?.disabled}
-        onBlur={props.onBlur}
-        onContextMenu={props.onContextMenu}
-        onDoubleClick={props.onDoubleClick}
-        onMouseDown={props.disabled ? undefined : props.onPressIn}
-        onMouseEnter={props.onMouseEnter}
-        onMouseLeave={props.onMouseLeave}
-        onFocus={props.onFocus}
-        onKeyDown={props.onKeyDown}
-        onMouseUp={props.disabled ? undefined : props.onPressOut}
-        onPointerEnter={props.onPointerEnter}
-        onPointerLeave={props.onPointerLeave}
-        onClick={(event) => {
-          props.onClick?.(event);
+    const explicitRole = resolveRole(props);
+    const role = explicitRole ?? 'button';
+    const disabled = props.disabled ?? props.accessibilityState?.disabled;
+    const shouldUseNativeButton =
+      props.type !== undefined ||
+      explicitRole === 'button' ||
+      explicitRole === 'checkbox' ||
+      explicitRole === 'radio' ||
+      explicitRole === 'option' ||
+      explicitRole === 'combobox' ||
+      explicitRole === 'menuitem' ||
+      explicitRole === 'tab';
 
-          if (!event.defaultPrevented) {
-            props.onPress?.();
+    const sharedHandlers = {
+      onBlur: props.onBlur,
+      onContextMenu: props.onContextMenu,
+      onDoubleClick: props.onDoubleClick,
+      onMouseDown: disabled ? undefined : props.onPressIn,
+      onMouseEnter: props.onMouseEnter,
+      onMouseLeave: props.onMouseLeave,
+      onFocus: props.onFocus,
+      onPointerEnter: props.onPointerEnter,
+      onPointerLeave: props.onPointerLeave,
+      onClick: (event: React.MouseEvent<HTMLElement>) => {
+        props.onClick?.(event);
+
+        if (!event.defaultPrevented && !disabled) {
+          props.onPress?.();
+        }
+      },
+      onKeyDown: (event: React.KeyboardEvent<HTMLElement>) => {
+        props.onKeyDown?.(event);
+
+        if (disabled) {
+          return;
+        }
+
+        if (event.key === ' ' || event.key === 'Enter') {
+          event.preventDefault();
+          props.onPressIn?.();
+        }
+      },
+      onKeyUp: (event: React.KeyboardEvent<HTMLElement>) => {
+        props.onKeyUp?.(event);
+
+        if (disabled) {
+          return;
+        }
+
+        if (event.key === ' ' || event.key === 'Enter') {
+          event.preventDefault();
+          props.onPressOut?.();
+          props.onPress?.();
+        }
+      },
+      onMouseUp: disabled ? undefined : props.onPressOut,
+    };
+
+    if (shouldUseNativeButton) {
+      return (
+        <button
+          ref={ref as React.Ref<HTMLButtonElement>}
+          type={props.type ?? 'button'}
+          {...toTestProps(props)}
+          disabled={disabled}
+          onBlur={sharedHandlers.onBlur as React.FocusEventHandler<HTMLButtonElement>}
+          onContextMenu={sharedHandlers.onContextMenu as React.MouseEventHandler<HTMLButtonElement>}
+          onDoubleClick={sharedHandlers.onDoubleClick as React.MouseEventHandler<HTMLButtonElement>}
+          onMouseDown={sharedHandlers.onMouseDown}
+          onMouseEnter={sharedHandlers.onMouseEnter as React.MouseEventHandler<HTMLButtonElement>}
+          onMouseLeave={sharedHandlers.onMouseLeave as React.MouseEventHandler<HTMLButtonElement>}
+          onFocus={sharedHandlers.onFocus as React.FocusEventHandler<HTMLButtonElement>}
+          onKeyDown={sharedHandlers.onKeyDown as React.KeyboardEventHandler<HTMLButtonElement>}
+          onKeyUp={sharedHandlers.onKeyUp as React.KeyboardEventHandler<HTMLButtonElement>}
+          onMouseUp={sharedHandlers.onMouseUp}
+          onPointerEnter={
+            sharedHandlers.onPointerEnter as React.PointerEventHandler<HTMLButtonElement>
           }
-        }}
+          onPointerLeave={
+            sharedHandlers.onPointerLeave as React.PointerEventHandler<HTMLButtonElement>
+          }
+          onClick={sharedHandlers.onClick as React.MouseEventHandler<HTMLButtonElement>}
+        >
+          {props.children}
+        </button>
+      );
+    }
+
+    return (
+      /* biome-ignore lint/a11y/noStaticElementInteractions: react-native Pressable mock needs div semantics for container pressables */
+      <div
+        ref={ref}
+        {...toTestProps(props)}
+        role={role}
+        tabIndex={props.tabIndex ?? (disabled ? -1 : 0)}
+        onBlur={sharedHandlers.onBlur}
+        onContextMenu={sharedHandlers.onContextMenu}
+        onDoubleClick={sharedHandlers.onDoubleClick}
+        onMouseDown={sharedHandlers.onMouseDown}
+        onMouseEnter={sharedHandlers.onMouseEnter}
+        onMouseLeave={sharedHandlers.onMouseLeave}
+        onFocus={sharedHandlers.onFocus}
+        onKeyDown={sharedHandlers.onKeyDown}
+        onKeyUp={sharedHandlers.onKeyUp}
+        onMouseUp={sharedHandlers.onMouseUp}
+        onPointerEnter={sharedHandlers.onPointerEnter}
+        onPointerLeave={sharedHandlers.onPointerLeave}
+        onClick={sharedHandlers.onClick}
       >
         {props.children}
-      </button>
+      </div>
     );
   },
 );
