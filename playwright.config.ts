@@ -14,13 +14,14 @@ export default defineConfig({
     screenshot: 'only-on-failure',
     video: 'retain-on-failure',
     launchOptions: {
-      args: ['--no-sandbox', '--disabled-setuid-sandbox']
-    }
+      args: ['--no-sandbox', '--disabled-setuid-sandbox'],
+    },
   },
   webServer: {
-    command: 'yarn dev:ui',
+    command: isCI ? 'yarn dev:vite' : 'yarn dev:ui',
     url: 'http://127.0.0.1:5673',
     reuseExistingServer: !isCI,
+    timeout: isCI ? 60000 : 30000,
   },
   projects: [
     {
