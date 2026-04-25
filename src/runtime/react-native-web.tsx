@@ -113,6 +113,8 @@ export const Pressable = React.forwardRef<HTMLElement, PressableProps>(function 
     onClick,
     onKeyDown,
     onKeyUp,
+    onMouseDown,
+    onMouseUp,
     onPress,
     onPressIn,
     onPressOut,
@@ -180,12 +182,16 @@ export const Pressable = React.forwardRef<HTMLElement, PressableProps>(function 
         onPress?.();
       }
     },
-    onMouseDown: () => {
+    onMouseDown: (event: React.MouseEvent<HTMLElement>) => {
+      onMouseDown?.(event);
+
       if (!disabled) {
         onPressIn?.();
       }
     },
-    onMouseUp: () => {
+    onMouseUp: (event: React.MouseEvent<HTMLElement>) => {
+      onMouseUp?.(event);
+
       if (!disabled) {
         onPressOut?.();
       }

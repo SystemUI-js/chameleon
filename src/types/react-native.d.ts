@@ -30,6 +30,8 @@ declare module 'react-native' {
     'data-value'?: string;
     [key: `data-${string}`]: string | number | boolean | undefined;
     onClick?: React.MouseEventHandler<HTMLElement>;
+    onMouseDown?: React.MouseEventHandler<HTMLElement>;
+    onMouseUp?: React.MouseEventHandler<HTMLElement>;
     onMouseEnter?: React.MouseEventHandler<HTMLElement>;
     onMouseLeave?: React.MouseEventHandler<HTMLElement>;
     onPointerEnter?: React.PointerEventHandler<HTMLElement>;
