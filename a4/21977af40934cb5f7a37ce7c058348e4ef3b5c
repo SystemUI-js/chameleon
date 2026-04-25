@@ -1,0 +1,51 @@
+src/runtime/react-native-web.tsx
+  b899e513c61691f0 116-117,185-187,192-194
+src/types/react-native.d.ts
+  00e715a51048b144 33-34
+---
+{
+  "schema_version": "authorship/3.0.0",
+  "git_ai_version": "1.3.4",
+  "base_commit_sha": "a421977af40934cb5f7a37ce7c058348e4ef3b5c",
+  "prompts": {
+    "00e715a51048b144": {
+      "agent_id": {
+        "tool": "claude",
+        "id": "opencode-transcript-ses_23af804b4ffeh47l043wrP0hzU-78bb712e-94e1-4871-8ad7-b78a051b0bf9",
+        "model": "unknown"
+      },
+      "human_author": "Chameleon Dev",
+      "messages": [],
+      "total_additions": 2,
+      "total_deletions": 0,
+      "accepted_lines": 2,
+      "overriden_lines": 0
+    },
+    "788f388d4e19c56e": {
+      "agent_id": {
+        "tool": "claude",
+        "id": "opencode-transcript-ses_23af804b4ffeh47l043wrP0hzU-57a34459-9145-45f0-b4b4-df4e8826a57c",
+        "model": "unknown"
+      },
+      "human_author": "Chameleon Dev",
+      "messages": [],
+      "total_additions": 0,
+      "total_deletions": 0,
+      "accepted_lines": 0,
+      "overriden_lines": 0
+    },
+    "b899e513c61691f0": {
+      "agent_id": {
+        "tool": "claude",
+        "id": "opencode-transcript-ses_23ba58ea5ffeECUCdvhoy334Ha-ca242279-65a8-4ee6-9234-e21e132f32c3",
+        "model": "unknown"
+      },
+      "human_author": "Chameleon Dev",
+      "messages": [],
+      "total_additions": 0,
+      "total_deletions": 0,
+      "accepted_lines": 8,
+      "overriden_lines": 0
+    }
+  }
+}
