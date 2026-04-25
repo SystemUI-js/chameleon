@@ -39,7 +39,8 @@ export class CWindow extends CWidget {
 
   public render(): React.ReactElement {
     const frame = this.getFrameState();
-    const contentThemeClassName = this.mergeThemeClassName(undefined, this.props.theme);
+    const innerClassName = this.mergeThemeClassName('cm-window__inner', this.props.theme);
+    const contentThemeClassName = this.mergeThemeClassName('cm-window', this.props.theme);
     const content = (
       <View testID="window-content" className={contentThemeClassName}>
         {this.mapComposedChildren()}
@@ -48,11 +49,16 @@ export class CWindow extends CWidget {
     );
 
     return this.renderFrame(
-      <View testID="window-inner" className={contentThemeClassName}>
+      <View testID="window-inner" className={innerClassName}>
         {content}
       </View>,
       { x: frame.x, y: frame.y, width: frame.width, height: frame.height },
-      { testId: 'window-frame' },
+      {
+        testId: 'window-frame',
+        className: 'cm-window-frame',
+        previewTestId: 'window-preview-frame',
+        previewClassName: 'cm-window-preview-frame',
+      },
     );
   }
 }
