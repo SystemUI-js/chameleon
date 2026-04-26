@@ -489,7 +489,11 @@ export class CWidget<TState extends WidgetState = WidgetState> extends React.Com
 
   protected mergeThemeClassName(className?: string, theme?: string): string | undefined {
     const resolvedTheme = normalizeThemeClassName(theme ?? this.context?.theme);
-    return [resolvedTheme, className].filter(Boolean).join(' ') || undefined;
+    return (
+      [resolvedTheme, this.getWidgetActive() ? 'cm-widget--active' : undefined, className]
+        .filter(Boolean)
+        .join(' ') || undefined
+    );
   }
 
   protected isFrameMoveHandleElement(_type: unknown): boolean {
@@ -537,7 +541,11 @@ export class CWidget<TState extends WidgetState = WidgetState> extends React.Com
     const preview = this.getPreviewState();
     const resolvedTheme = options?.theme ?? this.props.theme;
 
-    if (!preview.active || !preview.rect) {
+    if (
+      !preview.active ||
+      !preview.rect ||
+      preview.behavior !== WidgetInteractionBehavior.Outline
+    ) {
       return null;
     }
 
