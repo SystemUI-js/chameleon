@@ -51,6 +51,8 @@ const MIXED_TRIGGER_MENU_LIST: readonly MenuListItem[] = [
   { id: 'mixed-root-leaf', key: 'mixed-root-leaf', title: 'Mixed Root Leaf' },
 ];
 
+const MENU_BACKDROP_TEST_ID = 'cm-menu-backdrop';
+
 describe('CMenu', () => {
   it('exports CMenu from package entry', () => {
     render(
@@ -281,24 +283,43 @@ describe('CMenu', () => {
     expect(document.getElementById(submenuId ?? '')).toBeInTheDocument();
   });
 
-  it('outside click closes the menu', () => {
+  it('backdrop press closes the menu in click mode', () => {
+    render(
+      <CMenu menuList={INTERACTION_MENU_LIST} trigger="click" data-testid="menu-outside-close">
+        <button type="button">Open Menu</button>
+      </CMenu>,
+    );
+
+    const menu = screen.getByTestId('menu-outside-close');
+    const trigger = screen.getByRole('button', { name: 'Open Menu' });
+
+    fireEvent.click(trigger);
+    expect(menu).toHaveAttribute('data-menu-state', 'open');
+    expect(screen.getByTestId(MENU_BACKDROP_TEST_ID)).toBeInTheDocument();
+
+    fireEvent.click(screen.getByTestId(MENU_BACKDROP_TEST_ID));
+    expect(menu).toHaveAttribute('data-menu-state', 'closed');
+    expect(screen.queryByTestId('cm-menu-list')).not.toBeInTheDocument();
+  });
+
+  it('focus leaving the menu tree closes the menu', () => {
     render(
       <div>
-        <CMenu menuList={INTERACTION_MENU_LIST} trigger="click" data-testid="menu-outside-close">
+        <CMenu menuList={INTERACTION_MENU_LIST} trigger="click" data-testid="menu-blur-close">
           <button type="button">Open Menu</button>
         </CMenu>
         <button type="button">Outside</button>
       </div>,
     );
 
-    const menu = screen.getByTestId('menu-outside-close');
+    const menu = screen.getByTestId('menu-blur-close');
     const trigger = screen.getByRole('button', { name: 'Open Menu' });
     const outside = screen.getByRole('button', { name: 'Outside' });
 
     fireEvent.click(trigger);
     expect(menu).toHaveAttribute('data-menu-state', 'open');
 
-    fireEvent.mouseDown(outside);
+    fireEvent.blur(trigger, { relatedTarget: outside });
     expect(menu).toHaveAttribute('data-menu-state', 'closed');
     expect(screen.queryByTestId('cm-menu-list')).not.toBeInTheDocument();
   });
@@ -589,24 +610,22 @@ describe('CMenu', () => {
     expect(screen.queryByTestId('cm-menu-list')).not.toBeInTheDocument();
   });
 
-  it('mixed trigger closes on outside click after hover-opening a submenu', () => {
+  it('mixed trigger backdrop press closes after hover-opening a submenu', () => {
     render(
-      <div>
-        <CMenu menuList={MIXED_TRIGGER_MENU_LIST} trigger="click" data-testid="menu-mixed-outside">
-          <button type="button">Mixed Menu</button>
-        </CMenu>
-        <button type="button">Outside</button>
-      </div>,
+      <CMenu menuList={MIXED_TRIGGER_MENU_LIST} trigger="click" data-testid="menu-mixed-outside">
+        <button type="button">Mixed Menu</button>
+      </CMenu>,
     );
 
     const menu = screen.getByTestId('menu-mixed-outside');
+    const trigger = screen.getByRole('button', { name: 'Mixed Menu' });
 
-    fireEvent.click(screen.getByRole('button', { name: 'Mixed Menu' }));
+    fireEvent.click(trigger);
     fireEvent.pointerEnter(screen.getByTestId('menu-item-hover-parent'));
 
     expect(screen.getByRole('menuitem', { name: 'Hover Leaf' })).toBeInTheDocument();
 
-    fireEvent.mouseDown(screen.getByRole('button', { name: 'Outside' }));
+    fireEvent.click(screen.getByTestId(MENU_BACKDROP_TEST_ID));
 
     expect(menu).toHaveAttribute('data-menu-state', 'closed');
     expect(screen.queryByRole('menuitem', { name: 'Hover Leaf' })).not.toBeInTheDocument();

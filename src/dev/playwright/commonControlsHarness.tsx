@@ -1,5 +1,4 @@
 import { type ReactNode, useState } from 'react';
-import { createRoot } from 'react-dom/client';
 import {
   CButton,
   CButtonGroup,
@@ -22,7 +21,7 @@ interface HarnessLayoutProps {
   readonly children: ReactNode;
 }
 
-const HarnessLayout = ({ children }: HarnessLayoutProps): ReactNode => {
+const HarnessLayout = ({ children }: HarnessLayoutProps): JSX.Element => {
   return (
     <main
       style={{
@@ -37,7 +36,7 @@ const HarnessLayout = ({ children }: HarnessLayoutProps): ReactNode => {
   );
 };
 
-const DefaultFixture = (): ReactNode => {
+const DefaultFixture = (): JSX.Element => {
   const [selectedFruit, setSelectedFruit] = useState('apple');
   const [selectedSize, setSelectedSize] = useState('medium');
 
@@ -66,7 +65,7 @@ const DefaultFixture = (): ReactNode => {
   );
 };
 
-const DisabledFixture = (): ReactNode => {
+const DisabledFixture = (): JSX.Element => {
   return (
     <HarnessLayout>
       <CButton data-testid="button-demo-primary" disabled variant="primary">
@@ -93,7 +92,7 @@ const DisabledFixture = (): ReactNode => {
   );
 };
 
-const GroupedButtonsFixture = (): ReactNode => {
+const GroupedButtonsFixture = (): JSX.Element => {
   return (
     <HarnessLayout>
       <CButtonGroup data-testid="button-group-demo" variant="primary">
@@ -113,7 +112,7 @@ const GroupedButtonsFixture = (): ReactNode => {
   );
 };
 
-const GroupedButtonsDisabledFixture = (): ReactNode => {
+const GroupedButtonsDisabledFixture = (): JSX.Element => {
   return (
     <HarnessLayout>
       <CButtonGroup data-testid="button-group-disabled-demo" disabled variant="primary">
@@ -137,7 +136,7 @@ const GroupedButtonsDisabledFixture = (): ReactNode => {
   );
 };
 
-const renderFixture = (fixture: string): ReactNode => {
+const renderFixture = (fixture: string): JSX.Element => {
   switch (fixture) {
     case 'default':
       return <DefaultFixture />;
@@ -157,7 +156,7 @@ interface ThemedFixtureContainerProps {
   readonly fixture: string;
 }
 
-const ThemedFixtureContainer = ({ theme, fixture }: ThemedFixtureContainerProps): ReactNode => {
+const ThemedFixtureContainer = ({ theme, fixture }: ThemedFixtureContainerProps): JSX.Element => {
   return (
     <DevThemeRoot theme={theme}>
       <div style={{ padding: '24px' }}>{renderFixture(fixture)}</div>
@@ -165,15 +164,8 @@ const ThemedFixtureContainer = ({ theme, fixture }: ThemedFixtureContainerProps)
   );
 };
 
-const App = (): ReactNode => {
+export const CommonControlsHarnessApp = (): JSX.Element => {
   const route = readHarnessRoute();
 
   return <ThemedFixtureContainer theme={route.theme} fixture={route.fixture} />;
 };
-
-const container = document.getElementById('root');
-
-if (container) {
-  const root = createRoot(container);
-  root.render(<App />);
-}

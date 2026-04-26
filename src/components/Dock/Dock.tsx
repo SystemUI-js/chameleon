@@ -1,4 +1,4 @@
-import type React from 'react';
+import type { StyleProp, ViewStyle } from 'react-native';
 import { CWidget, type CWidgetProps, type WidgetState } from '../Widget/Widget';
 import { getDockEdgeStyle, getDockFrameClassName, getDockFrameStyle } from './dockLayout';
 import './index.scss';
@@ -14,7 +14,7 @@ interface CDockBaseProps extends CWidgetProps {
   gapStart?: number;
   gapEnd?: number;
   className?: string;
-  style?: React.CSSProperties;
+  style?: StyleProp<ViewStyle>;
   'data-testid'?: string;
 }
 

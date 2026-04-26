@@ -1,4 +1,5 @@
 import type React from 'react';
+import { Pressable, Text, View, type StyleProp, type ViewStyle } from 'react-native';
 import { mergeClasses } from '../Theme/mergeClasses';
 import { resolveThemeClassName } from '../Theme/themeName';
 import { useTheme } from '../Theme/useTheme';
@@ -23,7 +24,7 @@ export interface CIconProps {
   onActive?: (active: boolean) => void;
   activeTrigger?: CIconActiveTrigger;
   position?: CIconPosition;
-  onContextMenu?: (event: React.MouseEvent) => void;
+  onContextMenu?: React.ComponentProps<typeof Pressable>['onContextMenu'];
   onOpen?: () => void;
   openTrigger?: CIconOpenTrigger;
   className?: string;
@@ -52,7 +53,7 @@ export function CIcon({
     baseClasses.push('cm-icon--active');
   }
 
-  const inlineStyle: React.CSSProperties = {};
+  const inlineStyle: ViewStyle = {};
   if (position !== undefined) {
     inlineStyle.position = 'absolute';
     inlineStyle.left = position.x;
@@ -64,7 +65,7 @@ export function CIcon({
   const shouldHandleMouseEnter = activeTrigger === 'hover';
   const shouldHandleContextMenu = onActive !== undefined || onContextMenu !== undefined;
 
-  const handleClick = (): void => {
+  const handlePress = (): void => {
     if (activeTrigger === 'click') {
       onActive?.(true);
     }
@@ -86,24 +87,26 @@ export function CIcon({
     }
   };
 
-  const handleContextMenu = (event: React.MouseEvent<HTMLButtonElement>): void => {
+  const handleContextMenu: NonNullable<React.ComponentProps<typeof Pressable>['onContextMenu']> = (
+    event,
+  ): void => {
     onActive?.(true);
     onContextMenu?.(event);
   };
 
   return (
-    <button
-      type="button"
-      data-testid={dataTestId}
+    <Pressable
       className={mergeClasses(baseClasses, resolvedTheme, className)}
-      style={position !== undefined ? inlineStyle : undefined}
-      onClick={shouldHandleClick ? handleClick : undefined}
+      style={position !== undefined ? (inlineStyle as StyleProp<ViewStyle>) : undefined}
+      testID={dataTestId}
+      type="button"
+      onPress={shouldHandleClick ? handlePress : undefined}
       onDoubleClick={shouldHandleDoubleClick ? handleDoubleClick : undefined}
       onMouseEnter={shouldHandleMouseEnter ? handleMouseEnter : undefined}
       onContextMenu={shouldHandleContextMenu ? handleContextMenu : undefined}
     >
-      <span className="cm-icon__content">{icon}</span>
-      {title !== undefined && <span className="cm-icon__title">{title}</span>}
-    </button>
+      <View className="cm-icon__content">{icon}</View>
+      {title !== undefined ? <Text className="cm-icon__title">{title}</Text> : null}
+    </Pressable>
   );
 }

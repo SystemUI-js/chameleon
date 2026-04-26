@@ -1,2 +1,51 @@
+.cm-select-shell {
+    position: relative;
+    display: inline-flex;
+    flex-direction: column;
+    min-width: 12rem;
+}
+
 .cm-select {
+    display: inline-flex;
+    align-items: center;
+    justify-content: space-between;
+    width: 100%;
+    border: none;
+    text-align: left;
+}
+
+.cm-select__value {
+    flex: 1 1 auto;
+    min-width: 0;
+}
+
+.cm-select__caret {
+    flex-shrink: 0;
+    margin-left: 0.5rem;
+}
+
+.cm-select__listbox {
+    position: absolute;
+    top: calc(100% + 0.25rem);
+    left: 0;
+    z-index: 10;
+    min-width: 100%;
+}
+
+.cm-select__option {
+    display: block;
+    width: 100%;
+    border: none;
+    background: transparent;
+    text-align: left;
+}
+
+.cm-select__option--disabled {
+    cursor: not-allowed;
+}
+
+.cm-select__option--highlighted {
+}
+
+.cm-select__option--selected {
 }

@@ -1,5 +1,23 @@
 ## [UnReleased]
 
+- **Fix:** 修复 Expo React Native 宿主链路的 PR 校验回归
+  - 重构 `CMenu` 菜单项渲染辅助逻辑，消除 `Menu.tsx` 的认知复杂度超限告警，恢复 lint 通过
+  - 移除 `CStartBar` 的未使用导入，并修正 `react-native-web` Pressable shim 中 `type` / `_type` 变量引用错误，恢复构建期声明生成
+  - 恢复 `CMenu` 的外部点击关闭能力，并同步补齐 `Widget` / `Window` / `WindowTitle` 主题类名透传、`Pressable` mock 语义及相关单测，恢复 CI 单元测试通过
+  - 为 `CSplitArea` 面板恢复 `data-split-area-panel` 标记，修复 `ComponentCatalog` 展示用例中的外层面板计数断言
+  - 为 Playwright 的 Expo WebServer 补充按需预构建启动脚本，避免干净 CI 环境因缺失 `dist/` 导致 `package.json.main` 入口不可解析
+
+- **Fix:** 补齐 Radio 在 Expo 宿主层级下的主题选择器
+  - default / win98 / winxp 三套主题新增同层级宿主场景所需的 `&.cm-radio:focus-visible .cm-radio__input` 选择器
+  - 补齐 `&.cm-radio--checked .cm-radio__input` 与 `&.cm-radio--disabled .cm-radio__input`，确保选中与禁用态在 React Native 宿主渲染下继续命中
+
+- **Feature:** 建立 Expo Web 预览与导出基线
+  - 默认 `yarn dev` 切换为 Expo Web 预览，并新增根入口、Expo 配置、Metro CSS 支持与路径分发壳
+  - 保留 `yarn build` 的 Vite 库构建能力，新增 `yarn build:web` 用于导出 Expo Web 静态预览产物，`yarn dev:vite` 用于兼容旧 HTML harness
+  - 轻量宿主组件（`CButton`、`CButtonGroup`、`CButtonSeparator`、`CScrollArea`、`CStatusBar`、`CStatusBarItem`、`Theme` wrapper、`CWindowBody`）同步切换到 `react-native` primitives，并扩展本地 mock 以承接 `className`、滚动与 ARIA 互操作
+  - 窗口 / 拖拽链首批组件（`CSlider`、`CSplitArea`、`CIconContainer`、`CWidget`、`CWindow`、`CWindowManager`、`CWindowTitle`、`CStartBar`）切换到 `react-native` 宿主，并通过本地 `react-native` mock 维持 Jest 浏览器断言
+  - 移除上述链路源码对 `@system-ui-js/multi-drag` 的直接依赖，并新增独立 `tsconfig.build.json` 收敛声明生成范围；其余 DOM + SCSS 组件后续继续收敛
+
 - **Breaking:** 移除 legacy system shell / registry 公共 API
   - 包入口不再导出 `SystemHost`、`SYSTEM_TYPE`、`THEME`、`DEFAULT_SYSTEM_TYPE`、`DEFAULT_THEME_BY_SYSTEM`、`SYSTEM_THEME_MATRIX`、`resolveSystemTypeDefinition`、`assertValidSystemThemeSelection`、`resolveThemeDefinition` 及关联类型
   - `defaultThemeDefinition`、`win98ThemeDefinition`、`winXpThemeDefinition` 改为直接导出 `src/theme/*` 中的 canonical theme definition，不再包含 system registry 派生的 `systemType` 元数据

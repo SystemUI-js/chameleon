@@ -6,7 +6,7 @@
 
 ## OVERVIEW
 
-React 18 + TypeScript 组件库，使用 Vite 构建为 UMD/ES 模块，集成 Jest + React Testing Library 测试。
+React 18 + TypeScript 组件库，使用 Vite 构建库产物，并以 Expo Web 作为默认浏览器预览基线，集成 Jest + React Testing Library 测试。
 
 ## STRUCTURE
 
@@ -16,7 +16,7 @@ React 18 + TypeScript 组件库，使用 Vite 构建为 UMD/ES 模块，集成 J
 │   ├── components/    # 组件源码
 │   ├── types/          # 类型声明
 │   ├── theme/          # 主题定义与 CSS 变量
-│   ├── dev/            # Vite 开发预览入口
+│   ├── dev/            # Expo Web 预览页面与 Vite 兼容夹具
 │   └── index.ts        # 库导出入口
 ├── tests/              # 测试文件
 ├── dist/               # 构建产物 (自动生成)
@@ -72,7 +72,8 @@ React 18 + TypeScript 组件库，使用 Vite 构建为 UMD/ES 模块，集成 J
 
 ```bash
 # 开发
-yarn dev              # Vite dev server (port 5673)
+yarn dev              # Expo Web dev server (port 5673)
+yarn dev:vite         # Vite 兼容预览入口
 
 # 代码质量
 yarn lint             # ESLint 检查
@@ -85,7 +86,8 @@ yarn test:watch       # Jest watch 模式
 
 # 构建
 yarn build            # Vite lib build → dist/
-yarn preview          # 预览构建产物
+yarn build:web        # Expo Web export → dist-web/
+yarn preview          # 预览 Vite 构建产物
 ```
 
 ## NOTES

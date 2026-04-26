@@ -2,12 +2,18 @@
 }
 
 .cm-radio {
+    border: none;
+    background: transparent;
+    padding: 0;
 }
 
 .cm-radio--disabled {
 }
 
 .cm-radio__input {
+}
+
+.cm-radio--checked .cm-radio__input {
 }
 
 .cm-radio__label {

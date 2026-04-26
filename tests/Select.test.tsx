@@ -27,7 +27,7 @@ describe('CSelect', () => {
     expect(select).toHaveClass('cm-select');
   });
 
-  it('renders native select options and supported props', () => {
+  it('renders combobox trigger and supported props', () => {
     const handleChange = jest.fn();
     const props: CSelectProps = {
       options: OPTIONS,
@@ -41,34 +41,42 @@ describe('CSelect', () => {
     render(<CSelect {...props} />);
 
     const select = screen.getByRole('combobox');
+
+    expect(select).toBeInTheDocument();
+    expect(select).toHaveAttribute('data-testid', 'select-under-test');
+    expect(select).toHaveAttribute('name', 'fruit');
+    expect(select).toHaveAttribute('data-value', '');
+    expect(select).toHaveClass('cm-select');
+    expect(select).toHaveClass('select-shell');
+    expect(select).toHaveTextContent('Choose a fruit');
+
+    fireEvent.click(select);
+
     const renderedOptions = screen.getAllByRole('option');
     const placeholderOption = screen.getByRole('option', { name: 'Choose a fruit' });
     const disabledOption = screen.getByRole('option', { name: 'Banana' });
 
-    expect(select).toBeInTheDocument();
-    expect(select.tagName).toBe('SELECT');
-    expect(select).toHaveAttribute('data-testid', 'select-under-test');
-    expect(select).toHaveAttribute('name', 'fruit');
-    expect(select).toHaveClass('cm-select');
-    expect(select).toHaveClass('select-shell');
     expect(renderedOptions).toHaveLength(4);
-    expect(placeholderOption).toHaveValue('');
     expect(disabledOption).toBeDisabled();
+    expect(placeholderOption).toBeDisabled();
   });
 
-  it('uses defaultValue to initialize uncontrolled mode and updates after change', () => {
+  it('uses defaultValue to initialize uncontrolled mode and updates after selection', () => {
     const handleChange = jest.fn();
 
     render(<CSelect options={OPTIONS} defaultValue="apple" onChange={handleChange} />);
 
     const select = screen.getByRole('combobox');
 
-    expect(select).toHaveValue('apple');
+    expect(select).toHaveAttribute('data-value', 'apple');
+    expect(select).toHaveTextContent('Apple');
 
-    fireEvent.change(select, { target: { value: 'cherry' } });
+    fireEvent.click(select);
+    fireEvent.click(screen.getByRole('option', { name: 'Cherry' }));
 
     expect(handleChange).toHaveBeenCalledWith('cherry');
-    expect(select).toHaveValue('cherry');
+    expect(select).toHaveAttribute('data-value', 'cherry');
+    expect(select).toHaveTextContent('Cherry');
   });
 
   it('keeps the old value in controlled mode until parent rerenders', () => {
@@ -78,15 +86,17 @@ describe('CSelect', () => {
 
     const select = screen.getByRole('combobox');
 
-    expect(select).toHaveValue('apple');
+    expect(select).toHaveAttribute('data-value', 'apple');
 
-    fireEvent.change(select, { target: { value: 'cherry' } });
+    fireEvent.click(select);
+    fireEvent.click(screen.getByRole('option', { name: 'Cherry' }));
 
     expect(handleChange).toHaveBeenCalledWith('cherry');
-    expect(select).toHaveValue('apple');
+    expect(select).toHaveAttribute('data-value', 'apple');
+    expect(select).toHaveTextContent('Apple');
   });
 
-  it('passes disabled through to the native select', () => {
+  it('passes disabled through to the combobox trigger', () => {
     render(<CSelect options={OPTIONS} value="apple" disabled />);
 
     expect(screen.getByRole('combobox')).toBeDisabled();
@@ -96,16 +106,21 @@ describe('CSelect', () => {
     render(<CSelect options={OPTIONS} placeholder="Choose a fruit" required />);
 
     const select = screen.getByRole('combobox');
+
+    expect(select).toHaveAttribute('aria-required', 'true');
+    expect(select).toHaveAttribute('data-value', '');
+    expect(select).toHaveTextContent('Choose a fruit');
+
+    fireEvent.click(select);
+
     const placeholderOption = screen.getByRole('option', { name: 'Choose a fruit' });
 
-    expect(select).toBeRequired();
-    expect(select).toHaveValue('');
     expect(placeholderOption).toBeDisabled();
-    expect((placeholderOption as HTMLOptionElement).selected).toBe(true);
 
-    fireEvent.change(select, { target: { value: 'apple' } });
+    fireEvent.click(screen.getByRole('option', { name: 'Apple' }));
 
-    expect(select).toHaveValue('apple');
+    expect(select).toHaveAttribute('data-value', 'apple');
+    expect(select).toHaveTextContent('Apple');
   });
 
   describe('theme prop', () => {

@@ -91,4 +91,18 @@ test.describe('Menu interactions', () => {
 
     await expect(page.getByTestId(MENU_SELECTION_VALUE_TEST_ID)).toContainText('New');
   });
+
+  test('outside press closes popup through backdrop', async ({ page }) => {
+    await gotoClickMenu(page);
+
+    const trigger = page.getByTestId(MENU_DEMO_TRIGGER_TEST_ID);
+    await trigger.click();
+
+    const popup = page.getByTestId(MENU_DEMO_POPUP_TEST_ID);
+    await expect(popup).toBeVisible();
+
+    await page.mouse.click(4, 4);
+
+    await expect(popup).toBeHidden();
+  });
 });
