@@ -40,6 +40,7 @@ type BaseProps = {
   'data-value'?: string;
   [key: `data-${string}`]: unknown;
   onClick?: React.MouseEventHandler<HTMLElement>;
+  onMouseDown?: React.MouseEventHandler<HTMLElement>;
   onMouseEnter?: React.MouseEventHandler<HTMLElement>;
   onMouseLeave?: React.MouseEventHandler<HTMLElement>;
   onPointerEnter?: React.PointerEventHandler<HTMLElement>;
@@ -60,6 +61,17 @@ type PressableProps = BaseProps & {
   disabled?: boolean;
   type?: 'button' | 'submit' | 'reset';
 };
+
+function assignForwardedRef<T>(ref: React.ForwardedRef<T>, value: T | null): void {
+  if (typeof ref === 'function') {
+    ref(value);
+    return;
+  }
+
+  if (ref !== null) {
+    ref.current = value;
+  }
+}
 
 function flattenStyle(style: unknown): React.CSSProperties | undefined {
   if (style == null) {
@@ -123,13 +135,16 @@ export const View = React.forwardRef<HTMLElement, BaseProps>(function View(props
   return (
     /* biome-ignore lint/a11y/noStaticElementInteractions: react-native View mock forwards focus events for tests */
     <div
-      ref={ref as React.Ref<HTMLDivElement>}
+      ref={(node) => {
+        assignForwardedRef(ref, node);
+      }}
       {...toTestProps(props)}
       onBlur={props.onBlur}
       onContextMenu={props.onContextMenu}
       onDoubleClick={props.onDoubleClick}
       onFocus={props.onFocus}
       onKeyDown={props.onKeyDown}
+      onMouseDown={props.onMouseDown}
       onMouseEnter={props.onMouseEnter}
       onMouseLeave={props.onMouseLeave}
       onPointerEnter={props.onPointerEnter}
@@ -145,7 +160,9 @@ export const Text = React.forwardRef<HTMLElement, BaseProps>(function Text(props
   return (
     /* biome-ignore lint/a11y/noStaticElementInteractions: react-native Text mock forwards events for tests */
     <span
-      ref={ref as React.Ref<HTMLSpanElement>}
+      ref={(node) => {
+        assignForwardedRef(ref, node);
+      }}
       {...toTestProps(props)}
       onBlur={props.onBlur}
       onClick={props.onClick}
@@ -226,7 +243,9 @@ export const Pressable = React.forwardRef<HTMLElement, PressableProps>(
     if (shouldUseNativeButton) {
       return (
         <button
-          ref={ref as React.Ref<HTMLButtonElement>}
+          ref={(node) => {
+            assignForwardedRef(ref, node);
+          }}
           type={props.type ?? 'button'}
           {...toTestProps(props)}
           disabled={disabled}
@@ -256,7 +275,9 @@ export const Pressable = React.forwardRef<HTMLElement, PressableProps>(
     return (
       /* biome-ignore lint/a11y/noStaticElementInteractions: react-native Pressable mock needs div semantics for container pressables */
       <div
-        ref={ref}
+        ref={(node) => {
+          assignForwardedRef(ref, node);
+        }}
         {...toTestProps(props)}
         role={role}
         tabIndex={props.tabIndex ?? (disabled ? -1 : 0)}
