@@ -33,7 +33,7 @@ export default defineConfig(({ command }) => ({
     lib: {
       entry: 'src/index.ts',
       name: 'Chameleon',
-      fileName: (format) => (format === 'es' ? 'chameleon.es.js' : 'chameleon.umd.cjs'),
+      fileName: (format) => (format === 'es' ? 'chameleon.es.js' : 'chameleon.umd.js'),
       formats: ['es', 'umd'],
     },
     rollupOptions: {

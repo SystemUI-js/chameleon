@@ -1,5 +1,6 @@
 import type React from 'react';
 import { Pressable, type StyleProp, type ViewStyle } from 'react-native';
+import { renderNativeTextChildren } from '../nativeTextChildren';
 import { mergeClasses } from '../Theme/mergeClasses';
 import { normalizeThemeClassName } from '../Theme/normalizeThemeClassName';
 import { useTheme } from '../Theme/useTheme';
@@ -61,7 +62,7 @@ export function CButton({
       onMouseEnter={onPointerEnter === undefined ? undefined : handlePointerEnter}
       className={mergeClasses(baseClasses, resolvedTheme, className)}
     >
-      {children}
+      {renderNativeTextChildren(children)}
     </Pressable>
   );
 }

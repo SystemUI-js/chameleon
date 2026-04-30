@@ -2,8 +2,9 @@ module.exports = function babelConfig(api) {
   api.cache(true);
 
   return {
-    presets: ['babel-preset-expo'],
+    presets: [['babel-preset-expo', { disableFlowStripTypesTransform: true }]],
     plugins: [
+      ['@babel/plugin-transform-flow-strip-types', { allowDeclareFields: true }],
       [
         'module-resolver',
         {

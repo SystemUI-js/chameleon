@@ -28,6 +28,7 @@ describe('CStatusBar', () => {
 
     expect(item).toHaveClass('cm-status-bar__item');
     expect(item).toHaveTextContent('Standalone');
+    expect(item.firstElementChild?.tagName).toBe('SPAN');
   });
 
   it('merges custom className on both root and item', () => {

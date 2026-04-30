@@ -17,6 +17,7 @@ describe('CGridItem style merge', () => {
 
     expect(grid).toHaveClass('cm-grid');
     expect(gridItem).toHaveClass('cm-grid-item');
+    expect(gridItem.firstElementChild?.tagName).toBe('SPAN');
   });
 
   it('preserves caller style while applying grid placement styles', () => {

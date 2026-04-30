@@ -49,6 +49,8 @@ describe('CSelect', () => {
     expect(select).toHaveClass('cm-select');
     expect(select).toHaveClass('select-shell');
     expect(select).toHaveTextContent('Choose a fruit');
+    expect(select.querySelector('.cm-select__value span')).toHaveTextContent('Choose a fruit');
+    expect(select.querySelector('.cm-select__caret span')).toHaveTextContent('▾');
 
     fireEvent.click(select);
 
@@ -57,6 +59,9 @@ describe('CSelect', () => {
     const disabledOption = screen.getByRole('option', { name: 'Banana' });
 
     expect(renderedOptions).toHaveLength(4);
+    expect(screen.getByRole('option', { name: 'Apple' }).querySelector('span')).toHaveTextContent(
+      'Apple',
+    );
     expect(disabledOption).toBeDisabled();
     expect(placeholderOption).toBeDisabled();
   });

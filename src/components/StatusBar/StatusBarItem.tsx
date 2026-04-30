@@ -1,5 +1,6 @@
 import type React from 'react';
 import { View, type ViewProps } from 'react-native';
+import { renderNativeTextChildren } from '../nativeTextChildren';
 import { mergeClasses } from '../Theme/mergeClasses';
 import { useTheme } from '../Theme/useTheme';
 import './index.scss';
@@ -21,7 +22,7 @@ export function CStatusBarItem({
       {...restProps}
       className={mergeClasses(['cm-status-bar__item'], resolvedTheme, className)}
     >
-      {children}
+      {renderNativeTextChildren(children)}
     </View>
   );
 }

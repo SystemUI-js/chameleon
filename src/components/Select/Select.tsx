@@ -1,5 +1,5 @@
 import React from 'react';
-import { Pressable, View } from 'react-native';
+import { Pressable, Text, View } from 'react-native';
 import { mergeClasses } from '../Theme/mergeClasses';
 import { normalizeThemeClassName } from '../Theme/normalizeThemeClassName';
 import { useTheme } from '../Theme/useTheme';
@@ -318,9 +318,11 @@ export function CSelect({
         onClick={handleTriggerClick}
         onKeyDown={handleTriggerKeyDown}
       >
-        <View className="cm-select__value">{selectedOption?.label ?? placeholder ?? ''}</View>
+        <View className="cm-select__value">
+          <Text>{selectedOption?.label ?? placeholder ?? ''}</Text>
+        </View>
         <View aria-hidden="true" className="cm-select__caret">
-          ▾
+          <Text>▾</Text>
         </View>
       </Pressable>
 
@@ -365,7 +367,7 @@ export function CSelect({
                   }
                 }}
               >
-                {option.label}
+                <Text>{option.label}</Text>
               </Pressable>
             );
           })}

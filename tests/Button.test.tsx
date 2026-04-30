@@ -41,6 +41,28 @@ describe('CButton', () => {
     expect(button).toHaveClass('cm-button');
   });
 
+  it('wraps primitive children in native Text', () => {
+    render(<CButton data-testid="button-under-test">Click me</CButton>);
+
+    const button = screen.getByTestId('button-under-test');
+
+    expect(button.firstElementChild?.tagName).toBe('SPAN');
+    expect(button.firstElementChild).toHaveTextContent('Click me');
+  });
+
+  it('wraps primitive children inside fragments in native Text', () => {
+    render(
+      <CButton data-testid="button-under-test">
+        <>Fragment label</>
+      </CButton>,
+    );
+
+    const button = screen.getByTestId('button-under-test');
+
+    expect(button.firstElementChild?.tagName).toBe('SPAN');
+    expect(button.firstElementChild).toHaveTextContent('Fragment label');
+  });
+
   it('defaults type to button', () => {
     render(<CButton>Default type</CButton>);
 

@@ -1,5 +1,6 @@
 import React from 'react';
 import { View, type StyleProp, type ViewStyle } from 'react-native';
+import { renderNativeTextChildren } from '../nativeTextChildren';
 import { mergeClasses, ResolvedThemeClassName } from '../Theme';
 import './index.scss';
 
@@ -90,7 +91,7 @@ export class CGridItem extends React.Component<GridItemProps> {
               gridColumnEnd: this.props.grid[3],
             }}
           >
-            {this.props.children}
+            {renderNativeTextChildren(this.props.children)}
           </View>
         )}
       </ResolvedThemeClassName>

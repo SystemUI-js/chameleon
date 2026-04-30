@@ -4,13 +4,13 @@
   "private": true,
   "description": "React 组件库 - Chameleon",
   "type": "module",
-  "main": "dist/chameleon.umd.cjs",
+  "main": "index.ts",
   "module": "dist/chameleon.es.js",
   "types": "dist/index.d.ts",
   "exports": {
     ".": {
       "import": "./dist/chameleon.es.js",
-      "require": "./dist/chameleon.umd.cjs",
+      "require": "./dist/chameleon.umd.js",
       "types": "./dist/index.d.ts"
     }
   },
@@ -19,8 +19,8 @@
     "dist"
   ],
   "scripts": {
-    "dev": "expo start --web --localhost --port 5673",
-    "dev:ui": "test -f dist/chameleon.umd.cjs || yarn build; expo start --web --localhost --port 5673",
+    "dev": "expo start --web --port 5673",
+    "dev:ui": "test -f dist/chameleon.umd.js || yarn build; expo start --web --localhost --port 5673",
     "build": "vite build",
     "preview": "vite preview",
     "lint": "eslint \"{src,tests}/**/*.{ts,tsx}\"",
