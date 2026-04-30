@@ -1,4 +1,4 @@
-import type { StyleProp, ViewStyle } from 'react-native';
+import type { StyleProp, ViewStyle } from '../../runtime/react-native-web';
 import type { DockPosition } from './Dock';
 
 export function getDockEdgeStyle(

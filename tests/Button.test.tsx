@@ -39,6 +39,7 @@ describe('CButton', () => {
     expect(button).toHaveAttribute('data-testid', 'button-under-test');
     expect(button.tagName).toBe('BUTTON');
     expect(button).toHaveClass('cm-button');
+    expect(button.className).not.toContain('css-view-');
   });
 
   it('wraps primitive children in native Text', () => {

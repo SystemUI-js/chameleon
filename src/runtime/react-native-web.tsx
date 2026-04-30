@@ -2,8 +2,11 @@
 
 import React from 'react';
 
-type FlatStyle = React.CSSProperties;
-type StyleValue = FlatStyle | readonly StyleValue[] | null | undefined;
+export interface ViewStyle {
+  [key: string]: string | number | boolean | undefined;
+}
+
+export type StyleProp<T> = T | readonly StyleProp<T>[] | null | undefined;
 
 type AccessibilityState = {
   checked?: boolean;
@@ -11,16 +14,58 @@ type AccessibilityState = {
   selected?: boolean;
 };
 
-type BaseProps = React.HTMLAttributes<HTMLElement> & {
+interface DOMInteropProps {
+  className?: string;
+  id?: string;
+  hidden?: boolean;
+  role?: React.AriaRole;
+  tabIndex?: number;
+  title?: string;
+  name?: string;
+  value?: string | number | readonly string[];
+  disabled?: boolean;
+  required?: boolean;
+  'aria-label'?: string;
+  'aria-hidden'?: React.AriaAttributes['aria-hidden'];
+  'aria-haspopup'?: React.AriaAttributes['aria-haspopup'];
+  'aria-expanded'?: React.AriaAttributes['aria-expanded'];
+  'aria-checked'?: React.AriaAttributes['aria-checked'];
+  'aria-disabled'?: React.AriaAttributes['aria-disabled'];
+  'aria-controls'?: string;
+  'aria-selected'?: React.AriaAttributes['aria-selected'];
+  'aria-required'?: React.AriaAttributes['aria-required'];
+  'aria-labelledby'?: string;
+  'aria-activedescendant'?: string;
+  'data-testid'?: string;
+  'data-scroll-area-content'?: string;
+  'data-value'?: string;
+  [key: `data-${string}`]: string | number | boolean | undefined;
+  onClick?: React.MouseEventHandler<HTMLElement>;
+  onMouseDown?: React.MouseEventHandler<HTMLElement>;
+  onMouseUp?: React.MouseEventHandler<HTMLElement>;
+  onMouseEnter?: React.MouseEventHandler<HTMLElement>;
+  onMouseLeave?: React.MouseEventHandler<HTMLElement>;
+  onPointerEnter?: React.PointerEventHandler<HTMLElement>;
+  onPointerLeave?: React.PointerEventHandler<HTMLElement>;
+  onFocus?: React.FocusEventHandler<HTMLElement>;
+  onBlur?: React.FocusEventHandler<HTMLElement>;
+  onKeyDown?: React.KeyboardEventHandler<HTMLElement>;
+  onKeyUp?: React.KeyboardEventHandler<HTMLElement>;
+  onContextMenu?: React.MouseEventHandler<HTMLElement>;
+  onDoubleClick?: React.MouseEventHandler<HTMLElement>;
+  onScroll?: React.UIEventHandler<HTMLElement>;
+}
+
+export type ViewProps = DOMInteropProps & {
   children?: React.ReactNode;
-  style?: StyleValue;
+  style?: StyleProp<ViewStyle>;
   testID?: string;
   accessibilityLabel?: string;
   accessibilityRole?: React.AriaRole;
   accessibilityState?: AccessibilityState;
 };
 
-type PressableProps = BaseProps & {
+export type PressableProps = ViewProps & {
   onPress?: () => void;
   onPressIn?: () => void;
   onPressOut?: () => void;
@@ -30,13 +75,13 @@ type PressableProps = BaseProps & {
 
 type DomProps = React.HTMLAttributes<HTMLElement> & Record<string, unknown>;
 
-function flattenStyle(style: StyleValue): FlatStyle | undefined {
+function flattenStyle(style: StyleProp<ViewStyle>): ViewStyle | undefined {
   if (style == null) {
     return undefined;
   }
 
   if (Array.isArray(style)) {
-    return style.reduce<React.CSSProperties>((accumulator, item) => {
+    return style.reduce<ViewStyle>((accumulator, item) => {
       const flattenedItem = flattenStyle(item);
 
       if (flattenedItem !== undefined) {
@@ -47,7 +92,7 @@ function flattenStyle(style: StyleValue): FlatStyle | undefined {
     }, {});
   }
 
-  return style as FlatStyle;
+  return style as ViewStyle;
 }
 
 function extractDomProps({
@@ -58,7 +103,7 @@ function extractDomProps({
   style,
   testID,
   ...restProps
-}: BaseProps): DomProps {
+}: ViewProps): DomProps {
   const domProps: DomProps = {
     ...restProps,
     style: flattenStyle(style),
@@ -91,7 +136,7 @@ function extractDomProps({
   return domProps;
 }
 
-export const View = React.forwardRef<HTMLElement, BaseProps>(function View(props, ref) {
+export const View = React.forwardRef<HTMLElement, ViewProps>(function View(props, ref) {
   return (
     <div ref={ref as React.Ref<HTMLDivElement>} {...extractDomProps(props)}>
       {props.children}
@@ -99,7 +144,7 @@ export const View = React.forwardRef<HTMLElement, BaseProps>(function View(props
   );
 });
 
-export const Text = React.forwardRef<HTMLElement, BaseProps>(function Text(props, ref) {
+export const Text = React.forwardRef<HTMLElement, ViewProps>(function Text(props, ref) {
   return (
     <span ref={ref as React.Ref<HTMLSpanElement>} {...extractDomProps(props)}>
       {props.children}

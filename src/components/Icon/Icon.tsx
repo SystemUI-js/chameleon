@@ -1,5 +1,11 @@
 import type React from 'react';
-import { Pressable, Text, View, type StyleProp, type ViewStyle } from 'react-native';
+import {
+  Pressable,
+  Text,
+  View,
+  type StyleProp,
+  type ViewStyle,
+} from '../../runtime/react-native-web';
 import { mergeClasses } from '../Theme/mergeClasses';
 import { resolveThemeClassName } from '../Theme/themeName';
 import { useTheme } from '../Theme/useTheme';

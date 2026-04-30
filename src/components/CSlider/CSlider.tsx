@@ -1,5 +1,5 @@
 import React from 'react';
-import { Pressable, View } from 'react-native';
+import { Pressable, View } from '../../runtime/react-native-web';
 
 export interface CSliderClassNames {
   readonly track?: string;

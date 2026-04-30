@@ -1,5 +1,5 @@
 import type React from 'react';
-import { View, type ViewProps } from 'react-native';
+import { View, type ViewProps } from '../../runtime/react-native-web';
 import { mergeClasses } from '../Theme/mergeClasses';
 import { useTheme } from '../Theme/useTheme';
 import './index.scss';

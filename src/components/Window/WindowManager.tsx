@@ -1,5 +1,5 @@
 import React from 'react';
-import { View } from 'react-native';
+import { View } from '../../runtime/react-native-web';
 import { isManagedConstructor } from '../Manager/isManagedConstructor';
 import { CWidget } from '../Widget/Widget';
 

@@ -1,5 +1,5 @@
 import React from 'react';
-import { View } from 'react-native';
+import { View } from '../../runtime/react-native-web';
 import { ResolvedThemeClassName } from '../Theme';
 
 export interface CWindowBodyProps {

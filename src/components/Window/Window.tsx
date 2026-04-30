@@ -1,5 +1,5 @@
 import React from 'react';
-import { View } from 'react-native';
+import { View } from '../../runtime/react-native-web';
 import { WidgetInteractionBehavior, type WidgetPreviewRect } from '../Widget/Widget';
 import type { CWidgetProps, CWidgetResizeOptions, ResizeDirection } from '../Widget/Widget';
 import { CWidget } from '../Widget/Widget';

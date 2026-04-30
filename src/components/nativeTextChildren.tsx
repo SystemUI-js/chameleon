@@ -1,5 +1,5 @@
 import React from 'react';
-import { Text } from 'react-native';
+import { Text } from '../runtime/react-native-web';
 
 function isNativeTextNode(child: React.ReactNode): child is string | number {
   return typeof child === 'string' || typeof child === 'number';

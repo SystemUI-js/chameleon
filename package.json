@@ -4,7 +4,7 @@
   "private": true,
   "description": "React 组件库 - Chameleon",
   "type": "module",
-  "main": "dist/chameleon.umd.cjs",
+  "main": "index.ts",
   "module": "dist/chameleon.es.js",
   "types": "dist/index.d.ts",
   "exports": {

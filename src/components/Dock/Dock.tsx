@@ -1,4 +1,4 @@
-import type { StyleProp, ViewStyle } from 'react-native';
+import type { StyleProp, ViewStyle } from '../../runtime/react-native-web';
 import { CWidget, type CWidgetProps, type WidgetState } from '../Widget/Widget';
 import { getDockEdgeStyle, getDockFrameClassName, getDockFrameStyle } from './dockLayout';
 import './index.scss';

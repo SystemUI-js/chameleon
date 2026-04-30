@@ -1,5 +1,5 @@
 import React from 'react';
-import { Pressable, Text, View } from 'react-native';
+import { Pressable, Text, View } from '../../runtime/react-native-web';
 import { CWidget, type CWidgetProps, type WidgetState } from '../Widget/Widget';
 
 type StartBarState = WidgetState & { resolvedHeight?: number };

@@ -1,5 +1,5 @@
 import type React from 'react';
-import { Pressable, type StyleProp, type ViewStyle } from 'react-native';
+import { Pressable, type StyleProp, type ViewStyle } from '../../runtime/react-native-web';
 import { renderNativeTextChildren } from '../nativeTextChildren';
 import { mergeClasses } from '../Theme/mergeClasses';
 import { normalizeThemeClassName } from '../Theme/normalizeThemeClassName';

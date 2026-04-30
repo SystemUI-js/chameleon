@@ -1,5 +1,5 @@
 import React from 'react';
-import { View, type StyleProp, type ViewStyle } from 'react-native';
+import { View, type StyleProp, type ViewStyle } from '../../runtime/react-native-web';
 import { generateUUID } from '@/utils/uuid';
 import { normalizeThemeClassName, ThemeContext, type ThemeContextValue } from '../Theme';
 
