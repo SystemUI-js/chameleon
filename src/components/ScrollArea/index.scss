@@ -46,14 +46,6 @@
     }
 }
 
-.cm-scroll-area__viewport {
-    min-width: 0;
-    min-height: 0;
-    box-sizing: border-box;
-    flex: 1 1 auto;
-    overflow: auto;
-}
-
 .cm-scroll-area__content {
     min-width: 100%;
     min-height: 100%;

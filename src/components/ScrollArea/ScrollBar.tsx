@@ -1,4 +1,4 @@
-import React, { useRef } from 'react';
+import React, { useEffect, useRef } from 'react';
 import { Pressable, View } from '../../runtime/react-native-web';
 import { mergeClasses } from '../Theme/mergeClasses';
 import { normalizeThemeClassName } from '../Theme/normalizeThemeClassName';
@@ -32,8 +32,6 @@ function getThumbTravelDistance(trackSize: number, thumbSize: number): number {
 
 export function CScrollBar({
   orientation,
-  scrollSize: _scrollSize,
-  viewportSize: _viewportSize,
   scrollPosition,
   maxScrollPosition,
   thumbSize,
@@ -52,6 +50,21 @@ export function CScrollBar({
   const trackRef = useRef<HTMLElement | null>(null);
   const draggingRef = useRef(false);
   const dragStartRef = useRef({ position: 0, cursor: 0 });
+  const moveHandlerRef = useRef<((e: MouseEvent | TouchEvent) => void) | null>(null);
+  const upHandlerRef = useRef<(() => void) | null>(null);
+
+  useEffect(() => {
+    return () => {
+      if (moveHandlerRef.current) {
+        document.removeEventListener('mousemove', moveHandlerRef.current);
+        document.removeEventListener('touchmove', moveHandlerRef.current);
+      }
+      if (upHandlerRef.current) {
+        document.removeEventListener('mouseup', upHandlerRef.current);
+        document.removeEventListener('touchend', upHandlerRef.current);
+      }
+    };
+  }, []);
 
   const baseClasses = [
     'cm-scroll-bar',
@@ -117,11 +130,16 @@ export function CScrollBar({
       document.removeEventListener('mouseup', handleMouseUp);
       document.removeEventListener('touchmove', handleMouseMove);
       document.removeEventListener('touchend', handleMouseUp);
+      moveHandlerRef.current = null;
+      upHandlerRef.current = null;
     };
+
+    moveHandlerRef.current = handleMouseMove;
+    upHandlerRef.current = handleMouseUp;
 
     document.addEventListener('mousemove', handleMouseMove);
     document.addEventListener('mouseup', handleMouseUp);
-    document.addEventListener('touchmove', handleMouseMove as EventListener);
+    document.addEventListener('touchmove', handleMouseMove);
     document.addEventListener('touchend', handleMouseUp);
   };
 
@@ -146,6 +164,7 @@ export function CScrollBar({
         className="cm-scroll-bar__thumb"
         style={thumbStyle}
         onMouseDown={handleThumbMouseDown}
+        onTouchStart={handleThumbMouseDown}
       />
     </View>
   );

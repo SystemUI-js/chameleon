@@ -45,6 +45,7 @@ interface DOMInteropProps {
   onMouseUp?: React.MouseEventHandler<HTMLElement>;
   onMouseEnter?: React.MouseEventHandler<HTMLElement>;
   onMouseLeave?: React.MouseEventHandler<HTMLElement>;
+  onTouchStart?: React.TouchEventHandler<HTMLElement>;
   onPointerEnter?: React.PointerEventHandler<HTMLElement>;
   onPointerLeave?: React.PointerEventHandler<HTMLElement>;
   onFocus?: React.FocusEventHandler<HTMLElement>;
