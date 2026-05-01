@@ -1,2 +1,0 @@
-- 2026-03-26: Task 3 未满足“`SystemHost` / `registry` / `types` / `themeSwitcher` 无不必要改动”；`git diff main...HEAD` 仍返回这些文件。
-- 2026-03-26: Task 4 未满足 skin-only 约束；`src/theme/win98/styles/index.scss` 与 `src/theme/winxp/styles/index.scss` 的 Start Bar 规则块仍包含 `min-height`、`padding`、`margin`、`font-size` 等基础布局声明。

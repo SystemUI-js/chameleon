@@ -13,6 +13,7 @@ import {
   CRadio,
   CRadioGroup,
   CScrollArea,
+  CScrollBar,
   CSelect,
   CStatusBar,
   CStatusBarItem,
@@ -378,7 +379,21 @@ return (
 `.trim();
 
 const SCROLL_AREA_SNIPPET = `
-<CScrollArea aria-label="Activity feed" style={{ height: 180 }}>
+const [useDomScrollBar, setUseDomScrollBar] = React.useState(false);
+
+<CCheckbox
+  checked={useDomScrollBar}
+  onChange={setUseDomScrollBar}
+  data-testid="scroll-area-demo-dom-scrollbar-toggle"
+>
+  使用自定义 DOM 滚动条
+</CCheckbox>
+
+<CScrollArea
+  aria-label="Activity feed"
+  scrollBarComponent={useDomScrollBar ? CScrollBar : undefined}
+  style={{ height: 180 }}
+>
   {activityItems.map((item) => (
     <article key={item.title}>
       <strong>{item.title}</strong>
@@ -543,6 +558,8 @@ function SliderShowcase(): React.ReactElement {
 }
 
 function ScrollAreaShowcase(): React.ReactElement {
+  const [useDomScrollBar, setUseDomScrollBar] = React.useState(false);
+
   return (
     <ShowcaseSection
       title="ScrollArea"
@@ -550,11 +567,19 @@ function ScrollAreaShowcase(): React.ReactElement {
       code={SCROLL_AREA_SNIPPET}
     >
       <div className="cm-catalog__stack">
+        <CCheckbox
+          checked={useDomScrollBar}
+          onChange={setUseDomScrollBar}
+          data-testid="scroll-area-demo-dom-scrollbar-toggle"
+        >
+          使用自定义 DOM 滚动条
+        </CCheckbox>
         <CScrollArea
           aria-label="Activity feed"
           data-testid="scroll-area-demo"
           className="cm-catalog__scroll-area"
           contentClassName="cm-catalog__scroll-area-content"
+          scrollBarComponent={useDomScrollBar ? CScrollBar : undefined}
         >
           {SCROLL_AREA_ACTIVITY_ITEMS.map((item) => (
             <article key={item.title} className="cm-catalog__scroll-entry">

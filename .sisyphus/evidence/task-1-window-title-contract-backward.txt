@@ -1,3 +1,0 @@
-Command: yarn test -- CWindowTitleComposition.test.tsx
-Result: PASS
-Coverage: 未传 actionButton 时保留 window-title-text，queryByTestId('window-title-controls') 为空，标题根节点不含 with-controls modifier，向后兼容成立。

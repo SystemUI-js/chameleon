@@ -1,7 +1,0 @@
-Commands:
-1. yarn test -- CWindowTitleComposition.test.tsx
-2. npx playwright test tests/ui/window.action-buttons.spec.ts
-3. npx playwright test tests/ui/window.action-buttons.spec.ts --grep "dragging|no-op"
-
-Result: PASS
-Summary: 43 个 Jest 断言全部通过；新增 Playwright 4 个 action-buttons 场景全部通过，其中 click no-op 与 drag no-op 均通过，无 retry 依赖。

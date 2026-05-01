@@ -7,8 +7,103 @@
     scrollbar-gutter: stable;
 }
 
+.cm-scroll-area--dom-scrollbar {
+    display: flex;
+    flex-direction: row;
+    flex-wrap: wrap;
+}
+
+.cm-scroll-area__viewport {
+    min-width: 0;
+    min-height: 0;
+    box-sizing: border-box;
+    flex: 1 1 auto;
+    overflow: auto;
+    order: 0;
+}
+
+.cm-scroll-bar--vertical {
+    width: 12px;
+    height: 100%;
+    flex-shrink: 0;
+    order: 1;
+}
+
+.cm-scroll-bar--horizontal {
+    height: 12px;
+    width: 100%;
+    flex-shrink: 0;
+    order: 2;
+}
+
+.cm-scroll-area--hide-native-scrollbar {
+    scrollbar-width: none;
+    -ms-overflow-style: none;
+
+    &::-webkit-scrollbar {
+        width: 0;
+        height: 0;
+    }
+}
+
+.cm-scroll-area__viewport {
+    min-width: 0;
+    min-height: 0;
+    box-sizing: border-box;
+    flex: 1 1 auto;
+    overflow: auto;
+}
+
 .cm-scroll-area__content {
     min-width: 100%;
     min-height: 100%;
     box-sizing: border-box;
+}
+
+.cm-scroll-bar {
+    position: relative;
+    flex-shrink: 0;
+    background-color: rgba(0, 0, 0, 0.05);
+}
+
+.cm-scroll-bar--vertical {
+    width: 12px;
+    height: 100%;
+}
+
+.cm-scroll-bar--horizontal {
+    height: 12px;
+    width: 100%;
+}
+
+.cm-scroll-bar--hidden {
+    display: none;
+}
+
+.cm-scroll-bar__track {
+    position: absolute;
+    top: 0;
+    left: 0;
+    right: 0;
+    bottom: 0;
+    background-color: rgba(0, 0, 0, 0.08);
+}
+
+.cm-scroll-bar__thumb {
+    position: absolute;
+    background-color: rgba(0, 0, 0, 0.35);
+    border-radius: 6px;
+    cursor: pointer;
+}
+
+.cm-scroll-bar--vertical .cm-scroll-bar__thumb {
+    left: 2px;
+    right: 2px;
+    width: auto;
+}
+
+.cm-scroll-bar--horizontal .cm-scroll-bar__thumb {
+    top: 2px;
+    bottom: 2px;
+    height: auto;
 }
