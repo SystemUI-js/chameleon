@@ -1,4 +1,5 @@
 import { useState } from 'react';
+import { Pressable, Text, View } from '../runtime/react-native-web';
 
 interface ShowcaseCodeDisclosureProps {
   sectionId: string;
@@ -10,21 +11,26 @@ export function ShowcaseCodeDisclosure({ sectionId, code }: ShowcaseCodeDisclosu
   const regionId = `${sectionId}-code-region`;
 
   return (
-    <div className="cm-catalog__code-disclosure">
-      <button
-        type="button"
+    <View className="cm-catalog__code-disclosure">
+      <Pressable
         className="cm-catalog__code-toggle"
         aria-expanded={isOpen}
         aria-controls={regionId}
-        onClick={() => setIsOpen((prev) => !prev)}
+        onPress={() => setIsOpen((prev) => !prev)}
       >
-        {isOpen ? 'Hide code' : 'Show code'}
-      </button>
-      <div id={regionId} className="cm-catalog__code-region" hidden={!isOpen}>
-        <pre className="cm-catalog__code-block">
-          <code>{code}</code>
-        </pre>
-      </div>
-    </div>
+        <Text>{isOpen ? 'Hide code' : 'Show code'}</Text>
+      </Pressable>
+      {isOpen && (
+        <View
+          id={regionId}
+          className="cm-catalog__code-region"
+          style={{ display: isOpen ? 'block' : 'none' }}
+        >
+          <View className="cm-catalog__code-block">
+            <Text>{code}</Text>
+          </View>
+        </View>
+      )}
+    </View>
   );
 }

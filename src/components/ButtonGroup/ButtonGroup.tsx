@@ -34,6 +34,12 @@ function resolveThemeClass(theme: string | undefined): string | undefined {
   return theme.startsWith('cm-theme--') ? theme : `cm-theme--${theme}`;
 }
 
+function isFragmentElement(
+  child: React.ReactNode,
+): child is React.ReactElement<{ children?: React.ReactNode }> {
+  return React.isValidElement(child) && child.type === React.Fragment;
+}
+
 function flattenGroupChildren(children: React.ReactNode): React.ReactNode[] {
   const flattened: React.ReactNode[] = [];
 
@@ -42,7 +48,7 @@ function flattenGroupChildren(children: React.ReactNode): React.ReactNode[] {
       return;
     }
 
-    if (React.isValidElement(child) && child.type === React.Fragment) {
+    if (isFragmentElement(child)) {
       flattened.push(...flattenGroupChildren(child.props.children));
       return;
     }

@@ -6,43 +6,41 @@ import {
   type WindowTitleActionButtonPosition,
 } from '@/components/Window/WindowTitle';
 import { WidgetInteractionBehavior } from '@/components/Widget/Widget';
+import { Pressable, Text, View } from '../../runtime/react-native-web';
 import { DevThemeRoot } from '../themeSwitcher';
 import '../styles/catalog.scss';
 import { readHarnessRoute } from './harnessRoute';
 
 const handleWindowActionClick = (): void => {};
 
-const renderWindowActionButtons = (): JSX.Element => {
+const renderWindowActionButtons = (): React.JSX.Element => {
   return (
-    <div className="cm-catalog__window-actions">
-      <button
-        type="button"
+    <View className="cm-catalog__window-actions">
+      <Pressable
         className="cm-catalog__window-action"
         data-testid="window-demo-minimize"
         aria-label="Minimize window"
-        onClick={handleWindowActionClick}
+        onPress={handleWindowActionClick}
       >
         —
-      </button>
-      <button
-        type="button"
+      </Pressable>
+      <Pressable
         className="cm-catalog__window-action"
         data-testid="window-demo-maximize"
         aria-label="Maximize window"
-        onClick={handleWindowActionClick}
+        onPress={handleWindowActionClick}
       >
         □
-      </button>
-      <button
-        type="button"
+      </Pressable>
+      <Pressable
         className="cm-catalog__window-action cm-catalog__window-action--close"
         data-testid="window-demo-close"
         aria-label="Close window"
-        onClick={handleWindowActionClick}
+        onPress={handleWindowActionClick}
       >
         ×
-      </button>
-    </div>
+      </Pressable>
+    </View>
   );
 };
 
@@ -58,7 +56,7 @@ const renderActionButtonFixture = (
       >
         {title}
       </CWindowTitle>
-      <div>Window action controls</div>
+      <View>Window action controls</View>
     </CWindow>
   );
 };
@@ -69,7 +67,7 @@ const renderFixture = (fixture: string): ReactNode => {
       return (
         <CWindow x={10} y={20} width={240} height={160}>
           <CWindowTitle>Default Window</CWindowTitle>
-          <div>Default content</div>
+          <View>Default content</View>
         </CWindow>
       );
     case 'drag-only':
@@ -125,7 +123,7 @@ const renderFixture = (fixture: string): ReactNode => {
           moveBehavior={WidgetInteractionBehavior.Outline}
         >
           <CWindowTitle>Outline Move</CWindowTitle>
-          <div>Outline move content</div>
+          <View>Outline move content</View>
         </CWindow>
       );
     case 'outline-resize':
@@ -138,7 +136,7 @@ const renderFixture = (fixture: string): ReactNode => {
           resizeBehavior={WidgetInteractionBehavior.Outline}
         >
           <CWindowTitle>Outline Resize</CWindowTitle>
-          <div>Outline resize content</div>
+          <View>Outline resize content</View>
         </CWindow>
       );
     case 'outline-both':
@@ -152,39 +150,39 @@ const renderFixture = (fixture: string): ReactNode => {
           resizeBehavior={WidgetInteractionBehavior.Outline}
         >
           <CWindowTitle>Outline Both</CWindowTitle>
-          <div>Outline move + resize content</div>
+          <View>Outline move + resize content</View>
         </CWindow>
       );
     case 'icon-container':
       return (
-        <div style={{ padding: 24 }}>
+        <View style={{ padding: 24 }}>
           <CIconContainer
             iconList={[
               {
-                icon: <span>First</span>,
+                icon: <Text>First</Text>,
                 title: 'First',
                 position: { x: 10, y: 20 },
               },
               {
-                icon: <span>Second</span>,
+                icon: <Text>Second</Text>,
                 title: 'Second',
                 position: { x: 100, y: 120 },
               },
             ]}
             data-testid="icon-container"
           />
-        </div>
+        </View>
       );
     case 'action-buttons-right':
       return renderActionButtonFixture('Action buttons right');
     case 'action-buttons-left':
       return renderActionButtonFixture('Action buttons left', 'left');
     default:
-      return <div data-testid="fixture-error">Unknown fixture: {fixture}</div>;
+      return <View data-testid="fixture-error">Unknown fixture: {fixture}</View>;
   }
 };
 
-export const WindowHarnessApp = (): JSX.Element => {
+export const WindowHarnessApp = (): React.JSX.Element => {
   const route = readHarnessRoute();
 
   return <DevThemeRoot theme={route.theme}>{renderFixture(route.fixture)}</DevThemeRoot>;

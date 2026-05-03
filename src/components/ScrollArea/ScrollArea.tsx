@@ -1,5 +1,6 @@
 import type React from 'react';
 import { useCallback, useEffect, useRef, useState } from 'react';
+import { domEnv } from '../../runtime/dom-env';
 import { View, type StyleProp, type ViewStyle } from '../../runtime/react-native-web';
 import { mergeClasses } from '../Theme/mergeClasses';
 import { normalizeThemeClassName } from '../Theme/normalizeThemeClassName';
@@ -195,10 +196,10 @@ export function CScrollArea({
       };
     } else {
       const handleResize = (): void => measureScrollbar();
-      window.addEventListener('resize', handleResize);
+      domEnv.addEventListener('resize', handleResize);
       scrollRoot.addEventListener('scroll', measureScrollbar);
       return () => {
-        window.removeEventListener('resize', handleResize);
+        domEnv.removeEventListener('resize', handleResize);
         scrollRoot.removeEventListener('scroll', measureScrollbar);
       };
     }

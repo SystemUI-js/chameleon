@@ -1,6 +1,7 @@
-import { type ReactNode, useState } from 'react';
+import React, { type ReactNode, useState } from 'react';
 import { CButton, CMenu, type MenuListItem } from '@/components';
-import { DevThemeRoot, type DevThemeId } from '../themeSwitcher';
+import { Text, View } from '../../runtime/react-native-web';
+import { type DevThemeId, DevThemeRoot } from '../themeSwitcher';
 import { readHarnessRoute } from './harnessRoute';
 
 const DEFAULT_FIXTURE = 'click';
@@ -46,9 +47,9 @@ interface HarnessLayoutProps {
   readonly children: ReactNode;
 }
 
-const HarnessLayout = ({ children }: HarnessLayoutProps): JSX.Element => {
+const HarnessLayout = ({ children }: HarnessLayoutProps): React.JSX.Element => {
   return (
-    <main
+    <View
       style={{
         display: 'grid',
         gap: '16px',
@@ -57,11 +58,11 @@ const HarnessLayout = ({ children }: HarnessLayoutProps): JSX.Element => {
       }}
     >
       {children}
-    </main>
+    </View>
   );
 };
 
-const ClickFixture = (): JSX.Element => {
+const ClickFixture = (): React.JSX.Element => {
   const [selectedItem, setSelectedItem] = useState<MenuListItem | null>(null);
 
   return (
@@ -74,12 +75,12 @@ const ClickFixture = (): JSX.Element => {
       >
         <CButton data-testid="menu-demo-trigger">Menu</CButton>
       </CMenu>
-      <p data-testid="menu-selection-value">Selected: {selectedItem?.title ?? 'none'}</p>
+      <Text data-testid="menu-selection-value">Selected: {selectedItem?.title ?? 'none'}</Text>
     </HarnessLayout>
   );
 };
 
-const HoverFixture = (): JSX.Element => {
+const HoverFixture = (): React.JSX.Element => {
   const [selectedItem, setSelectedItem] = useState<MenuListItem | null>(null);
 
   return (
@@ -92,12 +93,12 @@ const HoverFixture = (): JSX.Element => {
       >
         <CButton data-testid="menu-demo-trigger">Hover Menu</CButton>
       </CMenu>
-      <p data-testid="menu-selection-value">Selected: {selectedItem?.title ?? 'none'}</p>
+      <Text data-testid="menu-selection-value">Selected: {selectedItem?.title ?? 'none'}</Text>
     </HarnessLayout>
   );
 };
 
-const MixedFixture = (): JSX.Element => {
+const MixedFixture = (): React.JSX.Element => {
   const [selectedItem, setSelectedItem] = useState<MenuListItem | null>(null);
 
   return (
@@ -110,16 +111,16 @@ const MixedFixture = (): JSX.Element => {
       >
         <CButton data-testid="menu-demo-trigger">Mixed Menu</CButton>
       </CMenu>
-      <p data-testid="menu-selection-value">Selected: {selectedItem?.title ?? 'none'}</p>
-      <p>
+      <Text data-testid="menu-selection-value">Selected: {selectedItem?.title ?? 'none'}</Text>
+      <Text>
         Default parent branches open on hover after the root click; items with{' '}
-        <code>trigger=&quot;click&quot;</code> still require click.
-      </p>
+        <Text>trigger=&quot;click&quot;</Text> still require click.
+      </Text>
     </HarnessLayout>
   );
 };
 
-const renderFixture = (fixture: string): JSX.Element => {
+const renderFixture = (fixture: string): React.JSX.Element => {
   switch (fixture) {
     case 'click':
       return <ClickFixture />;
@@ -128,7 +129,7 @@ const renderFixture = (fixture: string): JSX.Element => {
     case 'mixed':
       return <MixedFixture />;
     default:
-      return <div data-testid="fixture-error">Unknown fixture: {fixture}</div>;
+      return <View data-testid="fixture-error">Unknown fixture: {fixture}</View>;
   }
 };
 
@@ -137,15 +138,18 @@ interface ThemedFixtureContainerProps {
   readonly fixture: string;
 }
 
-const ThemedFixtureContainer = ({ theme, fixture }: ThemedFixtureContainerProps): JSX.Element => {
+const ThemedFixtureContainer = ({
+  theme,
+  fixture,
+}: ThemedFixtureContainerProps): React.JSX.Element => {
   return (
     <DevThemeRoot theme={theme}>
-      <div style={{ padding: '24px' }}>{renderFixture(fixture)}</div>
+      <View style={{ padding: '24px' }}>{renderFixture(fixture)}</View>
     </DevThemeRoot>
   );
 };
 
-export const MenuHarnessApp = (): JSX.Element => {
+export const MenuHarnessApp = (): React.JSX.Element => {
   const route = readHarnessRoute();
   const fixture = route.fixture === 'default' ? DEFAULT_FIXTURE : route.fixture;
 

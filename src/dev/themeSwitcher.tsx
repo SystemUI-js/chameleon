@@ -4,6 +4,7 @@ import { defaultThemeDefinition } from '@/theme/default';
 import type { ThemeDefinition, ThemeId } from '@/theme/types';
 import { win98ThemeDefinition } from '@/theme/win98';
 import { winXpThemeDefinition } from '@/theme/winxp';
+import { View } from '../runtime/react-native-web';
 
 export const DEV_THEME = {
   default: 'default',
@@ -45,7 +46,7 @@ export function DevThemeRoot({
 
   return (
     <Theme name={themeDefinition.className}>
-      <div data-testid={rootTestId}>{children}</div>
+      <View data-testid={rootTestId as string | undefined}>{children}</View>
     </Theme>
   );
 }

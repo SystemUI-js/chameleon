@@ -1,4 +1,5 @@
 import React from 'react';
+import { domEnv } from '../../runtime/dom-env';
 import { Pressable, type StyleProp, View, type ViewStyle } from '../../runtime/react-native-web';
 import { mergeClasses } from '../Theme/mergeClasses';
 import { normalizeThemeClassName } from '../Theme/normalizeThemeClassName';
@@ -111,12 +112,12 @@ export function CSplitArea({
       dragSessionRef.current = null;
     };
 
-    window.addEventListener('mousemove', handleMouseMove);
-    window.addEventListener('mouseup', handleMouseUp);
+    domEnv.addEventListener('mousemove', handleMouseMove);
+    domEnv.addEventListener('mouseup', handleMouseUp);
 
     return () => {
-      window.removeEventListener('mousemove', handleMouseMove);
-      window.removeEventListener('mouseup', handleMouseUp);
+      domEnv.removeEventListener('mousemove', handleMouseMove);
+      domEnv.removeEventListener('mouseup', handleMouseUp);
     };
   }, [direction]);
 

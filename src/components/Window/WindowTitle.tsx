@@ -1,4 +1,5 @@
 import React from 'react';
+import { domEnv } from '../../runtime/dom-env';
 import {
   Pressable,
   Text,
@@ -101,14 +102,14 @@ export class CWindowTitle extends React.Component<CWindowTitleProps> {
     this.props.onWindowMovePreviewClear?.();
     this.detachDragListeners();
     this.activeDrag = null;
-    window.setTimeout(() => {
+    domEnv.setTimeout(() => {
       this.dragMoved = false;
     }, 0);
   };
 
   private detachDragListeners(): void {
-    window.removeEventListener('mousemove', this.handleWindowMouseMove);
-    window.removeEventListener('mouseup', this.handleWindowMouseUp);
+    domEnv.removeEventListener('mousemove', this.handleWindowMouseMove);
+    domEnv.removeEventListener('mouseup', this.handleWindowMouseUp);
   }
 
   private handleMouseDown = (event: React.MouseEvent<HTMLElement>): void => {
@@ -133,8 +134,8 @@ export class CWindowTitle extends React.Component<CWindowTitleProps> {
       this.props.onWindowMovePreview?.({ x: pose.x, y: pose.y });
     }
 
-    window.addEventListener('mousemove', this.handleWindowMouseMove);
-    window.addEventListener('mouseup', this.handleWindowMouseUp);
+    domEnv.addEventListener('mousemove', this.handleWindowMouseMove);
+    domEnv.addEventListener('mouseup', this.handleWindowMouseUp);
   };
 
   private handlePress = (): void => {

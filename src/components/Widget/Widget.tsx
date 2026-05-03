@@ -1,4 +1,5 @@
 import React from 'react';
+import { domEnv } from '../../runtime/dom-env';
 import { View, type StyleProp, type ViewStyle } from '../../runtime/react-native-web';
 import { generateUUID } from '@/utils/uuid';
 import { normalizeThemeClassName, ThemeContext, type ThemeContextValue } from '../Theme';
@@ -356,8 +357,8 @@ export class CWidget<TState extends WidgetState = WidgetState> extends React.Com
   };
 
   protected detachResizeListeners(): void {
-    window.removeEventListener('mousemove', this.handleResizeDrag);
-    window.removeEventListener('mouseup', this.finishResizeDrag);
+    domEnv.removeEventListener('mousemove', this.handleResizeDrag);
+    domEnv.removeEventListener('mouseup', this.finishResizeDrag);
   }
 
   protected startResizeDrag = (
@@ -377,8 +378,8 @@ export class CWidget<TState extends WidgetState = WidgetState> extends React.Com
       this.applyResizePreviewRect(this.activeResizeSession.rect);
     }
 
-    window.addEventListener('mousemove', this.handleResizeDrag);
-    window.addEventListener('mouseup', this.finishResizeDrag);
+    domEnv.addEventListener('mousemove', this.handleResizeDrag);
+    domEnv.addEventListener('mouseup', this.finishResizeDrag);
   };
 
   protected getResizeHandleStyle(direction: ResizeDirection): StyleProp<ViewStyle> {

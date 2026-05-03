@@ -1,3 +1,4 @@
+import React from 'react';
 import { CommonControlsHarnessApp } from './src/dev/playwright/commonControlsHarness';
 import { MenuHarnessApp } from './src/dev/playwright/menuHarness';
 import { WindowHarnessApp } from './src/dev/playwright/windowHarness';
@@ -39,7 +40,7 @@ const resolvePreviewRoute = (): ExpoPreviewRoute => {
   }
 };
 
-const renderPreviewRoute = (route: ExpoPreviewRoute): JSX.Element => {
+const renderPreviewRoute = (route: ExpoPreviewRoute): React.JSX.Element => {
   switch (route) {
     case 'window':
       return <WindowHarnessApp />;
@@ -53,6 +54,6 @@ const renderPreviewRoute = (route: ExpoPreviewRoute): JSX.Element => {
   }
 };
 
-export const App = (): JSX.Element => {
+export const App = (): React.JSX.Element => {
   return renderPreviewRoute(resolvePreviewRoute());
 };

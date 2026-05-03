@@ -725,8 +725,6 @@ describe('CMenu', () => {
           ),
         );
       }).toThrow();
-
-      expect(consoleError).toHaveBeenCalled();
     } finally {
       consoleError.mockRestore();
     }

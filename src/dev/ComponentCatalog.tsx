@@ -33,6 +33,7 @@ import {
 import { ShowcaseCodeDisclosure } from './ShowcaseCodeDisclosure';
 import './styles/catalog.scss';
 import { DEV_THEME, DevThemeRoot, type DevThemeId } from './themeSwitcher';
+import { Text, View, Pressable } from 'react-native';
 
 const SIZE_OPTIONS: readonly CSelectOption[] = [
   { label: 'Small', value: 'small' },
@@ -77,11 +78,11 @@ function ShowcaseSection({
   code,
 }: ShowcaseSectionProps): React.ReactElement {
   return (
-    <section data-testid={testId} className="cm-catalog__section">
-      <h2 className="cm-catalog__section-title">{title}</h2>
-      <div className="cm-catalog__section-content">{children}</div>
+    <View data-testid={testId} className="cm-catalog__section">
+      <Text className="cm-catalog__section-title">{title}</Text>
+      <View className="cm-catalog__section-content">{children}</View>
       {code !== undefined && <ShowcaseCodeDisclosure sectionId={testId} code={code} />}
-    </section>
+    </View>
   );
 }
 
@@ -93,9 +94,9 @@ function ThemeSwitcher({
   onThemeChange: (theme: DevThemeId) => void;
 }): React.ReactElement {
   return (
-    <div data-testid="catalog-theme-switch" className="cm-catalog__theme-switcher">
-      <div className="cm-catalog__theme-label">
-        <span>Theme</span>
+    <View data-testid="catalog-theme-switch" className="cm-catalog__theme-switcher">
+      <View className="cm-catalog__theme-label">
+        <Text>Theme</Text>
         <CSelect
           aria-label="Theme"
           className="cm-catalog__theme-select"
@@ -107,8 +108,8 @@ function ThemeSwitcher({
             }
           }}
         />
-      </div>
-    </div>
+      </View>
+    </View>
   );
 }
 
@@ -121,7 +122,7 @@ return (
     <CButton>Default action</CButton>
     <CButton variant="ghost">Ghost action</CButton>
 
-    <p>Primary button clicks: {buttonClicks}</p>
+    <Text>Primary button clicks: {buttonClicks}</Text>
   </>
 );
 `.trim();
@@ -131,8 +132,8 @@ function ButtonShowcase(): React.ReactElement {
 
   return (
     <ShowcaseSection title="Button" testId="catalog-section-button" code={BUTTON_SNIPPET}>
-      <div className="cm-catalog__stack">
-        <div className="cm-catalog__row">
+      <View className="cm-catalog__stack">
+        <View className="cm-catalog__row">
           <CButton
             data-testid="button-demo-primary"
             variant="primary"
@@ -142,15 +143,15 @@ function ButtonShowcase(): React.ReactElement {
           </CButton>
           <CButton>Default action</CButton>
           <CButton variant="ghost">Ghost action</CButton>
-        </div>
-        <div className="cm-catalog__row">
+        </View>
+        <View className="cm-catalog__row">
           <CButton disabled>Disabled default</CButton>
           <CButton variant="primary" disabled>
             Disabled primary
           </CButton>
-        </div>
-        <p className="cm-catalog__value">Primary button clicks: {buttonClicks}</p>
-      </div>
+        </View>
+        <Text className="cm-catalog__value">Primary button clicks: {buttonClicks}</Text>
+      </View>
     </ShowcaseSection>
   );
 }
@@ -191,15 +192,15 @@ return (
     </CButton>
 
     <CSplitArea direction="horizontal" separatorMovable className="workspace-layout">
-      <section>Explorer</section>
+      <Text>Explorer</Text>
       <CSplitArea direction="vertical" separatorMovable>
-        <section>Editor</section>
+        <Text>Editor</Text>
         <CSplitArea direction="horizontal" separatorMovable>
-          <section>Preview</section>
-          <section>Console</section>
+          <Text>Preview</Text>
+          <Text>Console</Text>
         </CSplitArea>
       </CSplitArea>
-      {showInspector ? <section>Inspector</section> : null}
+      {showInspector ? <Text>Inspector</Text> : null}
     </CSplitArea>
   </>
 );
@@ -208,29 +209,117 @@ return (
 function ThemeShowcase(): React.ReactElement {
   return (
     <ShowcaseSection title="Theme" testId="catalog-section-theme" code={THEME_SNIPPET}>
-      <div>
-        <p>
-          <strong>Theme wrapper:</strong> Wrap any subtree with <code>&lt;Theme&gt;</code> and set
-          the <code>name</code> prop to a theme class like <code>cm-theme--win98</code>.
-        </p>
-        <p>
-          <strong>Nested Theme:</strong> Nesting <code>&lt;Theme&gt;</code> inside another{' '}
-          <code>&lt;Theme&gt;</code> is not supported. Use a component&apos;s <code>theme</code>{' '}
-          prop to override the provider theme for that specific component.
-        </p>
-        <p>
-          <strong>Explicit prop:</strong> A component&apos;s own <code>theme</code> prop takes
-          precedence over any Theme provider in its ancestor chain.
-        </p>
-        <div aria-hidden="true">
+      <View>
+        <Text>
+          <Text style={{ fontWeight: 'bold' }}>Theme wrapper:</Text>
+          <Text> Wrap any subtree with </Text>
+          <Text
+            style={{
+              fontFamily: 'monospace', // 等宽字体
+              backgroundColor: '#f5f5f5',
+              paddingHorizontal: 6,
+              paddingVertical: 2,
+              borderRadius: 4,
+              fontSize: 14,
+            }}
+          >
+            &lt;Theme&gt;
+          </Text>
+          <Text> and set the </Text>
+          <Text
+            style={{
+              fontFamily: 'monospace', // 等宽字体
+              backgroundColor: '#f5f5f5',
+              paddingHorizontal: 6,
+              paddingVertical: 2,
+              borderRadius: 4,
+              fontSize: 14,
+            }}
+          >
+            name
+          </Text>
+          <Text> prop to a theme class like </Text>
+          <Text
+            style={{
+              fontFamily: 'monospace', // 等宽字体
+              backgroundColor: '#f5f5f5',
+              paddingHorizontal: 6,
+              paddingVertical: 2,
+              borderRadius: 4,
+              fontSize: 14,
+            }}
+          >
+            cm-theme--win98
+          </Text>
+          <Text>.</Text>
+        </Text>
+        <Text>
+          <Text style={{ fontWeight: 'bold' }}>Nested Theme:</Text> Nesting{' '}
+          <Text
+            style={{
+              fontFamily: 'monospace', // 等宽字体
+              backgroundColor: '#f5f5f5',
+              paddingHorizontal: 6,
+              paddingVertical: 2,
+              borderRadius: 4,
+              fontSize: 14,
+            }}
+          >
+            &lt;Theme&gt;
+          </Text>
+          <Text> inside another </Text>
+          <Text
+            style={{
+              fontFamily: 'monospace', // 等宽字体
+              backgroundColor: '#f5f5f5',
+              paddingHorizontal: 6,
+              paddingVertical: 2,
+              borderRadius: 4,
+              fontSize: 14,
+            }}
+          >
+            &lt;Theme&gt;
+          </Text>
+          <Text> is not supported. Use a component&apos;s </Text>
+          <Text
+            style={{
+              fontFamily: 'monospace', // 等宽字体
+              backgroundColor: '#f5f5f5',
+              paddingHorizontal: 6,
+              paddingVertical: 2,
+              borderRadius: 4,
+              fontSize: 14,
+            }}
+          >
+            theme
+          </Text>
+          <Text> prop to override the provider theme for that specific component.</Text>
+        </Text>
+        <Text>
+          <Text style={{ fontWeight: 'bold' }}>Explicit prop:</Text> A component&apos;s own{' '}
+          <Text
+            style={{
+              fontFamily: 'monospace', // 等宽字体
+              backgroundColor: '#f5f5f5',
+              paddingHorizontal: 6,
+              paddingVertical: 2,
+              borderRadius: 4,
+              fontSize: 14,
+            }}
+          >
+            theme
+          </Text>
+          <Text> prop takes precedence over any Theme provider in its ancestor chain.</Text>
+        </Text>
+        <View>
           <Theme name="cm-theme--win98">
             <CButton>Wrapper applies theme</CButton>
           </Theme>
           <Theme name="cm-theme--win98">
             <CButton theme="cm-theme--default">Prop overrides</CButton>
           </Theme>
-        </div>
-      </div>
+        </View>
+      </View>
     </ShowcaseSection>
   );
 }
@@ -242,16 +331,16 @@ function ButtonGroupShowcase(): React.ReactElement {
       testId="catalog-section-button-group"
       code={BUTTON_GROUP_SNIPPET}
     >
-      <div className="cm-catalog__stack">
-        <div className="cm-catalog__row">
+      <View className="cm-catalog__stack">
+        <View className="cm-catalog__row">
           <CButtonGroup data-testid="button-group-demo-horizontal" variant="primary">
             <CButton>Back</CButton>
             <CButton>Next</CButton>
             <CButtonSeparator />
             <CButton variant="ghost">Cancel</CButton>
           </CButtonGroup>
-        </div>
-        <div className="cm-catalog__row">
+        </View>
+        <View className="cm-catalog__row">
           <CButtonGroup data-testid="button-group-demo-vertical" orientation="vertical">
             <CButton>Top</CButton>
             <CButton>Middle</CButton>
@@ -264,8 +353,8 @@ function ButtonGroupShowcase(): React.ReactElement {
             <CButtonSeparator />
             <CButton variant="ghost">Reset</CButton>
           </CButtonGroup>
-        </div>
-      </div>
+        </View>
+      </View>
     </ShowcaseSection>
   );
 }
@@ -280,7 +369,7 @@ return (
       <CRadio value="orange">Orange</CRadio>
     </CRadioGroup>
 
-    <p>Selected fruit: {selectedFruit}</p>
+    <Text>Selected fruit: {selectedFruit}</Text>
   </>
 );
 `.trim();
@@ -296,7 +385,7 @@ return (
     <CCheckbox defaultChecked>Auto-save drafts</CCheckbox>
     <CCheckbox disabled>Disabled setting</CCheckbox>
 
-    <p>Notifications enabled: {notificationsEnabled ? 'Yes' : 'No'}</p>
+    <Text>Notifications enabled: {notificationsEnabled ? 'Yes' : 'No'}</Text>
   </>
 );
 `.trim();
@@ -306,7 +395,7 @@ function RadioGroupShowcase(): React.ReactElement {
 
   return (
     <ShowcaseSection title="RadioGroup" testId="catalog-section-radio" code={RADIOGROUP_SNIPPET}>
-      <div className="cm-catalog__stack">
+      <View className="cm-catalog__stack">
         <CRadioGroup
           aria-label="Favorite fruit"
           data-testid="radio-demo-fruit"
@@ -314,19 +403,19 @@ function RadioGroupShowcase(): React.ReactElement {
           value={selectedFruit}
           onChange={setSelectedFruit}
         >
-          <div className="cm-catalog__choice-row">
+          <View className="cm-catalog__choice-row">
             <CRadio value="apple">Apple</CRadio>
             <CRadio value="orange">Orange</CRadio>
-          </div>
+          </View>
         </CRadioGroup>
         <CRadioGroup name="fruit-disabled" defaultValue="apple" disabled>
-          <div className="cm-catalog__choice-row">
+          <View className="cm-catalog__choice-row">
             <CRadio value="apple">Apple disabled</CRadio>
             <CRadio value="orange">Orange disabled</CRadio>
-          </div>
+          </View>
         </CRadioGroup>
-        <p className="cm-catalog__value">Selected fruit: {selectedFruit}</p>
-      </div>
+        <Text className="cm-catalog__value">Selected fruit: {selectedFruit}</Text>
+      </View>
     </ShowcaseSection>
   );
 }
@@ -336,7 +425,7 @@ function CheckboxShowcase(): React.ReactElement {
 
   return (
     <ShowcaseSection title="Checkbox" testId="catalog-section-checkbox" code={CHECKBOX_SNIPPET}>
-      <div className="cm-catalog__stack">
+      <View className="cm-catalog__stack">
         <CCheckbox
           checked={notificationsEnabled}
           data-testid="checkbox-demo-notifications"
@@ -346,10 +435,10 @@ function CheckboxShowcase(): React.ReactElement {
         </CCheckbox>
         <CCheckbox defaultChecked>Auto-save drafts</CCheckbox>
         <CCheckbox disabled>Disabled setting</CCheckbox>
-        <p className="cm-catalog__value">
+        <Text className="cm-catalog__value">
           Notifications enabled: {notificationsEnabled ? 'Yes' : 'No'}
-        </p>
-      </div>
+        </Text>
+      </View>
     </ShowcaseSection>
   );
 }
@@ -361,7 +450,7 @@ return (
   <>
     <CSelect name="size" value={selectedSize} options={sizeOptions} onChange={setSelectedSize} />
 
-    <p>Selected size: {selectedSize}</p>
+    <Text>Selected size: {selectedSize}</Text>
   </>
 );
 `.trim();
@@ -373,7 +462,7 @@ return (
   <>
     <CSlider min={0} max={100} step={5} value={volume} onChange={setVolume} />
 
-    <p>Volume: {volume}</p>
+    <Text>Volume: {volume}</Text>
   </>
 );
 `.trim();
@@ -395,10 +484,10 @@ const [useDomScrollBar, setUseDomScrollBar] = React.useState(false);
   style={{ height: 180 }}
 >
   {activityItems.map((item) => (
-    <article key={item.title}>
-      <strong>{item.title}</strong>
-      <p>{item.detail}</p>
-    </article>
+    <View key={item.title}>
+      <Text style={{ fontWeight: 'bold' }}>{item.title}</Text>
+      <Text>{item.detail}</Text>
+    </View>
   ))}
 </CScrollArea>
 `.trim();
@@ -476,8 +565,8 @@ return (
       <CButton data-testid="menu-demo-trigger-mixed">Mixed Menu</CButton>
     </CMenu>
 
-    <p>Root opens on click, nested parents default to hover, and explicit item.trigger=&quot;click&quot; still overrides.</p>
-    <p>Selected: {selectedItem?.title ?? 'none'}</p>
+    <Text>Root opens on click, nested parents default to hover, and explicit item.trigger=&quot;click&quot; still overrides.</Text>
+    <Text>Selected: {selectedItem?.title ?? 'none'}</Text>
   </>
 );
 `.trim();
@@ -485,14 +574,14 @@ return (
 const TAB_SNIPPET = `
 <CTab>
   <CTabItem key="overview" title="Overview">
-    <p>Use arrow keys, Home, and End to move between tabs.</p>
-    <p>Panels preserve semantic tab roles and active state automatically.</p>
+    <Text>Use arrow keys, Home, and End to move between tabs.</Text>
+    <Text>Panels preserve semantic tab roles and active state automatically.</Text>
   </CTabItem>
   <CTabItem key="details" title="Details">
-    <p>Each tab panel can render any React content.</p>
+    <Text>Each tab panel can render any React content.</Text>
   </CTabItem>
   <CTabItem key="notes" title="Notes">
-    <p>CTab manages focus and selection internally.</p>
+    <Text>CTab manages focus and selection internally.</Text>
   </CTabItem>
 </CTab>
 `.trim();
@@ -502,7 +591,7 @@ function SelectShowcase(): React.ReactElement {
 
   return (
     <ShowcaseSection title="Select" testId="catalog-section-select" code={SELECT_SNIPPET}>
-      <div className="cm-catalog__stack">
+      <View className="cm-catalog__stack">
         <CSelect
           data-testid="select-demo-size"
           name="size"
@@ -511,8 +600,8 @@ function SelectShowcase(): React.ReactElement {
           onChange={setSelectedSize}
         />
         <CSelect name="size-disabled" value="large" options={SIZE_OPTIONS} disabled />
-        <p className="cm-catalog__value">Selected size: {selectedSize}</p>
-      </div>
+        <Text className="cm-catalog__value">Selected size: {selectedSize}</Text>
+      </View>
     </ShowcaseSection>
   );
 }
@@ -522,8 +611,8 @@ function SliderShowcase(): React.ReactElement {
 
   return (
     <ShowcaseSection title="Slider" testId="catalog-section-slider" code={CSLIDER_SNIPPET}>
-      <div className="cm-catalog__stack">
-        <div className="cm-catalog__slider-shell">
+      <View className="cm-catalog__stack">
+        <View className="cm-catalog__slider-shell">
           <CSlider
             data-testid="slider-demo"
             min={0}
@@ -537,11 +626,11 @@ function SliderShowcase(): React.ReactElement {
               thumb: 'cm-catalog__slider-thumb',
             }}
           />
-        </div>
-        <p className="cm-catalog__value" data-testid="slider-demo-value">
+        </View>
+        <Text className="cm-catalog__value" data-testid="slider-demo-value">
           Volume: {volume}
-        </p>
-        <div className="cm-catalog__slider-presets">
+        </Text>
+        <View className="cm-catalog__slider-presets">
           <CButton data-testid="slider-demo-min" compact onClick={() => setVolume(0)}>
             Min
           </CButton>
@@ -551,8 +640,8 @@ function SliderShowcase(): React.ReactElement {
           <CButton data-testid="slider-demo-max" compact onClick={() => setVolume(100)}>
             Max
           </CButton>
-        </div>
-      </div>
+        </View>
+      </View>
     </ShowcaseSection>
   );
 }
@@ -566,7 +655,7 @@ function ScrollAreaShowcase(): React.ReactElement {
       testId="catalog-section-scroll-area"
       code={SCROLL_AREA_SNIPPET}
     >
-      <div className="cm-catalog__stack">
+      <View className="cm-catalog__stack">
         <CCheckbox
           checked={useDomScrollBar}
           onChange={setUseDomScrollBar}
@@ -582,16 +671,16 @@ function ScrollAreaShowcase(): React.ReactElement {
           scrollBarComponent={useDomScrollBar ? CScrollBar : undefined}
         >
           {SCROLL_AREA_ACTIVITY_ITEMS.map((item) => (
-            <article key={item.title} className="cm-catalog__scroll-entry">
-              <h3 className="cm-catalog__scroll-entry-title">{item.title}</h3>
-              <p className="cm-catalog__scroll-entry-detail">{item.detail}</p>
-            </article>
+            <View key={item.title} className="cm-catalog__scroll-entry">
+              <Text className="cm-catalog__scroll-entry-title">{item.title}</Text>
+              <Text className="cm-catalog__scroll-entry-detail">{item.detail}</Text>
+            </View>
           ))}
         </CScrollArea>
-        <p className="cm-catalog__value">
+        <Text className="cm-catalog__value">
           Focus the area and use wheel, trackpad, or keyboard to scroll.
-        </p>
-      </div>
+        </Text>
+      </View>
     </ShowcaseSection>
   );
 }
@@ -601,22 +690,22 @@ function TabShowcase(): React.ReactElement {
     <ShowcaseSection title="Tab" testId="catalog-section-tab" code={TAB_SNIPPET}>
       <CTab data-testid="tab-demo">
         <CTabItem key="overview" title="Overview">
-          <div className="cm-catalog__stack">
-            <p>Use arrow keys, Home, and End to move between tabs.</p>
-            <p>Panels preserve semantic tab roles and active state automatically.</p>
-          </div>
+          <View className="cm-catalog__stack">
+            <Text>Use arrow keys, Home, and End to move between tabs.</Text>
+            <Text>Panels preserve semantic tab roles and active state automatically.</Text>
+          </View>
         </CTabItem>
         <CTabItem key="details" title="Details">
-          <div className="cm-catalog__stack">
-            <p>Each tab panel can render any React content.</p>
-            <p>Try switching tabs with mouse or keyboard.</p>
-          </div>
+          <View className="cm-catalog__stack">
+            <Text>Each tab panel can render any React content.</Text>
+            <Text>Try switching tabs with mouse or keyboard.</Text>
+          </View>
         </CTabItem>
         <CTabItem key="notes" title="Notes">
-          <div className="cm-catalog__stack">
-            <p>CTab manages focus and selection internally.</p>
-            <p>Use keyed items for stable tab and panel identifiers.</p>
-          </div>
+          <View className="cm-catalog__stack">
+            <Text>CTab manages focus and selection internally.</Text>
+            <Text>Use keyed items for stable tab and panel identifiers.</Text>
+          </View>
         </CTabItem>
       </CTab>
     </ShowcaseSection>
@@ -628,7 +717,7 @@ function MenuShowcase(): React.ReactElement {
 
   return (
     <ShowcaseSection title="Menu" testId="catalog-section-menu" code={MENU_SNIPPET}>
-      <div className="cm-catalog__stack">
+      <View className="cm-catalog__stack">
         <CMenu
           data-testid="menu-demo-mixed"
           trigger="click"
@@ -637,10 +726,23 @@ function MenuShowcase(): React.ReactElement {
         >
           <CButton data-testid="menu-demo-trigger-mixed">Mixed Menu</CButton>
         </CMenu>
-        <p className="cm-catalog__value">
-          Mixed mode: root opens on click, <strong>File</strong> opens on hover, and{' '}
-          <strong>View</strong> keeps click via <code>item.trigger=&quot;click&quot;</code>.
-        </p>
+        <Text className="cm-catalog__value">
+          Mixed mode: root opens on click, <Text style={{ fontWeight: 'bold' }}>File</Text> opens on
+          hover, and <Text style={{ fontWeight: 'bold' }}>View</Text> keeps click via{' '}
+          <Text
+            style={{
+              fontFamily: 'monospace', // 等宽字体
+              backgroundColor: '#f5f5f5',
+              paddingHorizontal: 6,
+              paddingVertical: 2,
+              borderRadius: 4,
+              fontSize: 14,
+            }}
+          >
+            item.trigger=&quot;click&quot;
+          </Text>
+          .
+        </Text>
         <CMenu
           data-testid="menu-demo"
           trigger="click"
@@ -657,8 +759,8 @@ function MenuShowcase(): React.ReactElement {
         >
           <CButton data-testid="menu-demo-trigger-hover">Hover Menu</CButton>
         </CMenu>
-        <p className="cm-catalog__value">Selected: {selectedItem?.title ?? 'none'}</p>
-      </div>
+        <Text className="cm-catalog__value">Selected: {selectedItem?.title ?? 'none'}</Text>
+      </View>
     </ShowcaseSection>
   );
 }
@@ -667,11 +769,11 @@ const WINDOW_SNIPPET =
   `const [actionButtonPosition, setActionButtonPosition] = useState<'left' | 'right'>('right');
 
 const actionButtons = (
-  <div className="cm-catalog__window-actions">
-    <button type="button">—</button>
-    <button type="button">□</button>
-    <button type="button">×</button>
-  </div>
+  <View className="cm-catalog__window-actions">
+    <CButton>—</CButton>
+    <CButton>□</CButton>
+    <CButton>×</CButton>
+  </View>
 );
 
 return (
@@ -691,8 +793,8 @@ return (
         Sample Window
       </CWindowTitle>
       <CWindowBody>
-        <p>Window content goes here.</p>
-        <p>Try dragging the title bar.</p>
+        <Text>Window content goes here.</Text>
+        <Text>Try dragging the title bar.</Text>
       </CWindowBody>
       <CStatusBar>
         <CStatusBarItem>Ready</CStatusBarItem>
@@ -716,7 +818,7 @@ function WindowShowcase(): React.ReactElement {
 
   const actionButtons = React.useMemo(
     () => (
-      <div className="cm-catalog__window-actions">
+      <View className="cm-catalog__window-actions">
         <CButton
           className="cm-catalog__window-action"
           data-testid="window-demo-minimize"
@@ -744,14 +846,14 @@ function WindowShowcase(): React.ReactElement {
         >
           ×
         </CButton>
-      </div>
+      </View>
     ),
     [handleWindowActionClick],
   );
 
   return (
     <ShowcaseSection title="Window" testId="catalog-section-window" code={WINDOW_SNIPPET}>
-      <div className="cm-catalog__stack">
+      <View className="cm-catalog__stack">
         <CRadioGroup
           aria-label="Window action button position"
           data-testid="window-demo-position"
@@ -759,12 +861,12 @@ function WindowShowcase(): React.ReactElement {
           value={actionButtonPosition}
           onChange={handleActionButtonPositionChange}
         >
-          <div className="cm-catalog__choice-row cm-catalog__window-position-choice-row">
+          <View className="cm-catalog__choice-row cm-catalog__window-position-choice-row">
             <CRadio value="left">Left</CRadio>
             <CRadio value="right">Right</CRadio>
-          </div>
+          </View>
         </CRadioGroup>
-        <div className="cm-catalog__stage cm-catalog__stage--relative">
+        <View className="cm-catalog__stage cm-catalog__stage--relative">
           <CWindow
             x={24}
             y={24}
@@ -776,51 +878,51 @@ function WindowShowcase(): React.ReactElement {
               Sample Window
             </CWindowTitle>
             <CWindowBody>
-              <p>Window content goes here.</p>
-              <p>Try dragging the title bar.</p>
+              <Text>Window content goes here.</Text>
+              <Text>Try dragging the title bar.</Text>
             </CWindowBody>
             <CStatusBar>
               <CStatusBarItem>Ready</CStatusBarItem>
               <CStatusBarItem>Line 12, Column 4</CStatusBarItem>
             </CStatusBar>
           </CWindow>
-        </div>
-      </div>
+        </View>
+      </View>
     </ShowcaseSection>
   );
 }
 
 const DOCK_SNIPPET = `<CDock position="top" height={48} className="cm-catalog__dock">
-  <div className="cm-catalog__dock-content">Dock content area</div>
+  <View className="cm-catalog__dock-content">Dock content area</View>
 </CDock>`.trim();
 
 function DockShowcase(): React.ReactElement {
   return (
     <ShowcaseSection title="Dock" testId="catalog-section-dock" code={DOCK_SNIPPET}>
-      <div className="cm-catalog__stage cm-catalog__stage--relative">
+      <View className="cm-catalog__stage cm-catalog__stage--relative">
         <CDock position="top" height={48} className="cm-catalog__dock">
-          <div className="cm-catalog__dock-content">Dock content area</div>
+          <Text className="cm-catalog__dock-content">Dock content area</Text>
         </CDock>
-        <div className="cm-catalog__dock-spacer" />
-      </div>
+        <View className="cm-catalog__dock-spacer" />
+      </View>
     </ShowcaseSection>
   );
 }
 
 const STARTBAR_SNIPPET =
   `<CStartBar data-testid="catalog-start-bar" height={32} className="cm-catalog__start-bar">
-  <span>Application shortcuts</span>
+  <Text>Application shortcuts</Text>
 </CStartBar>`.trim();
 
 function StartBarShowcase(): React.ReactElement {
   return (
     <ShowcaseSection title="StartBar" testId="catalog-section-start-bar" code={STARTBAR_SNIPPET}>
-      <div className="cm-catalog__stage cm-catalog__stage--relative">
-        <div className="cm-catalog__start-bar-spacer" />
+      <View className="cm-catalog__stage cm-catalog__stage--relative">
+        <View className="cm-catalog__start-bar-spacer" />
         <CStartBar data-testid="catalog-start-bar" height={32} className="cm-catalog__start-bar">
-          <span>Application shortcuts</span>
+          <Text>Application shortcuts</Text>
         </CStartBar>
-      </div>
+      </View>
     </ShowcaseSection>
   );
 }
@@ -875,7 +977,7 @@ return (
     data-testid="icon-container"
     iconList={[
       {
-        icon: <span>★</span>,
+        icon: <Text>★</Text>,
         title: 'Star',
         position: { x: 10, y: 10 },
         activeTrigger: 'click',
@@ -885,7 +987,7 @@ return (
         onContextMenu: () => setContextInfo('Heart context'),
       },
       {
-        icon: <span>♥</span>,
+        icon: <Text>♥</Text>,
         title: 'Heart',
         position: { x: 60, y: 10 },
         activeTrigger: 'hover',
@@ -906,6 +1008,7 @@ function IconShowcase(): React.ReactElement {
   const [coords, setCoords] = React.useState<Record<string, string>>({});
 
   const readIconPositions = React.useCallback(() => {
+    if (typeof document === 'undefined') return;
     const container = document.querySelector('[data-testid="icon-container"]');
     if (!container) return;
     const items = container.querySelectorAll('[data-testid^="icon-item-"]');
@@ -923,8 +1026,8 @@ function IconShowcase(): React.ReactElement {
 
   return (
     <ShowcaseSection title="Icon" testId="catalog-section-icon" code={ICON_SNIPPET}>
-      <div className="cm-catalog__stack">
-        <div
+      <View className="cm-catalog__stack">
+        <View
           className="cm-catalog__stage cm-catalog__stage--relative"
           style={{ minHeight: '80px' }}
         >
@@ -932,7 +1035,7 @@ function IconShowcase(): React.ReactElement {
             data-testid="icon-container"
             iconList={[
               {
-                icon: <span>★</span>,
+                icon: <Text>★</Text>,
                 title: 'Star',
                 position: { x: 10, y: 10 },
                 activeTrigger: 'click',
@@ -945,7 +1048,7 @@ function IconShowcase(): React.ReactElement {
                 onContextMenu: () => setContextInfo('Star context'),
               },
               {
-                icon: <span>♥</span>,
+                icon: <Text>♥</Text>,
                 title: 'Heart',
                 position: { x: 60, y: 10 },
                 activeTrigger: 'hover',
@@ -959,33 +1062,33 @@ function IconShowcase(): React.ReactElement {
               },
             ]}
           />
-        </div>
-        <div className="cm-catalog__row">
-          <span className="cm-catalog__label">Active:</span>
-          <span className="cm-catalog__value">{activeInfo ?? '—'}</span>
-        </div>
-        <div className="cm-catalog__row">
-          <span className="cm-catalog__label">Open:</span>
-          <span className="cm-catalog__value">{openInfo ?? '—'}</span>
-        </div>
-        <div className="cm-catalog__row">
-          <span className="cm-catalog__label">Context:</span>
-          <span className="cm-catalog__value">{contextInfo ?? '—'}</span>
-        </div>
-        <div className="cm-catalog__row">
-          <span className="cm-catalog__label">Coords:</span>
-          <span className="cm-catalog__value" data-testid="icon-coords-display">
+        </View>
+        <View className="cm-catalog__row">
+          <Text className="cm-catalog__label">Active:</Text>
+          <Text className="cm-catalog__value">{activeInfo ?? '—'}</Text>
+        </View>
+        <View className="cm-catalog__row">
+          <Text className="cm-catalog__label">Open:</Text>
+          <Text className="cm-catalog__value">{openInfo ?? '—'}</Text>
+        </View>
+        <View className="cm-catalog__row">
+          <Text className="cm-catalog__label">Context:</Text>
+          <Text className="cm-catalog__value">{contextInfo ?? '—'}</Text>
+        </View>
+        <View className="cm-catalog__row">
+          <Text className="cm-catalog__label">Coords:</Text>
+          <Text className="cm-catalog__value" data-testid="icon-coords-display">
             {Object.keys(coords).length > 0
               ? Object.entries(coords)
                   .map(([k, v]) => `${k}:${v}`)
                   .join(' | ')
               : '—'}
-          </span>
-          <button type="button" data-testid="icon-coords-refresh" onClick={readIconPositions}>
-            Refresh
-          </button>
-        </div>
-      </div>
+          </Text>
+          <Pressable type="button" data-testid="icon-coords-refresh" onClick={readIconPositions}>
+            <Text>Refresh</Text>
+          </Pressable>
+        </View>
+      </View>
     </ShowcaseSection>
   );
 }
@@ -1032,70 +1135,72 @@ function SplitAreaShowcase(): React.ReactElement {
       testId="catalog-section-split-area"
       code={SPLIT_AREA_SNIPPET}
     >
-      <div className="cm-catalog__stack">
-        <div className="cm-catalog__row">
+      <View className="cm-catalog__stack">
+        <View className="cm-catalog__row">
           <CButton
             data-testid="split-area-demo-toggle"
             onClick={() => setShowInspector((visible) => !visible)}
           >
             {showInspector ? '隐藏右侧区域' : '恢复右侧区域'}
           </CButton>
-          <span className="cm-catalog__value" data-testid="split-area-demo-status">
+          <Text className="cm-catalog__value" data-testid="split-area-demo-status">
             {showInspector ? '当前为三栏布局' : '当前为双栏布局'}
-          </span>
-        </div>
+          </Text>
+        </View>
 
-        <div className="cm-split-area-demo-shell">
+        <View className="cm-split-area-demo-shell">
           <CSplitArea
             data-testid="split-area-demo-root"
             direction="horizontal"
             separatorMovable
             className="cm-split-area-demo"
           >
-            <section className="cm-split-area-demo__panel cm-split-area-demo__panel--sidebar">
-              <h3 className="cm-split-area-demo__title">Explorer</h3>
-              <p className="cm-split-area-demo__text">导航区保持横向分割中的左侧面板。</p>
-            </section>
+            <View className="cm-split-area-demo__panel cm-split-area-demo__panel--sidebar">
+              <Text className="cm-split-area-demo__title">Explorer</Text>
+              <Text className="cm-split-area-demo__text">导航区保持横向分割中的左侧面板。</Text>
+            </View>
 
             <CSplitArea
               direction="vertical"
               separatorMovable
               className="cm-split-area-demo__nested"
             >
-              <section className="cm-split-area-demo__panel cm-split-area-demo__panel--editor">
-                <h3 className="cm-split-area-demo__title">Editor</h3>
-                <p className="cm-split-area-demo__text">
+              <View className="cm-split-area-demo__panel cm-split-area-demo__panel--editor">
+                <Text className="cm-split-area-demo__title">Editor</Text>
+                <Text className="cm-split-area-demo__text">
                   中间区域再按纵向拆分，模拟编辑器与输出区。
-                </p>
-              </section>
+                </Text>
+              </View>
 
               <CSplitArea
                 direction="horizontal"
                 separatorMovable
                 className="cm-split-area-demo__nested"
               >
-                <section className="cm-split-area-demo__panel cm-split-area-demo__panel--preview">
-                  <h3 className="cm-split-area-demo__title">Preview</h3>
-                  <p className="cm-split-area-demo__text">横向嵌套区域可继续拖动调整。</p>
-                </section>
-                <section className="cm-split-area-demo__panel cm-split-area-demo__panel--console">
-                  <h3 className="cm-split-area-demo__title">Console</h3>
-                  <p className="cm-split-area-demo__text">分割线支持拖动，方便观察比例变化。</p>
-                </section>
+                <View className="cm-split-area-demo__panel cm-split-area-demo__panel--preview">
+                  <Text className="cm-split-area-demo__title">Preview</Text>
+                  <Text className="cm-split-area-demo__text">横向嵌套区域可继续拖动调整。</Text>
+                </View>
+                <View className="cm-split-area-demo__panel cm-split-area-demo__panel--console">
+                  <Text className="cm-split-area-demo__title">Console</Text>
+                  <Text className="cm-split-area-demo__text">
+                    分割线支持拖动，方便观察比例变化。
+                  </Text>
+                </View>
               </CSplitArea>
             </CSplitArea>
 
             {showInspector ? (
-              <section className="cm-split-area-demo__panel cm-split-area-demo__panel--inspector">
-                <h3 className="cm-split-area-demo__title">Inspector</h3>
-                <p className="cm-split-area-demo__text">
+              <View className="cm-split-area-demo__panel cm-split-area-demo__panel--inspector">
+                <Text className="cm-split-area-demo__title">Inspector</Text>
+                <Text className="cm-split-area-demo__text">
                   点击按钮后该区域会被移除，并触发布局重算。
-                </p>
-              </section>
+                </Text>
+              </View>
             ) : null}
           </CSplitArea>
-        </div>
-      </div>
+        </View>
+      </View>
     </ShowcaseSection>
   );
 }
@@ -1105,18 +1210,18 @@ export function ComponentCatalog({
   onThemeChange,
 }: ComponentCatalogProps): React.ReactElement {
   return (
-    <div data-testid="component-catalog" className="cm-catalog">
+    <View data-testid="component-catalog" className="cm-catalog">
       <DevThemeRoot theme={theme} testId={null}>
-        <header className="cm-catalog__header">
-          <h1 className="cm-catalog__title">Component Catalog</h1>
+        <View className="cm-catalog__header">
+          <Text className="cm-catalog__title">Component Catalog</Text>
           <ThemeSwitcher theme={theme} onThemeChange={onThemeChange} />
-        </header>
+        </View>
       </DevThemeRoot>
 
-      <main className="cm-catalog__main">
+      <View className="cm-catalog__main">
         <ThemeShowcase />
         <DevThemeRoot theme={theme}>
-          <div className="cm-catalog__showcase-list">
+          <View className="cm-catalog__showcase-list">
             <ButtonShowcase />
             <ButtonGroupShowcase />
             <RadioGroupShowcase />
@@ -1132,9 +1237,9 @@ export function ComponentCatalog({
             <StartBarShowcase />
             <SplitAreaShowcase />
             <GridShowcase />
-          </div>
+          </View>
         </DevThemeRoot>
-      </main>
-    </div>
+      </View>
+    </View>
   );
 }

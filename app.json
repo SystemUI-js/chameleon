@@ -3,9 +3,7 @@
     "name": "Chameleon",
     "slug": "chameleon",
     "entryPoint": "./index.ts",
-    "platforms": [
-      "web"
-    ],
+    "platforms": ["web"],
     "web": {
       "bundler": "metro"
     }

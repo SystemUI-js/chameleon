@@ -1,15 +1,18 @@
 const toHex = (value: number): string => value.toString(16).padStart(2, '0');
 
 const getRandomBytes = (): Uint8Array => {
-  if (
-    typeof globalThis.crypto === 'undefined' ||
-    typeof globalThis.crypto.getRandomValues !== 'function'
-  ) {
-    throw new Error('Secure random generator is unavailable in the current environment.');
-  }
-
   const bytes = new Uint8Array(16);
-  globalThis.crypto.getRandomValues(bytes);
+
+  if (
+    typeof globalThis.crypto !== 'undefined' &&
+    typeof globalThis.crypto.getRandomValues === 'function'
+  ) {
+    globalThis.crypto.getRandomValues(bytes);
+  } else {
+    for (let i = 0; i < 16; i++) {
+      bytes[i] = (Math.random() * 256) | 0;
+    }
+  }
 
   return bytes;
 };

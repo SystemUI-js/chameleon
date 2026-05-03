@@ -1,4 +1,4 @@
-import { type ReactNode, useState } from 'react';
+import React, { type ReactNode, useState } from 'react';
 import {
   CButton,
   CButtonGroup,
@@ -8,7 +8,8 @@ import {
   CSelect,
   type CSelectOption,
 } from '@/components';
-import { DevThemeRoot, type DevThemeId } from '../themeSwitcher';
+import { View } from '../../runtime/react-native-web';
+import { type DevThemeId, DevThemeRoot } from '../themeSwitcher';
 import { readHarnessRoute } from './harnessRoute';
 
 const SIZE_OPTIONS: readonly CSelectOption[] = [
@@ -21,9 +22,9 @@ interface HarnessLayoutProps {
   readonly children: ReactNode;
 }
 
-const HarnessLayout = ({ children }: HarnessLayoutProps): JSX.Element => {
+const HarnessLayout = ({ children }: HarnessLayoutProps): React.JSX.Element => {
   return (
-    <main
+    <View
       style={{
         display: 'grid',
         gap: '16px',
@@ -32,11 +33,11 @@ const HarnessLayout = ({ children }: HarnessLayoutProps): JSX.Element => {
       }}
     >
       {children}
-    </main>
+    </View>
   );
 };
 
-const DefaultFixture = (): JSX.Element => {
+const DefaultFixture = (): React.JSX.Element => {
   const [selectedFruit, setSelectedFruit] = useState('apple');
   const [selectedSize, setSelectedSize] = useState('medium');
 
@@ -65,7 +66,7 @@ const DefaultFixture = (): JSX.Element => {
   );
 };
 
-const DisabledFixture = (): JSX.Element => {
+const DisabledFixture = (): React.JSX.Element => {
   return (
     <HarnessLayout>
       <CButton data-testid="button-demo-primary" disabled variant="primary">
@@ -92,7 +93,7 @@ const DisabledFixture = (): JSX.Element => {
   );
 };
 
-const GroupedButtonsFixture = (): JSX.Element => {
+const GroupedButtonsFixture = (): React.JSX.Element => {
   return (
     <HarnessLayout>
       <CButtonGroup data-testid="button-group-demo" variant="primary">
@@ -112,7 +113,7 @@ const GroupedButtonsFixture = (): JSX.Element => {
   );
 };
 
-const GroupedButtonsDisabledFixture = (): JSX.Element => {
+const GroupedButtonsDisabledFixture = (): React.JSX.Element => {
   return (
     <HarnessLayout>
       <CButtonGroup data-testid="button-group-disabled-demo" disabled variant="primary">
@@ -136,7 +137,7 @@ const GroupedButtonsDisabledFixture = (): JSX.Element => {
   );
 };
 
-const renderFixture = (fixture: string): JSX.Element => {
+const renderFixture = (fixture: string): React.JSX.Element => {
   switch (fixture) {
     case 'default':
       return <DefaultFixture />;
@@ -147,7 +148,7 @@ const renderFixture = (fixture: string): JSX.Element => {
     case 'grouped-buttons-disabled':
       return <GroupedButtonsDisabledFixture />;
     default:
-      return <div data-testid="fixture-error">Unknown fixture: {fixture}</div>;
+      return <View data-testid="fixture-error">Unknown fixture: {fixture}</View>;
   }
 };
 
@@ -156,15 +157,18 @@ interface ThemedFixtureContainerProps {
   readonly fixture: string;
 }
 
-const ThemedFixtureContainer = ({ theme, fixture }: ThemedFixtureContainerProps): JSX.Element => {
+const ThemedFixtureContainer = ({
+  theme,
+  fixture,
+}: ThemedFixtureContainerProps): React.JSX.Element => {
   return (
     <DevThemeRoot theme={theme}>
-      <div style={{ padding: '24px' }}>{renderFixture(fixture)}</div>
+      <View style={{ padding: '24px' }}>{renderFixture(fixture)}</View>
     </DevThemeRoot>
   );
 };
 
-export const CommonControlsHarnessApp = (): JSX.Element => {
+export const CommonControlsHarnessApp = (): React.JSX.Element => {
   const route = readHarnessRoute();
 
   return <ThemedFixtureContainer theme={route.theme} fixture={route.fixture} />;
