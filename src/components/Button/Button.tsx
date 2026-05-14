@@ -1,5 +1,4 @@
 import type React from 'react';
-import { Pressable, type StyleProp, type ViewStyle } from 'react-native';
 import { mergeClasses } from '../Theme/mergeClasses';
 import { normalizeThemeClassName } from '../Theme/normalizeThemeClassName';
 import { useTheme } from '../Theme/useTheme';
@@ -8,8 +7,7 @@ import './index.scss';
 export type CButtonVariant = 'default' | 'primary' | 'ghost';
 export type CButtonType = 'button' | 'submit' | 'reset';
 
-export interface CButtonProps
-  extends Omit<React.ButtonHTMLAttributes<HTMLButtonElement>, 'type' | 'style'> {
+export interface CButtonProps extends Omit<React.ButtonHTMLAttributes<HTMLButtonElement>, 'type'> {
   variant?: CButtonVariant;
   compact?: boolean;
   type?: CButtonType;
@@ -18,7 +16,6 @@ export interface CButtonProps
   onPointerEnter?: React.PointerEventHandler<HTMLButtonElement>;
   className?: string;
   theme?: string;
-  style?: StyleProp<ViewStyle>;
   'data-testid'?: string;
 }
 
@@ -37,11 +34,6 @@ export function CButton({
 }: CButtonProps): React.ReactElement {
   const resolvedTheme = normalizeThemeClassName(useTheme(theme));
   const baseClasses = ['cm-button'];
-  const handlePointerEnter: React.MouseEventHandler<HTMLElement> = (event): void => {
-    if (onPointerEnter !== undefined) {
-      onPointerEnter(event as unknown as React.PointerEvent<HTMLButtonElement>);
-    }
-  };
 
   if (variant !== 'default') {
     baseClasses.push(`cm-button--${variant}`);
@@ -52,16 +44,16 @@ export function CButton({
   }
 
   return (
-    <Pressable
+    <button
       {...buttonProps}
-      testID={dataTestId}
       type={type}
       disabled={disabled}
       onClick={onClick}
-      onMouseEnter={onPointerEnter === undefined ? undefined : handlePointerEnter}
+      onPointerEnter={onPointerEnter}
       className={mergeClasses(baseClasses, resolvedTheme, className)}
+      data-testid={dataTestId}
     >
       {children}
-    </Pressable>
+    </button>
   );
 }

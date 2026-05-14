@@ -1,8 +1,7 @@
+import { Drag, type Pose } from '@system-ui-js/multi-drag';
 import React from 'react';
-import { Pressable, Text, View, type StyleProp, type ViewStyle } from 'react-native';
+import { mergeClasses, ResolvedThemeClassName } from '../Theme';
 import { WidgetInteractionBehavior, type WidgetFrameMovePosition } from '../Widget/Widget';
-import { mergeClasses } from '../Theme/mergeClasses';
-import { normalizeThemeClassName } from '../Theme/normalizeThemeClassName';
 
 export type WindowPosition = WidgetFrameMovePosition;
 export type WindowTitleActionButtonPosition = 'left' | 'right';
@@ -11,12 +10,12 @@ export interface CWindowTitleProps {
   children?: React.ReactNode;
   className?: string;
   theme?: string;
-  style?: StyleProp<ViewStyle>;
+  style?: React.CSSProperties;
   moveBehavior?: WidgetInteractionBehavior;
   onWindowMove?: (position: WindowPosition) => void;
   onWindowMovePreview?: (position: WindowPosition) => void;
   onWindowMovePreviewClear?: () => void;
-  getWindowPose?: () => { x: number; y: number; width: number; height: number };
+  getWindowPose?: () => Pose;
   actionButton?: React.ReactNode;
   actionButtonPosition?: WindowTitleActionButtonPosition;
 }
@@ -26,172 +25,262 @@ export interface WindowTitleBarTextProps {
 }
 
 export const WindowTitleBarText: React.FC<WindowTitleBarTextProps> = ({ children }) => (
-  <Text testID="window-title-text" className="cm-window__title-bar__text">
+  <span data-testid="window-title-text" className="cm-window__title-bar__text">
     {children}
-  </Text>
+  </span>
 );
 
 export class CWindowTitle extends React.Component<CWindowTitleProps> {
-  private activeDrag: {
-    pointer: { x: number; y: number };
-    pose: { x: number; y: number; width: number; height: number };
-  } | null = null;
+  protected readonly titleRef = React.createRef<HTMLDivElement>();
+  protected readonly controlsRef = React.createRef<HTMLDivElement>();
+  private drag?: Drag;
+  private isDragActive = false;
+  private dragStartPosition?: WindowPosition;
+  private pendingOutlinePosition?: WindowPosition;
+  private outlineDragCancelled = false;
+  private suppressDragSession = false;
 
-  private dragMoved = false;
+  public componentDidMount(): void {
+    this.isDragActive = true;
+    const element = this.titleRef.current;
 
-  private isControlTarget(target: EventTarget | null): boolean {
-    if (!(target instanceof HTMLElement)) {
-      return false;
+    if (!element) {
+      return;
     }
 
-    return (
-      target.closest('[data-testid="window-title-controls"]') !== null ||
-      target.closest('button,[role="button"],a,input,select,textarea') !== null
-    );
+    this.drag = new Drag(element, {
+      getPose: () => this.getEffectivePose(element),
+      setPose: (_element, pose) => {
+        this.handleDragPose(pose);
+      },
+      setPoseOnEnd: (_element, pose) => {
+        this.handleDragEnd(pose);
+      },
+    });
   }
 
   public componentWillUnmount(): void {
-    this.detachDragListeners();
+    if (this.getMoveBehavior() === WidgetInteractionBehavior.Outline) {
+      this.props.onWindowMovePreviewClear?.();
+    }
+
+    this.resetDragState();
+    this.isDragActive = false;
+    const activeDrag = this.drag;
+    activeDrag?.setDisabled();
+    this.drag = undefined;
   }
 
-  private handleWindowMouseMove = (event: MouseEvent): void => {
-    if (this.activeDrag === null) {
+  private getMoveBehavior(): WidgetInteractionBehavior {
+    return this.props.moveBehavior === WidgetInteractionBehavior.Outline
+      ? WidgetInteractionBehavior.Outline
+      : WidgetInteractionBehavior.Live;
+  }
+
+  private resetDragState(): void {
+    this.dragStartPosition = undefined;
+    this.pendingOutlinePosition = undefined;
+  }
+
+  private cancelOutlineDrag(): void {
+    if (this.getMoveBehavior() === WidgetInteractionBehavior.Outline) {
+      this.outlineDragCancelled = true;
+      this.props.onWindowMovePreviewClear?.();
+    }
+
+    this.resetDragState();
+  }
+
+  private isEventWithinControls(target: EventTarget | null): boolean {
+    const controls = this.controlsRef.current;
+
+    return controls !== null && target instanceof Node && controls.contains(target);
+  }
+
+  private handlePointerDown = (event: React.PointerEvent<HTMLDivElement>): void => {
+    if (event.button !== 0) {
       return;
     }
 
-    const deltaX = event.clientX - this.activeDrag.pointer.x;
-    const deltaY = event.clientY - this.activeDrag.pointer.y;
-    const nextPosition = {
-      x: this.activeDrag.pose.x + deltaX,
-      y: this.activeDrag.pose.y + deltaY,
-    };
-
-    this.dragMoved = true;
-
-    if (this.props.moveBehavior === WidgetInteractionBehavior.Outline) {
-      this.props.onWindowMovePreview?.(nextPosition);
+    if (this.isEventWithinControls(event.target)) {
+      this.suppressDragSession = true;
+      this.outlineDragCancelled = false;
+      this.resetDragState();
+      this.props.onWindowMovePreviewClear?.();
       return;
     }
 
-    this.props.onWindowMove?.(nextPosition);
+    this.suppressDragSession = false;
+
+    const pose = this.getEffectivePose(event.currentTarget);
+    const { position } = pose;
+
+    if (!position) {
+      this.resetDragState();
+      return;
+    }
+
+    this.dragStartPosition = { x: position.x, y: position.y };
+    this.pendingOutlinePosition = undefined;
+    this.outlineDragCancelled = false;
+
+    if (this.getMoveBehavior() === WidgetInteractionBehavior.Outline) {
+      this.props.onWindowMovePreviewClear?.();
+    }
   };
 
-  private handleWindowMouseUp = (event: MouseEvent): void => {
-    if (this.activeDrag === null) {
+  private handlePointerCancel = (event: React.PointerEvent<HTMLDivElement>): void => {
+    if (this.suppressDragSession || this.isEventWithinControls(event.target)) {
+      this.suppressDragSession = false;
+      this.outlineDragCancelled = false;
+      this.resetDragState();
+      this.props.onWindowMovePreviewClear?.();
       return;
     }
 
-    const deltaX = event.clientX - this.activeDrag.pointer.x;
-    const deltaY = event.clientY - this.activeDrag.pointer.y;
-    const nextPosition = {
-      x: this.activeDrag.pose.x + deltaX,
-      y: this.activeDrag.pose.y + deltaY,
-    };
+    this.cancelOutlineDrag();
+  };
 
-    if (this.dragMoved || this.props.moveBehavior === WidgetInteractionBehavior.Outline) {
-      this.props.onWindowMove?.(nextPosition);
+  private handleDragPose(pose: Partial<Pose>): void {
+    if (!this.isDragActive || this.suppressDragSession) {
+      return;
+    }
+
+    const { position } = pose;
+
+    if (!position) {
+      return;
+    }
+
+    if (this.getMoveBehavior() === WidgetInteractionBehavior.Outline) {
+      this.pendingOutlinePosition = { x: position.x, y: position.y };
+      this.props.onWindowMovePreview?.(this.pendingOutlinePosition);
+      return;
+    }
+
+    this.props.onWindowMove?.({ x: position.x, y: position.y });
+  }
+
+  private handleDragEnd(pose: Partial<Pose>): void {
+    if (!this.isDragActive) {
+      return;
+    }
+
+    if (this.suppressDragSession) {
+      this.suppressDragSession = false;
+      this.outlineDragCancelled = false;
+      this.resetDragState();
+      this.props.onWindowMovePreviewClear?.();
+      return;
+    }
+
+    if (this.getMoveBehavior() !== WidgetInteractionBehavior.Outline) {
+      this.outlineDragCancelled = false;
+      this.resetDragState();
+      return;
+    }
+
+    if (this.outlineDragCancelled) {
+      this.outlineDragCancelled = false;
+      this.props.onWindowMovePreviewClear?.();
+      this.resetDragState();
+      return;
+    }
+
+    const endPosition = pose.position
+      ? { x: pose.position.x, y: pose.position.y }
+      : this.pendingOutlinePosition;
+
+    const hasMovement =
+      this.dragStartPosition !== undefined &&
+      endPosition !== undefined &&
+      (this.dragStartPosition.x !== endPosition.x || this.dragStartPosition.y !== endPosition.y);
+
+    if (hasMovement && endPosition) {
+      this.props.onWindowMove?.(endPosition);
     }
 
     this.props.onWindowMovePreviewClear?.();
-    this.detachDragListeners();
-    this.activeDrag = null;
-    window.setTimeout(() => {
-      this.dragMoved = false;
-    }, 0);
-  };
-
-  private detachDragListeners(): void {
-    window.removeEventListener('mousemove', this.handleWindowMouseMove);
-    window.removeEventListener('mouseup', this.handleWindowMouseUp);
+    this.outlineDragCancelled = false;
+    this.resetDragState();
   }
 
-  private handleMouseDown = (event: React.MouseEvent<HTMLElement>): void => {
-    if (this.isControlTarget(event.target)) {
-      return;
+  protected getEffectivePose(element: HTMLElement): Pose {
+    const explicitPose = this.props.getWindowPose?.();
+
+    if (explicitPose) {
+      return explicitPose;
     }
 
-    const pose = this.props.getWindowPose?.();
-    if (pose === undefined) {
-      return;
-    }
-
-    event.preventDefault();
-
-    this.activeDrag = {
-      pointer: { x: event.clientX, y: event.clientY },
-      pose,
+    const rect = element.getBoundingClientRect();
+    return {
+      position: { x: rect.left, y: rect.top },
+      width: rect.width,
+      height: rect.height,
     };
-    this.dragMoved = false;
+  }
 
-    if (this.props.moveBehavior === WidgetInteractionBehavior.Outline) {
-      this.props.onWindowMovePreview?.({ x: pose.x, y: pose.y });
-    }
+  protected renderTitle(content: React.ReactNode, className?: string): React.ReactElement {
+    const actionButtonPosition = this.props.actionButtonPosition ?? 'right';
+    const actionButtonContent = React.Children.toArray(this.props.actionButton);
+    const hasActionButton = actionButtonContent.length > 0;
+    const shouldWrapTitleText =
+      React.Children.count(content) === 1 &&
+      (typeof content === 'string' || typeof content === 'number');
 
-    window.addEventListener('mousemove', this.handleWindowMouseMove);
-    window.addEventListener('mouseup', this.handleWindowMouseUp);
-  };
-
-  private handlePress = (): void => {
-    if (this.dragMoved) {
-      return;
-    }
-
-    this.props.onWindowMovePreviewClear?.();
-  };
-
-  public render(): React.ReactElement {
-    const resolvedTheme = normalizeThemeClassName(this.props.theme);
-    const hasActionButton = React.Children.count(this.props.actionButton) > 0;
-    const controlsClassName = mergeClasses(
-      ['cm-window__title-bar__controls'],
-      resolvedTheme,
-      this.props.actionButtonPosition === 'left'
-        ? 'cm-window__title-bar__controls--left'
-        : 'cm-window__title-bar__controls--right',
+    const titleContent = shouldWrapTitleText ? (
+      <WindowTitleBarText>{content}</WindowTitleBarText>
+    ) : (
+      content
     );
-    const titleContent =
-      React.Children.count(this.props.children) === 1 &&
-      (typeof this.props.children === 'string' || typeof this.props.children === 'number') ? (
-        <WindowTitleBarText>{this.props.children}</WindowTitleBarText>
-      ) : (
-        this.props.children
-      );
     const controls = hasActionButton ? (
-      <View testID="window-title-controls" className={controlsClassName}>
+      <div
+        ref={this.controlsRef}
+        data-testid="window-title-controls"
+        className={mergeClasses([
+          'cm-window__title-bar__controls',
+          `cm-window__title-bar__controls--${actionButtonPosition}`,
+        ])}
+      >
         {this.props.actionButton}
-      </View>
+      </div>
     ) : null;
 
     return (
-      <Pressable
-        testID="window-title"
-        accessibilityRole="none"
-        onMouseDown={this.handleMouseDown}
-        onPress={this.handlePress}
-        style={this.props.style}
-        className={mergeClasses(
-          ['cm-window__title-bar'],
-          resolvedTheme,
-          [
-            hasActionButton ? 'cm-window__title-bar--with-controls' : undefined,
-            this.props.className,
-          ]
-            .filter(Boolean)
-            .join(' '),
+      <ResolvedThemeClassName theme={this.props.theme}>
+        {(theme) => (
+          <div
+            ref={this.titleRef}
+            onPointerDown={this.handlePointerDown}
+            onPointerCancel={this.handlePointerCancel}
+            data-testid="window-title"
+            className={mergeClasses(
+              hasActionButton
+                ? ['cm-window__title-bar', 'cm-window__title-bar--with-controls']
+                : ['cm-window__title-bar'],
+              theme,
+              className,
+            )}
+            style={this.props.style}
+          >
+            {hasActionButton && actionButtonPosition === 'left' ? (
+              <>
+                {controls}
+                {titleContent}
+              </>
+            ) : (
+              <>
+                {titleContent}
+                {controls}
+              </>
+            )}
+          </div>
         )}
-      >
-        {this.props.actionButtonPosition === 'left' ? (
-          <>
-            {controls}
-            {titleContent}
-          </>
-        ) : (
-          <>
-            {titleContent}
-            {controls}
-          </>
-        )}
-      </Pressable>
+      </ResolvedThemeClassName>
     );
+  }
+
+  public render(): React.ReactElement {
+    return this.renderTitle(this.props.children, this.props.className);
   }
 }

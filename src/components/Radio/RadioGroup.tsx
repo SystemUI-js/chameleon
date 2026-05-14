@@ -1,5 +1,4 @@
 import React from 'react';
-import { View } from 'react-native';
 import { mergeClasses } from '../Theme/mergeClasses';
 import { normalizeThemeClassName } from '../Theme/normalizeThemeClassName';
 import { useTheme } from '../Theme/useTheme';
@@ -15,8 +14,6 @@ export interface CRadioGroupProps {
   children?: React.ReactNode;
   className?: string;
   theme?: string;
-  'aria-label'?: string;
-  'aria-labelledby'?: string;
   'data-testid'?: string;
 }
 
@@ -40,8 +37,6 @@ export function CRadioGroup({
   children,
   className,
   theme,
-  'aria-label': ariaLabel,
-  'aria-labelledby': ariaLabelledBy,
   'data-testid': dataTestId,
 }: CRadioGroupProps): React.ReactElement {
   const resolvedTheme = normalizeThemeClassName(useTheme(theme));
@@ -86,16 +81,9 @@ export function CRadioGroup({
 
   return (
     <RadioGroupContext.Provider value={contextValue}>
-      <View
-        role="radiogroup"
-        aria-label={ariaLabel}
-        aria-labelledby={ariaLabelledBy}
-        aria-required={required || undefined}
-        className={mergeClasses(baseClasses, resolvedTheme, className)}
-        testID={dataTestId}
-      >
+      <div className={mergeClasses(baseClasses, resolvedTheme, className)} data-testid={dataTestId}>
         {children}
-      </View>
+      </div>
     </RadioGroupContext.Provider>
   );
 }

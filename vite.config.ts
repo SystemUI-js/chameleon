@@ -3,17 +3,10 @@ import react from '@vitejs/plugin-react';
 import dts from 'vite-plugin-dts';
 import { fileURLToPath, URL } from 'node:url';
 
-export default defineConfig(({ command }) => ({
+export default defineConfig({
   resolve: {
     alias: {
       '@': fileURLToPath(new URL('./src', import.meta.url)),
-      ...(command === 'serve'
-        ? {
-            'react-native': fileURLToPath(
-              new URL('./src/runtime/react-native-web.tsx', import.meta.url),
-            ),
-          }
-        : {}),
     },
   },
   plugins: [
@@ -22,7 +15,7 @@ export default defineConfig(({ command }) => ({
       entryRoot: 'src',
       outDir: 'dist',
       insertTypesEntry: true,
-      tsconfigPath: './tsconfig.build.json',
+      tsconfigPath: './tsconfig.json',
     }),
   ],
   server: {
@@ -37,14 +30,13 @@ export default defineConfig(({ command }) => ({
       formats: ['es', 'umd'],
     },
     rollupOptions: {
-      external: ['react', 'react-dom', 'react-native'],
+      external: ['react', 'react-dom'],
       output: {
         globals: {
           react: 'React',
           'react-dom': 'ReactDOM',
-          'react-native': 'ReactNative',
         },
       },
     },
   },
-}));
+});

@@ -1,4 +1,5 @@
 import type { ReactNode } from 'react';
+import { createRoot } from 'react-dom/client';
 import { CIconContainer } from '@/components/Icon/IconContainer';
 import { CWindow } from '@/components/Window/Window';
 import {
@@ -12,7 +13,7 @@ import { readHarnessRoute } from './harnessRoute';
 
 const handleWindowActionClick = (): void => {};
 
-const renderWindowActionButtons = (): JSX.Element => {
+const renderWindowActionButtons = (): ReactNode => {
   return (
     <div className="cm-catalog__window-actions">
       <button
@@ -184,8 +185,14 @@ const renderFixture = (fixture: string): ReactNode => {
   }
 };
 
-export const WindowHarnessApp = (): JSX.Element => {
+const App = () => {
   const route = readHarnessRoute();
 
   return <DevThemeRoot theme={route.theme}>{renderFixture(route.fixture)}</DevThemeRoot>;
 };
+
+const container = document.getElementById('root');
+if (container) {
+  const root = createRoot(container);
+  root.render(<App />);
+}

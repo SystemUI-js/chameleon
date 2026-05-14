@@ -7,7 +7,6 @@ import {
   gotoWin98DisabledCommonControls,
   gotoWin98GroupedButtons,
   readCommonControlsRadioValue,
-  readCommonControlsSelectValue,
 } from './common-controls.helpers';
 
 test('default fixture exposes baseline controls state', async ({ page }) => {
@@ -15,7 +14,7 @@ test('default fixture exposes baseline controls state', async ({ page }) => {
 
   await expect(page.getByTestId('button-demo-primary')).toBeVisible();
   await expect(readCommonControlsRadioValue(page)).resolves.toBe('apple');
-  await expect(readCommonControlsSelectValue(page)).resolves.toBe('medium');
+  await expect(page.getByTestId('select-demo-size')).toHaveValue('medium');
 });
 
 test('disabled fixture exposes disabled controls state', async ({ page }) => {
@@ -191,7 +190,9 @@ test.describe('Win98 controls', () => {
 
   test.describe('Radio', () => {
     test('has correct Win98 radio appearance', async ({ page }) => {
-      const radioInput = page.locator('[data-testid="radio-demo-fruit"] .cm-radio__input').first();
+      const radioInput = page
+        .locator('[data-testid="radio-demo-fruit"] input[type="radio"]')
+        .first();
 
       const borderColor = await radioInput.evaluate((el) => {
         const styles = window.getComputedStyle(el);
@@ -207,12 +208,13 @@ test.describe('Win98 controls', () => {
     });
 
     test('checked radio shows centered black dot', async ({ page }) => {
-      const radioApple = page.locator('[data-testid="radio-demo-fruit"] .cm-radio').first();
-      const radioInput = radioApple.locator('.cm-radio__input');
+      const radioApple = page
+        .locator('[data-testid="radio-demo-fruit"] input[type="radio"]')
+        .first();
 
-      await expect(radioInput).toBeChecked();
+      await expect(radioApple).toBeChecked();
 
-      const backgroundImage = await radioInput.evaluate((el) => {
+      const backgroundImage = await radioApple.evaluate((el) => {
         const styles = window.getComputedStyle(el);
         return styles.backgroundImage;
       });
@@ -222,7 +224,9 @@ test.describe('Win98 controls', () => {
     });
 
     test('has 12px size', async ({ page }) => {
-      const radioInput = page.locator('[data-testid="radio-demo-fruit"] .cm-radio__input').first();
+      const radioInput = page
+        .locator('[data-testid="radio-demo-fruit"] input[type="radio"]')
+        .first();
 
       const dimensions = await radioInput.evaluate((el) => {
         const styles = window.getComputedStyle(el);
@@ -248,10 +252,11 @@ test.describe('Win98 controls', () => {
     });
 
     test('has focus outline', async ({ page }) => {
-      const radioRoot = page.locator('[data-testid="radio-demo-fruit"] .cm-radio').first();
-      const radioInput = radioRoot.locator('.cm-radio__input');
+      const radioInput = page
+        .locator('[data-testid="radio-demo-fruit"] input[type="radio"]')
+        .first();
 
-      await radioRoot.focus();
+      await radioInput.focus();
 
       const outline = await radioInput.evaluate((el) => {
         const styles = window.getComputedStyle(el);

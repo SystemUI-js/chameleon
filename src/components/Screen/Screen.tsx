@@ -1,5 +1,4 @@
 import React from 'react';
-import { View } from 'react-native';
 import { generateUUID } from '@/utils/uuid';
 import { CGrid } from '../Grid';
 
@@ -18,17 +17,17 @@ export class CScreen extends React.Component<CScreenProps> {
     const { children, className, screenClassName, systemType, theme } = this.props;
 
     return (
-      <View
-        testID="screen-root"
+      <div
+        data-testid="screen-root"
         className={className}
         data-system-type={systemType}
         data-theme={theme}
-        style={{ position: 'relative', width: '100%', minHeight: '100%', flexGrow: 1 }}
+        style={{ position: 'relative', width: '100%', minHeight: '100vh' }}
       >
         <CGrid grid={[3, 3]} className={screenClassName ? `c-grid ${screenClassName}` : undefined}>
           {children}
         </CGrid>
-      </View>
+      </div>
     );
   }
 }

@@ -1,5 +1,4 @@
 import React from 'react';
-import { View } from 'react-native';
 import { isManagedConstructor } from '../Manager/isManagedConstructor';
 import { CScreen } from './Screen';
 
@@ -78,7 +77,7 @@ export class CScreenManager extends React.Component<CScreenManagerProps> {
     const registeredScreens = Array.from(this.registeredScreenConstructors);
 
     return (
-      <View>{registeredScreens.map((ScreenCtor) => this.renderRegisteredScreen(ScreenCtor))}</View>
+      <div>{registeredScreens.map((ScreenCtor) => this.renderRegisteredScreen(ScreenCtor))}</div>
     );
   }
 

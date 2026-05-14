@@ -1,5 +1,4 @@
 import type React from 'react';
-import { View } from 'react-native';
 import { mergeClasses } from '../Theme/mergeClasses';
 import { useTheme } from '../Theme/useTheme';
 import './index.scss';
@@ -31,10 +30,10 @@ export function CButtonSeparator({
   const baseClasses = ['cm-button-separator', `cm-button-separator--${orientation}`];
 
   return (
-    <View
+    <span
       aria-hidden="true"
       className={mergeClasses(baseClasses, resolvedTheme, className)}
-      testID={dataTestId}
+      data-testid={dataTestId}
     />
   );
 }

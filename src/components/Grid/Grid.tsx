@@ -1,5 +1,4 @@
 import React from 'react';
-import { View, type StyleProp, type ViewStyle } from 'react-native';
 import { mergeClasses, ResolvedThemeClassName } from '../Theme';
 import './index.scss';
 
@@ -7,7 +6,7 @@ interface Props {
   grid: [number, number];
   className?: string;
   theme?: string;
-  style?: StyleProp<ViewStyle>;
+  style?: React.CSSProperties;
   children?: React.ReactNode;
   initGridSize?: {
     rows: string[];
@@ -40,7 +39,7 @@ export class CGrid extends React.Component<Props, State> {
     return (
       <ResolvedThemeClassName theme={this.props.theme}>
         {(theme) => (
-          <View
+          <div
             className={mergeClasses(['cm-grid'], theme, this.props.className)}
             style={{
               ...this.props.style,
@@ -49,7 +48,7 @@ export class CGrid extends React.Component<Props, State> {
             }}
           >
             {children}
-          </View>
+          </div>
         )}
       </ResolvedThemeClassName>
     );
@@ -69,7 +68,7 @@ export class CGrid extends React.Component<Props, State> {
 interface GridItemProps {
   parentGrid: Props['grid'];
   grid: [number, number, number, number];
-  style?: StyleProp<ViewStyle>;
+  style?: React.CSSProperties;
   className?: string;
   theme?: string;
   children?: React.ReactNode;
@@ -80,7 +79,7 @@ export class CGridItem extends React.Component<GridItemProps> {
     return (
       <ResolvedThemeClassName theme={this.props.theme}>
         {(theme) => (
-          <View
+          <div
             className={mergeClasses(['cm-grid-item'], theme, this.props.className)}
             style={{
               ...this.props.style,
@@ -91,7 +90,7 @@ export class CGridItem extends React.Component<GridItemProps> {
             }}
           >
             {this.props.children}
-          </View>
+          </div>
         )}
       </ResolvedThemeClassName>
     );

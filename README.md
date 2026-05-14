@@ -7,12 +7,10 @@ Chameleon
 快速开始
 
 - 安装依赖：yarn
-- 本地开发：`yarn dev`（Expo Web 预览，默认端口 `5673`）
+- 本地开发：yarn dev（打开浏览器访问提示地址）
 - 代码检查与格式化：yarn lint / yarn lint:fix / yarn format
 - 运行测试：yarn test
-- 构建组件库：`yarn build`（Vite 库产物输出到 `dist/`）
-- 导出 Web 预览：`yarn build:web`（Expo Web 静态导出到 `dist-web/`）
-- 兼容旧 Vite 夹具：`yarn dev:vite`
+- 构建组件库：yarn build（产物输出到 dist/）
 
 目录结构
 
@@ -22,20 +20,12 @@ Chameleon
 │   ├── components/    # 组件源码
 │   ├── types/         # 类型声明
 │   ├── theme/          # 主题定义与 CSS 变量
-│   ├── dev/            # Expo Web 预览页面与 Vite 兼容夹具
+│   ├── dev/            # Vite 开发预览入口
 │   └── index.ts        # 库导出入口
 ├── tests/             # 测试文件
 ├── dist/               # 构建产物 (自动生成)
 └── .github/workflows/  # CI/CD
 ```
-
-Expo Web 预览基线
-
-- 默认浏览器预览入口已切换为 Expo Web：`yarn dev` 会启动 Metro，并通过根 `App.tsx` 按路径分发到组件目录页或 Playwright harness。
-- 旧的 HTML 夹具链路仍可通过 `yarn dev:vite` 使用，便于在 Expo 迁移过程中排查差异。
-- SCSS 兼容策略：保留现有 `.scss` 直引模式，并在 `metro.config.cjs` 中显式启用 CSS；由于 Expo Web 对 Sass 仅提供部分支持，当前约束是继续使用已有的单文件 SCSS，不新增复杂的 `@import` / `@forward` 依赖链。
-- `className` 兼容策略：现有 DOM 组件与 catalog/harness 中的 `className` 写法保持不变，由 Expo Web 的浏览器渲染链路直接承接。
-- React Native 宿主边界：窗口 / 拖拽链首批组件（`CSlider`、`CSplitArea`、`CIconContainer`、`CWidget`、`CWindow`、`CWindowManager`、`CWindowTitle`、`CStartBar`）以及轻量宿主组件（`CButton`、`CButtonGroup`、`CButtonSeparator`、`CScrollArea`、`CStatusBar`、`CStatusBarItem`、`Theme` wrapper、`CWindowBody`）已切到 `react-native` primitives，并通过 Expo Web 与 Jest mock 在浏览器环境运行；其余组件仍沿用当前 DOM + SCSS 方案，后续继续收敛。
 
 发布与使用
 
@@ -122,11 +112,11 @@ import { CButton } from '@system-ui-js/chameleon';
 `CWindow` 不会隐式注入标题栏，使用时需要显式组合 `CWindowTitle`。
 
 ```tsx
-import { CWindow, CWindowBody, CWindowTitle } from '@system-ui-js/chameleon';
+import { CWindow, CWindowTitle } from '@system-ui-js/chameleon';
 
 <CWindow x={24} y={24} width={320} height={220}>
   <CWindowTitle>My Window</CWindowTitle>
-  <CWindowBody>Window body</CWindowBody>
+  <div>Window body</div>
 </CWindow>;
 ```
 
@@ -152,7 +142,7 @@ import { CWindow, CWindowBody, CWindowTitle } from '@system-ui-js/chameleon';
   }}
 >
   <CWindowTitle>Resizable Window</CWindowTitle>
-  <CWindowBody>Window body</CWindowBody>
+  <div>Window body</div>
 </CWindow>
 ```
 

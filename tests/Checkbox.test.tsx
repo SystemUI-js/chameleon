@@ -15,7 +15,7 @@ describe('CCheckbox', () => {
 
     expect(PackageEntryCCheckbox).toBe(CCheckbox);
     expect(checkbox).toBeInTheDocument();
-    expect(checkbox).toHaveClass('cm-checkbox');
+    expect(checkbox).toHaveClass('cm-checkbox__input');
   });
 
   it('initializes uncontrolled state from defaultChecked and toggles on click', () => {
@@ -98,8 +98,8 @@ describe('CCheckbox', () => {
       </CCheckbox>,
     );
 
-    const root = screen.getByTestId('checkbox-classnames');
-    const input = root.querySelector('.cm-checkbox__input');
+    const input = screen.getByTestId('checkbox-classnames');
+    const root = input.closest('.cm-checkbox');
     const label = root?.querySelector('.cm-checkbox__label');
 
     expect(root).toHaveClass('cm-checkbox');
@@ -116,7 +116,7 @@ describe('CCheckbox', () => {
       </Theme>,
     );
 
-    const root = screen.getByTestId('checkbox-provider-theme');
+    const root = screen.getByTestId('checkbox-provider-theme').closest('.cm-checkbox');
 
     expect(root).toHaveClass('cm-checkbox');
     expect(root).toHaveClass('cm-theme--win98');

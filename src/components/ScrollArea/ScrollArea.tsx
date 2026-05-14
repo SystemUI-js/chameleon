@@ -1,48 +1,23 @@
 import type React from 'react';
-import { View, type StyleProp, type ViewStyle } from 'react-native';
 import { mergeClasses } from '../Theme/mergeClasses';
 import { normalizeThemeClassName } from '../Theme/normalizeThemeClassName';
 import { useTheme } from '../Theme/useTheme';
 import './index.scss';
 
-export interface CScrollAreaProps {
+export interface CScrollAreaProps extends React.HTMLAttributes<HTMLDivElement> {
   readonly children?: React.ReactNode;
-  readonly className?: string;
+  readonly overflowX?: React.CSSProperties['overflowX'];
+  readonly overflowY?: React.CSSProperties['overflowY'];
   readonly contentClassName?: string;
-  readonly contentStyle?: StyleProp<ViewStyle>;
-  readonly overflowX?: string;
-  readonly overflowY?: string;
-  readonly style?: StyleProp<ViewStyle>;
-  readonly tabIndex?: number;
+  readonly contentStyle?: React.CSSProperties;
   readonly theme?: string;
-  readonly onScroll?: React.UIEventHandler<HTMLElement>;
-  readonly 'aria-label'?: string;
   readonly 'data-testid'?: string;
-}
-
-function flattenViewStyle(style: StyleProp<ViewStyle>): ViewStyle {
-  if (style == null) {
-    return {};
-  }
-
-  if (Array.isArray(style)) {
-    return style.reduce<ViewStyle>((accumulator, item) => {
-      Object.assign(accumulator, flattenViewStyle(item));
-      return accumulator;
-    }, {});
-  }
-
-  if (typeof style === 'object') {
-    return style as ViewStyle;
-  }
-
-  return {};
 }
 
 function resolveDefaultTabIndex(
   tabIndex: number | undefined,
-  overflowX: string | undefined,
-  overflowY: string | undefined,
+  overflowX: React.CSSProperties['overflowX'],
+  overflowY: React.CSSProperties['overflowY'],
 ): number | undefined {
   if (tabIndex !== undefined) {
     return tabIndex;
@@ -65,34 +40,27 @@ export function CScrollArea({
   style,
   tabIndex,
   theme,
-  onScroll,
-  'aria-label': ariaLabel,
   'data-testid': dataTestId,
+  ...divProps
 }: CScrollAreaProps): React.ReactElement {
   const resolvedTheme = normalizeThemeClassName(useTheme(theme));
   const resolvedTabIndex = resolveDefaultTabIndex(tabIndex, overflowX, overflowY);
-  const rootStyle: ViewStyle = {
-    ...flattenViewStyle(style),
-    overflowX,
-    overflowY,
-  };
 
   return (
-    <View
+    <div
+      {...divProps}
       className={mergeClasses(['cm-scroll-area'], resolvedTheme, className)}
-      style={rootStyle}
+      style={{ ...style, overflowX, overflowY }}
       tabIndex={resolvedTabIndex}
-      onScroll={onScroll}
-      aria-label={ariaLabel}
-      testID={dataTestId}
+      data-testid={dataTestId}
     >
-      <View
+      <div
         className={mergeClasses(['cm-scroll-area__content'], undefined, contentClassName)}
         style={contentStyle}
         data-scroll-area-content="true"
       >
         {children}
-      </View>
-    </View>
+      </div>
+    </div>
   );
 }

@@ -1,5 +1,4 @@
 import React from 'react';
-import { Pressable, Text, View } from 'react-native';
 import { mergeClasses } from '../Theme/mergeClasses';
 import { normalizeThemeClassName } from '../Theme/normalizeThemeClassName';
 import { useTheme } from '../Theme/useTheme';
@@ -39,34 +38,26 @@ export function CRadio({
     classNames.push('cm-radio--disabled');
   }
 
-  if (isChecked) {
-    classNames.push('cm-radio--checked');
-  }
-
-  const handlePress = (): void => {
-    if (!isChecked && !isDisabled) {
+  const handleChange = (event: React.ChangeEvent<HTMLInputElement>): void => {
+    if (event.target.checked) {
       groupContext.onRadioChange(value);
     }
   };
 
   return (
-    <Pressable
-      role="radio"
-      accessibilityRole="radio"
-      accessibilityState={{ checked: isChecked, disabled: isDisabled }}
-      aria-checked={isChecked}
-      aria-disabled={isDisabled}
-      data-value={value}
-      name={groupContext.name}
-      value={value}
-      required={groupContext.required}
-      className={mergeClasses(classNames, resolvedTheme)}
-      testID={dataTestId}
-      disabled={isDisabled}
-      onPress={handlePress}
-    >
-      <View aria-hidden="true" className="cm-radio__input" />
-      {content !== undefined ? <Text className="cm-radio__label">{content}</Text> : null}
-    </Pressable>
+    <label className={mergeClasses(classNames, resolvedTheme)}>
+      <input
+        checked={isChecked}
+        className="cm-radio__input"
+        data-testid={dataTestId}
+        disabled={isDisabled}
+        name={groupContext.name}
+        onChange={handleChange}
+        required={groupContext.required}
+        type="radio"
+        value={value}
+      />
+      <span className="cm-radio__label">{content}</span>
+    </label>
   );
 }

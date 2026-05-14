@@ -42,19 +42,10 @@ const SIZE_OPTIONS: readonly CSelectOption[] = [
 const GRID_COLUMNS = ['1fr', '1fr', '1fr'];
 const WINDOW_ACTION_BUTTON_POSITIONS = ['left', 'right'] as const;
 
-const DEV_THEME_OPTIONS: readonly CSelectOption[] = Object.values(DEV_THEME).map((themeId) => ({
-  label: themeId,
-  value: themeId,
-}));
-
 const isWindowTitleActionButtonPosition = (
   value: string,
 ): value is WindowTitleActionButtonPosition => {
   return WINDOW_ACTION_BUTTON_POSITIONS.includes(value as WindowTitleActionButtonPosition);
-};
-
-const isDevThemeId = (value: string): value is DevThemeId => {
-  return Object.values(DEV_THEME).includes(value as DevThemeId);
 };
 
 interface ComponentCatalogProps {
@@ -93,20 +84,20 @@ function ThemeSwitcher({
 }): React.ReactElement {
   return (
     <div data-testid="catalog-theme-switch" className="cm-catalog__theme-switcher">
-      <div className="cm-catalog__theme-label">
-        <span>Theme</span>
-        <CSelect
-          aria-label="Theme"
-          className="cm-catalog__theme-select"
+      <label className="cm-catalog__theme-label">
+        Theme
+        <select
           value={theme}
-          options={DEV_THEME_OPTIONS}
-          onChange={(nextTheme) => {
-            if (isDevThemeId(nextTheme)) {
-              onThemeChange(nextTheme);
-            }
-          }}
-        />
-      </div>
+          onChange={(event) => onThemeChange(event.target.value as DevThemeId)}
+          className="cm-catalog__theme-select"
+        >
+          {Object.values(DEV_THEME).map((themeId) => (
+            <option key={themeId} value={themeId}>
+              {themeId}
+            </option>
+          ))}
+        </select>
+      </label>
     </div>
   );
 }
