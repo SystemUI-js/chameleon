@@ -28,14 +28,6 @@ const waitForScrollAreaHarness = async (
   page: Page,
   options: { allowFixtureError?: boolean } = {},
 ): Promise<void> => {
-  // Collect console errors during page load
-  const consoleErrors: string[] = [];
-  page.on('console', (msg) => {
-    if (msg.type() === 'error') {
-      consoleErrors.push(msg.text());
-    }
-  });
-
   const result = await page.waitForFunction(
     ({ hostTestId, viewportTestId, fixtureErrorTestId }) => {
       const host = document.querySelector(`[data-testid="${hostTestId}"]`);
@@ -69,11 +61,7 @@ const waitForScrollAreaHarness = async (
 
   const pageHtml = await page.content().catch(() => '<failed to read page content>');
   throw new Error(
-    [
-      'ScrollArea harness did not render expected elements.',
-      `Console errors: ${consoleErrors.length > 0 ? JSON.stringify(consoleErrors) : 'none'}`,
-      `Page body HTML: ${pageHtml}`,
-    ].join('\n'),
+    `ScrollArea harness did not render expected elements. Page body HTML: ${pageHtml}`,
   );
 };
 
