@@ -70,6 +70,10 @@ export function CMenu({
   const [openBranchByDepth, setOpenBranchByDepth] = React.useState<string[]>([]);
   const rootTriggerMode = resolveRootTriggerMode(trigger);
 
+  if (React.Children.count(children) > 1) {
+    console.error('CMenu expects a single trigger child, but received multiple children.');
+  }
+
   React.Children.only(children);
 
   const closeAllMenus = React.useCallback(() => {
