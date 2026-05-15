@@ -28,6 +28,14 @@ const waitForScrollAreaHarness = async (
   page: Page,
   options: { allowFixtureError?: boolean } = {},
 ): Promise<void> => {
+  // Collect console errors during page load
+  const consoleErrors: string[] = [];
+  page.on('console', (msg) => {
+    if (msg.type() === 'error') {
+      consoleErrors.push(msg.text());
+    }
+  });
+
   try {
     await page.waitForFunction(
       ({ hostTestId, viewportTestId, fixtureErrorTestId }) => {
@@ -43,17 +51,30 @@ const waitForScrollAreaHarness = async (
         fixtureErrorTestId: FIXTURE_ERROR_TEST_ID,
       },
     );
-  } catch (error) {
-    const fixtureErrorText = await page
-      .getByTestId(FIXTURE_ERROR_TEST_ID)
-      .evaluate((element) => element.textContent)
-      .catch(() => null);
+  } catch {
+    try {
+      const fixtureErrorText = await page
+        .getByTestId(FIXTURE_ERROR_TEST_ID)
+        .evaluate((element) => element.textContent);
 
-    if (fixtureErrorText !== null) {
-      throw new Error(`ScrollArea harness rendered fixture error: ${fixtureErrorText}`);
+      if (fixtureErrorText !== null) {
+        throw new Error(`ScrollArea harness rendered fixture error: ${fixtureErrorText}`);
+      }
+    } catch (innerError) {
+      if (innerError instanceof Error && innerError.message.startsWith('ScrollArea harness')) {
+        throw innerError;
+      }
     }
 
-    throw error;
+    const pageHtml = await page.content().catch(() => '<failed to read page content>');
+
+    throw new Error(
+      [
+        'ScrollArea harness did not render expected elements.',
+        `Console errors: ${consoleErrors.length > 0 ? JSON.stringify(consoleErrors) : 'none'}`,
+        `Page body HTML: ${pageHtml}`,
+      ].join('\n'),
+    );
   }
 
   const fixtureErrorText = await page

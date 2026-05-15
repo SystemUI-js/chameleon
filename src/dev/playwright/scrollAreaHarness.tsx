@@ -1,8 +1,36 @@
-import { type ReactNode, useState } from 'react';
+import { Component, useState } from 'react';
+import type { ReactNode } from 'react';
 import { createRoot } from 'react-dom/client';
 import { CScrollArea } from '@/components/ScrollArea/ScrollArea';
 import { DevThemeRoot, type DevThemeId } from '../themeSwitcher';
 import { readHarnessRoute } from './harnessRoute';
+
+interface ErrorBoundaryState {
+  hasError: boolean;
+  errorMessage: string;
+}
+
+class ErrorBoundary extends Component<{ readonly children: ReactNode }, ErrorBoundaryState> {
+  constructor(props: { readonly children: ReactNode }) {
+    super(props);
+    this.state = { hasError: false, errorMessage: '' };
+  }
+
+  static getDerivedStateFromError(error: Error): ErrorBoundaryState {
+    return { hasError: true, errorMessage: error.message };
+  }
+
+  componentDidCatch(error: Error, info: React.ErrorInfo): void {
+    console.error('[ScrollAreaHarness] React render error:', error.message, info.componentStack);
+  }
+
+  render(): ReactNode {
+    if (this.state.hasError) {
+      return <div data-testid="fixture-error">Render Error: {this.state.errorMessage}</div>;
+    }
+    return this.props.children;
+  }
+}
 
 const createLongContent = (): ReactNode[] => {
   const items: ReactNode[] = [];
@@ -210,7 +238,11 @@ const ThemedFixtureContainer = ({ theme, fixture }: ThemedFixtureContainerProps)
 const App = (): ReactNode => {
   const route = readHarnessRoute();
 
-  return <ThemedFixtureContainer theme={route.theme} fixture={route.fixture} />;
+  return (
+    <ErrorBoundary>
+      <ThemedFixtureContainer theme={route.theme} fixture={route.fixture} />
+    </ErrorBoundary>
+  );
 };
 
 const container = document.getElementById('root');
