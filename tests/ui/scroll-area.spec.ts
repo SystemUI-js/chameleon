@@ -288,9 +288,13 @@ test.describe('ScrollArea Interaction Tests', () => {
     const scrollPosAfterShrink = await readViewportScrollPosition(page);
     expect(scrollPosAfterShrink.scrollHeight).toBeLessThan(initialPos.scrollHeight);
 
-    // Verify no stale drag state: scrollTop should remain at position from completed drag
-    // (not reset to 0, and not affected by the shrink operation)
+    // Verify no stale drag state: scrollTop should be preserved (clamped if
+    // the browser reduces the scrollable range when content shrinks).
     const scrollPosCheck = await readViewportScrollPosition(page);
-    expect(scrollPosCheck.scrollTop).toBe(scrollTopAfterDrag);
+    const maxScrollAfterShrink = Math.max(
+      0,
+      scrollPosCheck.scrollHeight - scrollPosCheck.clientHeight,
+    );
+    expect(scrollPosCheck.scrollTop).toBe(Math.min(scrollTopAfterDrag, maxScrollAfterShrink));
   });
 });
