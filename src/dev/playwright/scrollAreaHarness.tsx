@@ -123,7 +123,7 @@ const VerticalOverflowFixture = (): ReactNode => {
         overflowX="hidden"
         overflowY="auto"
       >
-        <div data-testid="scroll-area-viewport">{createTallContent()}</div>
+        <div>{createTallContent()}</div>
       </CScrollArea>
       <p>Vertical overflow only (200px height container, 20 paragraphs)</p>
     </HarnessLayout>
@@ -139,10 +139,7 @@ const HorizontalOverflowFixture = (): ReactNode => {
         overflowX="auto"
         overflowY="hidden"
       >
-        <div
-          data-testid="scroll-area-viewport"
-          style={{ display: 'flex', flexDirection: 'row', width: '800px' }}
-        >
+        <div style={{ display: 'flex', flexDirection: 'row', width: '800px' }}>
           {createWideContent()}
         </div>
       </CScrollArea>
@@ -166,9 +163,7 @@ const BothAxesOverflowFixture = (): ReactNode => {
         overflowX="auto"
         overflowY="auto"
       >
-        <div data-testid="scroll-area-viewport" style={contentStyle}>
-          {createLongContent()}
-        </div>
+        <div style={contentStyle}>{createLongContent()}</div>
       </CScrollArea>
       <p>Both axes overflow (200x300 container, 800px content)</p>
     </HarnessLayout>
@@ -192,7 +187,7 @@ const ShrinkingContentFixture = (): ReactNode => {
         overflowX="hidden"
         overflowY="auto"
       >
-        <div data-testid="scroll-area-viewport">
+        <div>
           {items.map((itemValue) => (
             <ShrinkingContentItem
               key={`item-${itemValue}`}

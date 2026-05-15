@@ -210,6 +210,7 @@ export function CScrollArea({
         style={{ overflowX, overflowY }}
         tabIndex={resolvedTabIndex}
         onScroll={handleScroll}
+        data-testid="scroll-area-viewport"
         data-scroll-area-viewport="true"
       >
         <div
