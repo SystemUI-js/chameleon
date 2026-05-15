@@ -137,7 +137,10 @@ export class CWidget<TState extends WidgetState = WidgetState> extends React.Com
 
   public readonly uuid = generateUUID();
   private isUnmounting = false;
-  private readonly resizeHandleRefs: Record<ResizeDirection, React.RefObject<HTMLDivElement>> = {
+  private readonly resizeHandleRefs: Record<
+    ResizeDirection,
+    React.RefObject<HTMLDivElement | null>
+  > = {
     n: React.createRef<HTMLDivElement>(),
     s: React.createRef<HTMLDivElement>(),
     e: React.createRef<HTMLDivElement>(),

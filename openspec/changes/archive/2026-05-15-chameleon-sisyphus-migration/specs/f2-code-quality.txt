@@ -1,0 +1,16 @@
+F2 Code Quality Review
+
+Verdict: REJECT
+
+Evidence:
+- yarn lint: FAIL. `tests/ScrollArea.test.tsx:27:10` reports `sonarjs/public-static-readonly`.
+- Forbidden pattern grep: PASS. No `as any`, `any`, `@ts-ignore`, `TODO`, `FIXME`, or `console.log` matches found in `src/components/ScrollArea` files.
+- Type diagnostics: PASS. LSP diagnostics reported no issues for `src/components/ScrollArea` TS/TSX files.
+- DRY axis review: FAIL. `ScrollbarVertical.tsx` and `ScrollbarHorizontal.tsx` duplicate the drag ref shape, blur/visibility cleanup effect, decrement/increment callbacks, pointer down/move/up/cancel handlers, thumb offset mapping, and capture release logic. This should be shared behind an axis configuration/helper before approval.
+- Cleanup review: FAIL. Both scrollbar components call `endDrag()` on unmount/window blur/visibilitychange, but pointer capture is released only from pointerup/pointercancel handlers; blur/visibility cleanup can leave the active pointer capture path unbalanced.
+- ResizeObserver review: PASS. `ScrollArea.tsx` disconnects the observer in effect cleanup.
+- Class/theme composition: PASS. Host class composition follows base -> normalized theme -> `className` via `mergeClasses(['cm-scroll-area'], resolvedTheme, className)`.
+
+Required rejection reasons:
+- Lint fails.
+- Duplicated axis logic remains between vertical and horizontal scrollbar implementations.

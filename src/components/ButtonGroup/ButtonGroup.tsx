@@ -42,7 +42,8 @@ function flattenGroupChildren(children: React.ReactNode): React.ReactNode[] {
     }
 
     if (React.isValidElement(child) && child.type === React.Fragment) {
-      flattened.push(...flattenGroupChildren(child.props.children));
+      const fragmentChild = child as React.ReactElement<{ children?: React.ReactNode }>;
+      flattened.push(...flattenGroupChildren(fragmentChild.props.children));
       return;
     }
 

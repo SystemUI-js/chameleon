@@ -6,7 +6,11 @@ import React from 'react';
 import { CButton as PackageEntryCButton, Theme } from '../src';
 import { CButton } from '../src/components/Button/Button';
 
-function MenuTriggerProbe({ children }: { children: React.ReactElement }): React.ReactElement {
+function MenuTriggerProbe({
+  children,
+}: {
+  children: React.ReactElement<React.HTMLAttributes<HTMLElement>>;
+}): React.ReactElement {
   return React.cloneElement(children, {
     'aria-haspopup': 'menu',
     'aria-expanded': false,

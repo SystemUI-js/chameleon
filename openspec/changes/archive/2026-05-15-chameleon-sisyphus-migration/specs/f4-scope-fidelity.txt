@@ -1,0 +1,47 @@
+F4 Scope Fidelity Check
+Date: 2026-05-15
+
+Verdict: REJECT
+
+Required command executed:
+- GIT_MASTER=1 git diff --name-only
+
+All changed files:
+- .opencode/package.json
+- src/components/ScrollArea/ScrollArea.tsx
+- src/components/ScrollArea/index.scss
+- src/dev/ComponentCatalog.tsx
+- src/theme/default/styles/index.scss
+- src/theme/win98/styles/index.scss
+- src/theme/winxp/styles/index.scss
+- tests/ScrollArea.test.tsx
+
+Allowed planned surfaces from Tasks 1-8:
+- src/components/ScrollArea/*
+- src/theme/*/styles/index.scss
+- src/dev/ComponentCatalog.tsx
+- src/dev/playwright/scrollAreaHarness.tsx
+- tests/ScrollArea.test.tsx
+- tests/ui/scroll-area.spec.ts
+- tests/ui/scroll-area.helpers.ts
+- playwright-scroll-area.html
+
+Scope comparison:
+- PASS: src/components/ScrollArea/ScrollArea.tsx maps to planned ScrollArea implementation surfaces.
+- PASS: src/components/ScrollArea/index.scss maps to planned ScrollArea styling surfaces.
+- PASS: src/dev/ComponentCatalog.tsx maps to the planned ScrollArea demo surface.
+- PASS: src/theme/default/styles/index.scss maps to planned theme scrollbar styling.
+- PASS: src/theme/win98/styles/index.scss maps to planned theme scrollbar styling.
+- PASS: src/theme/winxp/styles/index.scss maps to planned theme scrollbar styling.
+- PASS: tests/ScrollArea.test.tsx maps to planned ScrollArea unit coverage.
+- FAIL: .opencode/package.json is outside all planned file surfaces and has no direct dependency listed for the scrollbar feature.
+
+Unrelated component/theme/infrastructure check:
+- PASS: No changed files under src/components/Button, so CButton implementation was not modified.
+- PASS: No changed files under src/components/Widget.
+- PASS: No changed files under src/components/Window.
+- PASS: No changed Theme component files; only planned theme style files changed.
+- FAIL: .opencode/package.json is an infrastructure/tooling file outside the planned scope and must be justified or reverted before approval.
+
+Conclusion:
+- Do not approve as-is. The scrollbar-related files stay within the planned scope, but .opencode/package.json is scope creep under the F4 criteria.

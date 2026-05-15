@@ -534,6 +534,18 @@ function SliderShowcase(): React.ReactElement {
 }
 
 function ScrollAreaShowcase(): React.ReactElement {
+  const bothAxisContentStyle: React.CSSProperties = {
+    display: 'flex',
+    flexDirection: 'column',
+    width: '800px',
+  };
+
+  const bothAxisItems = Array.from({ length: 20 }, (_, idx) => (
+    <p key={`both-line-${idx}`} style={{ margin: '0 0 8px 0', whiteSpace: 'nowrap' }}>
+      Line {idx + 1}: Wide content — scroll horizontally and vertically.
+    </p>
+  ));
+
   return (
     <ShowcaseSection
       title="ScrollArea"
@@ -556,6 +568,21 @@ function ScrollAreaShowcase(): React.ReactElement {
         </CScrollArea>
         <p className="cm-catalog__value">
           Focus the area and use wheel, trackpad, or keyboard to scroll.
+        </p>
+      </div>
+      <div className="cm-catalog__stack" style={{ marginTop: '16px' }}>
+        <CScrollArea
+          aria-label="Wide and tall content"
+          data-testid="scroll-area-demo-both"
+          className="cm-catalog__scroll-area"
+          style={{ height: '200px', width: '300px' }}
+          overflowX="auto"
+          overflowY="auto"
+        >
+          <div style={bothAxisContentStyle}>{bothAxisItems}</div>
+        </CScrollArea>
+        <p className="cm-catalog__value">
+          Both axes overflow (300×200 container, 800px wide content, 20 rows).
         </p>
       </div>
     </ShowcaseSection>

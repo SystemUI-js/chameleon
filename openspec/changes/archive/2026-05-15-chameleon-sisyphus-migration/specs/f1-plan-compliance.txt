@@ -1,0 +1,28 @@
+F1 Plan Compliance Audit
+Verdict: REJECT
+
+Required command output:
+- `GIT_MASTER=1 git diff --stat -- ':!node_modules'` showed 8 tracked modified files: `.opencode/package.json`, `src/components/ScrollArea/ScrollArea.tsx`, `src/components/ScrollArea/index.scss`, `src/dev/ComponentCatalog.tsx`, `src/theme/default/styles/index.scss`, `src/theme/win98/styles/index.scss`, `src/theme/winxp/styles/index.scss`, `tests/ScrollArea.test.tsx`.
+- `GIT_MASTER=1 git status --short -- ':!node_modules'` additionally showed untracked implementation artifacts: `playwright-scroll-area.html`, `src/components/ScrollArea/ScrollbarHorizontal.tsx`, `src/components/ScrollArea/ScrollbarVertical.tsx`, `src/components/ScrollArea/scrollMetrics.ts`, `src/dev/playwright/scrollAreaHarness.tsx`, `tests/ui/scroll-area.helpers.ts`, `tests/ui/scroll-area.spec.ts`, plus `.sisyphus/notepads/scrollarea-scrollbar/` and `.sisyphus/plans/scrollarea-scrollbar.md`.
+
+Changed-file mapping:
+- Planned ScrollArea implementation surfaces: `src/components/ScrollArea/ScrollArea.tsx`, `src/components/ScrollArea/index.scss`, `src/components/ScrollArea/ScrollbarHorizontal.tsx`, `src/components/ScrollArea/ScrollbarVertical.tsx`, `src/components/ScrollArea/scrollMetrics.ts`.
+- Planned theme/demo/test/harness surfaces: `src/theme/default/styles/index.scss`, `src/theme/win98/styles/index.scss`, `src/theme/winxp/styles/index.scss`, `src/dev/ComponentCatalog.tsx`, `src/dev/playwright/scrollAreaHarness.tsx`, `tests/ScrollArea.test.tsx`, `tests/ui/scroll-area.helpers.ts`, `tests/ui/scroll-area.spec.ts`, `playwright-scroll-area.html`.
+- Not planned / scope violation: `.opencode/package.json` upgrades `@opencode-ai/plugin` from `1.4.3` to `1.14.28`; this has no mapping to Tasks 1-8.
+- Orchestration artifacts present in git status: `.sisyphus/plans/scrollarea-scrollbar.md` and `.sisyphus/notepads/scrollarea-scrollbar/`; these are not implementation deliverables and should not be part of the feature commit unless the orchestrator explicitly owns them.
+
+Pass checks:
+- `CScrollAreaProps` includes `scrollbarVisibility?: 'auto' | 'always' | 'hidden'` via `CScrollAreaScrollbarVisibility`, with default `scrollbarVisibility = 'auto'` in `src/components/ScrollArea/ScrollArea.tsx`.
+- `contentClassName` and `contentStyle` are preserved in props and applied to the content wrapper in `src/components/ScrollArea/ScrollArea.tsx`.
+- No `CScrollbar` export was found in `src/components/index.ts` or `src/index.ts`; `src/components/ScrollArea/index.ts` exports only `CScrollArea` and `CScrollAreaProps`.
+- Internal scrollbar components render from `axisState`, callbacks, and `step`; they do not read DOM dimensions directly.
+- v1 exclusions are mostly respected in implementation code: no track-click paging handler on track elements, no hover/transient visibility logic, no keyboard thumb manipulation, and no press-and-hold repeat/timer logic found in ScrollArea scrollbar internals.
+
+Violations requiring rejection:
+1. Trigger matrix is incomplete. `syncAxisStates` depends only on scrollbar eligibility booleans, so changing `scrollbarVisibility` between `auto` and `always`, or changing `overflowX`/`overflowY` between non-hidden values, does not force a metrics recalculation as required by the plan's prop-change trigger matrix.
+2. Gutter layout is not compliant for hidden/absent axes. `src/components/ScrollArea/index.scss` always defines a 20px second grid column and second grid row while the viewport stays fixed in grid cell 1/1, so hidden or non-overflowing axes still leave blank reserved gutters instead of reserving gutters only for rendered custom controls.
+3. Required Playwright interaction deliverables are missing. `tests/ui/scroll-area.spec.ts` only verifies fixture structure, overflow presence, shrink smoke, and invalid fixture behavior; it does not cover vertical/horizontal button stepping, thumb drag, drag release outside viewport, corner layout alignment, or shrink-after-drag cleanup required by Tasks 5-8.
+4. The implementation scope includes `.opencode/package.json`, an unrelated tooling package version change outside the plan's allowed file surfaces.
+
+Conclusion:
+REJECT. Do not approve until prop-change recalculation is fixed, gutter reservation is conditional/aligned with visible axes, required Playwright interaction coverage is added, and unrelated `.opencode/package.json` changes are removed or explicitly justified by a separate plan.

@@ -68,7 +68,7 @@ describe('CMenu', () => {
 
   it('exports CMenuTrigger as React.ReactElement type', () => {
     const trigger: CMenuTrigger = <button type="button">Trigger</button>;
-    expect(trigger.props.type).toBe('button');
+    expect((trigger.props as { type?: string }).type).toBe('button');
   });
 
   it('exports MenuListItem with required key and trigger type', () => {

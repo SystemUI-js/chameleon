@@ -265,9 +265,10 @@ describe('ComponentCatalog', () => {
 
     const scrollAreaSection = screen.getByTestId('catalog-section-scroll-area');
     const scrollArea = within(scrollAreaSection).getByTestId('scroll-area-demo');
+    const viewport = scrollArea.querySelector('[data-scroll-area-viewport="true"]');
 
     expect(scrollArea).toBeInTheDocument();
-    expect(scrollArea).toHaveAttribute('aria-label', 'Activity feed');
+    expect(viewport).toHaveAttribute('aria-label', 'Activity feed');
     expect(within(scrollAreaSection).getAllByRole('article')).toHaveLength(6);
   });
 

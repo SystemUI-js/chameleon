@@ -177,6 +177,36 @@
         gap: 6px;
     }
 
+    .cm-scroll-area__scrollbar-vertical,
+    .cm-scroll-area__scrollbar-horizontal,
+    .cm-scroll-area__scrollbar-corner {
+        background: #c0c0c0;
+    }
+
+    .cm-scroll-area__scrollbar-vertical-track,
+    .cm-scroll-area__scrollbar-horizontal-track {
+        background: #c0c0c0;
+        box-shadow:
+            inset 1px 1px #808080,
+            inset -1px -1px #ffffff;
+    }
+
+    .cm-scroll-area__scrollbar-vertical-decrement,
+    .cm-scroll-area__scrollbar-vertical-increment,
+    .cm-scroll-area__scrollbar-horizontal-decrement,
+    .cm-scroll-area__scrollbar-horizontal-increment,
+    .cm-scroll-area__scrollbar-vertical-thumb,
+    .cm-scroll-area__scrollbar-horizontal-thumb {
+        border: none;
+        border-radius: 0;
+        background: #c0c0c0;
+        box-shadow:
+            inset -1px -1px #0a0a0a,
+            inset 1px 1px #ffffff,
+            inset -2px -2px #808080,
+            inset 2px 2px #dfdfdf;
+    }
+
     &.cm-button {
         min-width: 75px;
         min-height: 23px;
