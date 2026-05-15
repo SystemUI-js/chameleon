@@ -1,5 +1,7 @@
 ## [UnReleased]
 
+### [0.4.0] (2026-05-15)
+
 - **Breaking:** 移除 legacy system shell / registry 公共 API
   - 包入口不再导出 `SystemHost`、`SYSTEM_TYPE`、`THEME`、`DEFAULT_SYSTEM_TYPE`、`DEFAULT_THEME_BY_SYSTEM`、`SYSTEM_THEME_MATRIX`、`resolveSystemTypeDefinition`、`assertValidSystemThemeSelection`、`resolveThemeDefinition` 及关联类型
   - `defaultThemeDefinition`、`win98ThemeDefinition`、`winXpThemeDefinition` 改为直接导出 `src/theme/*` 中的 canonical theme definition，不再包含 system registry 派生的 `systemType` 元数据
