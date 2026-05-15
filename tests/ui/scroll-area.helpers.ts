@@ -26,7 +26,7 @@ export type ScrollAreaHarnessSelection = {
 
 const waitForScrollAreaHarness = async (
   page: Page,
-  options: { allowFixtureError?: boolean } = {},
+  _options: { allowFixtureError?: boolean } = {},
 ): Promise<void> => {
   // Collect console errors during page load
   const consoleErrors: string[] = [];
@@ -36,55 +36,42 @@ const waitForScrollAreaHarness = async (
     }
   });
 
-  try {
-    await page.waitForFunction(
-      ({ hostTestId, viewportTestId, fixtureErrorTestId }) => {
-        const host = document.querySelector(`[data-testid="${hostTestId}"]`);
-        const viewport = document.querySelector(`[data-testid="${viewportTestId}"]`);
-        const fixtureError = document.querySelector(`[data-testid="${fixtureErrorTestId}"]`);
+  const result = await page.waitForFunction(
+    ({ hostTestId, viewportTestId, fixtureErrorTestId }) => {
+      const host = document.querySelector(`[data-testid="${hostTestId}"]`);
+      const viewport = document.querySelector(`[data-testid="${viewportTestId}"]`);
+      const fixtureError = document.querySelector(`[data-testid="${fixtureErrorTestId}"]`);
 
-        return Boolean((host && viewport) || fixtureError);
-      },
-      {
-        hostTestId: SCROLL_AREA_HOST_TEST_ID,
-        viewportTestId: SCROLL_AREA_VIEWPORT_TEST_ID,
-        fixtureErrorTestId: FIXTURE_ERROR_TEST_ID,
-      },
-    );
-  } catch {
-    try {
-      const fixtureErrorText = await page
-        .getByTestId(FIXTURE_ERROR_TEST_ID)
-        .evaluate((element) => element.textContent);
+      if (host && viewport) return 'harness-ready';
+      if (fixtureError) return `fixture-error:${fixtureError.textContent}`;
+      return null;
+    },
+    {
+      hostTestId: SCROLL_AREA_HOST_TEST_ID,
+      viewportTestId: SCROLL_AREA_VIEWPORT_TEST_ID,
+      fixtureErrorTestId: FIXTURE_ERROR_TEST_ID,
+    },
+    { polling: 'raf', timeout: 30_000 },
+  );
 
-      if (fixtureErrorText !== null) {
-        throw new Error(`ScrollArea harness rendered fixture error: ${fixtureErrorText}`);
-      }
-    } catch (innerError) {
-      if (innerError instanceof Error && innerError.message.startsWith('ScrollArea harness')) {
-        throw innerError;
-      }
-    }
+  const resultValue = await result.jsonValue();
 
-    const pageHtml = await page.content().catch(() => '<failed to read page content>');
-
-    throw new Error(
-      [
-        'ScrollArea harness did not render expected elements.',
-        `Console errors: ${consoleErrors.length > 0 ? JSON.stringify(consoleErrors) : 'none'}`,
-        `Page body HTML: ${pageHtml}`,
-      ].join('\n'),
-    );
+  if (resultValue === 'harness-ready') {
+    return;
   }
 
-  const fixtureErrorText = await page
-    .getByTestId(FIXTURE_ERROR_TEST_ID)
-    .evaluate((element) => element.textContent)
-    .catch(() => null);
-
-  if (fixtureErrorText !== null && !options.allowFixtureError) {
-    throw new Error(`ScrollArea harness rendered fixture error: ${fixtureErrorText}`);
+  if (typeof resultValue === 'string' && resultValue.startsWith('fixture-error:')) {
+    throw new Error(`ScrollArea harness rendered fixture error: ${resultValue.slice(14)}`);
   }
+
+  const pageHtml = await page.content().catch(() => '<failed to read page content>');
+  throw new Error(
+    [
+      'ScrollArea harness did not render expected elements.',
+      `Console errors: ${consoleErrors.length > 0 ? JSON.stringify(consoleErrors) : 'none'}`,
+      `Page body HTML: ${pageHtml}`,
+    ].join('\n'),
+  );
 };
 
 export const gotoScrollAreaFixture = async (
