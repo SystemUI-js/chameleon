@@ -15,6 +15,7 @@ export interface UseScrollbarDragResult {
     isDragging: boolean;
     startPointer: number;
     startScrollOffset: number;
+    startAxisState: AxisState;
     thumbElement?: HTMLButtonElement;
     pointerId?: number;
   }>;
@@ -37,12 +38,14 @@ export function useScrollbarDrag({
     isDragging: boolean;
     startPointer: number;
     startScrollOffset: number;
+    startAxisState: AxisState;
     thumbElement?: HTMLButtonElement;
     pointerId?: number;
   }>({
     isDragging: false,
     startPointer: 0,
     startScrollOffset: 0,
+    startAxisState: axisState,
   });
 
   const endDrag = useCallback(() => {
@@ -95,11 +98,12 @@ export function useScrollbarDrag({
         isDragging: true,
         startPointer: orientation === 'vertical' ? event.clientY : event.clientX,
         startScrollOffset: axisState.scrollOffset,
+        startAxisState: axisState,
         thumbElement: target,
         pointerId: event.pointerId,
       };
     },
-    [axisState.scrollOffset, orientation],
+    [axisState, orientation],
   );
 
   const handlePointerMove = useCallback(
@@ -112,9 +116,7 @@ export function useScrollbarDrag({
         orientation === 'vertical'
           ? event.clientY - dragRef.current.startPointer
           : event.clientX - dragRef.current.startPointer;
-      const trackSize = axisState.trackSize;
-      const thumbSize = axisState.thumbSize;
-      const maxScrollOffset = axisState.maxScrollOffset;
+      const { trackSize, thumbSize, maxScrollOffset } = dragRef.current.startAxisState;
       const maxThumbOffset = Math.max(0, trackSize - thumbSize);
 
       if (maxThumbOffset === 0) {
@@ -124,7 +126,7 @@ export function useScrollbarDrag({
       const mappedOffset = (delta / maxThumbOffset) * maxScrollOffset;
       onScrollTo(dragRef.current.startScrollOffset + mappedOffset);
     },
-    [axisState.trackSize, axisState.thumbSize, axisState.maxScrollOffset, onScrollTo, orientation],
+    [onScrollTo, orientation],
   );
 
   const handlePointerUp = useCallback(
