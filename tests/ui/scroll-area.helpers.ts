@@ -26,7 +26,7 @@ export type ScrollAreaHarnessSelection = {
 
 const waitForScrollAreaHarness = async (
   page: Page,
-  _options: { allowFixtureError?: boolean } = {},
+  options: { allowFixtureError?: boolean } = {},
 ): Promise<void> => {
   // Collect console errors during page load
   const consoleErrors: string[] = [];
@@ -61,7 +61,10 @@ const waitForScrollAreaHarness = async (
   }
 
   if (typeof resultValue === 'string' && resultValue.startsWith('fixture-error:')) {
-    throw new Error(`ScrollArea harness rendered fixture error: ${resultValue.slice(14)}`);
+    if (!options.allowFixtureError) {
+      throw new Error(`ScrollArea harness rendered fixture error: ${resultValue.slice(14)}`);
+    }
+    return;
   }
 
   const pageHtml = await page.content().catch(() => '<failed to read page content>');
