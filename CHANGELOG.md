@@ -1,5 +1,11 @@
 ## [UnReleased]
 
+### [0.4.1] (2026-05-16)
+
+- **Fix:** 修复 Vite 构建配置中的 ES 模块路径和模块导出配置
+  - 修正 ES 模块的导入路径配置，确保模块解析正确
+  - 优化 package.json 中的 exports 字段，提升模块兼容性
+
 ### [0.4.0] (2026-05-15)
 
 - **Breaking:** 移除 legacy system shell / registry 公共 API
