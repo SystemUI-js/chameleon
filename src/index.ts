@@ -29,3 +29,4 @@ export {
   winXpThemeDefinition,
   winXpThemeDefinition as pureWinXpThemeDefinition,
 } from './theme/winxp';
+export { win7ThemeDefinition, win7ThemeDefinition as pureWin7ThemeDefinition } from './theme/win7';
