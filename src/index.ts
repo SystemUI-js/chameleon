@@ -4,23 +4,25 @@ export {
   CButtonGroup,
   CButtonSeparator,
   CCheckbox,
-  CSlider,
-  CSplitArea,
   CIcon,
   CIconContainer,
   CMenu,
-  CTab,
-  CTabItem,
   CRadio,
   CRadioGroup,
   CSelect,
+  CSlider,
+  CSplitArea,
+  CSwitch,
+  CTab,
+  CTabItem,
   Theme,
 } from './components';
-export type { ThemeDefinition as PureThemeDefinition, ThemeId as PureThemeId } from './theme/types';
 export {
   defaultThemeDefinition,
   defaultThemeDefinition as pureDefaultThemeDefinition,
 } from './theme/default';
+export type { ThemeDefinition as PureThemeDefinition, ThemeId as PureThemeId } from './theme/types';
+export { win7ThemeDefinition, win7ThemeDefinition as pureWin7ThemeDefinition } from './theme/win7';
 export {
   win98ThemeDefinition,
   win98ThemeDefinition as pureWin98ThemeDefinition,
@@ -29,4 +31,3 @@ export {
   winXpThemeDefinition,
   winXpThemeDefinition as pureWinXpThemeDefinition,
 } from './theme/winxp';
-export { win7ThemeDefinition, win7ThemeDefinition as pureWin7ThemeDefinition } from './theme/win7';

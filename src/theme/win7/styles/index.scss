@@ -24,6 +24,60 @@
         backdrop-filter: blur(12px);
     }
 
+    // Inactive windows keep the Aero glass shape but mute the blue focus tint.
+    .cm-window-frame.cm-widget--inactive,
+    &.cm-window-frame.cm-widget--inactive {
+        border-color: rgba(35, 52, 72, 0.25);
+        background: linear-gradient(
+            180deg,
+            rgba(255, 255, 255, 0.38) 0%,
+            rgba(118, 142, 168, 0.32) 40%,
+            rgba(94, 116, 142, 0.45) 100%
+        );
+        box-shadow:
+            0 6px 24px rgba(0, 0, 0, 0.22),
+            inset 0 0 0 1px rgba(255, 255, 255, 0.28),
+            inset 0 1px 0 rgba(255, 255, 255, 0.38);
+
+        .cm-window__title-bar {
+            background: linear-gradient(
+                180deg,
+                rgba(255, 255, 255, 0.18) 0%,
+                rgba(126, 151, 180, 0.68) 10%,
+                rgba(98, 123, 153, 0.78) 90%,
+                rgba(80, 102, 130, 0.82) 100%
+            );
+            color: rgba(255, 255, 255, 0.82);
+            text-shadow: 0 1px 1px rgba(0, 0, 0, 0.25);
+        }
+
+        .cm-window__title-bar__controls .cm-button {
+            border-color: rgba(55, 70, 88, 0.35);
+            background: linear-gradient(
+                180deg,
+                rgba(255, 255, 255, 0.26) 0%,
+                rgba(255, 255, 255, 0.08) 49%,
+                rgba(0, 0, 0, 0.04) 50%,
+                rgba(0, 0, 0, 0.08) 100%
+            );
+            box-shadow:
+                inset 0 1px 0 rgba(255, 255, 255, 0.35),
+                0 1px 1px rgba(0, 0, 0, 0.1);
+            color: rgba(255, 255, 255, 0.78);
+        }
+
+        .cm-window__title-bar__controls .cm-button:last-child {
+            background: linear-gradient(
+                180deg,
+                rgba(185, 172, 168, 0.5) 0%,
+                rgba(154, 112, 104, 0.62) 49%,
+                rgba(132, 92, 86, 0.68) 50%,
+                rgba(112, 78, 74, 0.72) 100%
+            );
+            border-color: rgba(100, 75, 72, 0.42);
+        }
+    }
+
     .cm-window-preview-frame,
     &.cm-window-preview-frame {
         border: 2px dashed rgba(69, 128, 196, 0.8);
@@ -391,6 +445,14 @@
         );
     }
 
+    .cm-scroll-area__viewport.has-vertical {
+        padding-right: var(--cm-scroll-area-scrollbar-size);
+    }
+
+    .cm-scroll-area__viewport.has-horizontal {
+        padding-bottom: var(--cm-scroll-area-scrollbar-size);
+    }
+
     // ============================================================
     // Button
     // ============================================================
@@ -440,12 +502,41 @@
         box-shadow: inset 0 2px 4px rgba(0, 0, 0, 0.15);
     }
 
+    &.cm-button--no-active:active:not(:disabled) {
+        background: linear-gradient(
+            180deg,
+            #f0f0f0 0%,
+            #e8e8e8 49%,
+            #d8d8d8 50%,
+            #d0d0d0 100%
+        );
+        box-shadow:
+            inset 0 1px 0 rgba(255, 255, 255, 0.9),
+            0 1px 2px rgba(0, 0, 0, 0.1);
+    }
+
+    &.cm-button--active:not(:disabled) {
+        background: linear-gradient(
+            180deg,
+            #c8c8c8 0%,
+            #d0d0d0 49%,
+            #d8d8d8 50%,
+            #e0e0e0 100%
+        );
+        box-shadow: inset 0 2px 4px rgba(0, 0, 0, 0.15);
+    }
+
     &.cm-button:focus-visible,
     .cm-radio__input:focus-visible,
     .cm-select:focus-visible,
     &.cm-select:focus-visible {
         outline: 2px solid #4580c4;
         outline-offset: 2px;
+    }
+
+    &.cm-button--no-focus:focus-visible,
+    &.cm-button--no-focus:focus {
+        outline: none;
     }
 
     &.cm-button--primary {
@@ -478,6 +569,30 @@
     }
 
     &.cm-button--primary:active:not(:disabled) {
+        background: linear-gradient(
+            180deg,
+            #2a6db5 0%,
+            #3d7ec9 49%,
+            #4580c4 50%,
+            #5a8fd4 100%
+        );
+        box-shadow: inset 0 2px 4px rgba(0, 0, 0, 0.25);
+    }
+
+    &.cm-button--no-active.cm-button--primary:active:not(:disabled) {
+        background: linear-gradient(
+            180deg,
+            #6ea6f9 0%,
+            #4580c4 49%,
+            #2a6db5 50%,
+            #3d7ec9 100%
+        );
+        box-shadow:
+            inset 0 1px 0 rgba(255, 255, 255, 0.4),
+            0 1px 2px rgba(0, 0, 0, 0.2);
+    }
+
+    &.cm-button--active.cm-button--primary:not(:disabled) {
         background: linear-gradient(
             180deg,
             #2a6db5 0%,

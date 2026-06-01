@@ -23,7 +23,7 @@ export interface CWidgetResizeOptions {
   maxContentHeight?: number;
 }
 
-export interface CWidgetProps extends WidgetLayoutProps {
+export interface CWidgetPropsBase extends WidgetLayoutProps {
   children?: React.ReactNode;
   theme?: string;
   active?: boolean;
@@ -32,7 +32,11 @@ export interface CWidgetProps extends WidgetLayoutProps {
   moveBehavior?: WidgetInteractionBehavior;
   resizeBehavior?: WidgetInteractionBehavior;
   resizeOptions?: CWidgetResizeOptions;
+  style?: React.CSSProperties;
+  onClick?: React.MouseEventHandler<HTMLDivElement>;
 }
+
+export type CWidgetProps = CWidgetPropsBase & React.HTMLAttributes<HTMLDivElement>;
 
 export type WidgetFrameState = Required<WidgetLayoutProps>;
 
@@ -338,21 +342,6 @@ export class CWidget<TState extends WidgetState = WidgetState> extends React.Com
     return this.props.active ?? this.state.active;
   }
 
-  protected setWidgetActive(nextActive: boolean): void {
-    if (this.getWidgetActive() === nextActive) {
-      return;
-    }
-
-    if (!this.isWidgetActiveControlled()) {
-      this.setState((prevState) => ({
-        ...prevState,
-        active: nextActive,
-      }));
-    }
-
-    this.props.onActive?.(nextActive);
-  }
-
   protected getPreviewBehavior(source: WidgetPreviewSource): WidgetInteractionBehavior {
     return source === WidgetPreviewSource.Resize
       ? this.getResizeBehavior()
@@ -396,10 +385,6 @@ export class CWidget<TState extends WidgetState = WidgetState> extends React.Com
       rect: null,
     });
   }
-
-  protected handleFramePointerDown = (): void => {
-    this.setWidgetActive(true);
-  };
 
   protected areFrameStatesEqual(left: WidgetFrameState, right: WidgetFrameState): boolean {
     return (
@@ -807,13 +792,49 @@ export class CWidget<TState extends WidgetState = WidgetState> extends React.Com
     ));
   }
 
+  protected filterLayoutStyle(style?: React.CSSProperties): React.CSSProperties {
+    if (!style) {
+      return {};
+    }
+
+    const filtered = { ...style };
+    delete filtered.position;
+    delete filtered.top;
+    delete filtered.right;
+    delete filtered.bottom;
+    delete filtered.left;
+    delete filtered.width;
+    delete filtered.height;
+
+    return filtered;
+  }
+
   protected renderFrame(
     content: React.ReactNode,
     layout?: WidgetLayoutProps,
     options?: WidgetFrameOptions,
   ): React.ReactElement {
     const { x, y, width, height } = layout ?? this.getFrameState();
+    /* eslint-disable sonarjs/no-unused-vars -- 解构排除不应传递给 DOM 的 props */
+    const {
+      style,
+      x: _x,
+      y: _y,
+      width: _w,
+      height: _h,
+      children: _c,
+      theme: _t,
+      active: _a,
+      onActive: _oa,
+      resizable: _r,
+      moveBehavior: _mb,
+      resizeBehavior: _rb,
+      resizeOptions: _ro,
+      ...restProps
+    } = this.props;
+    /* eslint-enable sonarjs/no-unused-vars */
     const frameStyle: React.CSSProperties = {
+      ...this.filterLayoutStyle(style),
       left: x,
       top: y,
       width,
@@ -823,20 +844,20 @@ export class CWidget<TState extends WidgetState = WidgetState> extends React.Com
     };
 
     const preview = this.renderPreviewFrame(options);
+    const active = this.getWidgetActive();
     const frameClassName = this.mergeThemeClassName(
-      [options?.className, this.getWidgetActive() ? 'cm-widget--active' : undefined]
+      [options?.className, active ? 'cm-widget--active' : 'cm-widget--inactive']
         .filter((className): className is string => Boolean(className))
         .join(' '),
       options?.theme,
     );
-
     return (
       <>
         <div
           data-testid={options?.testId ?? 'widget-frame'}
           className={frameClassName}
           style={frameStyle}
-          onPointerDown={this.handleFramePointerDown}
+          {...restProps}
         >
           {content}
         </div>

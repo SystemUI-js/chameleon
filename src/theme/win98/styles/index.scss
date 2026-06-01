@@ -1,4 +1,11 @@
+@import url(../../../styles/global.css);
+
 .cm-theme--win98 {
+    [class^="cm-"] {
+        &, & > * {
+            box-sizing: border-box;
+        }
+    }
     font-size: 11px;
     -webkit-font-smoothing: none;
     font-family: 'Pixelated MS Sans Serif', Arial, sans-serif;
@@ -29,9 +36,29 @@
         padding: 3px;
     }
 
+    // Inactive windows keep the classic bevel but switch to the muted system title colors.
+    .cm-window-frame.cm-widget--inactive,
+    &.cm-window-frame.cm-widget--inactive {
+        background: #c0c0c0;
+        box-shadow:
+            inset -1px -1px #404040,
+            inset 1px 1px #dcdcdc,
+            inset -2px -2px #909090,
+            inset 2px 2px #ffffff;
+
+        .cm-window__title-bar {
+            background: linear-gradient(90deg, #808080, #b5b5b5);
+
+            .cm-window__title-bar__text {
+                color: #e0e0e0;
+                text-shadow: 1px 1px 0 #6f6f6f;
+            }
+        }
+    }
+
     .cm-window-preview-frame,
     &.cm-window-preview-frame {
-        border: 2px dashed navy;
+        border: 1px dashed rgb(126, 126, 126);
         background: transparent;
         pointer-events: none;
         box-sizing: border-box;
@@ -49,6 +76,7 @@
             color: #fff;
             letter-spacing: 0;
             margin-right: 24px;
+            font-weight: 700;
         }
     }
 
@@ -94,7 +122,16 @@
 
     .cm-window__body,
     &.cm-window__body {
-        margin: 8px;
+        flex: 1;
+    }
+
+    .cm-status-bar__item {
+        box-shadow: inset -1px -1px #dfdfdf, inset 1px 1px grey;
+        flex-grow: 1;
+        margin: 0;
+        padding: 2px 3px;
+        line-height: 1.5;
+        font-size: 11px;
     }
 
     .cm-common-controls-preview,
@@ -151,32 +188,6 @@
         gap: 8px;
     }
 
-    .cm-scroll-area,
-    &.cm-scroll-area {
-        padding: 6px;
-        background: #c0c0c0;
-        box-shadow:
-            inset -1px -1px #0a0a0a,
-            inset 1px 1px #ffffff,
-            inset -2px -2px #808080,
-            inset 2px 2px #dfdfdf;
-        scrollbar-color: #808080 #c0c0c0;
-    }
-
-    .cm-scroll-area:focus,
-    &.cm-scroll-area:focus,
-    .cm-scroll-area.cm-theme--win98:focus {
-        outline: 1px dotted #000000;
-        outline-offset: 2px;
-    }
-
-    .cm-scroll-area__content,
-    &.cm-scroll-area__content {
-        display: flex;
-        flex-direction: column;
-        gap: 6px;
-    }
-
     .cm-scroll-area__scrollbar-vertical,
     .cm-scroll-area__scrollbar-horizontal,
     .cm-scroll-area__scrollbar-corner {
@@ -205,6 +216,14 @@
             inset 1px 1px #ffffff,
             inset -2px -2px #808080,
             inset 2px 2px #dfdfdf;
+    }
+
+    .cm-scroll-area__viewport.has-vertical {
+        padding-right: var(--cm-scroll-area-scrollbar-size);
+    }
+
+    .cm-scroll-area__viewport.has-horizontal {
+        padding-bottom: var(--cm-scroll-area-scrollbar-size);
     }
 
     &.cm-button {
@@ -243,9 +262,31 @@
         text-shadow: 1px 1px #222;
     }
 
+    &.cm-button--no-active:active:not(:disabled) {
+        box-shadow:
+            inset -1px -1px #0a0a0a,
+            inset 1px 1px #fff,
+            inset -2px -2px grey,
+            inset 2px 2px #dfdfdf;
+        text-shadow: 0 0 #222;
+    }
+
+    &.cm-button--active:not(:disabled) {
+        box-shadow:
+            inset -1px -1px #fff,
+            inset 1px 1px #0a0a0a,
+            inset -2px -2px #dfdfdf,
+            inset 2px 2px grey;
+        text-shadow: 1px 1px #222;
+    }
+
     &.cm-button:focus {
         outline: 1px dotted #000;
         outline-offset: -4px;
+    }
+
+    &.cm-button--no-focus:focus {
+        outline: none;
     }
 
     &.cm-button--primary {
@@ -259,6 +300,14 @@
     }
 
     &.cm-button--ghost:active:not(:disabled) {
+        background: #cccccc;
+    }
+
+    &.cm-button--no-active.cm-button--ghost:active:not(:disabled) {
+        background: #d9d9d9;
+    }
+
+    &.cm-button--active.cm-button--ghost:not(:disabled) {
         background: #cccccc;
     }
 

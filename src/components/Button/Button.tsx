@@ -12,6 +12,9 @@ export interface CButtonProps extends Omit<React.ButtonHTMLAttributes<HTMLButton
   compact?: boolean;
   type?: CButtonType;
   disabled?: boolean;
+  showActiveEffect?: boolean;
+  showFocusEffect?: boolean;
+  active?: boolean;
   onClick?: React.MouseEventHandler<HTMLButtonElement>;
   onPointerEnter?: React.PointerEventHandler<HTMLButtonElement>;
   className?: string;
@@ -25,6 +28,9 @@ export function CButton({
   compact = false,
   type = 'button',
   disabled,
+  showActiveEffect = true,
+  showFocusEffect = true,
+  active = false,
   onClick,
   onPointerEnter,
   className,
@@ -43,6 +49,18 @@ export function CButton({
     baseClasses.push('cm-button--compact');
   }
 
+  if (!showActiveEffect) {
+    baseClasses.push('cm-button--no-active');
+  }
+
+  if (!showFocusEffect) {
+    baseClasses.push('cm-button--no-focus');
+  }
+
+  if (active) {
+    baseClasses.push('cm-button--active');
+  }
+
   return (
     <button
       {...buttonProps}
@@ -52,6 +70,7 @@ export function CButton({
       onPointerEnter={onPointerEnter}
       className={mergeClasses(baseClasses, resolvedTheme, className)}
       data-testid={dataTestId}
+      tabIndex={showFocusEffect ? undefined : -1}
     >
       {children}
     </button>

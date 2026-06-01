@@ -658,6 +658,7 @@ function MenuShowcase(): React.ReactElement {
 
 const WINDOW_SNIPPET =
   `const [actionButtonPosition, setActionButtonPosition] = useState<'left' | 'right'>('right');
+const [windowActive, setWindowActive] = useState(true);
 
 const actionButtons = (
   <div className="cm-catalog__window-actions">
@@ -679,7 +680,11 @@ return (
       <CRadio value="right">Right</CRadio>
     </CRadioGroup>
 
-    <CWindow x={24} y={24} width={300} height={140} resizeBehavior={WidgetInteractionBehavior.Outline}>
+    <CCheckbox checked={windowActive} onChange={setWindowActive}>
+      Active
+    </CCheckbox>
+
+    <CWindow active={windowActive} x={24} y={24} width={300} height={140} resizeBehavior={WidgetInteractionBehavior.Outline}>
       <CWindowTitle actionButton={actionButtons} actionButtonPosition={actionButtonPosition}>
         Sample Window
       </CWindowTitle>
@@ -698,6 +703,7 @@ return (
 function WindowShowcase(): React.ReactElement {
   const [actionButtonPosition, setActionButtonPosition] =
     React.useState<WindowTitleActionButtonPosition>('right');
+  const [windowActive, setWindowActive] = React.useState(true);
 
   const handleActionButtonPositionChange = React.useCallback((nextValue: string) => {
     if (isWindowTitleActionButtonPosition(nextValue)) {
@@ -745,20 +751,30 @@ function WindowShowcase(): React.ReactElement {
   return (
     <ShowcaseSection title="Window" testId="catalog-section-window" code={WINDOW_SNIPPET}>
       <div className="cm-catalog__stack">
-        <CRadioGroup
-          aria-label="Window action button position"
-          data-testid="window-demo-position"
-          name="window-action-button-position"
-          value={actionButtonPosition}
-          onChange={handleActionButtonPositionChange}
-        >
-          <div className="cm-catalog__choice-row cm-catalog__window-position-choice-row">
-            <CRadio value="left">Left</CRadio>
-            <CRadio value="right">Right</CRadio>
-          </div>
-        </CRadioGroup>
+        <div className="cm-catalog__row">
+          <CRadioGroup
+            aria-label="Window action button position"
+            data-testid="window-demo-position"
+            name="window-action-button-position"
+            value={actionButtonPosition}
+            onChange={handleActionButtonPositionChange}
+          >
+            <div className="cm-catalog__choice-row cm-catalog__window-position-choice-row">
+              <CRadio value="left">Left</CRadio>
+              <CRadio value="right">Right</CRadio>
+            </div>
+          </CRadioGroup>
+          <CCheckbox
+            data-testid="window-demo-active"
+            checked={windowActive}
+            onChange={setWindowActive}
+          >
+            Active
+          </CCheckbox>
+        </div>
         <div className="cm-catalog__stage cm-catalog__stage--relative">
           <CWindow
+            active={windowActive}
             x={24}
             y={24}
             width={300}
@@ -769,8 +785,10 @@ function WindowShowcase(): React.ReactElement {
               Sample Window
             </CWindowTitle>
             <CWindowBody>
-              <p>Window content goes here.</p>
-              <p>Try dragging the title bar.</p>
+              <CScrollArea>
+                <p>Window content goes here.</p>
+                <p>Try dragging the title bar.</p>
+              </CScrollArea>
             </CWindowBody>
             <CStatusBar>
               <CStatusBarItem>Ready</CStatusBarItem>

@@ -199,4 +199,248 @@ describe('CButton', () => {
       expect(readThemeStyles('winxp')).toContain('&.cm-button--ghost');
     });
   });
+
+  describe('showActiveEffect prop', () => {
+    it('does not add no-active class by default', () => {
+      render(<CButton data-testid="default-active">Default</CButton>);
+
+      const button = screen.getByTestId('default-active');
+
+      expect(button).not.toHaveClass('cm-button--no-active');
+    });
+
+    it('adds no-active class when showActiveEffect is false', () => {
+      render(
+        <CButton showActiveEffect={false} data-testid="no-active">
+          No Active
+        </CButton>,
+      );
+
+      const button = screen.getByTestId('no-active');
+
+      expect(button).toHaveClass('cm-button--no-active');
+    });
+
+    it('does not add no-active class when showActiveEffect is true', () => {
+      render(
+        <CButton showActiveEffect={true} data-testid="with-active">
+          With Active
+        </CButton>,
+      );
+
+      const button = screen.getByTestId('with-active');
+
+      expect(button).not.toHaveClass('cm-button--no-active');
+    });
+
+    it('keeps no-active combinable with variants', () => {
+      render(
+        <>
+          <CButton showActiveEffect={false} variant="primary" data-testid="no-active-primary">
+            No Active Primary
+          </CButton>
+          <CButton showActiveEffect={false} variant="ghost" data-testid="no-active-ghost">
+            No Active Ghost
+          </CButton>
+        </>,
+      );
+
+      expect(screen.getByTestId('no-active-primary')).toHaveClass(
+        'cm-button',
+        'cm-button--primary',
+        'cm-button--no-active',
+      );
+      expect(screen.getByTestId('no-active-ghost')).toHaveClass(
+        'cm-button',
+        'cm-button--ghost',
+        'cm-button--no-active',
+      );
+    });
+  });
+
+  describe('showFocusEffect prop', () => {
+    it('does not add no-focus class by default', () => {
+      render(<CButton data-testid="default-focus">Default</CButton>);
+
+      const button = screen.getByTestId('default-focus');
+
+      expect(button).not.toHaveClass('cm-button--no-focus');
+      expect(button).not.toHaveAttribute('tabindex');
+    });
+
+    it('adds no-focus class and tabIndex=-1 when showFocusEffect is false', () => {
+      render(
+        <CButton showFocusEffect={false} data-testid="no-focus">
+          No Focus
+        </CButton>,
+      );
+
+      const button = screen.getByTestId('no-focus');
+
+      expect(button).toHaveClass('cm-button--no-focus');
+      expect(button).toHaveAttribute('tabindex', '-1');
+    });
+
+    it('does not add no-focus class when showFocusEffect is true', () => {
+      render(
+        <CButton showFocusEffect={true} data-testid="with-focus">
+          With Focus
+        </CButton>,
+      );
+
+      const button = screen.getByTestId('with-focus');
+
+      expect(button).not.toHaveClass('cm-button--no-focus');
+      expect(button).not.toHaveAttribute('tabindex');
+    });
+
+    it('keeps no-focus combinable with variants', () => {
+      render(
+        <>
+          <CButton showFocusEffect={false} variant="primary" data-testid="no-focus-primary">
+            No Focus Primary
+          </CButton>
+          <CButton showFocusEffect={false} variant="ghost" data-testid="no-focus-ghost">
+            No Focus Ghost
+          </CButton>
+        </>,
+      );
+
+      expect(screen.getByTestId('no-focus-primary')).toHaveClass(
+        'cm-button',
+        'cm-button--primary',
+        'cm-button--no-focus',
+      );
+      expect(screen.getByTestId('no-focus-primary')).toHaveAttribute('tabindex', '-1');
+
+      expect(screen.getByTestId('no-focus-ghost')).toHaveClass(
+        'cm-button',
+        'cm-button--ghost',
+        'cm-button--no-focus',
+      );
+      expect(screen.getByTestId('no-focus-ghost')).toHaveAttribute('tabindex', '-1');
+    });
+  });
+
+  describe('active prop', () => {
+    it('does not add active class by default', () => {
+      render(<CButton data-testid="default-active-state">Default</CButton>);
+
+      const button = screen.getByTestId('default-active-state');
+
+      expect(button).not.toHaveClass('cm-button--active');
+    });
+
+    it('adds active class when active is true', () => {
+      render(
+        <CButton active data-testid="forced-active">
+          Active
+        </CButton>,
+      );
+
+      const button = screen.getByTestId('forced-active');
+
+      expect(button).toHaveClass('cm-button--active');
+    });
+
+    it('does not add active class when active is false', () => {
+      render(
+        <CButton active={false} data-testid="not-active">
+          Not Active
+        </CButton>,
+      );
+
+      const button = screen.getByTestId('not-active');
+
+      expect(button).not.toHaveClass('cm-button--active');
+    });
+
+    it('keeps active combinable with variants', () => {
+      render(
+        <>
+          <CButton active variant="primary" data-testid="active-primary">
+            Active Primary
+          </CButton>
+          <CButton active variant="ghost" data-testid="active-ghost">
+            Active Ghost
+          </CButton>
+        </>,
+      );
+
+      expect(screen.getByTestId('active-primary')).toHaveClass(
+        'cm-button',
+        'cm-button--primary',
+        'cm-button--active',
+      );
+      expect(screen.getByTestId('active-ghost')).toHaveClass(
+        'cm-button',
+        'cm-button--ghost',
+        'cm-button--active',
+      );
+    });
+
+    it('works with other props combined', () => {
+      render(
+        <CButton
+          active
+          showActiveEffect={false}
+          compact
+          variant="primary"
+          data-testid="full-active-combo"
+        >
+          Full Combo
+        </CButton>,
+      );
+
+      const button = screen.getByTestId('full-active-combo');
+
+      expect(button).toHaveClass(
+        'cm-button',
+        'cm-button--primary',
+        'cm-button--compact',
+        'cm-button--active',
+        'cm-button--no-active',
+      );
+    });
+  });
+
+  describe('combined showActiveEffect and showFocusEffect', () => {
+    it('adds both no-active and no-focus classes when both are false', () => {
+      render(
+        <CButton showActiveEffect={false} showFocusEffect={false} data-testid="no-effects">
+          No Effects
+        </CButton>,
+      );
+
+      const button = screen.getByTestId('no-effects');
+
+      expect(button).toHaveClass('cm-button', 'cm-button--no-active', 'cm-button--no-focus');
+      expect(button).toHaveAttribute('tabindex', '-1');
+    });
+
+    it('works with compact and variants', () => {
+      render(
+        <CButton
+          showActiveEffect={false}
+          showFocusEffect={false}
+          variant="primary"
+          compact
+          data-testid="full-combo"
+        >
+          Full Combo
+        </CButton>,
+      );
+
+      const button = screen.getByTestId('full-combo');
+
+      expect(button).toHaveClass(
+        'cm-button',
+        'cm-button--primary',
+        'cm-button--compact',
+        'cm-button--no-active',
+        'cm-button--no-focus',
+      );
+      expect(button).toHaveAttribute('tabindex', '-1');
+    });
+  });
 });

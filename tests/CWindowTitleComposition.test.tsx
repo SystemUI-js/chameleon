@@ -72,7 +72,7 @@ const getFrameMetrics = (
   height: Number.parseFloat(frame.style.height),
 });
 
-const readThemeStyles = (theme: 'default' | 'win98' | 'winxp'): string =>
+const readThemeStyles = (theme: 'default' | 'win7' | 'win98' | 'winxp'): string =>
   readFileSync(join(process.cwd(), 'src', 'theme', theme, 'styles', 'index.scss'), 'utf8');
 
 class PreviewTestWindow extends CWindow {
@@ -177,6 +177,30 @@ describe('CWindow and CWindowTitle composition', () => {
 
     expect(title).toContainElement(titleText);
     expect(titleText).toHaveTextContent('Composed Title');
+  });
+
+  it('applies cm-widget--inactive class when active is false', () => {
+    const { getByTestId } = render(
+      <CWindow active={false}>
+        <CWindowTitle>Inactive Window</CWindowTitle>
+      </CWindow>,
+    );
+
+    const frame = getByTestId('window-frame');
+    expect(frame).toHaveClass('cm-widget--inactive');
+    expect(frame).not.toHaveClass('cm-widget--active');
+  });
+
+  it('applies cm-widget--active class when active is true', () => {
+    const { getByTestId } = render(
+      <CWindow active>
+        <CWindowTitle>Active Window</CWindowTitle>
+      </CWindow>,
+    );
+
+    const frame = getByTestId('window-frame');
+    expect(frame).toHaveClass('cm-widget--active');
+    expect(frame).not.toHaveClass('cm-widget--inactive');
   });
 
   it('does not render title controls when actionButton is omitted', () => {
@@ -302,6 +326,13 @@ describe('CWindow and CWindowTitle composition', () => {
     expect(readThemeStyles('winxp')).toContain('&.cm-window-preview-frame');
     expect(readThemeStyles('default')).toContain('&.cm-window__title-bar');
     expect(readThemeStyles('default')).toContain('&.cm-window-preview-frame');
+  });
+
+  it('includes inactive window frame selectors in all themes', () => {
+    expect(readThemeStyles('default')).toContain('cm-widget--inactive');
+    expect(readThemeStyles('win7')).toContain('cm-widget--inactive');
+    expect(readThemeStyles('win98')).toContain('cm-widget--inactive');
+    expect(readThemeStyles('winxp')).toContain('cm-widget--inactive');
   });
 
   it('keeps composed status bars out of window body theme selectors', () => {

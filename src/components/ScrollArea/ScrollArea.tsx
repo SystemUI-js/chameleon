@@ -37,11 +37,37 @@ function resolveDefaultTabIndex(
   return 0;
 }
 
-function isCustomScrollbarEligible(
+/**
+ * 统一判断滚动条是否应该显示。
+ *
+ * 综合考虑 overflow 设置、scrollbarVisibility Props 与轴向的动态滚动状态：
+ * - overflow 为 'hidden' 或 'clip'，或 scrollbarVisibility 为 'hidden' 时永不显示
+ * - scrollbarVisibility 为 'always' 时强制显示
+ * - overflow 为 'scroll' 时即使内容未溢出也显示
+ * - overflow 为 'auto'（默认情况）时按 axisState.scrollable 动态决定
+ */
+function shouldShowScrollbar(
+  axisState: AxisState,
   overflow: React.CSSProperties['overflowX'] | React.CSSProperties['overflowY'],
   scrollbarVisibility: CScrollAreaScrollbarVisibility,
 ): boolean {
-  return scrollbarVisibility !== 'hidden' && overflow !== 'hidden';
+  // hidden 或 clip 强制屏蔽自定义滚动条，scrollbarVisibility="hidden" 同理
+  if (overflow === 'hidden' || overflow === 'clip' || scrollbarVisibility === 'hidden') {
+    return false;
+  }
+
+  // scrollbarVisibility="always" 总是显示
+  if (scrollbarVisibility === 'always') {
+    return true;
+  }
+
+  // overflow="scroll" 与原生行为一致：始终显示滚动条
+  if (overflow === 'scroll') {
+    return true;
+  }
+
+  // overflow="auto" 时根据内容是否真正溢出来决定（依赖 ResizeObserver 同步的 axisState）
+  return axisState.scrollable;
 }
 
 function serializeAxisState(axisState: AxisState): string {
@@ -73,8 +99,12 @@ export function CScrollArea({
   );
   const resolvedTheme = normalizeThemeClassName(useTheme(theme));
   const resolvedTabIndex = resolveDefaultTabIndex(tabIndex, overflowX, overflowY);
-  const horizontalScrollbarEligible = isCustomScrollbarEligible(overflowX, scrollbarVisibility);
-  const verticalScrollbarEligible = isCustomScrollbarEligible(overflowY, scrollbarVisibility);
+  // 当 overflow 被强制屏蔽（hidden/clip）或 scrollbarVisibility 为 hidden 时
+  // 不应将 viewport 的 scrollTop/scrollLeft 反馈到 axis state，避免被清零
+  const horizontalScrollOffsetActive =
+    overflowX !== 'hidden' && overflowX !== 'clip' && scrollbarVisibility !== 'hidden';
+  const verticalScrollOffsetActive =
+    overflowY !== 'hidden' && overflowY !== 'clip' && scrollbarVisibility !== 'hidden';
   const syncAxisStates = useCallback(() => {
     const viewport = viewportRef.current;
 
@@ -86,7 +116,7 @@ export function CScrollArea({
       computeAxisState(
         viewport.clientHeight,
         viewport.scrollHeight,
-        verticalScrollbarEligible ? viewport.scrollTop : 0,
+        verticalScrollOffsetActive ? viewport.scrollTop : 0,
         20,
         'vertical',
       ),
@@ -95,12 +125,12 @@ export function CScrollArea({
       computeAxisState(
         viewport.clientWidth,
         viewport.scrollWidth,
-        horizontalScrollbarEligible ? viewport.scrollLeft : 0,
+        horizontalScrollOffsetActive ? viewport.scrollLeft : 0,
         20,
         'horizontal',
       ),
     );
-  }, [horizontalScrollbarEligible, verticalScrollbarEligible]);
+  }, [horizontalScrollOffsetActive, verticalScrollOffsetActive]);
 
   useEffect(() => {
     syncAxisStates();
@@ -185,28 +215,51 @@ export function CScrollArea({
     [syncAxisStates],
   );
 
-  const showVerticalScrollbar =
-    verticalScrollbarEligible && (scrollbarVisibility === 'always' || verticalAxisState.scrollable);
-  const showHorizontalScrollbar =
-    horizontalScrollbarEligible &&
-    (scrollbarVisibility === 'always' || horizontalAxisState.scrollable);
+  const showVerticalScrollbar = shouldShowScrollbar(
+    verticalAxisState,
+    overflowY,
+    scrollbarVisibility,
+  );
+  const showHorizontalScrollbar = shouldShowScrollbar(
+    horizontalAxisState,
+    overflowX,
+    scrollbarVisibility,
+  );
+
+  const rootClasses = mergeClasses(
+    [
+      'cm-scroll-area',
+      showVerticalScrollbar ? 'cm-scroll-area--has-vertical' : undefined,
+      showHorizontalScrollbar ? 'cm-scroll-area--has-horizontal' : undefined,
+    ].filter((c): c is string => c !== undefined),
+    resolvedTheme,
+    className,
+  );
+
+  const viewportClasses = mergeClasses(
+    [
+      'cm-scroll-area__viewport',
+      showVerticalScrollbar ? 'has-vertical' : undefined,
+      showHorizontalScrollbar ? 'has-horizontal' : undefined,
+    ].filter((c): c is string => c !== undefined),
+  );
 
   return (
     <div
-      className={mergeClasses(['cm-scroll-area'], resolvedTheme, className)}
+      className={rootClasses}
       style={style}
       data-testid={dataTestId}
       data-scroll-area-host="true"
       data-scrollbar-visibility={scrollbarVisibility}
-      data-scrollbar-horizontal-eligible={String(horizontalScrollbarEligible)}
-      data-scrollbar-vertical-eligible={String(verticalScrollbarEligible)}
+      data-scrollbar-horizontal-visible={String(showHorizontalScrollbar)}
+      data-scrollbar-vertical-visible={String(showVerticalScrollbar)}
       data-scroll-axis-vertical={serializeAxisState(verticalAxisState)}
       data-scroll-axis-horizontal={serializeAxisState(horizontalAxisState)}
     >
       <div
         {...divProps}
         ref={viewportRef}
-        className="cm-scroll-area__viewport"
+        className={viewportClasses}
         style={{ overflowX, overflowY }}
         tabIndex={resolvedTabIndex}
         onScroll={handleScroll}
