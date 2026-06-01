@@ -3,6 +3,7 @@
 ## Exit Code: 0
 
 ## Output:
+
 ```
 PASS tests/ComponentCatalog.test.tsx
 PASS tests/Radio.test.tsx
@@ -24,6 +25,7 @@ Time:        1.531 s
 ```
 
 ## Summary:
+
 - All 12 test suites passed
 - All 129 tests passed
 - Exit code: 0 ✓

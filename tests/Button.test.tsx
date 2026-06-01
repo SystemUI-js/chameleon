@@ -65,44 +65,84 @@ describe('CButton', () => {
     expect(screen.getByRole('button', { name: 'Ghost' })).toHaveClass('cm-button--ghost');
   });
 
-  it('adds compact class only when compact is enabled', () => {
-    const { rerender } = render(<CButton>Default</CButton>);
+  describe('size prop', () => {
+    it('defaults to medium size', () => {
+      render(<CButton data-testid="default-size">Default</CButton>);
 
-    const button = screen.getByRole('button', { name: 'Default' });
+      expect(screen.getByTestId('default-size')).toHaveClass('cm-button', 'cm-button--medium');
+    });
 
-    expect(button).toHaveClass('cm-button');
-    expect(button).not.toHaveClass('cm-button--compact');
+    it('applies explicit size class', () => {
+      const { rerender } = render(
+        <CButton size="compact" data-testid="sized">
+          Compact
+        </CButton>,
+      );
 
-    rerender(<CButton compact>Compact</CButton>);
+      expect(screen.getByTestId('sized')).toHaveClass('cm-button', 'cm-button--compact');
 
-    expect(screen.getByRole('button', { name: 'Compact' })).toHaveClass(
-      'cm-button',
-      'cm-button--compact',
-    );
+      rerender(
+        <CButton size="small" data-testid="sized">
+          Small
+        </CButton>,
+      );
+      expect(screen.getByTestId('sized')).toHaveClass('cm-button', 'cm-button--small');
+
+      rerender(
+        <CButton size="large" data-testid="sized">
+          Large
+        </CButton>,
+      );
+      expect(screen.getByTestId('sized')).toHaveClass('cm-button', 'cm-button--large');
+    });
   });
 
-  it('keeps compact combinable with existing variants', () => {
-    render(
-      <>
-        <CButton compact variant="primary">
-          Compact Primary
-        </CButton>
-        <CButton compact variant="ghost">
-          Compact Ghost
-        </CButton>
-      </>,
-    );
+  describe('displayType prop', () => {
+    it('defaults to rect display type', () => {
+      render(<CButton data-testid="default-display">Default</CButton>);
 
-    expect(screen.getByRole('button', { name: 'Compact Primary' })).toHaveClass(
-      'cm-button',
-      'cm-button--primary',
-      'cm-button--compact',
-    );
-    expect(screen.getByRole('button', { name: 'Compact Ghost' })).toHaveClass(
-      'cm-button',
-      'cm-button--ghost',
-      'cm-button--compact',
-    );
+      expect(screen.getByTestId('default-display')).toHaveClass('cm-button', 'cm-button--rect');
+    });
+
+    it('applies round display type class', () => {
+      render(
+        <CButton displayType="round" data-testid="round-btn">
+          Round
+        </CButton>,
+      );
+
+      expect(screen.getByTestId('round-btn')).toHaveClass('cm-button', 'cm-button--round');
+    });
+
+    it('applies custom borderRadius when displayType is round', () => {
+      render(
+        <CButton displayType="round" borderRadius="8px" data-testid="custom-radius">
+          Custom
+        </CButton>,
+      );
+
+      expect(screen.getByTestId('custom-radius')).toHaveStyle({ borderRadius: '8px' });
+    });
+
+    it('uses default 50% borderRadius when displayType is round', () => {
+      render(
+        <CButton displayType="round" data-testid="default-radius">
+          Default
+        </CButton>,
+      );
+
+      expect(screen.getByTestId('default-radius')).toHaveStyle({ borderRadius: '50%' });
+    });
+
+    it('does not apply borderRadius style when displayType is rect', () => {
+      render(
+        <CButton displayType="rect" borderRadius="8px" data-testid="rect-no-radius">
+          Rect
+        </CButton>,
+      );
+
+      expect(screen.getByTestId('rect-no-radius')).not.toHaveStyle({ borderRadius: '8px' });
+    });
   });
 
   it('passes disabled through and blocks clicks', () => {
@@ -384,7 +424,7 @@ describe('CButton', () => {
         <CButton
           active
           showActiveEffect={false}
-          compact
+          size="compact"
           variant="primary"
           data-testid="full-active-combo"
         >
@@ -424,7 +464,7 @@ describe('CButton', () => {
           showActiveEffect={false}
           showFocusEffect={false}
           variant="primary"
-          compact
+          size="compact"
           data-testid="full-combo"
         >
           Full Combo

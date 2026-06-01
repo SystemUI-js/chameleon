@@ -4,7 +4,11 @@ import type { DevThemeId } from '@/dev/themeSwitcher';
 const PLAYWRIGHT_COMMON_CONTROLS_PATH = '/playwright-common-controls.html';
 const BUTTON_TEST_ID = 'button-demo-primary';
 const RADIO_GROUP_TEST_ID = 'radio-demo-fruit';
-const SELECT_TEST_ID = 'select-demo-size';
+export const SELECT_TEST_ID = 'select-demo-size';
+export const SELECT_NATIVE_TEST_ID = `${SELECT_TEST_ID}__native`;
+export const SELECT_LARGE_MENU_ITEM_TEST_ID = 'menu-item-large';
+export const SELECT_MEDIUM_MENU_ITEM_TEST_ID = 'menu-item-medium';
+export const SELECT_MENU_POPUP_TEST_ID = 'menu-demo-popup';
 const FIXTURE_ERROR_TEST_ID = 'fixture-error';
 const GROUPED_BUTTON_GROUP_TEST_ID = 'button-group-demo';
 const GROUPED_BUTTON_SEPARATOR_TEST_ID = 'button-group-separator';
@@ -18,7 +22,8 @@ const waitForStandardControlsHarness = async (page: Page): Promise<void> => {
     ({ buttonTestId, radioGroupTestId, selectTestId, fixtureErrorTestId }) => {
       const button = document.querySelector(`[data-testid="${buttonTestId}"]`);
       const radioGroup = document.querySelector(`[data-testid="${radioGroupTestId}"]`);
-      const select = document.querySelector(`[data-testid="${selectTestId}"]`);
+      const selectTrigger = document.querySelector(`[data-testid="${selectTestId}"]`);
+      const selectNative = document.querySelector(`[data-testid="${selectTestId}__native"]`);
       const fixtureError = document.querySelector(`[data-testid="${fixtureErrorTestId}"]`);
 
       if (fixtureError) {
@@ -29,7 +34,8 @@ const waitForStandardControlsHarness = async (page: Page): Promise<void> => {
         button instanceof HTMLButtonElement &&
           radioGroup instanceof HTMLElement &&
           radioGroup.querySelector('input[type="radio"]') !== null &&
-          select instanceof HTMLSelectElement,
+          selectTrigger instanceof HTMLButtonElement &&
+          selectNative instanceof HTMLSelectElement,
       );
     },
     {
@@ -85,13 +91,15 @@ const waitForWin98ThemedControls = async (page: Page): Promise<void> => {
     ({ buttonTestId, radioGroupTestId, selectTestId }) => {
       const button = document.querySelector(`[data-testid="${buttonTestId}"]`);
       const radioGroup = document.querySelector(`[data-testid="${radioGroupTestId}"]`);
-      const select = document.querySelector(`[data-testid="${selectTestId}"]`);
+      const selectTrigger = document.querySelector(`[data-testid="${selectTestId}"]`);
+      const selectNative = document.querySelector(`[data-testid="${selectTestId}__native"]`);
 
       return Boolean(
         button instanceof HTMLButtonElement &&
           radioGroup instanceof HTMLElement &&
           radioGroup.querySelector('input[type="radio"]') !== null &&
-          select instanceof HTMLSelectElement,
+          selectTrigger instanceof HTMLButtonElement &&
+          selectNative instanceof HTMLSelectElement,
       );
     },
     {
@@ -203,5 +211,13 @@ export const readCommonControlsRadioValue = async (page: Page): Promise<string |
     const checkedRadio = element.querySelector<HTMLInputElement>('input[type="radio"]:checked');
 
     return checkedRadio?.value ?? null;
+  });
+};
+
+export const readCommonControlsSelectNativeValue = async (
+  page: Page,
+): Promise<string | null> => {
+  return page.getByTestId(SELECT_NATIVE_TEST_ID).evaluate((element) => {
+    return element instanceof HTMLSelectElement ? element.value : null;
   });
 };

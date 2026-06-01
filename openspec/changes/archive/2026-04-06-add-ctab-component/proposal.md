@@ -12,9 +12,11 @@
 ## Capabilities
 
 ### New Capabilities
+
 - `ctab-component`: 提供基于 `CTab` 与 `CTabItem` 的标签页组合能力，支持从 `CTabItem.title` 自动生成标签标题并展示对应内容。
 
 ### Modified Capabilities
+
 - 无
 
 ## Impact

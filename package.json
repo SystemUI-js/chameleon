@@ -6,14 +6,18 @@
   "main": "dist/chameleon.umd.cjs",
   "module": "dist/chameleon.es.js",
   "types": "dist/index.d.ts",
+  "style": "./dist/style.css",
   "exports": {
     ".": {
       "import": "./dist/chameleon.es.js",
       "require": "./dist/chameleon.umd.cjs",
       "types": "./dist/index.d.ts"
-    }
+    },
+    "./dist/style.css": "./dist/style.css"
   },
-  "sideEffects": false,
+  "sideEffects": [
+    "**/*.css"
+  ],
   "files": [
     "dist"
   ],

@@ -279,9 +279,9 @@
     &.cm-button {
         min-height: 32px;
         padding: 0 18px;
-        border: 1px solid #c9a67a;
+        border: 1px solid transparent;
         border-radius: 999px;
-        background: linear-gradient(180deg, #fffbf5 0%, #fff3e6 100%);
+        background: linear-gradient(180deg, #fffbf5 0%, #fff8f0 100%);
         box-shadow: 0 1px 3px rgba(160, 120, 60, 0.12);
         color: #3d2810;
         font-size: 13px;
@@ -331,7 +331,7 @@
     }
 
     &.cm-button--primary {
-        border-color: #d4720e;
+        border-color: transparent;
         background: linear-gradient(180deg, #f5a623 0%, #e67e22 100%);
         color: #ffffff;
         text-shadow: 0 1px 0 rgba(80, 40, 0, 0.25);
@@ -352,11 +352,42 @@
     }
 
     &.cm-button:disabled {
-        border-color: #d4bfa0;
+        border-color: transparent;
         background: linear-gradient(180deg, #fff8f0 0%, #f5e6d3 100%);
         box-shadow: none;
         color: #a68e6e;
         cursor: not-allowed;
+    }
+
+    // Size variants
+    &.cm-button--compact {
+        min-height: 20px;
+        padding: 0 8px;
+        font-size: 11px;
+    }
+
+    &.cm-button--small {
+        min-height: 24px;
+        padding: 0 10px;
+        font-size: 12px;
+    }
+
+    &.cm-button--medium {
+        min-height: 32px;
+        padding: 0 18px;
+        font-size: 13px;
+    }
+
+    &.cm-button--large {
+        min-height: 40px;
+        padding: 0 20px;
+        font-size: 14px;
+    }
+
+    // Display type variants
+    &.cm-button--round {
+        aspect-ratio: 1;
+        padding: 0;
     }
 
     &.cm-button--grouped {

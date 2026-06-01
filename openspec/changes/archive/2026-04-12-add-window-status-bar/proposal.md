@@ -12,9 +12,11 @@
 ## Capabilities
 
 ### New Capabilities
+
 - `cstatusbar-component`: 提供独立的 `CStatusBar` 与 `CStatusBarItem` 组件，支持灵活组合、默认横向布局与基础样式钩子。
 
 ### Modified Capabilities
+
 - 无
 
 ## Impact

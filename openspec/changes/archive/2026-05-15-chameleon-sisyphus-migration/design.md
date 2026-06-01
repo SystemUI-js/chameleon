@@ -14,15 +14,15 @@ Chameleon is a pure React component library providing themeable UI components. T
 
 ### Component Architecture
 
-| Pattern | Description |
-|---------|-------------|
-| Props | TypeScript interfaces with explicit optional props |
-| Theme | `resolveThemeClass(theme)` + `useTheme()` + `mergeClasses(base, theme, className)` |
-| Class order | `base → theme → className` |
-| State ownership | Parent owns measurement/state; children render from props |
-| SCSS | Local `index.scss` per component; theme overrides in `src/theme/*/styles/index.scss` |
-| Test IDs | Stable `data-testid` selectors for automation |
-| Export | Barrel via `src/components/index.ts` + explicit re-export in `src/index.ts` |
+| Pattern         | Description                                                                          |
+| --------------- | ------------------------------------------------------------------------------------ |
+| Props           | TypeScript interfaces with explicit optional props                                   |
+| Theme           | `resolveThemeClass(theme)` + `useTheme()` + `mergeClasses(base, theme, className)`   |
+| Class order     | `base → theme → className`                                                           |
+| State ownership | Parent owns measurement/state; children render from props                            |
+| SCSS            | Local `index.scss` per component; theme overrides in `src/theme/*/styles/index.scss` |
+| Test IDs        | Stable `data-testid` selectors for automation                                        |
+| Export          | Barrel via `src/components/index.ts` + explicit re-export in `src/index.ts`          |
 
 ---
 
@@ -35,6 +35,7 @@ Chameleon is a pure React component library providing themeable UI components. T
 **Choice**: Throw `new Error('Nested Theme is not supported')` for any nested Theme provider.
 
 **Alternatives considered**:
+
 - Silent outer-wins behavior (rejected - caused confusion)
 - Warning console output (rejected - not actionable)
 
@@ -49,6 +50,7 @@ Chameleon is a pure React component library providing themeable UI components. T
 **Choice**: ScrollArea owns all measurement and scroll state; internal scrollbar components render purely from props and emit interaction callbacks.
 
 **Key design points**:
+
 - Axis state shape: `{ id, viewportSize, contentSize, scrollOffset, maxScrollOffset, scrollable, thumbSize, thumbOffset }`
 - Metric sync triggers: mount, viewport resize, content resize, scroll event, prop changes
 - Visibility modes: `auto | always | hidden`
@@ -66,6 +68,7 @@ Chameleon is a pure React component library providing themeable UI components. T
 **Choice**: In outline mode, drag updates a preview frame (dashed border) while the real frame stays at committed position; release commits the preview to real frame.
 
 **Key design points**:
+
 - Preview DOM: `data-testid="window-preview-frame"`
 - Preview ownership: Widget layer owns preview/comitted state
 - Cancel/unmount: Preview cleared without committing
@@ -80,6 +83,7 @@ Chameleon is a pure React component library providing themeable UI components. T
 **Decision**: CMenu uses single trigger child via `React.Children.only`, recursive menu data via `menuList`, and fires `onSelect` for leaf items only.
 
 **Key design points**:
+
 - `MenuListItem`: `{ id, key, title, children?, trigger?, disabled? }`
 - `trigger`: `'click' | 'hover'` per item (inherits from parent)
 - Branch tracking: `openBranchByDepth: string[]` maintains single open path per depth
@@ -94,6 +98,7 @@ Chameleon is a pure React component library providing themeable UI components. T
 **Decision**: CIconContainer manages active state and positions; individual CIcon instances render from props and emit callbacks.
 
 **Key design points**:
+
 - Position: Container-relative absolute positioning via `position: absolute` + `left/top`
 - Drag: `@system-ui-js/multi-drag` per icon slot
 - Long-press: 500ms / 6px threshold for touch context menu

@@ -80,13 +80,20 @@ export function CommonControlsPreview(): React.ReactElement {
           <h3 className="cm-common-controls-preview__panel-title">Select</h3>
           <div className="cm-common-controls-preview__stack">
             <CSelect
+              aria-label="Select demo size"
               data-testid="select-demo-size"
               name="size"
               value={selectedSize}
               options={SIZE_OPTIONS}
               onChange={setSelectedSize}
             />
-            <CSelect name="size-disabled" value="large" options={SIZE_OPTIONS} disabled />
+            <CSelect
+              aria-label="Disabled select demo size"
+              name="size-disabled"
+              value="large"
+              options={SIZE_OPTIONS}
+              disabled
+            />
             <p className="cm-common-controls-preview__value">Selected size: {selectedSize}</p>
           </div>
         </section>

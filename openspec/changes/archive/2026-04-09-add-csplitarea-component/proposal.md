@@ -12,10 +12,12 @@
 ## Capabilities
 
 ### New Capabilities
+
 - `csplitarea-component`: 定义 `CSplitArea` 的区域划分、嵌套使用、方向切换和可拖动分割线行为。
 - `csplitarea-demo`: 定义开发展示中 `CSplitArea` 的嵌套横竖组合示例，以及子区域动态销毁时的演示要求。
 
 ### Modified Capabilities
+
 - 无
 
 ## Impact

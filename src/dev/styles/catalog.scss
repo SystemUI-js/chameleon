@@ -262,6 +262,12 @@
     color: var(--cm-color-text-muted, #666);
 }
 
+.cm-catalog__list-demo {
+    max-width: 500px;
+    border: 1px solid var(--cm-color-border-light, rgba(0, 0, 0, 0.08));
+    border-radius: 4px;
+}
+
 .cm-split-area-demo-shell {
     min-height: 280px;
     height: 280px;

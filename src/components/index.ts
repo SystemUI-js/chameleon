@@ -2,6 +2,7 @@ export * from './Button/Button';
 export * from './ButtonGroup/ButtonGroup';
 export * from './ButtonSeparator/ButtonSeparator';
 export * from './Checkbox/Checkbox';
+export * from './CList';
 export * from './CSlider';
 export * from './CSplitArea';
 export * from './Dock/Dock';

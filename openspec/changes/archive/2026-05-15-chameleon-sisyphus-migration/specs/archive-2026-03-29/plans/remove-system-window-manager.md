@@ -1,36 +1,45 @@
 # Remove system layer and window manager
 
 ## TL;DR
+
 > **Summary**: 删除 `src/system/**` 与 `src/components/Window/WindowManager.tsx`，同步清理所有 system/theme 切换相关公共导出、dev 预览、Playwright harness、以及仅验证被删除能力的测试。保留 `CWindow`、`CWindowTitle`、`CWindowBody`、`CScreen`、`CScreenManager` 等未被证实无用的基础组件。
 > **Deliverables**:
+>
 > - 删除 `src/system/**` 与 `src/components/Window/WindowManager.tsx`
 > - 清理 `src/index.ts` / `src/components/index.ts` 的相关公共导出
 > - 删除 system/theme 相关 dev 预览与 Playwright harness 路径
 > - 删除失效 Jest / Playwright 用例并保留无关回归能力
 > - 在 `CHANGELOG.md` 的 `[UnReleased]` 记录 breaking 变更
-> **Effort**: Medium
-> **Parallel**: YES - 3 waves
-> **Critical Path**: 1 → 2 → 4 → 6 → 8
+>   **Effort**: Medium
+>   **Parallel**: YES - 3 waves
+>   **Critical Path**: 1 → 2 → 4 → 6 → 8
 
 ## Context
+
 ### Original Request
+
 - 「去掉 `src/system` 文件夹，去掉 `@src/components/Window/WindowManager.tsx` ，以及相关依赖、测试用例」
 
 ### Interview Summary
+
 - 用户确认：删除 `src/system` 后，system/theme 切换相关的 dev 预览与 Playwright harness 一并删除，不保留替代壳层。
 - 用户确认：`src/index.ts` 当前导出的 `SystemHost`、registry、system types 可以直接移除，接受 breaking API 变更。
 - 用户确认：测试策略采用“测试后补齐”，即先删失效实现与测试，再做完整 lint / test / build / pack 验证。
 
 ### Metis Review (gaps addressed)
+
 - 将本次任务收敛为 **breaking cleanup**，禁止顺手删除未证实无用的 window/screen 基础组件。
 - 要求显式覆盖公共 API 收缩、dev surface 清理、theme definition 依赖清理、以及 `[UnReleased]` changelog 记录。
 - 要求所有验收条件都能由 agent 直接执行，并增加“仓库内不得残留 `@/system/` / `CWindowManager` 引用”的搜索式校验。
 
 ## Work Objectives
+
 ### Core Objective
+
 - 彻底移除 system 层与 `CWindowManager`，让仓库在不再支持 system/theme 切换壳层的前提下继续通过 lint、Jest、Playwright、build 与 `npm pack --dry-run`。
 
 ### Deliverables
+
 - 删除目录：`src/system/`
 - 删除文件：`src/components/Window/WindowManager.tsx`
 - 删除关联导出：`src/index.ts` 中的 system exports / theme-definition exports；`src/components/index.ts` 中的 `CWindowManager`
@@ -40,6 +49,7 @@
 - 更新 `CHANGELOG.md`
 
 ### Definition of Done (verifiable conditions with commands)
+
 - `yarn lint` 退出码为 0
 - `yarn test --runInBand` 退出码为 0
 - `yarn test:ui` 退出码为 0
@@ -50,61 +60,72 @@
 - `src/components/index.ts` 不再导出 `./Window/WindowManager`
 
 ### Must Have
+
 - 仅删除与 system 层、`WindowManager`、以及 system/theme 切换预览直接相关的实现与测试
 - 保留并继续验证 fixture 模式下的 window Playwright 能力
 - 保留 `CommonControlsPreview` 这类与 system 壳层无关的预览能力
 - 明确记录 breaking API 收缩到 changelog
 
 ### Must NOT Have (guardrails, AI slop patterns, scope boundaries)
+
 - 不得顺手删除 `CWindow`、`CWindowTitle`、`CWindowBody`、`CScreen`、`CScreenManager` 等仍可独立存在的基础组件
 - 不得引入新的 system 替代抽象或兼容壳层
 - 不得把无关组件测试一并清空；只删除验证已删除能力的测试
 - 不得修改 `node_modules`
 
 ## Verification Strategy
+
 > ZERO HUMAN INTERVENTION — all verification is agent-executed.
+
 - Test decision: tests-after + Jest + Playwright
 - QA policy: Every task has agent-executed scenarios
 - Evidence: `.sisyphus/evidence/task-{N}-{slug}.{ext}`
 
 ## Execution Strategy
+
 ### Parallel Execution Waves
+
 > Target: 5-8 tasks per wave. <3 per wave (except final) = under-splitting.
 > Extract shared dependencies as Wave-1 tasks for max parallelism.
 
 Wave 1: API surface contraction + source deletion boundaries + dev entry cleanup
+
 - Task 1 API/export cleanup
 - Task 2 WindowManager and system implementation deletion
 - Task 3 theme-definition dependency cleanup
 
 Wave 2: runtime tooling cleanup
+
 - Task 4 dev preview entrypoint simplification
 - Task 5 Playwright harness/helper simplification
 - Task 6 Jest regression triage and cleanup
 
 Wave 3: test suite surface cleanup + release notes
+
 - Task 7 Playwright spec triage and cleanup
 - Task 8 changelog update and final package-surface check prep
 
 ### Dependency Matrix (full, all tasks)
 
-| Task | Depends On | Blocks |
-|---|---|---|
-| 1 | none | 4, 8 |
-| 2 | none | 4, 5, 6 |
-| 3 | 1, 2 | 4, 8 |
-| 4 | 1, 2, 3 | 5, 6 |
-| 5 | 2, 4 | 7 |
-| 6 | 2, 4 | 8 |
-| 7 | 5 | 8 |
-| 8 | 1, 3, 6, 7 | F1-F4 |
+| Task | Depends On | Blocks  |
+| ---- | ---------- | ------- |
+| 1    | none       | 4, 8    |
+| 2    | none       | 4, 5, 6 |
+| 3    | 1, 2       | 4, 8    |
+| 4    | 1, 2, 3    | 5, 6    |
+| 5    | 2, 4       | 7       |
+| 6    | 2, 4       | 8       |
+| 7    | 5          | 8       |
+| 8    | 1, 3, 6, 7 | F1-F4   |
 
 ### Agent Dispatch Summary (wave → task count → categories)
+
 - Wave 1 → 3 tasks → `quick`, `unspecified-low`
 - Wave 2 → 3 tasks → `quick`, `unspecified-low`
 - Wave 3 → 2 tasks → `quick`, `writing`
 
 ## TODOs
+
 > Implementation + Test = ONE task. Never separate.
 > EVERY task MUST have: Agent Profile + Parallelization + QA Scenarios.
 
@@ -446,9 +467,11 @@ Wave 3: test suite surface cleanup + release notes
   **Commit**: YES | Message: `docs(changelog): record breaking removal of system APIs` | Files: `CHANGELOG.md`
 
 ## Final Verification Wave (MANDATORY — after ALL implementation tasks)
+
 > 4 review agents run in PARALLEL. ALL must APPROVE. Present consolidated results to user and get explicit "okay" before completing.
 > **Do NOT auto-proceed after verification. Wait for user's explicit approval before marking work complete.**
 > **Never mark F1-F4 as checked before getting user's okay.** Rejection or user feedback -> fix -> re-run -> present again -> wait for okay.
+
 - [ ] F1. Plan Compliance Audit — oracle
 
   **What to do**: 让 `oracle` 审核实现结果是否逐项满足本计划 1-8 号任务的范围、保留面、删除面、提交策略与 breaking 说明，不得放过任何越界删除或漏删引用。
@@ -540,6 +563,7 @@ Wave 3: test suite surface cleanup + release notes
   ```
 
 ## Commit Strategy
+
 - Commit 1: `refactor(exports): remove system and window manager public surface`
 - Commit 2: `refactor(system): delete system layer and window manager implementation`
 - Commit 3: `refactor(dev): remove system-based preview and harness flows`
@@ -547,6 +571,7 @@ Wave 3: test suite surface cleanup + release notes
 - Commit 5: `docs(changelog): record breaking removal of system APIs`
 
 ## Success Criteria
+
 - 运行时代码中不再存在 `src/system/**` 或 `CWindowManager` 依赖链
 - 剩余 window fixture 与 common controls 预览/测试仍可正常运行
 - 包入口导出与 changelog 一致反映 breaking 变更

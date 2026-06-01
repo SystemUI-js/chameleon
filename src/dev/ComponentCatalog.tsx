@@ -4,34 +4,35 @@ import {
   CButtonGroup,
   CButtonSeparator,
   CCheckbox,
-  CSlider,
   CDock,
   CGrid,
   CGridItem,
   CIconContainer,
+  CList,
   CMenu,
   CRadio,
   CRadioGroup,
   CScrollArea,
   CSelect,
+  type CSelectOption,
+  CSlider,
+  CSplitArea,
+  CStartBar,
   CStatusBar,
   CStatusBarItem,
-  CStartBar,
-  CSplitArea,
   CTab,
   CTabItem,
   CWindow,
   CWindowBody,
   CWindowTitle,
-  Theme,
-  type CSelectOption,
   type MenuListItem,
-  type WindowTitleActionButtonPosition,
+  Theme,
   WidgetInteractionBehavior,
+  type WindowTitleActionButtonPosition,
 } from '@/components';
 import { ShowcaseCodeDisclosure } from './ShowcaseCodeDisclosure';
 import './styles/catalog.scss';
-import { DEV_THEME, DevThemeRoot, type DevThemeId } from './themeSwitcher';
+import { DEV_THEME, type DevThemeId, DevThemeRoot } from './themeSwitcher';
 
 const SIZE_OPTIONS: readonly CSelectOption[] = [
   { label: 'Small', value: 'small' },
@@ -41,6 +42,77 @@ const SIZE_OPTIONS: readonly CSelectOption[] = [
 
 const GRID_COLUMNS = ['1fr', '1fr', '1fr'];
 const WINDOW_ACTION_BUTTON_POSITIONS = ['left', 'right'] as const;
+
+interface CatalogListItem {
+  readonly id: string;
+  readonly name: string;
+  readonly description: string;
+  readonly icon: string;
+  readonly actions?: readonly string[];
+  readonly children?: readonly CatalogListItem[];
+  readonly lazyMode?: 'success' | 'retry';
+}
+
+const LIST_ITEMS: readonly CatalogListItem[] = [
+  {
+    id: '1',
+    name: 'Item 1',
+    description: 'First list item',
+    icon: '□',
+    actions: ['Edit', 'Delete'],
+  },
+  {
+    id: '2',
+    name: 'Item 2',
+    description: 'Second list item',
+    icon: '◇',
+    actions: ['Edit', 'Delete'],
+  },
+  {
+    id: '3',
+    name: 'Item 3',
+    description: 'Third list item',
+    icon: '○',
+    actions: ['Edit', 'Delete'],
+    children: [
+      {
+        id: '3-1',
+        name: 'Nested note',
+        description: 'Immediate child rendered from caller-owned data',
+        icon: '↳',
+      },
+    ],
+  },
+] as const;
+
+const LIST_GRID_ITEMS: readonly CatalogListItem[] = [
+  { id: 'grid-1', name: 'Grid Alpha', description: 'Compact grid card', icon: '▣' },
+  { id: 'grid-2', name: 'Grid Beta', description: 'Second grid card', icon: '▤' },
+  { id: 'grid-3', name: 'Grid Gamma', description: 'Third grid card', icon: '▥' },
+] as const;
+
+const LIST_ICON_ITEMS: readonly CatalogListItem[] = [
+  { id: 'icon-1', name: 'Desktop', description: 'Icon mode uses larger affordances', icon: '▦' },
+  { id: 'icon-2', name: 'Archive', description: 'Double-click or hover to emit intent', icon: '▧' },
+  { id: 'icon-3', name: 'Settings', description: 'Keyboard drag handle remains focusable', icon: '⚙' },
+] as const;
+
+const LIST_LAZY_ITEMS: readonly CatalogListItem[] = [
+  {
+    id: 'lazy-success',
+    name: 'Lazy success branch',
+    description: 'Expands into async children',
+    icon: '▸',
+    lazyMode: 'success',
+  },
+  {
+    id: 'lazy-retry',
+    name: 'Lazy retry branch',
+    description: 'Fails once, then Retry loads children',
+    icon: '!',
+    lazyMode: 'retry',
+  },
+] as const;
 
 const isWindowTitleActionButtonPosition = (
   value: string,
@@ -107,9 +179,27 @@ const [buttonClicks, setButtonClicks] = useState(0);
 
 return (
   <>
-    <CButton variant="primary" onClick={() => setButtonClicks((c) => c + 1)}>Primary action</CButton>
-    <CButton>Default action</CButton>
-    <CButton variant="ghost">Ghost action</CButton>
+    <div className="cm-catalog__row">
+      <CButton variant="primary" onClick={() => setButtonClicks((c) => c + 1)}>Primary action</CButton>
+      <CButton>Default action</CButton>
+      <CButton variant="ghost">Ghost action</CButton>
+    </div>
+
+    <div className="cm-catalog__row">
+      <CButton size="compact">Compact</CButton>
+      <CButton size="small">Small</CButton>
+      <CButton size="medium">Medium</CButton>
+      <CButton size="large">Large</CButton>
+    </div>
+
+    <div className="cm-catalog__row">
+      <CButton displayType="round" size="small" aria-label="Small icon">
+        <span aria-hidden="true">+</span>
+      </CButton>
+      <CButton displayType="round" variant="primary" aria-label="Primary icon">
+        <span aria-hidden="true">+</span>
+      </CButton>
+    </div>
 
     <p>Primary button clicks: {buttonClicks}</p>
   </>
@@ -137,6 +227,26 @@ function ButtonShowcase(): React.ReactElement {
           <CButton disabled>Disabled default</CButton>
           <CButton variant="primary" disabled>
             Disabled primary
+          </CButton>
+        </div>
+        <div className="cm-catalog__row">
+          <CButton size="compact">Compact</CButton>
+          <CButton size="small">Small</CButton>
+          <CButton size="medium">Medium</CButton>
+          <CButton size="large">Large</CButton>
+        </div>
+        <div className="cm-catalog__row">
+          <CButton displayType="round" size="small" aria-label="Small icon">
+            <span aria-hidden="true">+</span>
+          </CButton>
+          <CButton displayType="round" size="medium" aria-label="Medium icon">
+            <span aria-hidden="true">+</span>
+          </CButton>
+          <CButton displayType="round" size="large" aria-label="Large icon">
+            <span aria-hidden="true">+</span>
+          </CButton>
+          <CButton displayType="round" variant="primary" aria-label="Primary icon">
+            <span aria-hidden="true">+</span>
           </CButton>
         </div>
         <p className="cm-catalog__value">Primary button clicks: {buttonClicks}</p>
@@ -174,23 +284,66 @@ const BUTTON_GROUP_SNIPPET = `
 const SPLIT_AREA_SNIPPET = `
 const [showInspector, setShowInspector] = useState(true);
 
+// 基础用法：嵌套分割区域
+<CSplitArea direction="horizontal" separatorMovable className="workspace-layout">
+  <section>Explorer</section>
+  <CSplitArea direction="vertical" separatorMovable>
+    <section>Editor</section>
+    <CSplitArea direction="horizontal" separatorMovable>
+      <section>Preview</section>
+      <section>Console</section>
+    </CSplitArea>
+  </CSplitArea>
+  {showInspector ? <section>Inspector</section> : null}
+</CSplitArea>
+
+// Hover 模式: area — 鼠标悬停于区域时显示分割线（默认）
+<CSplitArea separatorVisibleOnHover separatorHoverMode="area">
+  <section>Left</section>
+  <section>Right</section>
+</CSplitArea>
+
+// Hover 模式: separator — 仅鼠标悬停于分割线本身时才显示
+<CSplitArea separatorVisibleOnHover separatorHoverMode="separator">
+  <section>Left</section>
+  <section>Right</section>
+</CSplitArea>
+`.trim();
+
+const LIST_SNIPPET = `
+const [selectedItem, setSelectedItem] = useState(null);
+const [lastIntent, setLastIntent] = useState('none');
+
 return (
   <>
-    <CButton onClick={() => setShowInspector((visible) => !visible)}>
-      {showInspector ? 'Hide inspector' : 'Restore inspector'}
-    </CButton>
+    <CList
+      type="list"
+      draggable
+      items={items}
+      getItemKey={(item) => item.id}
+      getItemChildren={(item) => item.children}
+      renderItem={(item) => <ListLabel item={item} />}
+      renderActions={(item) => item.actions?.map((action) => <CButton>{action}</CButton>)}
+      onItemClick={(item) => setSelectedItem(item)}
+      onItemHover={(payload) => setLastIntent('Hover ' + payload.item.name)}
+      onItemDoubleClick={(payload) => setLastIntent('Open ' + payload.item.name)}
+      onItemDrag={(payload) => setLastIntent(payload.source.key + ' ' + payload.position + ' ' + payload.target.key)}
+      onItemDragInto={(payload) => setLastIntent(payload.source.key + ' inside ' + payload.target.key)}
+    />
 
-    <CSplitArea direction="horizontal" separatorMovable className="workspace-layout">
-      <section>Explorer</section>
-      <CSplitArea direction="vertical" separatorMovable>
-        <section>Editor</section>
-        <CSplitArea direction="horizontal" separatorMovable>
-          <section>Preview</section>
-          <section>Console</section>
-        </CSplitArea>
-      </CSplitArea>
-      {showInspector ? <section>Inspector</section> : null}
-    </CSplitArea>
+    <CList type="grid" iconSize={32} items={gridItems} renderItem={(item) => <ListLabel item={item} />} />
+    <CList type="icon" iconSize={40} items={iconItems} renderItem={(item) => <ListLabel item={item} />} />
+
+    <CList
+      items={lazyItems}
+      getItemKey={(item) => item.id}
+      isItemExpandable={(item) => item.lazyMode !== undefined}
+      onLoadChildren={loadChildren}
+      renderItem={(item) => <ListLabel item={item} />}
+    />
+
+    <p>Selected: {selectedItem?.name ?? 'none'}</p>
+    <p>Intent: {lastIntent}</p>
   </>
 );
 `.trim();
@@ -406,6 +559,11 @@ const SCROLL_AREA_ACTIVITY_ITEMS = [
   },
 ] as const;
 
+const SCROLL_AREA_BOTH_AXIS_LINE_NUMBERS = Array.from(
+  { length: 20 },
+  (_, lineIndex) => lineIndex + 1,
+);
+
 const SAMPLE_MENU_LIST: readonly MenuListItem[] = [
   {
     id: 'file',
@@ -480,13 +638,20 @@ function SelectShowcase(): React.ReactElement {
     <ShowcaseSection title="Select" testId="catalog-section-select" code={SELECT_SNIPPET}>
       <div className="cm-catalog__stack">
         <CSelect
+          aria-label="Catalog size"
           data-testid="select-demo-size"
           name="size"
           value={selectedSize}
           options={SIZE_OPTIONS}
           onChange={setSelectedSize}
         />
-        <CSelect name="size-disabled" value="large" options={SIZE_OPTIONS} disabled />
+        <CSelect
+          aria-label="Disabled catalog size"
+          name="size-disabled"
+          value="large"
+          options={SIZE_OPTIONS}
+          disabled
+        />
         <p className="cm-catalog__value">Selected size: {selectedSize}</p>
       </div>
     </ShowcaseSection>
@@ -518,13 +683,13 @@ function SliderShowcase(): React.ReactElement {
           Volume: {volume}
         </p>
         <div className="cm-catalog__slider-presets">
-          <CButton data-testid="slider-demo-min" compact onClick={() => setVolume(0)}>
+          <CButton data-testid="slider-demo-min" size="compact" onClick={() => setVolume(0)}>
             Min
           </CButton>
-          <CButton data-testid="slider-demo-mid" compact onClick={() => setVolume(50)}>
+          <CButton data-testid="slider-demo-mid" size="compact" onClick={() => setVolume(50)}>
             Mid
           </CButton>
-          <CButton data-testid="slider-demo-max" compact onClick={() => setVolume(100)}>
+          <CButton data-testid="slider-demo-max" size="compact" onClick={() => setVolume(100)}>
             Max
           </CButton>
         </div>
@@ -540,9 +705,9 @@ function ScrollAreaShowcase(): React.ReactElement {
     width: '800px',
   };
 
-  const bothAxisItems = Array.from({ length: 20 }, (_, idx) => (
-    <p key={`both-line-${idx}`} style={{ margin: '0 0 8px 0', whiteSpace: 'nowrap' }}>
-      Line {idx + 1}: Wide content — scroll horizontally and vertically.
+  const bothAxisItems = SCROLL_AREA_BOTH_AXIS_LINE_NUMBERS.map((lineNumber) => (
+    <p key={`both-line-${lineNumber}`} style={{ margin: '0 0 8px 0', whiteSpace: 'nowrap' }}>
+      Line {lineNumber}: Wide content — scroll horizontally and vertically.
     </p>
   ));
 
@@ -720,7 +885,7 @@ function WindowShowcase(): React.ReactElement {
           className="cm-catalog__window-action"
           data-testid="window-demo-minimize"
           aria-label="Minimize window"
-          compact
+          size="compact"
           onClick={handleWindowActionClick}
         >
           _
@@ -729,7 +894,7 @@ function WindowShowcase(): React.ReactElement {
           className="cm-catalog__window-action"
           data-testid="window-demo-maximize"
           aria-label="Maximize window"
-          compact
+          size="compact"
           onClick={handleWindowActionClick}
         >
           □
@@ -738,7 +903,7 @@ function WindowShowcase(): React.ReactElement {
           className="cm-catalog__window-action cm-catalog__window-action--close"
           data-testid="window-demo-close"
           aria-label="Close window"
-          compact
+          size="compact"
           onClick={handleWindowActionClick}
         >
           ×
@@ -1034,6 +1199,172 @@ function GridShowcase(): React.ReactElement {
   );
 }
 
+function ListShowcase(): React.ReactElement {
+  const lazyRetryAttemptsRef = React.useRef(0);
+  const [selectedItem, setSelectedItem] = React.useState<CatalogListItem | null>(null);
+  const [lastAction, setLastAction] = React.useState('none');
+  const [lastIntent, setLastIntent] = React.useState('none');
+
+  const renderCatalogListItem = React.useCallback((item: CatalogListItem): React.ReactNode => {
+    return (
+      <div>
+        <strong>
+          <span aria-hidden="true">{item.icon}</span> {item.name}
+        </strong>
+        <p>{item.description}</p>
+      </div>
+    );
+  }, []);
+
+  const handleLoadChildren = React.useCallback(
+    async (item: CatalogListItem): Promise<readonly CatalogListItem[]> => {
+      await new Promise<void>((resolve) => {
+        window.setTimeout(resolve, 20);
+      });
+
+      if (item.lazyMode === 'retry' && lazyRetryAttemptsRef.current === 0) {
+        lazyRetryAttemptsRef.current += 1;
+        throw new Error('Preview load failed once; Retry will succeed.');
+      }
+
+      return [
+        {
+          id: `${item.id}-child`,
+          name: `${item.name} child`,
+          description: 'Loaded asynchronously by the catalog caller',
+          icon: '↳',
+        },
+      ];
+    },
+    [],
+  );
+
+  return (
+    <ShowcaseSection title="List" testId="catalog-section-list" code={LIST_SNIPPET}>
+      <div className="cm-catalog__stack">
+        <p className="cm-catalog__value">
+          List mode: click selects, hover/double-click reports intent, drag handles emit movement
+          payloads without mutating caller-owned items.
+        </p>
+        <div className="cm-catalog__row">
+          <div className="cm-catalog__list-demo">
+            <CList
+              data-testid="list-demo-basic"
+              type="list"
+              draggable
+              items={LIST_ITEMS}
+              getItemKey={(item) => item.id}
+              getItemChildren={(item) => item.children}
+              renderItem={renderCatalogListItem}
+              renderActions={(item) =>
+                item.actions?.map((action) => (
+                  <CButton
+                    key={action}
+                    data-testid={`list-demo-action-${item.id}-${action.toLowerCase()}`}
+                    size="compact"
+                    onClick={(event) => {
+                      event.stopPropagation();
+                      setLastAction(`${action} ${item.name}`);
+                    }}
+                  >
+                    {action}
+                  </CButton>
+                ))
+              }
+              onItemClick={(item) => setSelectedItem(item)}
+              onItemHover={(payload) => setLastIntent(`Hover ${payload.item.name}`)}
+              onItemDoubleClick={(payload) => setLastIntent(`Open ${payload.item.name}`)}
+              onItemDrag={(payload) =>
+                setLastIntent(
+                  `Move ${String(payload.source.key)} ${payload.position} ${String(
+                    payload.target.key,
+                  )} by ${payload.input}`,
+                )
+              }
+              onItemDragInto={(payload) =>
+                setLastIntent(
+                  `Move ${String(payload.source.key)} inside ${String(payload.target.key)} by ${
+                    payload.input
+                  }`,
+                )
+              }
+            />
+          </div>
+        </div>
+        <p className="cm-catalog__value">Selected: {selectedItem?.name ?? 'none'}</p>
+        <p className="cm-catalog__value" data-testid="list-demo-intent">
+          Intent: {lastIntent}
+        </p>
+        <p className="cm-catalog__value">Action: {lastAction}</p>
+
+        <p className="cm-catalog__value">
+          Keyboard hint: focus a ↕ handle, press ArrowUp/ArrowDown to emit before/after, or
+          Alt+ArrowRight to emit inside.
+        </p>
+        <div className="cm-catalog__row">
+          <CList
+            data-testid="list-demo-grid"
+            type="grid"
+            iconSize={32}
+            items={LIST_GRID_ITEMS}
+            getItemKey={(item) => item.id}
+            renderItem={renderCatalogListItem}
+            onItemHover={(payload) => setLastIntent(`Grid hover ${payload.item.name}`)}
+            onItemDoubleClick={(payload) => setLastIntent(`Grid open ${payload.item.name}`)}
+          />
+          <CList
+            data-testid="list-demo-icon"
+            type="icon"
+            iconSize="40px"
+            draggable
+            items={LIST_ICON_ITEMS}
+            getItemKey={(item) => item.id}
+            renderItem={renderCatalogListItem}
+            onItemHover={(payload) => setLastIntent(`Icon hover ${payload.item.name}`)}
+            onItemDoubleClick={(payload) => setLastIntent(`Icon open ${payload.item.name}`)}
+            onItemDrag={(payload) =>
+              setLastIntent(
+                `Icon move ${String(payload.source.key)} ${payload.position} ${String(
+                  payload.target.key,
+                )}`,
+              )
+            }
+            onItemDragInto={(payload) =>
+              setLastIntent(
+                `Icon move ${String(payload.source.key)} inside ${String(payload.target.key)}`,
+              )
+            }
+          />
+        </div>
+
+        <p className="cm-catalog__value">
+          Lazy loading: expand the success branch for children, expand the retry branch to see an
+          error and use Retry.
+        </p>
+        <div className="cm-catalog__row">
+          <CList
+            data-testid="list-demo-lazy"
+            items={LIST_LAZY_ITEMS}
+            getItemKey={(item) => item.id}
+            isItemExpandable={(item) => item.lazyMode !== undefined}
+            onLoadChildren={handleLoadChildren}
+            renderItem={renderCatalogListItem}
+          />
+        </div>
+
+        <div className="cm-catalog__row">
+          <CList
+            data-testid="list-demo-empty"
+            items={[]}
+            renderItem={() => null}
+            emptyState={<p>No items available</p>}
+          />
+        </div>
+      </div>
+    </ShowcaseSection>
+  );
+}
+
 function SplitAreaShowcase(): React.ReactElement {
   const [showInspector, setShowInspector] = React.useState(true);
 
@@ -1106,6 +1437,53 @@ function SplitAreaShowcase(): React.ReactElement {
             ) : null}
           </CSplitArea>
         </div>
+
+        <div className="cm-catalog__stack">
+          <p className="cm-catalog__value">Hover over the SplitArea below to reveal separators</p>
+          <div className="cm-split-area-demo-shell">
+            <CSplitArea
+              data-testid="split-area-demo-hover"
+              direction="horizontal"
+              separatorMovable
+              separatorVisibleOnHover
+              className="cm-split-area-demo"
+            >
+              <section className="cm-split-area-demo__panel cm-split-area-demo__panel--sidebar">
+                <h3 className="cm-split-area-demo__title">Left</h3>
+                <p className="cm-split-area-demo__text">Hover to see separator</p>
+              </section>
+              <section className="cm-split-area-demo__panel cm-split-area-demo__panel--editor">
+                <h3 className="cm-split-area-demo__title">Right</h3>
+                <p className="cm-split-area-demo__text">Separator appears on hover</p>
+              </section>
+            </CSplitArea>
+          </div>
+        </div>
+
+        <div className="cm-catalog__stack">
+          <p className="cm-catalog__value">
+            separatorHoverMode=&quot;separator&quot; — only the separator itself responds to hover
+          </p>
+          <div className="cm-split-area-demo-shell">
+            <CSplitArea
+              data-testid="split-area-demo-separator-hover"
+              direction="horizontal"
+              separatorMovable
+              separatorVisibleOnHover
+              separatorHoverMode="separator"
+              className="cm-split-area-demo"
+            >
+              <section className="cm-split-area-demo__panel cm-split-area-demo__panel--sidebar">
+                <h3 className="cm-split-area-demo__title">Left</h3>
+                <p className="cm-split-area-demo__text">Hover the separator line to reveal it</p>
+              </section>
+              <section className="cm-split-area-demo__panel cm-split-area-demo__panel--editor">
+                <h3 className="cm-split-area-demo__title">Right</h3>
+                <p className="cm-split-area-demo__text">Only the separator responds to hover</p>
+              </section>
+            </CSplitArea>
+          </div>
+        </div>
       </div>
     </ShowcaseSection>
   );
@@ -1142,6 +1520,7 @@ export function ComponentCatalog({
             <DockShowcase />
             <StartBarShowcase />
             <SplitAreaShowcase />
+            <ListShowcase />
             <GridShowcase />
           </div>
         </DevThemeRoot>

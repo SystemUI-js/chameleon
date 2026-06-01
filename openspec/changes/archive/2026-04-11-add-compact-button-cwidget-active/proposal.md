@@ -12,10 +12,12 @@
 ## Capabilities
 
 ### New Capabilities
+
 - `cbutton-compact`: 定义按钮的紧凑型样式能力，以及尺寸由样式层决定的约束。
 - `cwidget-active-state`: 定义 `CWidget` 的 active 状态模型，包括默认值、受控/非受控行为、状态回调与激活态样式表现。
 
 ### Modified Capabilities
+
 - 无
 
 ## Impact

@@ -2,6 +2,7 @@ import { fireEvent, render, screen } from '@testing-library/react';
 import '@testing-library/jest-dom';
 import { readFileSync } from 'node:fs';
 import { join } from 'node:path';
+import React from 'react';
 import { CSelect as PackageEntryCSelect, Theme } from '../src';
 import { CSelect, type CSelectOption, type CSelectProps } from '../src/components/Select/Select';
 
@@ -14,20 +15,25 @@ const OPTIONS: readonly CSelectOption[] = [
 const readThemeStyles = (theme: 'win98' | 'winxp'): string =>
   readFileSync(join(process.cwd(), 'src', 'theme', theme, 'styles', 'index.scss'), 'utf8');
 
+const openSelect = (trigger: HTMLElement): void => {
+  fireEvent.click(trigger);
+};
+
 describe('CSelect', () => {
   it('exports CSelect from package entry', () => {
     render(
       <PackageEntryCSelect data-testid="select-package-entry" options={OPTIONS} value="apple" />,
     );
 
-    const select = screen.getByTestId('select-package-entry');
+    const trigger = screen.getByTestId('select-package-entry');
 
     expect(PackageEntryCSelect).toBe(CSelect);
-    expect(select).toBeInTheDocument();
-    expect(select).toHaveClass('cm-select');
+    expect(trigger).toBeInTheDocument();
+    expect(trigger).toHaveClass('cm-select');
+    expect(trigger.tagName).toBe('BUTTON');
   });
 
-  it('renders native select options and supported props', () => {
+  it('renders a CMenu-backed trigger and hidden native options with supported props', () => {
     const handleChange = jest.fn();
     const props: CSelectProps = {
       options: OPTIONS,
@@ -35,87 +41,229 @@ describe('CSelect', () => {
       className: 'select-shell',
       placeholder: 'Choose a fruit',
       onChange: handleChange,
+      'aria-label': 'Fruit picker',
       'data-testid': 'select-under-test',
     };
 
     render(<CSelect {...props} />);
 
-    const select = screen.getByRole('combobox');
-    const renderedOptions = screen.getAllByRole('option');
-    const placeholderOption = screen.getByRole('option', { name: 'Choose a fruit' });
-    const disabledOption = screen.getByRole('option', { name: 'Banana' });
+    const trigger = screen.getByTestId('select-under-test');
+    const hiddenSelect = screen.getByTestId('select-under-test__native');
+    const renderedOptions = hiddenSelect.querySelectorAll('option');
 
-    expect(select).toBeInTheDocument();
-    expect(select.tagName).toBe('SELECT');
-    expect(select).toHaveAttribute('data-testid', 'select-under-test');
-    expect(select).toHaveAttribute('name', 'fruit');
-    expect(select).toHaveClass('cm-select');
-    expect(select).toHaveClass('select-shell');
+    expect(trigger).toBeInTheDocument();
+    expect(trigger.tagName).toBe('BUTTON');
+    expect(trigger).toHaveAttribute('aria-label', 'Fruit picker');
+    expect(trigger).toHaveAttribute('aria-haspopup', 'menu');
+    expect(trigger).toHaveClass('cm-select');
+    expect(trigger).toHaveClass('select-shell');
+    expect(trigger).toHaveTextContent('Choose a fruit');
+    expect(hiddenSelect).toHaveAttribute('name', 'fruit');
+    expect(hiddenSelect).toHaveClass('cm-select__native');
     expect(renderedOptions).toHaveLength(4);
-    expect(placeholderOption).toHaveValue('');
-    expect(disabledOption).toBeDisabled();
+    expect(renderedOptions[0]).toHaveValue('');
+    expect(renderedOptions[1]).toHaveValue('apple');
+    expect(renderedOptions[2]).toBeDisabled();
   });
 
-  it('uses defaultValue to initialize uncontrolled mode and updates after change', () => {
+  it('opens CMenu items and adapts selection back to onChange(nextValue)', () => {
     const handleChange = jest.fn();
 
-    render(<CSelect options={OPTIONS} defaultValue="apple" onChange={handleChange} />);
+    render(
+      <CSelect
+        options={OPTIONS}
+        placeholder="Choose a fruit"
+        onChange={handleChange}
+        data-testid="fruit-select"
+      />,
+    );
 
-    const select = screen.getByRole('combobox');
+    const trigger = screen.getByTestId('fruit-select');
 
-    expect(select).toHaveValue('apple');
+    expect(screen.queryByRole('menu')).not.toBeInTheDocument();
 
-    fireEvent.change(select, { target: { value: 'cherry' } });
+    openSelect(trigger);
+
+    expect(screen.getByRole('menu')).toBeInTheDocument();
+    expect(screen.getByTestId('menu-item-apple')).toHaveTextContent('Apple');
+    expect(screen.getByTestId('menu-item-banana')).toBeDisabled();
+
+    fireEvent.click(screen.getByTestId('menu-item-cherry'));
 
     expect(handleChange).toHaveBeenCalledWith('cherry');
-    expect(select).toHaveValue('cherry');
+    expect(trigger).toHaveTextContent('Cherry');
+    expect(screen.getByTestId('fruit-select__native')).toHaveValue('cherry');
+    expect(screen.queryByRole('menu')).not.toBeInTheDocument();
+  });
+
+  it('uses defaultValue to initialize uncontrolled mode and reset semantics', () => {
+    const handleChange = jest.fn();
+
+    render(
+      <form data-testid="fruit-form">
+        <CSelect options={OPTIONS} defaultValue="apple" onChange={handleChange} name="fruit" />
+        <button type="reset">Reset</button>
+      </form>,
+    );
+
+    const trigger = screen.getByRole('button', { name: 'Apple' });
+    const hiddenSelect = screen.getByTestId('cm-select-native-control');
+
+    expect(hiddenSelect).toHaveValue('apple');
+
+    openSelect(trigger);
+    fireEvent.click(screen.getByTestId('menu-item-cherry'));
+
+    expect(handleChange).toHaveBeenCalledWith('cherry');
+    expect(hiddenSelect).toHaveValue('cherry');
+    expect(trigger).toHaveTextContent('Cherry');
+
+    fireEvent.click(screen.getByRole('button', { name: 'Reset' }));
+
+    expect(hiddenSelect).toHaveValue('apple');
+    expect(trigger).toHaveTextContent('Apple');
   });
 
   it('keeps the old value in controlled mode until parent rerenders', () => {
     const handleChange = jest.fn();
 
-    render(<CSelect options={OPTIONS} value="apple" onChange={handleChange} />);
+    render(
+      <CSelect
+        options={OPTIONS}
+        value="apple"
+        onChange={handleChange}
+        data-testid="controlled-select"
+      />,
+    );
 
-    const select = screen.getByRole('combobox');
+    const trigger = screen.getByTestId('controlled-select');
+    const hiddenSelect = screen.getByTestId('controlled-select__native');
 
-    expect(select).toHaveValue('apple');
+    expect(hiddenSelect).toHaveValue('apple');
+    expect(trigger).toHaveTextContent('Apple');
 
-    fireEvent.change(select, { target: { value: 'cherry' } });
+    openSelect(trigger);
+    fireEvent.click(screen.getByTestId('menu-item-cherry'));
 
     expect(handleChange).toHaveBeenCalledWith('cherry');
-    expect(select).toHaveValue('apple');
+    expect(hiddenSelect).toHaveValue('apple');
+    expect(trigger).toHaveTextContent('Apple');
   });
 
-  it('passes disabled through to the native select', () => {
-    render(<CSelect options={OPTIONS} value="apple" disabled />);
+  it('updates trigger label and hidden value when controlled value rerenders', () => {
+    const ControlledSelect = (): React.ReactElement => {
+      const [selectedValue, setSelectedValue] = React.useState('apple');
 
-    expect(screen.getByRole('combobox')).toBeDisabled();
+      return (
+        <>
+          <CSelect
+            options={OPTIONS}
+            value={selectedValue}
+            onChange={setSelectedValue}
+            data-testid="rerendered-select"
+          />
+          <button
+            type="button"
+            onClick={() => {
+              setSelectedValue('cherry');
+            }}
+          >
+            Pick cherry
+          </button>
+        </>
+      );
+    };
+
+    render(<ControlledSelect />);
+
+    const trigger = screen.getByTestId('rerendered-select');
+    const hiddenSelect = screen.getByTestId('rerendered-select__native');
+
+    expect(trigger).toHaveTextContent('Apple');
+    expect(hiddenSelect).toHaveValue('apple');
+
+    fireEvent.click(screen.getByRole('button', { name: 'Pick cherry' }));
+
+    expect(trigger).toHaveTextContent('Cherry');
+    expect(hiddenSelect).toHaveValue('cherry');
   });
 
-  it('shows placeholder with empty value and requires a real option selection', () => {
-    render(<CSelect options={OPTIONS} placeholder="Choose a fruit" required />);
+  it('passes disabled through to trigger and hidden native control without opening menu', () => {
+    const handleChange = jest.fn();
 
-    const select = screen.getByRole('combobox');
-    const placeholderOption = screen.getByRole('option', { name: 'Choose a fruit' });
+    render(
+      <CSelect
+        options={OPTIONS}
+        value="apple"
+        disabled
+        onChange={handleChange}
+        data-testid="disabled-select"
+      />,
+    );
 
-    expect(select).toBeRequired();
-    expect(select).toHaveValue('');
+    const trigger = screen.getByTestId('disabled-select');
+    const hiddenSelect = screen.getByTestId('disabled-select__native');
+
+    expect(trigger).toBeDisabled();
+    expect(hiddenSelect).toBeDisabled();
+
+    fireEvent.click(trigger);
+
+    expect(screen.queryByRole('menu')).not.toBeInTheDocument();
+    expect(handleChange).not.toHaveBeenCalled();
+  });
+
+  it('shows placeholder with empty hidden value and requires a real option selection', () => {
+    render(<CSelect options={OPTIONS} placeholder="Choose a fruit" required data-testid="required" />);
+
+    const trigger = screen.getByTestId('required');
+    const hiddenSelect = screen.getByTestId('required__native') as HTMLSelectElement;
+    const placeholderOption = hiddenSelect.querySelector('option[value=""]');
+
+    expect(hiddenSelect).toBeRequired();
+    expect(hiddenSelect).toHaveValue('');
+    expect(hiddenSelect.checkValidity()).toBe(false);
     expect(placeholderOption).toBeDisabled();
     expect((placeholderOption as HTMLOptionElement).selected).toBe(true);
+    expect(trigger).toHaveTextContent('Choose a fruit');
 
-    fireEvent.change(select, { target: { value: 'apple' } });
+    openSelect(trigger);
+    fireEvent.click(screen.getByTestId('menu-item-apple'));
 
-    expect(select).toHaveValue('apple');
+    expect(hiddenSelect).toHaveValue('apple');
+    expect(hiddenSelect.checkValidity()).toBe(true);
+    expect(trigger).toHaveTextContent('Apple');
+  });
+
+  it('uses hidden native control value for form submission', () => {
+    const handleSubmit = jest.fn((event: React.FormEvent<HTMLFormElement>) => {
+      event.preventDefault();
+      const formData = new FormData(event.currentTarget);
+      return formData.get('fruit');
+    });
+
+    render(
+      <form onSubmit={handleSubmit}>
+        <CSelect options={OPTIONS} defaultValue="apple" name="fruit" data-testid="form-select" />
+        <button type="submit">Submit</button>
+      </form>,
+    );
+
+    openSelect(screen.getByTestId('form-select'));
+    fireEvent.click(screen.getByTestId('menu-item-cherry'));
+    fireEvent.click(screen.getByRole('button', { name: 'Submit' }));
+
+    expect(handleSubmit).toHaveReturnedWith('cherry');
   });
 
   describe('theme prop', () => {
     it('applies theme class from explicit theme prop', () => {
       render(<CSelect options={OPTIONS} value="apple" theme="cm-theme--win98" />);
 
-      const select = screen.getByRole('combobox');
+      const trigger = screen.getByRole('button', { name: 'Apple' });
 
-      expect(select).toHaveClass('cm-select');
-      expect(select).toHaveClass('cm-theme--win98');
+      expect(trigger).toHaveClass('cm-select');
+      expect(trigger).toHaveClass('cm-theme--win98');
     });
 
     it('applies theme class from Theme provider when no explicit prop', () => {
@@ -125,10 +273,10 @@ describe('CSelect', () => {
         </Theme>,
       );
 
-      const select = screen.getByTestId('provider-themed');
+      const trigger = screen.getByTestId('provider-themed');
 
-      expect(select).toHaveClass('cm-select');
-      expect(select).toHaveClass('cm-theme--win98');
+      expect(trigger).toHaveClass('cm-select');
+      expect(trigger).toHaveClass('cm-theme--win98');
     });
 
     it('explicit theme prop overrides Theme provider', () => {
@@ -143,11 +291,11 @@ describe('CSelect', () => {
         </Theme>,
       );
 
-      const select = screen.getByTestId('override-themed');
+      const trigger = screen.getByTestId('override-themed');
 
-      expect(select).toHaveClass('cm-select');
-      expect(select).toHaveClass('cm-theme--winxp');
-      expect(select).not.toHaveClass('cm-theme--win98');
+      expect(trigger).toHaveClass('cm-select');
+      expect(trigger).toHaveClass('cm-theme--winxp');
+      expect(trigger).not.toHaveClass('cm-theme--win98');
     });
 
     it('merges className with theme following correct order: base → theme → className', () => {
@@ -160,11 +308,11 @@ describe('CSelect', () => {
         />,
       );
 
-      const select = screen.getByRole('combobox');
+      const trigger = screen.getByRole('button', { name: 'Apple' });
 
-      expect(select).toHaveClass('cm-select');
-      expect(select).toHaveClass('cm-theme--win98');
-      expect(select).toHaveClass('custom-class');
+      expect(trigger).toHaveClass('cm-select');
+      expect(trigger).toHaveClass('cm-theme--win98');
+      expect(trigger).toHaveClass('custom-class');
     });
 
     it('keeps select theme selectors self-scoped in theme styles', () => {

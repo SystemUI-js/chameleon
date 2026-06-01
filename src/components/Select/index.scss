@@ -1,2 +1,35 @@
+.cm-select__root {
+    display: inline-block;
+}
+
 .cm-select {
+    display: inline-flex;
+    align-items: center;
+    justify-content: space-between;
+    min-width: 120px;
+    text-align: left;
+    cursor: pointer;
+}
+
+.cm-select:disabled {
+    cursor: not-allowed;
+}
+
+.cm-select__label {
+    overflow: hidden;
+    text-overflow: ellipsis;
+    white-space: nowrap;
+}
+
+.cm-select__native {
+    position: absolute;
+    width: 1px;
+    height: 1px;
+    margin: -1px;
+    padding: 0;
+    overflow: hidden;
+    white-space: nowrap;
+    border: 0;
+    clip: rect(0 0 0 0);
+    clip-path: inset(50%);
 }

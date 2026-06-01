@@ -268,4 +268,220 @@ describe('CSplitArea', () => {
     expect(multiDragMock.instances[0]?.disabled).toBe(true);
     expect(multiDragMock.instances[1]?.disabled).toBe(false);
   });
+
+  describe('separatorVisibleOnHover', () => {
+    it('does not add hover-visibility class by default (backward compatibility)', () => {
+      render(
+        <CSplitArea data-testid="split-area-default-hover">
+          <div>Left</div>
+          <div>Right</div>
+        </CSplitArea>,
+      );
+
+      expect(screen.getByTestId('split-area-default-hover')).not.toHaveClass(
+        'cm-split-area--separator-visible-on-hover',
+      );
+    });
+
+    it('adds hover-visibility class when separatorVisibleOnHover is true', () => {
+      render(
+        <CSplitArea data-testid="split-area-hover-enabled" separatorVisibleOnHover>
+          <div>Left</div>
+          <div>Right</div>
+        </CSplitArea>,
+      );
+
+      expect(screen.getByTestId('split-area-hover-enabled')).toHaveClass(
+        'cm-split-area--separator-visible-on-hover',
+      );
+    });
+
+    it('keeps separator elements in DOM when hover visibility is enabled', () => {
+      const { container } = render(
+        <CSplitArea separatorVisibleOnHover>
+          <div>Left</div>
+          <div>Right</div>
+        </CSplitArea>,
+      );
+
+      expect(container.querySelectorAll('[data-split-area-separator]')).toHaveLength(1);
+    });
+
+    it('toggles hover-visibility class on rerender', () => {
+      const { rerender } = render(
+        <CSplitArea data-testid="split-area-hover-toggle" separatorVisibleOnHover={false}>
+          <div>Left</div>
+          <div>Right</div>
+        </CSplitArea>,
+      );
+
+      expect(screen.getByTestId('split-area-hover-toggle')).not.toHaveClass(
+        'cm-split-area--separator-visible-on-hover',
+      );
+
+      rerender(
+        <CSplitArea data-testid="split-area-hover-toggle" separatorVisibleOnHover>
+          <div>Left</div>
+          <div>Right</div>
+        </CSplitArea>,
+      );
+
+      expect(screen.getByTestId('split-area-hover-toggle')).toHaveClass(
+        'cm-split-area--separator-visible-on-hover',
+      );
+
+      rerender(
+        <CSplitArea data-testid="split-area-hover-toggle" separatorVisibleOnHover={false}>
+          <div>Left</div>
+          <div>Right</div>
+        </CSplitArea>,
+      );
+
+      expect(screen.getByTestId('split-area-hover-toggle')).not.toHaveClass(
+        'cm-split-area--separator-visible-on-hover',
+      );
+    });
+
+    it('preserves drag functionality when combined with separatorMovable', () => {
+      render(
+        <CSplitArea data-testid="split-area-hover-movable" separatorVisibleOnHover separatorMovable>
+          <div>Left</div>
+          <div>Right</div>
+        </CSplitArea>,
+      );
+
+      expect(screen.getByTestId('split-area-hover-movable')).toHaveClass(
+        'cm-split-area--separator-visible-on-hover',
+      );
+      expect(multiDragMock.instances).toHaveLength(1);
+    });
+  });
+
+  describe('separatorHoverMode', () => {
+    it('keeps area-hover class when separatorVisibleOnHover is true and separatorHoverMode is area (default)', () => {
+      render(
+        <CSplitArea data-testid="split-area-hover-mode-default" separatorVisibleOnHover>
+          <div>Left</div>
+          <div>Right</div>
+        </CSplitArea>,
+      );
+
+      expect(screen.getByTestId('split-area-hover-mode-default')).toHaveClass(
+        'cm-split-area--separator-visible-on-hover',
+      );
+    });
+
+    it('keeps area-hover class when separatorHoverMode is explicitly area', () => {
+      render(
+        <CSplitArea
+          data-testid="split-area-hover-mode-area"
+          separatorVisibleOnHover
+          separatorHoverMode="area"
+        >
+          <div>Left</div>
+          <div>Right</div>
+        </CSplitArea>,
+      );
+
+      expect(screen.getByTestId('split-area-hover-mode-area')).toHaveClass(
+        'cm-split-area--separator-visible-on-hover',
+      );
+    });
+
+    it('adds separator-hover class when separatorHoverMode is separator', () => {
+      render(
+        <CSplitArea
+          data-testid="split-area-hover-mode-separator"
+          separatorVisibleOnHover
+          separatorHoverMode="separator"
+        >
+          <div>Left</div>
+          <div>Right</div>
+        </CSplitArea>,
+      );
+
+      expect(screen.getByTestId('split-area-hover-mode-separator')).toHaveClass(
+        'cm-split-area--separator-visible-on-separator-hover',
+      );
+      expect(screen.getByTestId('split-area-hover-mode-separator')).not.toHaveClass(
+        'cm-split-area--separator-visible-on-hover',
+      );
+    });
+
+    it('does not add any hover class when separatorVisibleOnHover is false even with separatorHoverMode', () => {
+      render(
+        <CSplitArea
+          data-testid="split-area-hover-mode-disabled"
+          separatorVisibleOnHover={false}
+          separatorHoverMode="separator"
+        >
+          <div>Left</div>
+          <div>Right</div>
+        </CSplitArea>,
+      );
+
+      expect(screen.getByTestId('split-area-hover-mode-disabled')).not.toHaveClass(
+        'cm-split-area--separator-visible-on-hover',
+      );
+      expect(screen.getByTestId('split-area-hover-mode-disabled')).not.toHaveClass(
+        'cm-split-area--separator-visible-on-separator-hover',
+      );
+    });
+
+    it('toggles between area-hover and separator-hover class on rerender', () => {
+      const { rerender } = render(
+        <CSplitArea
+          data-testid="split-area-hover-mode-toggle"
+          separatorVisibleOnHover
+          separatorHoverMode="area"
+        >
+          <div>Left</div>
+          <div>Right</div>
+        </CSplitArea>,
+      );
+
+      expect(screen.getByTestId('split-area-hover-mode-toggle')).toHaveClass(
+        'cm-split-area--separator-visible-on-hover',
+      );
+      expect(screen.getByTestId('split-area-hover-mode-toggle')).not.toHaveClass(
+        'cm-split-area--separator-visible-on-separator-hover',
+      );
+
+      rerender(
+        <CSplitArea
+          data-testid="split-area-hover-mode-toggle"
+          separatorVisibleOnHover
+          separatorHoverMode="separator"
+        >
+          <div>Left</div>
+          <div>Right</div>
+        </CSplitArea>,
+      );
+
+      expect(screen.getByTestId('split-area-hover-mode-toggle')).not.toHaveClass(
+        'cm-split-area--separator-visible-on-hover',
+      );
+      expect(screen.getByTestId('split-area-hover-mode-toggle')).toHaveClass(
+        'cm-split-area--separator-visible-on-separator-hover',
+      );
+
+      rerender(
+        <CSplitArea
+          data-testid="split-area-hover-mode-toggle"
+          separatorVisibleOnHover
+          separatorHoverMode="area"
+        >
+          <div>Left</div>
+          <div>Right</div>
+        </CSplitArea>,
+      );
+
+      expect(screen.getByTestId('split-area-hover-mode-toggle')).toHaveClass(
+        'cm-split-area--separator-visible-on-hover',
+      );
+      expect(screen.getByTestId('split-area-hover-mode-toggle')).not.toHaveClass(
+        'cm-split-area--separator-visible-on-separator-hover',
+      );
+    });
+  });
 });

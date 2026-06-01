@@ -6,10 +6,14 @@ import './index.scss';
 
 export type CButtonVariant = 'default' | 'primary' | 'ghost';
 export type CButtonType = 'button' | 'submit' | 'reset';
+export type CButtonSize = 'compact' | 'small' | 'medium' | 'large';
+export type CButtonDisplayType = 'round' | 'rect';
 
 export interface CButtonProps extends Omit<React.ButtonHTMLAttributes<HTMLButtonElement>, 'type'> {
   variant?: CButtonVariant;
-  compact?: boolean;
+  size?: CButtonSize;
+  displayType?: CButtonDisplayType;
+  borderRadius?: React.CSSProperties['borderRadius'];
   type?: CButtonType;
   disabled?: boolean;
   showActiveEffect?: boolean;
@@ -25,7 +29,9 @@ export interface CButtonProps extends Omit<React.ButtonHTMLAttributes<HTMLButton
 export function CButton({
   children,
   variant = 'default',
-  compact = false,
+  size = 'medium',
+  displayType = 'rect',
+  borderRadius = '50%',
   type = 'button',
   disabled,
   showActiveEffect = true,
@@ -40,14 +46,15 @@ export function CButton({
 }: CButtonProps): React.ReactElement {
   const resolvedTheme = normalizeThemeClassName(useTheme(theme));
   const baseClasses = ['cm-button'];
+  const buttonStyle =
+    displayType === 'round' ? { ...buttonProps.style, borderRadius } : buttonProps.style;
 
   if (variant !== 'default') {
     baseClasses.push(`cm-button--${variant}`);
   }
 
-  if (compact) {
-    baseClasses.push('cm-button--compact');
-  }
+  baseClasses.push(`cm-button--${size}`);
+  baseClasses.push(`cm-button--${displayType}`);
 
   if (!showActiveEffect) {
     baseClasses.push('cm-button--no-active');
@@ -69,6 +76,7 @@ export function CButton({
       onClick={onClick}
       onPointerEnter={onPointerEnter}
       className={mergeClasses(baseClasses, resolvedTheme, className)}
+      style={buttonStyle}
       data-testid={dataTestId}
       tabIndex={showFocusEffect ? undefined : -1}
     >

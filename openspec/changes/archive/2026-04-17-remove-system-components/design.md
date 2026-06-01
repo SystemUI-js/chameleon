@@ -7,12 +7,14 @@
 ## Goals / Non-Goals
 
 **Goals:**
+
 - 移除 `src/system/` 相关 runtime、类型、常量与解析函数的公开导出。
 - 将包入口中的主题定义导出直接接到 `src/theme/default`、`src/theme/win98`、`src/theme/winxp`。
 - 删除或改写依赖 legacy system layer 的测试，保留组件库与纯主题定义的公共契约验证。
 - 让仓库内部不再依赖 system registry 才能完成主题导出与基础预览。
 
 **Non-Goals:**
+
 - 不重构现有主题 definition 的对象结构、token 命名或样式实现。
 - 不调整组件本身的行为、样式类名约定或窗口组件功能。
 - 不提供兼容旧 API 的 runtime shim、弃用警告层或临时代理实现。

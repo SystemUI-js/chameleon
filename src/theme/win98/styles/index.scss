@@ -1,8 +1,9 @@
 @import url(../../../styles/global.css);
 
 .cm-theme--win98 {
-    [class^="cm-"] {
-        &, & > * {
+    [class^='cm-'] {
+        &,
+        & > * {
             box-sizing: border-box;
         }
     }
@@ -126,7 +127,9 @@
     }
 
     .cm-status-bar__item {
-        box-shadow: inset -1px -1px #dfdfdf, inset 1px 1px grey;
+        box-shadow:
+            inset -1px -1px #dfdfdf,
+            inset 1px 1px grey;
         flex-grow: 1;
         margin: 0;
         padding: 2px 3px;
@@ -241,13 +244,6 @@
         box-sizing: border-box;
         color: transparent;
         text-shadow: 0 0 #222;
-        &--compact {
-            min-width: auto;
-            min-height: auto;
-            width: 16px;
-            height: 14px;
-            padding: 0;
-        }
     }
 
     &.cm-button:hover:not(:disabled) {
@@ -315,6 +311,42 @@
         color: #808080;
         text-shadow: 1px 1px 0 #ffffff;
         cursor: not-allowed;
+    }
+
+    // Size variants
+    &.cm-button--compact {
+        min-width: auto;
+        min-height: 16px;
+        padding: 0 6px;
+        font-size: 10px;
+    }
+
+    &.cm-button--small {
+        min-width: 50px;
+        min-height: 19px;
+        padding: 0 10px;
+        font-size: 11px;
+    }
+
+    &.cm-button--medium {
+        min-width: 75px;
+        min-height: 23px;
+        padding: 0 12px;
+        font-size: 12px;
+    }
+
+    &.cm-button--large {
+        min-width: 90px;
+        min-height: 28px;
+        padding: 0 16px;
+        font-size: 13px;
+    }
+
+    // Display type variants
+    &.cm-button--round {
+        min-width: auto;
+        aspect-ratio: 1;
+        padding: 0;
     }
 
     &.cm-button--grouped {

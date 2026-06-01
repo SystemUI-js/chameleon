@@ -25,14 +25,14 @@ React 18 + TypeScript 组件库，使用 Vite 构建为 UMD/ES 模块，集成 J
 
 ## WHERE TO LOOK
 
-| Task           | Location             | Notes                         |
-| -------------- | -------------------- | ----------------------------- |
-| Add component  | `src/components/`    | 遵循现有组件模式              |
-| Add theme      | `src/theme/`          | 主题定义与 CSS 变量导出       |
-| Add types      | `src/types/`         | SCSS module declarations      |
-| Write tests    | `tests/`             | 参考现有测试结构              |
-| CI config      | `.github/workflows/` | PR checks, publish            |
-| Library entry  | `src/index.ts`        | 组件与主题导出                |
+| Task          | Location             | Notes                    |
+| ------------- | -------------------- | ------------------------ |
+| Add component | `src/components/`    | 遵循现有组件模式         |
+| Add theme     | `src/theme/`         | 主题定义与 CSS 变量导出  |
+| Add types     | `src/types/`         | SCSS module declarations |
+| Write tests   | `tests/`             | 参考现有测试结构         |
+| CI config     | `.github/workflows/` | PR checks, publish       |
+| Library entry | `src/index.ts`       | 组件与主题导出           |
 
 ## CONVENTIONS
 

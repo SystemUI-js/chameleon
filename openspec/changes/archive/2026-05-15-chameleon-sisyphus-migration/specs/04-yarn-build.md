@@ -3,6 +3,7 @@
 ## Exit Code: 0
 
 ## Output:
+
 ```
 vite v5.4.21 building for production...
 transforming...
@@ -17,6 +18,7 @@ dist/chameleon.umd.cjs  115.41 kB │ gzip: 41.15 kB
 ```
 
 ## Summary:
+
 - Vite production build succeeded
 - Output: dist/chameleon.es.js (ESM), dist/chameleon.umd.cjs (UMD), dist/style.css
 - Exit code: 0 ✓

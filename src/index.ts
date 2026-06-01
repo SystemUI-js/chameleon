@@ -6,6 +6,7 @@ export {
   CCheckbox,
   CIcon,
   CIconContainer,
+  CList,
   CMenu,
   CRadio,
   CRadioGroup,

@@ -9,6 +9,8 @@ export interface CSplitAreaProps {
   readonly children?: React.ReactNode;
   readonly direction?: CSplitAreaDirection;
   readonly separatorMovable?: boolean;
+  readonly separatorVisibleOnHover?: boolean;
+  readonly separatorHoverMode?: 'area' | 'separator';
   readonly className?: string;
   readonly theme?: string;
   readonly style?: React.CSSProperties;
@@ -146,6 +148,8 @@ export function CSplitArea({
   children,
   direction = 'horizontal',
   separatorMovable = false,
+  separatorVisibleOnHover = false,
+  separatorHoverMode = 'area',
   className,
   theme,
   style,
@@ -287,6 +291,12 @@ export function CSplitArea({
               'cm-split-area',
               `cm-split-area--${direction}`,
               separatorMovable ? 'cm-split-area--movable' : 'cm-split-area--static',
+              separatorVisibleOnHover && separatorHoverMode === 'area'
+                ? 'cm-split-area--separator-visible-on-hover'
+                : '',
+              separatorVisibleOnHover && separatorHoverMode === 'separator'
+                ? 'cm-split-area--separator-visible-on-separator-hover'
+                : '',
             ],
             resolvedTheme,
             className,

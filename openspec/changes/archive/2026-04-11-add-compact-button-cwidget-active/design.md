@@ -7,12 +7,14 @@
 ## Goals / Non-Goals
 
 **Goals:**
+
 - 为 `CButton` 增加紧凑型能力，并将尺寸表达下沉为样式类名，而不是新增一套组件内尺寸分支。
 - 为 `CWidget` 增加统一的 widget-level active 状态模型，支持受控与非受控两种使用方式。
 - 为 `CWidget` 增加 `onActive` 回调，确保外部可以感知并联动激活态变化。
 - 在 `CWidget` 根节点上输出稳定的激活态样式标记，方便 `Window`、`Dock` 等子类复用。
 
 **Non-Goals:**
+
 - 不重构 `CWidget` 的拖拽、缩放、preview 流程，也不改变其现有布局状态结构。
 - 不引入新的主题系统、样式依赖或复杂的尺寸枚举体系。
 - 不在本设计中扩展多态激活来源（如 hover/selection/focus 多通道状态），仅覆盖 proposal 中要求的 active 能力。

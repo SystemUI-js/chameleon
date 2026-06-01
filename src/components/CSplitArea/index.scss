@@ -51,6 +51,50 @@
     background: var(--cm-color-border, rgba(0, 0, 0, 0.18));
 }
 
+// Separator visible on hover behavior
+.cm-split-area--separator-visible-on-hover {
+    > .cm-split-area__separator {
+        background: transparent;
+    }
+
+    > .cm-split-area__separator .cm-split-area__separator-handle {
+        opacity: 0;
+    }
+
+    &:hover > .cm-split-area__separator {
+        background: var(--cm-color-border-light, rgba(0, 0, 0, 0.08));
+    }
+
+    &:hover > .cm-split-area__separator .cm-split-area__separator-handle {
+        opacity: 1;
+    }
+}
+
+// Keep movable separator hover highlight when visible-on-hover is enabled
+.cm-split-area--separator-visible-on-hover.cm-split-area--movable:hover
+    > .cm-split-area__separator:hover {
+    background: var(--cm-color-border, rgba(0, 0, 0, 0.18));
+}
+
+// Separator visible on separator-hover behavior
+.cm-split-area--separator-visible-on-separator-hover {
+    > .cm-split-area__separator {
+        background: transparent;
+    }
+
+    > .cm-split-area__separator .cm-split-area__separator-handle {
+        opacity: 0;
+    }
+
+    > .cm-split-area__separator:hover {
+        background: var(--cm-color-border-light, rgba(0, 0, 0, 0.08));
+    }
+
+    > .cm-split-area__separator:hover .cm-split-area__separator-handle {
+        opacity: 1;
+    }
+}
+
 .cm-split-area__separator-handle {
     display: block;
     border-radius: 999px;
