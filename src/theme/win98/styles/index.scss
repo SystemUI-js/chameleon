@@ -634,4 +634,308 @@
     .cm-menu__caret {
         margin-left: 8px;
     }
+
+    // ──────────────────────────────────────────────
+    // CInput
+    // ──────────────────────────────────────────────
+    &.cm-input {
+        border: 2px solid;
+        border-color: #808080 #ffffff #ffffff #808080;
+        border-radius: 0;
+        background: #ffffff;
+        color: #000000;
+        font-size: 11px;
+        font-family: 'MS Sans Serif', Tahoma, sans-serif;
+    }
+
+    &.cm-input:focus {
+        outline: 1px dotted #000000;
+        outline-offset: -2px;
+    }
+
+    &.cm-input--disabled {
+        background: #c0c0c0;
+        color: #808080;
+    }
+
+    &.cm-input--readonly {
+        background: #c0c0c0;
+    }
+
+    // ──────────────────────────────────────────────
+    // CTooltip
+    // ──────────────────────────────────────────────
+    .cm-tooltip__popup,
+    .cm-tooltip__overlay {
+        background: #000000;
+        color: #ffffff;
+        border-radius: 0;
+        box-shadow: none;
+        font-size: 11px;
+        font-family: 'MS Sans Serif', Tahoma, sans-serif;
+    }
+
+    .cm-tooltip__arrow {
+        background: #000000;
+    }
+
+    .cm-tooltip__content {
+        color: #ffffff;
+        font-size: 11px;
+        font-family: 'MS Sans Serif', Tahoma, sans-serif;
+    }
+
+    .cm-tooltip--open .cm-tooltip__popup,
+    .cm-tooltip--open .cm-tooltip__overlay {
+        opacity: 1;
+        visibility: visible;
+    }
+
+    .cm-tooltip--disabled {
+        opacity: 0.5;
+        pointer-events: none;
+    }
+
+    // ──────────────────────────────────────────────
+    // CTimePicker
+    // ──────────────────────────────────────────────
+    .cm-time-picker__select,
+    .cm-time-picker__input {
+        border: 2px solid;
+        border-color: #808080 #ffffff #ffffff #808080;
+        border-radius: 0;
+        background: #ffffff;
+        color: #000000;
+        font-size: 11px;
+        font-family: 'MS Sans Serif', Tahoma, sans-serif;
+    }
+
+    .cm-time-picker__select:focus,
+    .cm-time-picker__input:focus {
+        outline: 1px dotted #000000;
+        outline-offset: -2px;
+    }
+
+    .cm-time-picker__select:disabled,
+    .cm-time-picker__input:disabled {
+        background: #c0c0c0;
+        color: #808080;
+    }
+
+    .cm-time-picker__panel {
+        border: 2px solid;
+        border-color: #808080 #ffffff #ffffff #808080;
+        background: #c0c0c0;
+        box-shadow: inset -1px -1px 0 #000000;
+    }
+
+    .cm-time-picker__column {
+        border-right: 1px solid #808080;
+    }
+
+    .cm-time-picker__column:last-child {
+        border-right: none;
+    }
+
+    .cm-time-picker__option {
+        padding: 4px 8px;
+        color: #000000;
+        font-size: 11px;
+        font-family: 'MS Sans Serif', Tahoma, sans-serif;
+        cursor: pointer;
+    }
+
+    .cm-time-picker__option:hover {
+        background: navy;
+        color: #ffffff;
+    }
+
+    .cm-time-picker__option--selected {
+        background: navy;
+        color: #ffffff;
+    }
+
+    .cm-time-picker__clear {
+        color: #000000;
+        cursor: pointer;
+    }
+
+    .cm-time-picker__separator {
+        color: #000000;
+    }
+
+    // ──────────────────────────────────────────────
+    // CTree
+    // ──────────────────────────────────────────────
+    .cm-tree__title {
+        color: #000000;
+        font-size: 11px;
+        font-family: 'MS Sans Serif', Tahoma, sans-serif;
+    }
+
+    .cm-tree__title:hover {
+        color: navy;
+    }
+
+    .cm-tree__node--selected > .cm-tree__node-content > .cm-tree__title,
+    .cm-tree__item--selected > .cm-tree__node > .cm-tree__title {
+        background: navy;
+        color: #ffffff;
+    }
+
+    .cm-tree__node--expanded > .cm-tree__node-content > .cm-tree__switcher {
+        color: navy;
+    }
+
+    .cm-tree__node--checked > .cm-tree__node-content > .cm-tree__title {
+        color: #000080;
+    }
+
+    .cm-tree__children {
+        padding-left: 16px;
+    }
+
+    .cm-tree__switcher {
+        color: #000000;
+    }
+
+    // ──────────────────────────────────────────────
+    // CTransfer
+    // ──────────────────────────────────────────────
+    .cm-transfer__panel {
+        border: 2px solid;
+        border-color: #808080 #ffffff #ffffff #808080;
+        background: #c0c0c0;
+        box-shadow: inset -1px -1px 0 #000000;
+    }
+
+    .cm-transfer__header {
+        border-bottom: 2px solid;
+        border-color: #808080 #ffffff #ffffff #808080;
+        background: silver;
+        color: #000000;
+        font-size: 11px;
+        font-weight: 700;
+    }
+
+    .cm-transfer__search {
+        border: 2px solid;
+        border-color: #808080 #ffffff #ffffff #808080;
+        background: #ffffff;
+        color: #000000;
+        font-size: 11px;
+        font-family: 'MS Sans Serif', Tahoma, sans-serif;
+    }
+
+    .cm-transfer__body {
+        padding: 4px;
+        background: #c0c0c0;
+    }
+
+    .cm-transfer__item--selected {
+        background: navy;
+        color: #ffffff;
+    }
+
+    .cm-transfer__item-button:hover {
+        background: navy;
+        color: #ffffff;
+    }
+
+    .cm-transfer__operation,
+    .cm-transfer__button {
+        border: none;
+        border-radius: 0;
+        background: silver;
+        box-shadow: inset -1px -1px #0a0a0a, inset 1px 1px #fff, inset -2px -2px grey, inset 2px 2px #dfdfdf;
+        color: #000000;
+        font-size: 11px;
+    }
+
+    .cm-transfer__operation:hover:not(:disabled),
+    .cm-transfer__button:hover:not(:disabled) {
+        background: #d6d6d6;
+    }
+
+    .cm-transfer__operation:disabled,
+    .cm-transfer__button:disabled {
+        color: #808080;
+        text-shadow: 1px 1px 0 #ffffff;
+    }
+
+    .cm-transfer--disabled {
+        opacity: 0.5;
+        pointer-events: none;
+    }
+
+    // ──────────────────────────────────────────────
+    // CTable
+    // ──────────────────────────────────────────────
+    .cm-table__scroll {
+        border: 2px solid;
+        border-color: #808080 #ffffff #ffffff #808080;
+        background: #ffffff;
+        box-shadow: inset -1px -1px 0 #000000;
+    }
+
+    .cm-table__header {
+        background: silver;
+    }
+
+    .cm-table__row--header {
+        background: silver;
+    }
+
+    .cm-table__cell--header {
+        color: #000000;
+        font-weight: 700;
+        font-size: 11px;
+    }
+
+    .cm-table__body {
+        background: #ffffff;
+    }
+
+    .cm-table__row {
+        border-bottom: 1px solid #c0c0c0;
+    }
+
+    .cm-table__sorter {
+        color: #000000;
+        cursor: pointer;
+    }
+
+    .cm-table__selection {
+        text-align: center;
+    }
+
+    .cm-table--empty {
+        color: #808080;
+    }
+
+    .cm-table__loading {
+        background: rgba(192, 192, 192, 0.85);
+        color: #000000;
+    }
+
+    .cm-table__pagination-button {
+        border: none;
+        border-radius: 0;
+        background: silver;
+        box-shadow: inset -1px -1px #0a0a0a, inset 1px 1px #fff, inset -2px -2px grey, inset 2px 2px #dfdfdf;
+        color: #000000;
+        font-size: 11px;
+    }
+
+    .cm-table__pagination-button:hover:not(:disabled) {
+        background: #d6d6d6;
+    }
+
+    .cm-table__pagination-button:disabled {
+        color: #808080;
+    }
+
+    .cm-table__pagination-status {
+        color: #000000;
+    }
 }

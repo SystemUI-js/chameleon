@@ -23,7 +23,9 @@ test('default fixture exposes baseline controls state', async ({ page }) => {
   await expect(page.getByTestId(SELECT_NATIVE_TEST_ID)).toHaveValue('medium');
 });
 
-test('default fixture selects CSelect options through the visible CMenu trigger', async ({ page }) => {
+test('default fixture selects CSelect options through the visible CMenu trigger', async ({
+  page,
+}) => {
   await gotoCommonControlsFixture(page, 'default');
 
   const trigger = page.getByTestId(SELECT_TEST_ID);

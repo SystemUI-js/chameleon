@@ -486,11 +486,11 @@ describe('ComponentCatalog', () => {
       expect(within(listSection).getByTestId('list-demo-intent')).toHaveTextContent(
         'Intent: Move 1 after 2 by keyboard',
       );
-      expect(within(listBasic).getAllByText(/Item [123]/).map((node) => node.textContent)).toEqual([
-        '□ Item 1',
-        '◇ Item 2',
-        '○ Item 3',
-      ]);
+      expect(
+        within(listBasic)
+          .getAllByText(/Item [123]/)
+          .map((node) => node.textContent),
+      ).toEqual(['□ Item 1', '◇ Item 2', '○ Item 3']);
     });
 
     it('shows lazy loading success and retry states from caller-owned loader', async () => {

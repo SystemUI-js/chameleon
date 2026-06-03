@@ -529,9 +529,9 @@ describe('CList', () => {
 
     it('loads children on expansion and caches them after re-expansion', async () => {
       const loadedChildren = [{ id: '1-lazy', name: 'Lazy Child' }];
-      const onLoadChildren = jest.fn<Promise<readonly TestItem[]>, [TestItem, string | number]>().mockResolvedValue(
-        loadedChildren,
-      );
+      const onLoadChildren = jest
+        .fn<Promise<readonly TestItem[]>, [TestItem, string | number]>()
+        .mockResolvedValue(loadedChildren);
 
       render(
         <CList
@@ -670,7 +670,9 @@ describe('CList', () => {
 
       const list = screen.getByTestId('list-nested-drag');
       expect(list.querySelectorAll('.cm-list__item--draggable')).toHaveLength(4);
-      expect(screen.getAllByRole('button', { name: 'Move item 1' })[0]).toHaveClass('cm-list__drag-handle');
+      expect(screen.getAllByRole('button', { name: 'Move item 1' })[0]).toHaveClass(
+        'cm-list__drag-handle',
+      );
     });
 
     it('does not expose lazy loading for non-expandable siblings', async () => {

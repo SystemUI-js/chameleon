@@ -1,0 +1,97 @@
+.cm-input {
+    display: inline-flex;
+    align-items: center;
+    box-sizing: border-box;
+    gap: 4px;
+    min-width: 160px;
+    padding: 0 8px;
+    font-size: 13px;
+    line-height: 1.5;
+    border: 1px solid #ccc;
+    border-radius: 2px;
+    background: #fff;
+    color: #000;
+
+    &:focus-within {
+        border-color: #1a73e8;
+    }
+}
+
+.cm-input--small {
+    min-height: 24px;
+    padding: 0 6px;
+    font-size: 12px;
+}
+
+.cm-input--middle {
+    min-height: 30px;
+}
+
+.cm-input--large {
+    min-height: 36px;
+    padding: 0 10px;
+    font-size: 14px;
+}
+
+.cm-input--disabled {
+    cursor: not-allowed;
+    opacity: 0.6;
+}
+
+.cm-input--readonly {
+    cursor: default;
+}
+
+.cm-input--error {
+    border-color: #d93025;
+}
+
+.cm-input--warning {
+    border-color: #f29900;
+}
+
+.cm-input__field {
+    flex: 1 1 auto;
+    min-width: 0;
+    padding: 4px 0;
+    font: inherit;
+    line-height: inherit;
+    color: inherit;
+    border: 0;
+    outline: none;
+    background: transparent;
+
+    &::placeholder {
+        color: #999;
+    }
+
+    &:disabled {
+        cursor: not-allowed;
+    }
+}
+
+.cm-input__prefix,
+.cm-input__suffix {
+    flex: 0 0 auto;
+    color: #666;
+}
+
+.cm-input__clear {
+    flex: 0 0 auto;
+    display: inline-flex;
+    align-items: center;
+    justify-content: center;
+    width: 16px;
+    height: 16px;
+    padding: 0;
+    font: inherit;
+    line-height: 1;
+    color: #666;
+    border: 0;
+    background: transparent;
+    cursor: pointer;
+
+    &:disabled {
+        cursor: not-allowed;
+    }
+}

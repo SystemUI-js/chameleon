@@ -8,6 +8,7 @@ import {
   CGrid,
   CGridItem,
   CIconContainer,
+  CInput,
   CList,
   CMenu,
   CRadio,
@@ -22,6 +23,13 @@ import {
   CStatusBarItem,
   CTab,
   CTabItem,
+  CTable,
+  CTimePicker,
+  CTooltip,
+  CTransfer,
+  type CTransferItem,
+  CTree,
+  type CTreeDataNode,
   CWindow,
   CWindowBody,
   CWindowTitle,
@@ -86,15 +94,45 @@ const LIST_ITEMS: readonly CatalogListItem[] = [
 ] as const;
 
 const LIST_GRID_ITEMS: readonly CatalogListItem[] = [
-  { id: 'grid-1', name: 'Grid Alpha', description: 'Compact grid card', icon: '▣' },
-  { id: 'grid-2', name: 'Grid Beta', description: 'Second grid card', icon: '▤' },
-  { id: 'grid-3', name: 'Grid Gamma', description: 'Third grid card', icon: '▥' },
+  {
+    id: 'grid-1',
+    name: 'Grid Alpha',
+    description: 'Compact grid card',
+    icon: '▣',
+  },
+  {
+    id: 'grid-2',
+    name: 'Grid Beta',
+    description: 'Second grid card',
+    icon: '▤',
+  },
+  {
+    id: 'grid-3',
+    name: 'Grid Gamma',
+    description: 'Third grid card',
+    icon: '▥',
+  },
 ] as const;
 
 const LIST_ICON_ITEMS: readonly CatalogListItem[] = [
-  { id: 'icon-1', name: 'Desktop', description: 'Icon mode uses larger affordances', icon: '▦' },
-  { id: 'icon-2', name: 'Archive', description: 'Double-click or hover to emit intent', icon: '▧' },
-  { id: 'icon-3', name: 'Settings', description: 'Keyboard drag handle remains focusable', icon: '⚙' },
+  {
+    id: 'icon-1',
+    name: 'Desktop',
+    description: 'Icon mode uses larger affordances',
+    icon: '▦',
+  },
+  {
+    id: 'icon-2',
+    name: 'Archive',
+    description: 'Double-click or hover to emit intent',
+    icon: '▧',
+  },
+  {
+    id: 'icon-3',
+    name: 'Settings',
+    description: 'Keyboard drag handle remains focusable',
+    icon: '⚙',
+  },
 ] as const;
 
 const LIST_LAZY_ITEMS: readonly CatalogListItem[] = [
@@ -1489,6 +1527,289 @@ function SplitAreaShowcase(): React.ReactElement {
   );
 }
 
+const INPUT_SNIPPET = `
+const [inputValue, setInputValue] = useState('');
+
+return (
+  <>
+    <CInput
+      placeholder="Type something…"
+      value={inputValue}
+      onChange={(nextValue) => setInputValue(nextValue)}
+    />
+    <CButton size="compact" onClick={() => setInputValue('')}>Clear</CButton>
+    <CInput placeholder="Disabled input" disabled />
+  </>
+);
+`.trim();
+
+function InputShowcase(): React.ReactElement {
+  const [inputValue, setInputValue] = React.useState('');
+
+  return (
+    <ShowcaseSection title="Input" testId="catalog-section-input" code={INPUT_SNIPPET}>
+      <div className="cm-catalog__stack">
+        <div className="cm-catalog__row">
+          <CInput
+            data-testid="input-demo"
+            placeholder="Type something…"
+            value={inputValue}
+            onChange={(nextValue) => setInputValue(nextValue)}
+          />
+          <CButton data-testid="input-demo-clear" size="compact" onClick={() => setInputValue('')}>
+            Clear
+          </CButton>
+        </div>
+        <div className="cm-catalog__row">
+          <CInput data-testid="input-demo-disabled" placeholder="Disabled input" disabled />
+        </div>
+        <p className="cm-catalog__value">Value: {inputValue || '(empty)'}</p>
+      </div>
+    </ShowcaseSection>
+  );
+}
+
+const TOOLTIP_SNIPPET = `
+<CTooltip title="Hover tooltip" placement="top">
+  <CButton>Hover me</CButton>
+</CTooltip>
+
+<CTooltip title="Focus tooltip" placement="right">
+  <CButton>Focus me</CButton>
+</CTooltip>
+`.trim();
+
+function TooltipShowcase(): React.ReactElement {
+  return (
+    <ShowcaseSection title="Tooltip" testId="catalog-section-tooltip" code={TOOLTIP_SNIPPET}>
+      <div className="cm-catalog__stack">
+        <div className="cm-catalog__row">
+          <CTooltip data-testid="tooltip-demo-hover" title="Hover tooltip" placement="top">
+            <CButton>Hover me</CButton>
+          </CTooltip>
+          <CTooltip data-testid="tooltip-demo-focus" title="Focus tooltip" placement="right">
+            <CButton>Focus me</CButton>
+          </CTooltip>
+          <CTooltip data-testid="tooltip-demo-bottom" title="Bottom tooltip" placement="bottom">
+            <span>Hover text</span>
+          </CTooltip>
+        </div>
+      </div>
+    </ShowcaseSection>
+  );
+}
+
+const TIME_PICKER_SNIPPET = `
+const [time, setTime] = useState('09:30');
+
+return (
+  <>
+    <CTimePicker value={time} onChange={setTime} />
+    <CTimePicker disabled />
+    <p>Selected time: {time}</p>
+  </>
+);
+`.trim();
+
+function TimePickerShowcase(): React.ReactElement {
+  const [time, setTime] = React.useState('09:30');
+
+  return (
+    <ShowcaseSection
+      title="TimePicker"
+      testId="catalog-section-time-picker"
+      code={TIME_PICKER_SNIPPET}
+    >
+      <div className="cm-catalog__stack">
+        <div className="cm-catalog__row">
+          <CTimePicker data-testid="time-picker-demo" value={time} onChange={setTime} />
+          <CTimePicker data-testid="time-picker-demo-disabled" disabled />
+        </div>
+        <p className="cm-catalog__value">Selected time: {time}</p>
+      </div>
+    </ShowcaseSection>
+  );
+}
+
+const TREE_SAMPLE_DATA: readonly CTreeDataNode[] = [
+  {
+    key: 'root-1',
+    title: 'Documents',
+    children: [
+      { key: 'doc-1', title: 'Report.pdf' },
+      { key: 'doc-2', title: 'Notes.txt' },
+    ],
+  },
+  {
+    key: 'root-2',
+    title: 'Pictures',
+    children: [
+      { key: 'pic-1', title: 'Vacation.jpg' },
+      { key: 'pic-2', title: 'Portrait.png' },
+    ],
+  },
+  { key: 'root-3', title: 'Settings' },
+];
+
+const TREE_SNIPPET = `
+const treeData = [
+  {
+    key: 'root-1',
+    title: 'Documents',
+    children: [
+      { key: 'doc-1', title: 'Report.pdf' },
+      { key: 'doc-2', title: 'Notes.txt' },
+    ],
+  },
+];
+
+const [checkedKeys, setCheckedKeys] = useState<string[]>(['doc-1']);
+const [selectedKeys, setSelectedKeys] = useState<string[]>([]);
+
+return (
+  <>
+    <CTree
+      treeData={treeData}
+      checkable
+      checkedKeys={checkedKeys}
+      onCheck={setCheckedKeys}
+      onSelect={setSelectedKeys}
+    />
+    <p>Checked: {checkedKeys.join(', ')}</p>
+    <p>Selected: {selectedKeys.join(', ')}</p>
+  </>
+);
+`.trim();
+
+function TreeShowcase(): React.ReactElement {
+  const [checkedKeys, setCheckedKeys] = React.useState<string[]>(['doc-1']);
+  const [selectedKeys, setSelectedKeys] = React.useState<string[]>([]);
+
+  return (
+    <ShowcaseSection title="Tree" testId="catalog-section-tree" code={TREE_SNIPPET}>
+      <div className="cm-catalog__stack">
+        <CTree
+          data-testid="tree-demo"
+          treeData={TREE_SAMPLE_DATA}
+          checkable
+          checkedKeys={checkedKeys}
+          onCheck={(nextCheckedKeys) => setCheckedKeys(nextCheckedKeys)}
+          onSelect={(nextSelectedKeys) => setSelectedKeys(nextSelectedKeys)}
+        />
+        <p className="cm-catalog__value">Checked: {checkedKeys.join(', ') || 'none'}</p>
+        <p className="cm-catalog__value">Selected: {selectedKeys.join(', ') || 'none'}</p>
+      </div>
+    </ShowcaseSection>
+  );
+}
+
+const TRANSFER_SAMPLE_DATA: readonly CTransferItem[] = [
+  { key: 'a', title: 'Apple' },
+  { key: 'b', title: 'Banana' },
+  { key: 'c', title: 'Cherry' },
+  { key: 'd', title: 'Date' },
+  { key: 'e', title: 'Elderberry' },
+];
+
+const TRANSFER_SNIPPET = `
+const data = [
+  { key: 'a', title: 'Apple' },
+  { key: 'b', title: 'Banana' },
+  { key: 'c', title: 'Cherry' },
+];
+
+const [targetKeys, setTargetKeys] = useState<string[]>(['b']);
+
+return (
+  <CTransfer
+    dataSource={data}
+    targetKeys={targetKeys}
+    titles={['Available', 'Chosen']}
+    onChange={setTargetKeys}
+  />
+);
+`.trim();
+
+function TransferShowcase(): React.ReactElement {
+  const [targetKeys, setTargetKeys] = React.useState<string[]>(['b']);
+
+  return (
+    <ShowcaseSection title="Transfer" testId="catalog-section-transfer" code={TRANSFER_SNIPPET}>
+      <div className="cm-catalog__stack">
+        <CTransfer
+          data-testid="transfer-demo"
+          dataSource={TRANSFER_SAMPLE_DATA}
+          targetKeys={targetKeys}
+          titles={['Available', 'Chosen']}
+          onChange={(nextTargetKeys) => setTargetKeys(nextTargetKeys as string[])}
+        />
+        <p className="cm-catalog__value">Target keys: {targetKeys.join(', ') || 'none'}</p>
+      </div>
+    </ShowcaseSection>
+  );
+}
+
+interface TableRecord {
+  readonly id: number;
+  readonly name: string;
+  readonly role: string;
+  readonly age: number;
+}
+
+const TABLE_SAMPLE_DATA: readonly TableRecord[] = [
+  { id: 1, name: 'Alice', role: 'Developer', age: 28 },
+  { id: 2, name: 'Bob', role: 'Designer', age: 32 },
+  { id: 3, name: 'Carol', role: 'Manager', age: 45 },
+  { id: 4, name: 'Dave', role: 'Developer', age: 24 },
+  { id: 5, name: 'Eve', role: 'Tester', age: 29 },
+  { id: 6, name: 'Frank', role: 'DevOps', age: 35 },
+];
+
+const TABLE_COLUMNS = [
+  { title: 'Name', dataIndex: 'name' as const, sorter: true },
+  { title: 'Role', dataIndex: 'role' as const },
+  {
+    title: 'Age',
+    dataIndex: 'age' as const,
+    sorter: (a: TableRecord, b: TableRecord) => a.age - b.age,
+  },
+];
+
+const TABLE_SNIPPET = `
+const columns = [
+  { title: 'Name', dataIndex: 'name', sorter: true },
+  { title: 'Role', dataIndex: 'role' },
+  { title: 'Age', dataIndex: 'age', sorter: (a, b) => a.age - b.age },
+];
+
+const data = [
+  { id: 1, name: 'Alice', role: 'Developer', age: 28 },
+  { id: 2, name: 'Bob', role: 'Designer', age: 32 },
+];
+
+return (
+  <>
+    <CTable columns={columns} dataSource={data} pagination={{ pageSize: 4 }} rowKey="id" />
+  </>
+);
+`.trim();
+
+function TableShowcase(): React.ReactElement {
+  return (
+    <ShowcaseSection title="Table" testId="catalog-section-table" code={TABLE_SNIPPET}>
+      <div className="cm-catalog__stack">
+        <CTable<TableRecord>
+          data-testid="table-demo"
+          columns={TABLE_COLUMNS}
+          dataSource={TABLE_SAMPLE_DATA}
+          pagination={{ pageSize: 4 }}
+          rowKey="id"
+        />
+      </div>
+    </ShowcaseSection>
+  );
+}
+
 export function ComponentCatalog({
   theme,
   onThemeChange,
@@ -1522,6 +1843,12 @@ export function ComponentCatalog({
             <SplitAreaShowcase />
             <ListShowcase />
             <GridShowcase />
+            <InputShowcase />
+            <TooltipShowcase />
+            <TimePickerShowcase />
+            <TreeShowcase />
+            <TransferShowcase />
+            <TableShowcase />
           </div>
         </DevThemeRoot>
       </main>

@@ -568,4 +568,302 @@
     .cm-menu__caret {
         margin-left: 8px;
     }
+
+    // ──────────────────────────────────────────────
+    // CInput
+    // ──────────────────────────────────────────────
+    &.cm-input {
+        border: 1px solid #7da2ce;
+        border-radius: 3px;
+        background: #ffffff;
+        color: #12315f;
+        font-size: 12px;
+        box-shadow: inset 0 1px 2px rgba(49, 106, 197, 0.12);
+    }
+
+    &.cm-input:focus {
+        border-color: #316ac5;
+        box-shadow: inset 0 1px 2px rgba(49, 106, 197, 0.18), 0 0 0 2px rgba(49, 106, 197, 0.15);
+    }
+
+    &.cm-input--disabled {
+        border-color: #9fb8dd;
+        background: #edf3fb;
+        color: #92a6c6;
+    }
+
+    &.cm-input--readonly {
+        border-color: #b9d0f4;
+        background: #f8fbff;
+    }
+
+    // ──────────────────────────────────────────────
+    // CTooltip
+    // ──────────────────────────────────────────────
+    .cm-tooltip__popup,
+    .cm-tooltip__overlay {
+        background: #12315f;
+        color: #ffffff;
+        border-radius: 6px;
+        box-shadow: 0 4px 12px rgba(49, 106, 197, 0.3);
+        font-size: 12px;
+    }
+
+    .cm-tooltip__arrow {
+        background: #12315f;
+    }
+
+    .cm-tooltip__content {
+        color: #ffffff;
+        font-size: 12px;
+    }
+
+    .cm-tooltip--open .cm-tooltip__popup,
+    .cm-tooltip--open .cm-tooltip__overlay {
+        opacity: 1;
+        visibility: visible;
+    }
+
+    .cm-tooltip--disabled {
+        opacity: 0.5;
+        pointer-events: none;
+    }
+
+    // ──────────────────────────────────────────────
+    // CTimePicker
+    // ──────────────────────────────────────────────
+    .cm-time-picker__select,
+    .cm-time-picker__input {
+        border: 1px solid #7da2ce;
+        border-radius: 3px;
+        background: linear-gradient(180deg, #ffffff 0%, #dce8f8 100%);
+        color: #12315f;
+        font-size: 12px;
+        box-shadow: inset 0 1px 0 rgba(255, 255, 255, 0.95);
+    }
+
+    .cm-time-picker__select:focus,
+    .cm-time-picker__input:focus {
+        border-color: #316ac5;
+        outline: none;
+    }
+
+    .cm-time-picker__select:disabled,
+    .cm-time-picker__input:disabled {
+        border-color: #9fb8dd;
+        background: #edf3fb;
+        color: #92a6c6;
+    }
+
+    .cm-time-picker__panel {
+        border: 1px solid #7da2ce;
+        border-radius: 4px;
+        background: linear-gradient(180deg, #f8fbff 0%, #e7eefb 100%);
+        box-shadow: inset 0 1px 0 rgba(255, 255, 255, 0.95), 0 4px 12px rgba(49, 106, 197, 0.2);
+    }
+
+    .cm-time-picker__column {
+        border-right: 1px solid rgba(125, 162, 206, 0.3);
+    }
+
+    .cm-time-picker__column:last-child {
+        border-right: none;
+    }
+
+    .cm-time-picker__option {
+        padding: 6px 12px;
+        color: #12315f;
+        font-size: 12px;
+        cursor: pointer;
+    }
+
+    .cm-time-picker__option:hover {
+        background: linear-gradient(180deg, #316ac5 0%, #245595 100%);
+        color: #ffffff;
+    }
+
+    .cm-time-picker__option--selected {
+        background: linear-gradient(180deg, #6ea6f9 0%, #3778dc 100%);
+        color: #ffffff;
+    }
+
+    .cm-time-picker__clear {
+        color: #4b6288;
+        cursor: pointer;
+    }
+
+    .cm-time-picker__separator {
+        color: #4b6288;
+    }
+
+    // ──────────────────────────────────────────────
+    // CTree
+    // ──────────────────────────────────────────────
+    .cm-tree__title {
+        color: #12315f;
+        font-size: 12px;
+    }
+
+    .cm-tree__title:hover {
+        color: #316ac5;
+    }
+
+    .cm-tree__node--selected > .cm-tree__node-content > .cm-tree__title,
+    .cm-tree__item--selected > .cm-tree__node > .cm-tree__title {
+        background: linear-gradient(180deg, #316ac5 0%, #245595 100%);
+        color: #ffffff;
+    }
+
+    .cm-tree__node--expanded > .cm-tree__node-content > .cm-tree__switcher {
+        color: #316ac5;
+    }
+
+    .cm-tree__node--checked > .cm-tree__node-content > .cm-tree__title {
+        color: #3778dc;
+    }
+
+    .cm-tree__children {
+        padding-left: 16px;
+    }
+
+    .cm-tree__switcher {
+        color: #4d79bb;
+    }
+
+    // ──────────────────────────────────────────────
+    // CTransfer
+    // ──────────────────────────────────────────────
+    .cm-transfer__panel {
+        border: 1px solid #7da2ce;
+        border-radius: 8px;
+        background: linear-gradient(180deg, #f8fbff 0%, #e7eefb 100%);
+        box-shadow: inset 0 1px 0 rgba(255, 255, 255, 0.95), 0 4px 12px rgba(49, 106, 197, 0.12);
+    }
+
+    .cm-transfer__header {
+        border-bottom: 1px solid #7da2ce;
+        background: linear-gradient(180deg, #fefefe 0%, #d7e6fb 47%, #b9d0f4 48%, #dce9fd 100%);
+        color: #12315f;
+        font-size: 12px;
+        font-weight: 700;
+    }
+
+    .cm-transfer__search {
+        border: 1px solid #7da2ce;
+        border-radius: 3px;
+        background: linear-gradient(180deg, #ffffff 0%, #dce8f8 100%);
+        color: #12315f;
+        font-size: 12px;
+    }
+
+    .cm-transfer__body {
+        padding: 8px;
+    }
+
+    .cm-transfer__item--selected {
+        background: linear-gradient(180deg, #c2d7f6 0%, #e8f1ff 100%);
+    }
+
+    .cm-transfer__item-button:hover {
+        background: #e8f1ff;
+    }
+
+    .cm-transfer__operation,
+    .cm-transfer__button {
+        border: 1px solid #4d79bb;
+        border-radius: 999px;
+        background: linear-gradient(180deg, #fefefe 0%, #e4eefc 47%, #d0e0f8 48%, #e8f1ff 100%);
+        color: #12315f;
+        font-size: 12px;
+        font-weight: 700;
+    }
+
+    .cm-transfer__operation:hover:not(:disabled),
+    .cm-transfer__button:hover:not(:disabled) {
+        background: linear-gradient(180deg, #ffffff 0%, #e0edff 47%, #c4d8f7 48%, #e8f1ff 100%);
+    }
+
+    .cm-transfer__operation:disabled,
+    .cm-transfer__button:disabled {
+        border-color: #9fb8dd;
+        background: linear-gradient(180deg, #f7faff 0%, #dfe9f7 100%);
+        color: #8aa1c4;
+    }
+
+    .cm-transfer--disabled {
+        opacity: 0.5;
+        pointer-events: none;
+    }
+
+    // ──────────────────────────────────────────────
+    // CTable
+    // ──────────────────────────────────────────────
+    .cm-table__scroll {
+        border: 1px solid #7da2ce;
+        border-radius: 8px;
+        background: #ffffff;
+        box-shadow: inset 0 1px 0 rgba(255, 255, 255, 0.95), 0 4px 12px rgba(49, 106, 197, 0.1);
+    }
+
+    .cm-table__header {
+        background: linear-gradient(180deg, #fefefe 0%, #d7e6fb 47%, #b9d0f4 48%, #dce9fd 100%);
+    }
+
+    .cm-table__row--header {
+        background: linear-gradient(180deg, #fefefe 0%, #d7e6fb 47%, #b9d0f4 48%, #dce9fd 100%);
+    }
+
+    .cm-table__cell--header {
+        color: #12315f;
+        font-weight: 700;
+    }
+
+    .cm-table__body {
+        background: #ffffff;
+    }
+
+    .cm-table__row {
+        border-bottom: 1px solid rgba(125, 162, 206, 0.2);
+    }
+
+    .cm-table__sorter {
+        color: #4d79bb;
+        cursor: pointer;
+    }
+
+    .cm-table__selection {
+        text-align: center;
+    }
+
+    .cm-table--empty {
+        color: #92a6c6;
+    }
+
+    .cm-table__loading {
+        background: rgba(255, 255, 255, 0.85);
+        color: #12315f;
+    }
+
+    .cm-table__pagination-button {
+        border: 1px solid #4d79bb;
+        border-radius: 999px;
+        background: linear-gradient(180deg, #fefefe 0%, #e4eefc 47%, #d0e0f8 48%, #e8f1ff 100%);
+        color: #12315f;
+        font-size: 12px;
+        font-weight: 700;
+    }
+
+    .cm-table__pagination-button:hover:not(:disabled) {
+        background: linear-gradient(180deg, #ffffff 0%, #e0edff 47%, #c4d8f7 48%, #e8f1ff 100%);
+    }
+
+    .cm-table__pagination-button:disabled {
+        border-color: #9fb8dd;
+        background: linear-gradient(180deg, #f7faff 0%, #dfe9f7 100%);
+        color: #8aa1c4;
+    }
+
+    .cm-table__pagination-status {
+        color: #4b6288;
+    }
 }

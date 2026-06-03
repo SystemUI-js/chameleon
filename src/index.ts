@@ -6,6 +6,7 @@ export {
   CCheckbox,
   CIcon,
   CIconContainer,
+  CInput,
   CList,
   CMenu,
   CRadio,
@@ -16,6 +17,11 @@ export {
   CSwitch,
   CTab,
   CTabItem,
+  CTable,
+  CTimePicker,
+  CTooltip,
+  CTransfer,
+  CTree,
   Theme,
 } from './components';
 export {

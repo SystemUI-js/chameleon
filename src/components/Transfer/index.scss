@@ -1,0 +1,179 @@
+.cm-transfer {
+    display: grid;
+    grid-template-columns: minmax(0, 1fr) auto minmax(0, 1fr);
+    gap: 12px;
+    align-items: stretch;
+    color: var(--cm-color-text, #111);
+}
+
+.cm-transfer--disabled {
+    opacity: 0.65;
+    pointer-events: none;
+}
+
+.cm-transfer__panel {
+    min-width: 0;
+    border: 1px solid var(--cm-color-border-light, #ddd);
+    border-radius: 4px;
+    background: var(--cm-color-background, #fff);
+    overflow: hidden;
+}
+
+.cm-transfer__header {
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    gap: 8px;
+    min-height: 36px;
+    padding: 8px 12px;
+    border-bottom: 1px solid var(--cm-color-border-light, #ddd);
+    background: var(--cm-color-background-subtle, #f7f7f7);
+    font-weight: 600;
+}
+
+.cm-transfer__search {
+    width: 100%;
+    padding: 6px 12px;
+    border: none;
+    border-bottom: 1px solid var(--cm-color-border-light, #ddd);
+    background: var(--cm-color-background, #fff);
+    font: inherit;
+    outline: none;
+}
+
+.cm-transfer__search:focus {
+    background: var(--cm-color-background-hover, #f5f5f5);
+}
+
+.cm-transfer__search:disabled {
+    color: var(--cm-color-text-disabled, #999);
+    cursor: not-allowed;
+}
+
+.cm-transfer__body {
+    overflow: auto;
+}
+
+.cm-transfer__title,
+.cm-transfer__count {
+    min-width: 0;
+}
+
+.cm-transfer__count {
+    flex-shrink: 0;
+    color: var(--cm-color-text-secondary, #666);
+    font-weight: 400;
+}
+
+.cm-transfer__list {
+    min-height: 180px;
+    max-height: 280px;
+    margin: 0;
+    padding: 0;
+    overflow: auto;
+    list-style: none;
+}
+
+.cm-transfer__item {
+    border-bottom: 1px solid var(--cm-color-border-light, #eee);
+}
+
+.cm-transfer__item:last-child {
+    border-bottom: none;
+}
+
+.cm-transfer__item--selected {
+    background: var(--cm-color-background-selected, #e8f2ff);
+}
+
+.cm-transfer__item--disabled {
+    color: var(--cm-color-text-disabled, #999);
+    cursor: not-allowed;
+    opacity: 0.65;
+}
+
+.cm-transfer__item-button {
+    display: flex;
+    flex-direction: column;
+    align-items: flex-start;
+    gap: 4px;
+    width: 100%;
+    min-height: 36px;
+    padding: 8px 12px;
+    color: inherit;
+    text-align: left;
+    background: transparent;
+    border: none;
+    cursor: pointer;
+    font: inherit;
+}
+
+.cm-transfer__item-button:hover {
+    background: var(--cm-color-background-hover, #f5f5f5);
+}
+
+.cm-transfer__item-button:focus-visible {
+    outline: 2px solid var(--cm-color-focus, #007bff);
+    outline-offset: -2px;
+}
+
+.cm-transfer__item-title,
+.cm-transfer__item-description {
+    max-width: 100%;
+    overflow-wrap: anywhere;
+}
+
+.cm-transfer__item-description {
+    color: var(--cm-color-text-secondary, #666);
+    font-size: 12px;
+}
+
+.cm-transfer__operations {
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    justify-content: center;
+    gap: 8px;
+}
+
+.cm-transfer__operation {
+    min-width: 36px;
+    min-height: 28px;
+    padding: 2px 8px;
+    color: inherit;
+    background: var(--cm-color-background, #fff);
+    border: 1px solid var(--cm-color-border, #bbb);
+    border-radius: 4px;
+    cursor: pointer;
+    font: inherit;
+}
+
+.cm-transfer__operation:hover:not(:disabled) {
+    background: var(--cm-color-background-hover, #f5f5f5);
+}
+
+.cm-transfer__operation:disabled {
+    color: var(--cm-color-text-disabled, #999);
+    cursor: not-allowed;
+    opacity: 0.65;
+}
+
+.cm-transfer__operation:focus-visible {
+    outline: 2px solid var(--cm-color-focus, #007bff);
+    outline-offset: 2px;
+}
+
+.cm-transfer__button {
+    // Used alongside .cm-transfer__operation for semantic clarity
+}
+
+@media (max-width: 640px) {
+    .cm-transfer {
+        grid-template-columns: 1fr;
+    }
+
+    .cm-transfer__operations {
+        flex-direction: row;
+        flex-wrap: wrap;
+    }
+}

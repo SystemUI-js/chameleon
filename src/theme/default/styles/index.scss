@@ -621,4 +621,309 @@
         margin-left: 8px;
         color: #9a6f3a;
     }
+
+    // ──────────────────────────────────────────────
+    // CInput
+    // ──────────────────────────────────────────────
+    &.cm-input {
+        border: 1px solid #c9a67a;
+        border-radius: 999px;
+        background: #fffbf5;
+        color: #3d2810;
+        font-size: 13px;
+        box-shadow: 0 1px 3px rgba(160, 120, 60, 0.12);
+    }
+
+    &.cm-input:focus {
+        border-color: #f28c28;
+        box-shadow: 0 0 0 2px rgba(242, 140, 40, 0.2);
+    }
+
+    &.cm-input--disabled {
+        border-color: #d4bfa0;
+        background: #f5ede3;
+        color: #a68e6e;
+        cursor: not-allowed;
+    }
+
+    &.cm-input--readonly {
+        border-color: #dec49e;
+        background: #f5ede3;
+    }
+
+    // ──────────────────────────────────────────────
+    // CTooltip
+    // ──────────────────────────────────────────────
+    .cm-tooltip__popup,
+    .cm-tooltip__overlay {
+        background: #3d2810;
+        color: #ffffff;
+        border-radius: 8px;
+        box-shadow: 0 4px 12px rgba(160, 120, 60, 0.25);
+        font-size: 12px;
+    }
+
+    .cm-tooltip__arrow {
+        background: #3d2810;
+    }
+
+    .cm-tooltip__content {
+        color: #ffffff;
+        font-size: 12px;
+    }
+
+    .cm-tooltip--open .cm-tooltip__popup,
+    .cm-tooltip--open .cm-tooltip__overlay,
+    .cm-tooltip__overlay--visible {
+        opacity: 1;
+        visibility: visible;
+    }
+
+    .cm-tooltip--disabled {
+        opacity: 0.5;
+        pointer-events: none;
+    }
+
+    // ──────────────────────────────────────────────
+    // CTimePicker
+    // ──────────────────────────────────────────────
+    .cm-time-picker__select,
+    .cm-time-picker__input {
+        border: 1px solid #c9a67a;
+        border-radius: 999px;
+        background: #fffbf5;
+        color: #3d2810;
+        font-size: 13px;
+        box-shadow: 0 1px 3px rgba(160, 120, 60, 0.12);
+    }
+
+    .cm-time-picker__select:focus,
+    .cm-time-picker__input:focus {
+        border-color: #f28c28;
+        outline: none;
+        box-shadow: 0 0 0 2px rgba(242, 140, 40, 0.2);
+    }
+
+    .cm-time-picker__select:disabled,
+    .cm-time-picker__input:disabled {
+        border-color: #d4bfa0;
+        background: #f5ede3;
+        color: #a68e6e;
+        cursor: not-allowed;
+    }
+
+    .cm-time-picker__panel {
+        border: 1px solid #dec49e;
+        border-radius: 12px;
+        background: #fffbf5;
+        box-shadow: 0 4px 12px rgba(160, 120, 60, 0.14);
+    }
+
+    .cm-time-picker__column {
+        border-right: 1px solid rgba(160, 120, 60, 0.12);
+    }
+
+    .cm-time-picker__column:last-child {
+        border-right: none;
+    }
+
+    .cm-time-picker__option {
+        padding: 6px 12px;
+        color: #5c3d1a;
+        font-size: 13px;
+        cursor: pointer;
+    }
+
+    .cm-time-picker__option:hover {
+        background: linear-gradient(180deg, #fddcb5 0%, #f5d6a8 100%);
+    }
+
+    .cm-time-picker__option--selected {
+        background: linear-gradient(180deg, #f5a623 0%, #e67e22 100%);
+        color: #ffffff;
+    }
+
+    .cm-time-picker__clear {
+        color: #9a6f3a;
+        cursor: pointer;
+    }
+
+    .cm-time-picker__separator {
+        color: #9a6f3a;
+    }
+
+    // ──────────────────────────────────────────────
+    // CTree
+    // ──────────────────────────────────────────────
+    .cm-tree__title {
+        color: #5c3d1a;
+        font-size: 13px;
+    }
+
+    .cm-tree__title:hover {
+        color: #d4720e;
+    }
+
+    .cm-tree__node--selected > .cm-tree__node-content > .cm-tree__title,
+    .cm-tree__item--selected > .cm-tree__node > .cm-tree__title {
+        color: #d4720e;
+        font-weight: 700;
+    }
+
+    .cm-tree__node--expanded > .cm-tree__node-content > .cm-tree__switcher {
+        color: #d4720e;
+    }
+
+    .cm-tree__node--checked > .cm-tree__node-content > .cm-tree__title {
+        color: #e67e22;
+    }
+
+    .cm-tree__children {
+        padding-left: 16px;
+    }
+
+    .cm-tree__switcher {
+        color: #9a6f3a;
+    }
+
+    // ──────────────────────────────────────────────
+    // CTransfer
+    // ──────────────────────────────────────────────
+    .cm-transfer__panel {
+        border: 1px solid #dec49e;
+        border-radius: 12px;
+        background: #fffbf5;
+        box-shadow: 0 4px 12px rgba(160, 120, 60, 0.1);
+    }
+
+    .cm-transfer__header {
+        border-bottom: 1px solid #dec49e;
+        background: linear-gradient(180deg, #fffbf5 0%, #fff3e6 100%);
+        color: #5c3d1a;
+        font-size: 13px;
+        font-weight: 600;
+    }
+
+    .cm-transfer__search {
+        border: 1px solid #c9a67a;
+        border-radius: 999px;
+        background: #fffbf5;
+        color: #3d2810;
+        font-size: 12px;
+    }
+
+    .cm-transfer__body {
+        padding: 8px;
+    }
+
+    .cm-transfer__item--selected {
+        background: linear-gradient(180deg, #fddcb5 0%, #f5d6a8 100%);
+    }
+
+    .cm-transfer__item-button:hover {
+        background: #fff3e6;
+    }
+
+    .cm-transfer__operation,
+    .cm-transfer__button {
+        border: 1px solid #c9a67a;
+        border-radius: 999px;
+        background: linear-gradient(180deg, #fffbf5 0%, #fff8f0 100%);
+        color: #3d2810;
+        font-size: 12px;
+        font-weight: 600;
+        box-shadow: 0 1px 3px rgba(160, 120, 60, 0.12);
+    }
+
+    .cm-transfer__operation:hover:not(:disabled),
+    .cm-transfer__button:hover:not(:disabled) {
+        border-color: #b8894a;
+        background: linear-gradient(180deg, #fffbf5 0%, #fddcb5 100%);
+    }
+
+    .cm-transfer__operation:disabled,
+    .cm-transfer__button:disabled {
+        border-color: #d4bfa0;
+        background: #f5ede3;
+        color: #a68e6e;
+    }
+
+    .cm-transfer--disabled {
+        opacity: 0.5;
+        pointer-events: none;
+    }
+
+    // ──────────────────────────────────────────────
+    // CTable
+    // ──────────────────────────────────────────────
+    .cm-table__scroll {
+        border: 1px solid #dec49e;
+        border-radius: 12px;
+        background: #fffbf5;
+        box-shadow: 0 4px 12px rgba(160, 120, 60, 0.08);
+    }
+
+    .cm-table__header {
+        background: linear-gradient(180deg, #fffbf5 0%, #fff3e6 100%);
+    }
+
+    .cm-table__row--header {
+        background: linear-gradient(180deg, #fffbf5 0%, #fff3e6 100%);
+    }
+
+    .cm-table__cell--header {
+        color: #5c3d1a;
+        font-weight: 700;
+    }
+
+    .cm-table__body {
+        background: #fffbf5;
+    }
+
+    .cm-table__row {
+        border-bottom: 1px solid rgba(160, 120, 60, 0.12);
+    }
+
+    .cm-table__sorter {
+        color: #9a6f3a;
+        cursor: pointer;
+    }
+
+    .cm-table__selection {
+        text-align: center;
+    }
+
+    .cm-table--empty {
+        color: #a68e6e;
+    }
+
+    .cm-table__loading {
+        background: rgba(255, 251, 245, 0.85);
+        color: #5c3d1a;
+    }
+
+    .cm-table__pagination-button {
+        border: 1px solid #c9a67a;
+        border-radius: 999px;
+        background: linear-gradient(180deg, #fffbf5 0%, #fff8f0 100%);
+        color: #3d2810;
+        font-size: 12px;
+        font-weight: 600;
+        box-shadow: 0 1px 3px rgba(160, 120, 60, 0.12);
+    }
+
+    .cm-table__pagination-button:hover:not(:disabled) {
+        border-color: #b8894a;
+        background: linear-gradient(180deg, #fffbf5 0%, #fddcb5 100%);
+    }
+
+    .cm-table__pagination-button:disabled {
+        border-color: #d4bfa0;
+        background: #f5ede3;
+        color: #a68e6e;
+    }
+
+    .cm-table__pagination-status {
+        color: #9a6f3a;
+    }
 }

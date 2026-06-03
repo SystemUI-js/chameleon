@@ -214,7 +214,9 @@ describe('CSelect', () => {
   });
 
   it('shows placeholder with empty hidden value and requires a real option selection', () => {
-    render(<CSelect options={OPTIONS} placeholder="Choose a fruit" required data-testid="required" />);
+    render(
+      <CSelect options={OPTIONS} placeholder="Choose a fruit" required data-testid="required" />,
+    );
 
     const trigger = screen.getByTestId('required');
     const hiddenSelect = screen.getByTestId('required__native') as HTMLSelectElement;

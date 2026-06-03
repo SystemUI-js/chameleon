@@ -129,8 +129,14 @@ const getErrorMessage = (error: unknown): string => {
   return error instanceof Error ? error.message : 'Failed to load children.';
 };
 
-const isDescendantPath = (sourcePath: readonly number[], targetPath: readonly number[]): boolean => {
-  return sourcePath.length < targetPath.length && sourcePath.every((pathPart, index) => targetPath[index] === pathPart);
+const isDescendantPath = (
+  sourcePath: readonly number[],
+  targetPath: readonly number[],
+): boolean => {
+  return (
+    sourcePath.length < targetPath.length &&
+    sourcePath.every((pathPart, index) => targetPath[index] === pathPart)
+  );
 };
 
 export function CList<T>({
@@ -167,12 +173,12 @@ export function CList<T>({
   const [activeDragKey, setActiveDragKey] = useState<CListItemKey | null>(null);
   const [dropTargetKey, setDropTargetKey] = useState<CListItemKey | null>(null);
   const [expandedKeys, setExpandedKeys] = useState<ReadonlySet<CListItemKey>>(() => new Set());
-  const [loadedChildrenByKey, setLoadedChildrenByKey] = useState<ReadonlyMap<CListItemKey, readonly T[]>>(
-    () => new Map(),
-  );
-  const [loadStateByKey, setLoadStateByKey] = useState<ReadonlyMap<CListItemKey, CListItemLoadState>>(
-    () => new Map(),
-  );
+  const [loadedChildrenByKey, setLoadedChildrenByKey] = useState<
+    ReadonlyMap<CListItemKey, readonly T[]>
+  >(() => new Map());
+  const [loadStateByKey, setLoadStateByKey] = useState<
+    ReadonlyMap<CListItemKey, CListItemLoadState>
+  >(() => new Map());
 
   useEffect(() => {
     return () => {
@@ -180,7 +186,11 @@ export function CList<T>({
     };
   }, []);
 
-  const buildItemReference = (item: T, index: number, key: CListItemKey): CListItemReference<T> => ({
+  const buildItemReference = (
+    item: T,
+    index: number,
+    key: CListItemKey,
+  ): CListItemReference<T> => ({
     item,
     key,
     index,
@@ -258,7 +268,7 @@ export function CList<T>({
     requestTokenByKeyRef.current.set(key, requestToken);
     setLoadState(key, { status: 'loading' });
 
-    void onLoadChildren(item, key)
+    onLoadChildren(item, key)
       .then((children) => {
         if (!mountedRef.current || requestTokenByKeyRef.current.get(key) !== requestToken) {
           return;
@@ -416,8 +426,14 @@ export function CList<T>({
 
                 event.preventDefault();
                 const position =
-                  dropPositionRef.current ?? (event.altKey ? 'inside' : getDropPosition(event, itemReference));
-                emitMovementIntent(dragSourceRef.current, internalItemReference, position, 'pointer');
+                  dropPositionRef.current ??
+                  (event.altKey ? 'inside' : getDropPosition(event, itemReference));
+                emitMovementIntent(
+                  dragSourceRef.current,
+                  internalItemReference,
+                  position,
+                  'pointer',
+                );
                 dragSourceRef.current = null;
                 dropPositionRef.current = null;
                 setActiveDragKey(null);
@@ -437,7 +453,9 @@ export function CList<T>({
                   <button
                     type="button"
                     className={expandToggleClassName}
-                    aria-label={isExpanded ? `Collapse item ${index + 1}` : `Expand item ${index + 1}`}
+                    aria-label={
+                      isExpanded ? `Collapse item ${index + 1}` : `Expand item ${index + 1}`
+                    }
                     aria-expanded={isExpanded}
                     title={isExpanded ? 'Collapse item' : 'Expand item'}
                     onClick={() => handleExpandToggle(item, key)}
@@ -526,12 +544,18 @@ export function CList<T>({
                   {loadState?.status === 'error' && (
                     <div className={loadStateClassName} role="alert">
                       <span>{loadState.message ?? 'Failed to load children.'}</span>
-                      <button type="button" className="cm-list__load-retry" onClick={() => retryChildLoad(item, key)}>
+                      <button
+                        type="button"
+                        className="cm-list__load-retry"
+                        onClick={() => retryChildLoad(item, key)}
+                      >
                         Retry
                       </button>
                     </div>
                   )}
-                  {childItems !== undefined && childItems.length > 0 && renderItemTree(childItems, itemPath, false)}
+                  {childItems !== undefined &&
+                    childItems.length > 0 &&
+                    renderItemTree(childItems, itemPath, false)}
                 </div>
               )}
             </li>
@@ -544,7 +568,11 @@ export function CList<T>({
   if (items.length === 0 && emptyState) {
     return (
       <div
-        className={mergeClasses(['cm-list', modeClassName, 'cm-list--empty'], resolvedTheme, className)}
+        className={mergeClasses(
+          ['cm-list', modeClassName, 'cm-list--empty'],
+          resolvedTheme,
+          className,
+        )}
         style={mergedStyle}
         data-testid={dataTestId}
       >

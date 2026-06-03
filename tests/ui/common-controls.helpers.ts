@@ -214,9 +214,7 @@ export const readCommonControlsRadioValue = async (page: Page): Promise<string |
   });
 };
 
-export const readCommonControlsSelectNativeValue = async (
-  page: Page,
-): Promise<string | null> => {
+export const readCommonControlsSelectNativeValue = async (page: Page): Promise<string | null> => {
   return page.getByTestId(SELECT_NATIVE_TEST_ID).evaluate((element) => {
     return element instanceof HTMLSelectElement ? element.value : null;
   });
