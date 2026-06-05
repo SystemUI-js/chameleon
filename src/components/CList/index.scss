@@ -36,6 +36,12 @@
     grid-template-columns: repeat(auto-fill, minmax(var(--cm-list-icon-column-size), 1fr));
 }
 
+.cm-list--icon-free {
+    position: relative;
+    min-block-size: var(--cm-list-icon-free-min-block-size, 240px);
+    overflow: auto;
+}
+
 .cm-list__item {
     border-bottom: 1px solid var(--cm-color-border-light, #eee);
 
@@ -59,6 +65,11 @@
 .cm-list__item--grid,
 .cm-list__item--icon {
     min-width: 0;
+    border-bottom: none;
+}
+
+.cm-list__item--icon-free {
+    position: absolute;
     border-bottom: none;
 }
 

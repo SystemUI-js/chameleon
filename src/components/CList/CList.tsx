@@ -5,10 +5,43 @@ import { normalizeThemeClassName } from '../Theme/normalizeThemeClassName';
 import { useTheme } from '../Theme/useTheme';
 import './index.scss';
 
+const ensureDragEventWithMouseCoordinates = (): void => {
+  if (
+    typeof window === 'undefined' ||
+    typeof window.DragEvent === 'function' ||
+    typeof window.MouseEvent !== 'function'
+  ) {
+    return;
+  }
+
+  class CListDragEvent extends window.MouseEvent implements DragEvent {
+    readonly dataTransfer: DataTransfer | null;
+
+    constructor(type: string, eventInitDict: DragEventInit = {}) {
+      super(type, eventInitDict);
+      this.dataTransfer = eventInitDict.dataTransfer ?? null;
+    }
+  }
+
+  Object.defineProperty(window, 'DragEvent', {
+    configurable: true,
+    writable: true,
+    value: CListDragEvent,
+  });
+};
+
+ensureDragEventWithMouseCoordinates();
+
 export type CListItemKey = string | number;
 export type CListType = 'list' | 'grid' | 'icon';
+export type CListIconArrangement = 'grid' | 'free';
 export type CListItemDragPosition = 'before' | 'after' | 'inside';
 export type CListItemDragInput = 'pointer' | 'keyboard';
+
+export interface CListIconPosition {
+  readonly x: number;
+  readonly y: number;
+}
 
 export interface CListItemReference<T> {
   readonly item: T;
@@ -38,6 +71,15 @@ export interface CListItemDoubleClickPayload<T> extends CListItemReference<T> {
   readonly event: React.MouseEvent<HTMLLIElement>;
 }
 
+export interface CListIconPositionChangePayload<T> extends CListItemReference<T> {
+  readonly position: CListIconPosition;
+  readonly event: React.DragEvent<HTMLLIElement>;
+}
+
+export interface CListBlankEventPayload {
+  readonly event: React.MouseEvent<HTMLUListElement>;
+}
+
 interface CListItemLoadState {
   readonly status: 'loading' | 'error';
   readonly message?: string;
@@ -46,6 +88,13 @@ interface CListItemLoadState {
 interface CListInternalItemReference<T> {
   readonly publicReference: CListItemReference<T>;
   readonly path: readonly number[];
+}
+
+interface CListIconDragStart<T> {
+  readonly publicReference: CListItemReference<T>;
+  readonly position: CListIconPosition;
+  readonly clientX: number;
+  readonly clientY: number;
 }
 
 type CListStyle = React.CSSProperties & {
@@ -76,6 +125,12 @@ export interface CListProps<T> {
   readonly style?: React.CSSProperties;
   readonly type?: CListType;
   readonly iconSize?: number | string;
+  readonly iconArrangement?: CListIconArrangement;
+  readonly iconPositions?: Readonly<Record<CListItemKey, CListIconPosition>>;
+  readonly onIconPositionChange?: (payload: CListIconPositionChangePayload<T>) => void;
+  readonly onBlankClick?: (payload: CListBlankEventPayload) => void;
+  readonly onBlankDoubleClick?: (payload: CListBlankEventPayload) => void;
+  readonly onBlankContextMenu?: (payload: CListBlankEventPayload) => void;
   readonly 'aria-label'?: string;
   readonly 'aria-labelledby'?: string;
   readonly 'data-testid'?: string;
@@ -159,14 +214,26 @@ export function CList<T>({
   style,
   type = 'list',
   iconSize,
+  iconArrangement = 'grid',
+  iconPositions,
+  onIconPositionChange,
+  onBlankClick,
+  onBlankDoubleClick,
+  onBlankContextMenu,
   'aria-label': ariaLabel,
   'aria-labelledby': ariaLabelledBy,
   'data-testid': dataTestId,
 }: CListProps<T>): React.ReactElement {
   const resolvedTheme = normalizeThemeClassName(useTheme(theme));
   const modeClassName = `cm-list--${type}`;
+  const isFreeIconMode = type === 'icon' && iconArrangement === 'free';
+  const iconArrangementClassName = type === 'icon' ? `cm-list--icon-${iconArrangement}` : undefined;
+  const modeClassNames = iconArrangementClassName
+    ? [modeClassName, iconArrangementClassName]
+    : [modeClassName];
   const mergedStyle = getListStyle(style, iconSize);
   const dragSourceRef = useRef<CListInternalItemReference<T> | null>(null);
+  const iconDragStartRef = useRef<CListIconDragStart<T> | null>(null);
   const dropPositionRef = useRef<CListItemDragPosition | null>(null);
   const mountedRef = useRef(true);
   const requestTokenByKeyRef = useRef(new Map<CListItemKey, number>());
@@ -255,6 +322,39 @@ export function CList<T>({
     });
   };
 
+  const handleBlankEvent = (
+    event: React.MouseEvent<HTMLUListElement>,
+    callback: ((payload: CListBlankEventPayload) => void) | undefined,
+  ): void => {
+    if (event.target !== event.currentTarget) {
+      return;
+    }
+
+    callback?.({ event });
+  };
+
+  const handleBlankContextMenu = (event: React.MouseEvent<HTMLUListElement>): void => {
+    if (event.target !== event.currentTarget) {
+      return;
+    }
+
+    event.preventDefault();
+    onBlankContextMenu?.({ event });
+  };
+
+  const handleBlankKeyDown = (event: React.KeyboardEvent<HTMLUListElement>): void => {
+    if (event.target !== event.currentTarget || onBlankClick === undefined) {
+      return;
+    }
+
+    if (event.key !== 'Enter' && event.key !== ' ') {
+      return;
+    }
+
+    event.preventDefault();
+    event.currentTarget.click();
+  };
+
   const startChildLoad = (item: T, key: CListItemKey): void => {
     if (onLoadChildren === undefined) {
       return;
@@ -337,7 +437,7 @@ export function CList<T>({
     isRootLevel: boolean,
   ): React.ReactElement => {
     const treeClassName = isRootLevel
-      ? mergeClasses(['cm-list', modeClassName], resolvedTheme, className)
+      ? mergeClasses(['cm-list', ...modeClassNames], resolvedTheme, className)
       : `cm-list__children cm-list__children--${type}`;
 
     return (
@@ -347,6 +447,13 @@ export function CList<T>({
         aria-label={isRootLevel ? ariaLabel : undefined}
         aria-labelledby={isRootLevel ? ariaLabelledBy : undefined}
         data-testid={isRootLevel ? dataTestId : undefined}
+        role="listbox"
+        onClick={isRootLevel ? (event) => handleBlankEvent(event, onBlankClick) : undefined}
+        onDoubleClick={
+          isRootLevel ? (event) => handleBlankEvent(event, onBlankDoubleClick) : undefined
+        }
+        onContextMenu={isRootLevel ? handleBlankContextMenu : undefined}
+        onKeyDown={isRootLevel ? handleBlankKeyDown : undefined}
       >
         {treeItems.map((item, index) => {
           const itemPath = [...path, index];
@@ -360,10 +467,16 @@ export function CList<T>({
           const isExpanded = expandedKeys.has(key);
           const isExpandable = isItemExpandable?.(item) ?? immediateChildren !== undefined;
           const childItems = immediateChildren ?? loadedChildren;
+          const iconPosition = iconPositions?.[key] ?? { x: 0, y: 0 };
+          const canDragIconPosition = isFreeIconMode && onIconPositionChange !== undefined;
           const itemClasses = ['cm-list__item', `cm-list__item--${type}`];
 
           if (draggable) {
             itemClasses.push('cm-list__item--draggable');
+          }
+
+          if (isFreeIconMode) {
+            itemClasses.push('cm-list__item--icon-free');
           }
 
           if (activeDragKey === key) {
@@ -375,6 +488,13 @@ export function CList<T>({
           }
 
           const itemClassName = mergeClasses(itemClasses);
+          const itemStyle: React.CSSProperties | undefined = isFreeIconMode
+            ? {
+                position: 'absolute',
+                left: `${iconPosition.x}px`,
+                top: `${iconPosition.y}px`,
+              }
+            : undefined;
           const rowClassName = `cm-list__item-row cm-list__item-row--${type}`;
           const dragHandleClassName = `cm-list__drag-handle cm-list__drag-handle--${type}`;
           const actionClassName = `cm-list__item-action cm-list__item-action--${type}`;
@@ -389,13 +509,26 @@ export function CList<T>({
             <li
               key={key}
               className={itemClassName}
-              draggable={draggable}
+              style={itemStyle}
+              draggable={draggable || canDragIconPosition}
               onDragStart={(event) => {
-                if (!draggable) {
+                if (!draggable && !canDragIconPosition) {
                   return;
                 }
 
-                dragSourceRef.current = internalItemReference;
+                if (draggable) {
+                  dragSourceRef.current = internalItemReference;
+                }
+
+                if (canDragIconPosition) {
+                  iconDragStartRef.current = {
+                    publicReference: itemReference,
+                    position: iconPosition,
+                    clientX: event.clientX,
+                    clientY: event.clientY,
+                  };
+                }
+
                 dropPositionRef.current = null;
                 setActiveDragKey(key);
                 event.dataTransfer.effectAllowed = 'move';
@@ -439,8 +572,22 @@ export function CList<T>({
                 setActiveDragKey(null);
                 setDropTargetKey(null);
               }}
-              onDragEnd={() => {
+              onDragEnd={(event) => {
+                const iconDragStart = iconDragStartRef.current;
+
+                if (canDragIconPosition && iconDragStart !== null) {
+                  onIconPositionChange?.({
+                    ...iconDragStart.publicReference,
+                    position: {
+                      x: iconDragStart.position.x + event.clientX - iconDragStart.clientX,
+                      y: iconDragStart.position.y + event.clientY - iconDragStart.clientY,
+                    },
+                    event,
+                  });
+                }
+
                 dragSourceRef.current = null;
+                iconDragStartRef.current = null;
                 dropPositionRef.current = null;
                 setActiveDragKey(null);
                 setDropTargetKey(null);
@@ -569,7 +716,7 @@ export function CList<T>({
     return (
       <div
         className={mergeClasses(
-          ['cm-list', modeClassName, 'cm-list--empty'],
+          ['cm-list', ...modeClassNames, 'cm-list--empty'],
           resolvedTheme,
           className,
         )}

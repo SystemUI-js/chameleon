@@ -65,6 +65,15 @@
         box-sizing: border-box;
     }
 
+    .cm-window--fullscreen,
+    &.cm-window--fullscreen {
+        position: fixed;
+        top: 0;
+        left: 0;
+        width: 100vw;
+        height: 100vh;
+    }
+
     .cm-window__title-bar,
     &.cm-window__title-bar {
         align-items: center;
@@ -937,5 +946,88 @@
 
     .cm-table__pagination-status {
         color: #000000;
+    }
+
+    // CListIcon
+    .cm-list-icon,
+    &.cm-list-icon {
+        padding: 4px;
+        color: #000000;
+        background: transparent;
+        border: 1px solid transparent;
+    }
+
+    .cm-list-icon--active,
+    &.cm-list-icon--active {
+        background: silver;
+        box-shadow:
+            inset -1px -1px #fff,
+            inset 1px 1px #0a0a0a,
+            inset -2px -2px #dfdfdf,
+            inset 2px 2px grey;
+    }
+
+    .cm-list-icon:focus-visible,
+    &.cm-list-icon:focus-visible {
+        outline: 1px dotted #000;
+        outline-offset: -2px;
+    }
+
+    .cm-list-icon--disabled,
+    &.cm-list-icon--disabled {
+        opacity: 0.5;
+        cursor: not-allowed;
+        color: #808080;
+        text-shadow: 1px 1px 0 #ffffff;
+    }
+
+    .cm-list-icon__label,
+    &.cm-list-icon__label {
+        font-size: 11px;
+        font-family: 'MS Sans Serif', Tahoma, sans-serif;
+        color: #000000;
+        text-align: center;
+    }
+
+    // CLoading
+    .cm-loading,
+    &.cm-loading {
+        color: #000000;
+    }
+
+    .cm-loading__label,
+    &.cm-loading__label {
+        font-size: 11px;
+        font-family: 'MS Sans Serif', Tahoma, sans-serif;
+        color: #000000;
+    }
+
+    .cm-loading--spinner .cm-loading__indicator,
+    &.cm-loading--spinner .cm-loading__indicator {
+        border-color: #000000;
+        border-top-color: transparent;
+    }
+
+    .cm-loading--dots .cm-loading__indicator::before,
+    .cm-loading--dots .cm-loading__indicator::after,
+    &.cm-loading--dots .cm-loading__indicator::before,
+    &.cm-loading--dots .cm-loading__indicator::after {
+        background: #000000;
+    }
+
+    .cm-loading--bar .cm-loading__indicator,
+    &.cm-loading--bar .cm-loading__indicator {
+        background: #c0c0c0;
+        border: 2px solid;
+        border-color: #808080 #ffffff #ffffff #808080;
+        border-radius: 0;
+        box-shadow: inset -1px -1px 0 #000000;
+        height: 16px;
+    }
+
+    .cm-loading--bar .cm-loading__fill,
+    &.cm-loading--bar .cm-loading__fill {
+        background: navy;
+        border-radius: 0;
     }
 }

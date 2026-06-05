@@ -163,11 +163,141 @@ describe('CList', () => {
       );
 
       const list = screen.getByTestId('list-icon-mode');
-      expect(list).toHaveClass('cm-list', 'cm-list--icon');
+      expect(list).toHaveClass('cm-list', 'cm-list--icon', 'cm-list--icon-grid');
       expect(list.querySelectorAll('.cm-list__item--icon')).toHaveLength(3);
       expect(list.querySelectorAll('.cm-list__item-row--icon')).toHaveLength(3);
       expect(list.querySelectorAll('.cm-list__item-content--icon')).toHaveLength(3);
       expect(screen.getByTestId('icon-1')).toBeInTheDocument();
+    });
+
+    it('renders free icon arrangement with controlled absolute item positions', () => {
+      render(
+        <CList
+          type="icon"
+          iconArrangement="free"
+          iconPositions={{
+            1: { x: 24, y: 32 },
+            2: { x: 80, y: 16 },
+          }}
+          items={TEST_ITEMS}
+          renderItem={(item) => <span>{item.name}</span>}
+          getItemKey={(item) => item.id}
+          data-testid="list-icon-free"
+        />,
+      );
+
+      const list = screen.getByTestId('list-icon-free');
+      const items = list.querySelectorAll('.cm-list__item');
+
+      expect(list).toHaveClass('cm-list--icon', 'cm-list--icon-free');
+      expect(list).not.toHaveClass('cm-list--icon-grid');
+      expect(items[0]).toHaveClass('cm-list__item--icon-free');
+      expect(items[0]).toHaveStyle({ left: '24px', position: 'absolute', top: '32px' });
+      expect(items[1]).toHaveStyle({ left: '80px', position: 'absolute', top: '16px' });
+      expect(items[2]).toHaveStyle({ left: '0px', position: 'absolute', top: '0px' });
+    });
+
+    it('updates free icon positions from controlled iconPositions', () => {
+      const { rerender } = render(
+        <CList
+          type="icon"
+          iconArrangement="free"
+          iconPositions={{ 1: { x: 12, y: 18 } }}
+          items={TEST_ITEMS}
+          renderItem={(item) => <span>{item.name}</span>}
+          getItemKey={(item) => item.id}
+          data-testid="list-icon-controlled"
+        />,
+      );
+
+      const firstItem = screen.getByTestId('list-icon-controlled').querySelector('.cm-list__item');
+      expect(firstItem).toHaveStyle({ left: '12px', top: '18px' });
+
+      rerender(
+        <CList
+          type="icon"
+          iconArrangement="free"
+          iconPositions={{ 1: { x: 96, y: 48 } }}
+          items={TEST_ITEMS}
+          renderItem={(item) => <span>{item.name}</span>}
+          getItemKey={(item) => item.id}
+          data-testid="list-icon-controlled"
+        />,
+      );
+
+      expect(firstItem).toHaveStyle({ left: '96px', top: '48px' });
+    });
+
+    it('ignores free icon positioning outside icon mode', () => {
+      render(
+        <>
+          <CList
+            type="list"
+            iconArrangement="free"
+            iconPositions={{ 1: { x: 24, y: 32 } }}
+            items={TEST_ITEMS}
+            renderItem={(item) => <span>{item.name}</span>}
+            getItemKey={(item) => item.id}
+            data-testid="list-free-ignored"
+          />
+          <CList
+            type="grid"
+            iconArrangement="free"
+            iconPositions={{ 1: { x: 24, y: 32 } }}
+            items={TEST_ITEMS}
+            renderItem={(item) => <span>{item.name}</span>}
+            getItemKey={(item) => item.id}
+            data-testid="grid-free-ignored"
+          />
+        </>,
+      );
+
+      const listItem = screen.getByTestId('list-free-ignored').querySelector('.cm-list__item');
+      const gridItem = screen.getByTestId('grid-free-ignored').querySelector('.cm-list__item');
+
+      expect(screen.getByTestId('list-free-ignored')).not.toHaveClass('cm-list--icon-free');
+      expect(screen.getByTestId('grid-free-ignored')).not.toHaveClass('cm-list--icon-free');
+      expect(listItem).not.toHaveClass('cm-list__item--icon-free');
+      expect(gridItem).not.toHaveClass('cm-list__item--icon-free');
+      expect(listItem).not.toHaveStyle({ left: '24px', position: 'absolute', top: '32px' });
+      expect(gridItem).not.toHaveStyle({ left: '24px', position: 'absolute', top: '32px' });
+    });
+
+    it('emits controlled free icon position changes from pointer drag', () => {
+      const onIconPositionChange = jest.fn();
+
+      render(
+        <CList
+          type="icon"
+          iconArrangement="free"
+          iconPositions={{ 1: { x: 20, y: 10 } }}
+          items={TEST_ITEMS}
+          renderItem={(item) => <span>{item.name}</span>}
+          getItemKey={(item) => item.id}
+          onIconPositionChange={onIconPositionChange}
+          data-testid="list-icon-position-change"
+        />,
+      );
+
+      const firstItem = screen
+        .getByTestId('list-icon-position-change')
+        .querySelector('.cm-list__item');
+      const dataTransfer = createDataTransfer();
+
+      expect(firstItem).not.toBeNull();
+      fireEvent.dragStart(firstItem as Element, { clientX: 25, clientY: 30, dataTransfer });
+      fireEvent.dragEnd(firstItem as Element, { clientX: 145, clientY: 90, dataTransfer });
+
+      expect(onIconPositionChange).toHaveBeenCalledTimes(1);
+      expect(onIconPositionChange).toHaveBeenCalledWith(
+        expect.objectContaining({
+          item: TEST_ITEMS[0],
+          key: '1',
+          index: 0,
+          position: { x: 140, y: 70 },
+          event: expect.any(Object),
+        }),
+      );
     });
 
     it('maps numeric iconSize to px CSS variable', () => {
@@ -292,6 +422,49 @@ describe('CList', () => {
       expect(onItemClick).toHaveBeenLastCalledWith(TEST_ITEMS[2], 2, expect.any(Object));
 
       expect(onItemClick).toHaveBeenCalledTimes(2);
+    });
+  });
+
+  describe('blank list events', () => {
+    it('fires blank click, double-click, and context-menu handlers only from the root list', () => {
+      const onBlankClick = jest.fn();
+      const onBlankDoubleClick = jest.fn();
+      const onBlankContextMenu = jest.fn();
+
+      render(
+        <CList
+          type="icon"
+          iconArrangement="free"
+          items={TEST_ITEMS}
+          renderItem={(item) => <span data-testid={`blank-child-${item.id}`}>{item.name}</span>}
+          getItemKey={(item) => item.id}
+          onBlankClick={onBlankClick}
+          onBlankDoubleClick={onBlankDoubleClick}
+          onBlankContextMenu={onBlankContextMenu}
+          data-testid="list-blank-events"
+        />,
+      );
+
+      const list = screen.getByTestId('list-blank-events');
+
+      fireEvent.click(screen.getByTestId('blank-child-1'));
+      fireEvent.doubleClick(screen.getByTestId('blank-child-1'));
+      fireEvent.contextMenu(screen.getByTestId('blank-child-1'));
+
+      expect(onBlankClick).not.toHaveBeenCalled();
+      expect(onBlankDoubleClick).not.toHaveBeenCalled();
+      expect(onBlankContextMenu).not.toHaveBeenCalled();
+
+      fireEvent.click(list);
+      fireEvent.doubleClick(list);
+      fireEvent.contextMenu(list);
+
+      expect(onBlankClick).toHaveBeenCalledTimes(1);
+      expect(onBlankClick).toHaveBeenCalledWith({ event: expect.any(Object) });
+      expect(onBlankDoubleClick).toHaveBeenCalledTimes(1);
+      expect(onBlankDoubleClick).toHaveBeenCalledWith({ event: expect.any(Object) });
+      expect(onBlankContextMenu).toHaveBeenCalledTimes(1);
+      expect(onBlankContextMenu.mock.calls[0][0].event.isDefaultPrevented()).toBe(true);
     });
   });
 
@@ -494,6 +667,98 @@ describe('CList', () => {
       const list = screen.getByTestId('list-actions-null');
       const actionsElements = list.querySelectorAll('.cm-list__item-actions');
       expect(actionsElements).toHaveLength(0);
+    });
+
+    it('renders a custom React component from renderActions', () => {
+      const CustomButton = ({ label }: { label: string }) => (
+        <button type="button" data-testid={`custom-btn-${label}`}>
+          {label}
+        </button>
+      );
+
+      render(
+        <CList
+          type="grid"
+          items={TEST_ITEMS}
+          renderItem={(item) => <span>{item.name}</span>}
+          getItemKey={(item) => item.id}
+          renderActions={(item) => <CustomButton label={item.name} />}
+          data-testid="list-actions-custom-component"
+        />,
+      );
+
+      expect(screen.getByTestId('custom-btn-Item 1')).toBeInTheDocument();
+      expect(screen.getByTestId('custom-btn-Item 2')).toBeInTheDocument();
+      expect(screen.getByTestId('custom-btn-Item 3')).toBeInTheDocument();
+
+      const list = screen.getByTestId('list-actions-custom-component');
+      expect(list.querySelectorAll('.cm-list__item-actions--grid')).toHaveLength(3);
+    });
+
+    it('renders intrinsic HTML elements from renderActions', () => {
+      render(
+        <CList
+          type="grid"
+          items={TEST_ITEMS}
+          renderItem={(item) => <span>{item.name}</span>}
+          getItemKey={(item) => item.id}
+          renderActions={(item) => (
+            <button type="button" data-testid={`html-btn-${item.id}`}>
+              HTML
+            </button>
+          )}
+          data-testid="list-actions-html"
+        />,
+      );
+
+      expect(screen.getByTestId('html-btn-1')).toHaveTextContent('HTML');
+      expect(screen.getByTestId('html-btn-2')).toHaveTextContent('HTML');
+      expect(screen.getByTestId('html-btn-3')).toHaveTextContent('HTML');
+    });
+
+    it('does not render .cm-list__item-actions when renderActions returns undefined', () => {
+      render(
+        <CList
+          items={TEST_ITEMS}
+          renderItem={(item) => <span>{item.name}</span>}
+          getItemKey={(item) => item.id}
+          renderActions={() => undefined}
+          data-testid="list-actions-undefined"
+        />,
+      );
+
+      const list = screen.getByTestId('list-actions-undefined');
+      const actionsElements = list.querySelectorAll('.cm-list__item-actions');
+      expect(actionsElements).toHaveLength(0);
+    });
+
+    it('renders a React fragment with multiple children from renderActions', () => {
+      render(
+        <CList
+          type="grid"
+          items={TEST_ITEMS}
+          renderItem={(item) => <span>{item.name}</span>}
+          getItemKey={(item) => item.id}
+          renderActions={(item) => (
+            <>
+              <button type="button" data-testid={`edit-${item.id}`}>
+                Edit
+              </button>
+              <button type="button" data-testid={`delete-${item.id}`}>
+                Delete
+              </button>
+            </>
+          )}
+          data-testid="list-actions-fragment"
+        />,
+      );
+
+      expect(screen.getByTestId('edit-1')).toBeInTheDocument();
+      expect(screen.getByTestId('delete-1')).toBeInTheDocument();
+      expect(screen.getByTestId('edit-2')).toBeInTheDocument();
+      expect(screen.getByTestId('delete-2')).toBeInTheDocument();
+      expect(screen.getByTestId('edit-3')).toBeInTheDocument();
+      expect(screen.getByTestId('delete-3')).toBeInTheDocument();
     });
   });
 

@@ -86,6 +86,16 @@
         box-sizing: border-box;
     }
 
+    .cm-window--fullscreen,
+    &.cm-window--fullscreen {
+        position: fixed;
+        top: 0;
+        left: 0;
+        width: 100vw;
+        height: 100vh;
+        border-radius: 0;
+    }
+
     // ============================================================
     // Window & Title Bar
     // ============================================================
@@ -1280,5 +1290,123 @@
 
     .cm-table__pagination-status {
         color: #666666;
+    }
+
+    // ──────────────────────────────────────────────
+    // CListIcon
+    // ──────────────────────────────────────────────
+    .cm-list-icon {
+        padding: 6px;
+        border: 1px solid transparent;
+        border-radius: 6px;
+        background: linear-gradient(
+            180deg,
+            rgba(255, 255, 255, 0.6) 0%,
+            rgba(245, 248, 252, 0.5) 100%
+        );
+        box-shadow: inset 0 1px 0 rgba(255, 255, 255, 0.5);
+        transition:
+            background 150ms ease,
+            border-color 150ms ease,
+            box-shadow 150ms ease;
+    }
+
+    .cm-list-icon:hover:not(.cm-list-icon--disabled) {
+        border-color: rgba(69, 128, 196, 0.4);
+        background: linear-gradient(
+            180deg,
+            rgba(255, 255, 255, 0.8) 0%,
+            rgba(232, 241, 250, 0.7) 100%
+        );
+        box-shadow:
+            inset 0 1px 0 rgba(255, 255, 255, 0.7),
+            0 1px 4px rgba(69, 128, 196, 0.15);
+    }
+
+    .cm-list-icon--active {
+        border-color: rgba(69, 128, 196, 0.6);
+        background: linear-gradient(
+            180deg,
+            rgba(110, 166, 249, 0.35) 0%,
+            rgba(69, 128, 196, 0.45) 100%
+        );
+        box-shadow:
+            inset 0 1px 0 rgba(255, 255, 255, 0.5),
+            0 1px 4px rgba(69, 128, 196, 0.25);
+    }
+
+    .cm-list-icon--active .cm-list-icon__label {
+        color: #1a1a1a;
+        text-shadow: 0 1px 0 rgba(255, 255, 255, 0.5);
+    }
+
+    .cm-list-icon--disabled {
+        opacity: 0.45;
+        cursor: not-allowed;
+    }
+
+    .cm-list-icon:focus-visible {
+        outline: 2px solid #4580c4;
+        outline-offset: 2px;
+    }
+
+    .cm-list-icon__label {
+        color: #000000;
+        font-size: 11px;
+        text-shadow: 0 1px 0 rgba(255, 255, 255, 0.6);
+    }
+
+    // ──────────────────────────────────────────────
+    // CLoading
+    // ──────────────────────────────────────────────
+    .cm-loading {
+        color: #4580c4;
+    }
+
+    .cm-loading__label {
+        color: #4a4a4a;
+        font-size: 12px;
+        text-shadow: 0 1px 0 rgba(255, 255, 255, 0.6);
+    }
+
+    .cm-loading--spinner .cm-loading__indicator {
+        border-color: rgba(69, 128, 196, 0.25);
+        border-top-color: #4580c4;
+    }
+
+    .cm-loading--dots .cm-loading__indicator::before,
+    .cm-loading--dots .cm-loading__indicator::after {
+        background: #4580c4;
+    }
+
+    .cm-loading--bar .cm-loading__indicator {
+        background: linear-gradient(
+            180deg,
+            rgba(200, 210, 220, 0.5) 0%,
+            rgba(220, 228, 235, 0.5) 100%
+        );
+        box-shadow: inset 0 1px 2px rgba(0, 0, 0, 0.1);
+    }
+
+    .cm-loading--bar .cm-loading__fill {
+        background: linear-gradient(
+            180deg,
+            #6ea6f9 0%,
+            #4580c4 49%,
+            #2a6db5 50%,
+            #3d7ec9 100%
+        );
+        box-shadow: inset 0 1px 0 rgba(255, 255, 255, 0.3);
+    }
+
+    .cm-loading--bar.cm-loading--indeterminate .cm-loading__fill {
+        background: linear-gradient(
+            90deg,
+            transparent 0%,
+            #6ea6f9 20%,
+            #4580c4 50%,
+            #2a6db5 80%,
+            transparent 100%
+        );
     }
 }

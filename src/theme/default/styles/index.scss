@@ -36,6 +36,29 @@
         box-sizing: border-box;
     }
 
+    .cm-window--fullscreen,
+    &.cm-window--fullscreen {
+        position: fixed;
+        top: 0;
+        left: 0;
+        width: 100vw;
+        height: 100vh;
+        border-radius: 0;
+        border: none;
+        padding: 0;
+
+        // 隐藏标题栏
+        .cm-window__title-bar {
+            display: none;
+        }
+
+        // 去除 cm-window 的 border-radius 和 border
+        .cm-window {
+            border-radius: 0;
+            border: none;
+        }
+    }
+
     // ──────────────────────────────────────────────
     // Window — concentric with frame border-radius
     // ──────────────────────────────────────────────
@@ -447,6 +470,73 @@
     &.cm-button-separator--horizontal {
         margin: 8px 0;
         box-shadow: 0 1px 0 rgba(255, 255, 255, 0.4);
+    }
+
+    // ──────────────────────────────────────────────
+    // CListIcon
+    // ──────────────────────────────────────────────
+    .cm-list-icon,
+    &.cm-list-icon {
+        padding: 8px;
+        border: 1px solid transparent;
+        border-radius: 12px;
+        background: transparent;
+        color: #5c3d1a;
+        transition:
+            background 120ms ease,
+            border-color 120ms ease;
+    }
+
+    .cm-list-icon:hover:not(.cm-list-icon--disabled),
+    &.cm-list-icon:hover:not(.cm-list-icon--disabled) {
+        border-color: #dec49e;
+        background: linear-gradient(180deg, #fffbf5 0%, #fff3e6 100%);
+    }
+
+    .cm-list-icon--active,
+    &.cm-list-icon--active {
+        border-color: #d4720e;
+        background: linear-gradient(180deg, #fddcb5 0%, #f5d6a8 100%);
+    }
+
+    .cm-list-icon:focus-visible,
+    &.cm-list-icon:focus-visible {
+        outline: 2px solid #f28c28;
+        outline-offset: 2px;
+    }
+
+    .cm-list-icon--disabled,
+    &.cm-list-icon--disabled {
+        color: #a68e6e;
+    }
+
+    .cm-list-icon__label,
+    &.cm-list-icon__label {
+        font-size: 12px;
+        font-weight: 500;
+    }
+
+    // ──────────────────────────────────────────────
+    // CLoading
+    // ──────────────────────────────────────────────
+    .cm-loading,
+    &.cm-loading {
+        color: #d4720e;
+    }
+
+    .cm-loading__label,
+    &.cm-loading__label {
+        color: #5c3d1a;
+    }
+
+    .cm-loading--bar .cm-loading__indicator,
+    &.cm-loading--bar .cm-loading__indicator {
+        background: rgba(160, 120, 60, 0.15);
+    }
+
+    .cm-loading--bar .cm-loading__fill,
+    &.cm-loading--bar .cm-loading__fill {
+        background: linear-gradient(180deg, #f5a623 0%, #e67e22 100%);
     }
 
     // ──────────────────────────────────────────────

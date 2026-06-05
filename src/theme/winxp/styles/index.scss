@@ -30,6 +30,16 @@
         box-sizing: border-box;
     }
 
+    .cm-window--fullscreen,
+    &.cm-window--fullscreen {
+        position: fixed;
+        top: 0;
+        left: 0;
+        width: 100vw;
+        height: 100vh;
+        border-radius: 0;
+    }
+
     .cm-window__title-bar--with-controls,
     .cm-window__title-bar--with-controls.cm-theme--winxp {
         display: flex;
@@ -865,5 +875,75 @@
 
     .cm-table__pagination-status {
         color: #4b6288;
+    }
+
+    // ──────────────────────────────────────────────
+    // CListIcon
+    // ──────────────────────────────────────────────
+    .cm-list-icon {
+        padding: 5px 7px;
+        border: 1px solid transparent;
+        border-radius: 6px;
+        color: #12315f;
+        font-family: Tahoma, 'Trebuchet MS', sans-serif;
+        font-size: 12px;
+        cursor: pointer;
+    }
+
+    .cm-list-icon:hover:not(.cm-list-icon--active):not(.cm-list-icon--disabled) {
+        border-color: #b9d0f4;
+        background: rgba(185, 208, 244, 0.25);
+    }
+
+    .cm-list-icon:focus-visible {
+        outline: 2px solid #ffb74a;
+        outline-offset: 2px;
+    }
+
+    .cm-list-icon--active {
+        background: linear-gradient(180deg, #316ac5 0%, #245595 100%);
+        color: #ffffff;
+    }
+
+    .cm-list-icon--active .cm-list-icon__visual,
+    .cm-list-icon--active .cm-list-icon__label {
+        color: #ffffff;
+    }
+
+    .cm-list-icon--disabled {
+        color: #92a6c6;
+        cursor: not-allowed;
+    }
+
+    .cm-list-icon--draggable {
+        cursor: grab;
+    }
+
+    .cm-list-icon__label {
+        font-size: 11px;
+        text-align: center;
+    }
+
+    // ──────────────────────────────────────────────
+    // CLoading
+    // ──────────────────────────────────────────────
+    .cm-loading {
+        color: #316ac5;
+    }
+
+    .cm-loading__label {
+        color: #12315f;
+        font-family: Tahoma, 'Trebuchet MS', sans-serif;
+        font-size: 12px;
+    }
+
+    .cm-loading--bar .cm-loading__indicator {
+        background: rgba(49, 106, 197, 0.15);
+        border-radius: 4px;
+    }
+
+    .cm-loading--bar .cm-loading__fill {
+        background: linear-gradient(180deg, #6ea6f9 0%, #3778dc 48%, #2d65bd 49%, #5d95ea 100%);
+        border-radius: 4px;
     }
 }
