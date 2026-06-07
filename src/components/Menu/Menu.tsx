@@ -19,6 +19,7 @@ export interface CMenuProps {
   menuList: readonly MenuListItem[];
   trigger?: 'click' | 'hover';
   onSelect?: (item: MenuListItem) => void;
+  closeOnSelect?: boolean;
   className?: string;
   theme?: string;
   'data-testid'?: string;
@@ -57,6 +58,7 @@ export function CMenu({
   menuList,
   trigger,
   onSelect,
+  closeOnSelect = true,
   className,
   theme,
   'data-testid': dataTestId,
@@ -210,7 +212,10 @@ export function CMenu({
             }
 
             onSelect?.(item);
-            closeAllMenus();
+
+            if (closeOnSelect) {
+              closeAllMenus();
+            }
           };
 
           return (

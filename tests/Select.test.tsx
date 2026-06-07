@@ -19,6 +19,32 @@ const openSelect = (trigger: HTMLElement): void => {
   fireEvent.click(trigger);
 };
 
+interface ControlledMultiSelectHarnessProps {
+  onChange: (nextValues: string[]) => void;
+}
+
+const ControlledMultiSelectHarness = ({
+  onChange,
+}: ControlledMultiSelectHarnessProps): React.ReactElement => {
+  const [selectedValues, setSelectedValues] = React.useState<string[]>([]);
+
+  const handleControlledChange = (nextValues: string[]): void => {
+    onChange(nextValues);
+    setSelectedValues(nextValues);
+  };
+
+  return (
+    <CSelect
+      multiple
+      options={OPTIONS}
+      value={selectedValues}
+      onChange={handleControlledChange}
+      placeholder="Choose fruit"
+      data-testid="controlled-multi"
+    />
+  );
+};
+
 describe('CSelect', () => {
   it('exports CSelect from package entry', () => {
     render(
@@ -256,6 +282,146 @@ describe('CSelect', () => {
     fireEvent.click(screen.getByRole('button', { name: 'Submit' }));
 
     expect(handleSubmit).toHaveReturnedWith('cherry');
+  });
+
+  describe('multiple mode', () => {
+    const readSelectedNativeValues = (select: HTMLSelectElement): string[] =>
+      Array.from(select.options)
+        .filter((option) => option.selected)
+        .map((option) => option.value);
+
+    it('toggles uncontrolled selections in option order while keeping the menu open', () => {
+      const handleChange = jest.fn();
+
+      render(
+        <CSelect
+          multiple
+          options={OPTIONS}
+          defaultValue={['apple']}
+          onChange={handleChange}
+          data-testid="multi-fruit"
+        />,
+      );
+
+      const trigger = screen.getByTestId('multi-fruit');
+      const hiddenSelect = screen.getByTestId('multi-fruit__native') as HTMLSelectElement;
+
+      expect(trigger).toHaveTextContent('Apple');
+      expect(hiddenSelect.multiple).toBe(true);
+      expect(readSelectedNativeValues(hiddenSelect)).toEqual(['apple']);
+
+      openSelect(trigger);
+      fireEvent.click(screen.getByTestId('menu-item-cherry'));
+
+      expect(handleChange).toHaveBeenLastCalledWith(['apple', 'cherry']);
+      expect(trigger).toHaveTextContent('Apple, Cherry');
+      expect(readSelectedNativeValues(hiddenSelect)).toEqual(['apple', 'cherry']);
+      expect(screen.getByRole('menu')).toBeInTheDocument();
+
+      fireEvent.click(screen.getByTestId('menu-item-apple'));
+
+      expect(handleChange).toHaveBeenLastCalledWith(['cherry']);
+      expect(trigger).toHaveTextContent('Cherry');
+      expect(readSelectedNativeValues(hiddenSelect)).toEqual(['cherry']);
+      expect(screen.getByRole('menu')).toBeInTheDocument();
+
+      fireEvent.mouseDown(document.body);
+
+      expect(screen.queryByRole('menu')).not.toBeInTheDocument();
+    });
+
+    it('does not emit changes for disabled multi-select options', () => {
+      const handleChange = jest.fn();
+
+      render(
+        <CSelect
+          multiple
+          options={OPTIONS}
+          defaultValue={['apple']}
+          onChange={handleChange}
+          data-testid="multi-disabled"
+        />,
+      );
+
+      const trigger = screen.getByTestId('multi-disabled');
+
+      openSelect(trigger);
+      fireEvent.click(screen.getByTestId('menu-item-banana'));
+
+      expect(handleChange).not.toHaveBeenCalled();
+      expect(trigger).toHaveTextContent('Apple');
+      expect(screen.getByRole('menu')).toBeInTheDocument();
+    });
+
+    it('supports controlled arrays, empty placeholder text, and native multiple selection state', () => {
+      const handleChange = jest.fn<void, [string[]]>();
+
+      render(<ControlledMultiSelectHarness onChange={handleChange} />);
+
+      const trigger = screen.getByTestId('controlled-multi');
+      const hiddenSelect = screen.getByTestId('controlled-multi__native') as HTMLSelectElement;
+
+      expect(trigger).toHaveTextContent('Choose fruit');
+      expect(hiddenSelect.multiple).toBe(true);
+      expect(readSelectedNativeValues(hiddenSelect)).toEqual([]);
+
+      openSelect(trigger);
+      fireEvent.click(screen.getByTestId('menu-item-cherry'));
+
+      expect(handleChange).toHaveBeenLastCalledWith(['cherry']);
+      expect(trigger).toHaveTextContent('Cherry');
+      expect(readSelectedNativeValues(hiddenSelect)).toEqual(['cherry']);
+      expect(screen.getByRole('menu')).toBeInTheDocument();
+
+      fireEvent.click(screen.getByTestId('menu-item-apple'));
+
+      expect(handleChange).toHaveBeenLastCalledWith(['apple', 'cherry']);
+      expect(trigger).toHaveTextContent('Apple, Cherry');
+      expect(readSelectedNativeValues(hiddenSelect)).toEqual(['apple', 'cherry']);
+      expect(screen.getByRole('menu')).toBeInTheDocument();
+    });
+
+    it('submits and resets multi-select hidden native values from defaultValue', () => {
+      const handleSubmit = jest.fn((event: React.FormEvent<HTMLFormElement>) => {
+        event.preventDefault();
+        return new FormData(event.currentTarget).getAll('fruit');
+      });
+
+      render(
+        <form onSubmit={handleSubmit}>
+          <CSelect
+            multiple
+            options={OPTIONS}
+            defaultValue={['apple', 'cherry']}
+            name="fruit"
+            data-testid="multi-form"
+          />
+          <button type="submit">Submit</button>
+          <button type="reset">Reset</button>
+        </form>,
+      );
+
+      const trigger = screen.getByTestId('multi-form');
+      const hiddenSelect = screen.getByTestId('multi-form__native') as HTMLSelectElement;
+
+      expect(trigger).toHaveTextContent('Apple, Cherry');
+      expect(readSelectedNativeValues(hiddenSelect)).toEqual(['apple', 'cherry']);
+
+      openSelect(trigger);
+      fireEvent.click(screen.getByTestId('menu-item-apple'));
+      fireEvent.click(screen.getByRole('button', { name: 'Submit' }));
+
+      expect(handleSubmit).toHaveReturnedWith(['cherry']);
+
+      fireEvent.click(screen.getByRole('button', { name: 'Reset' }));
+
+      expect(trigger).toHaveTextContent('Apple, Cherry');
+      expect(readSelectedNativeValues(hiddenSelect)).toEqual(['apple', 'cherry']);
+
+      fireEvent.click(screen.getByRole('button', { name: 'Submit' }));
+
+      expect(handleSubmit).toHaveReturnedWith(['apple', 'cherry']);
+    });
   });
 
   describe('theme prop', () => {

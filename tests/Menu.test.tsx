@@ -334,6 +334,74 @@ describe('CMenu', () => {
     expect(screen.queryByTestId('cm-menu-list')).not.toBeInTheDocument();
   });
 
+  it('closeOnSelect={false} keeps root menu open after leaf selection', () => {
+    const handleSelect = jest.fn();
+
+    render(
+      <CMenu
+        menuList={INTERACTION_MENU_LIST}
+        trigger="click"
+        onSelect={handleSelect}
+        closeOnSelect={false}
+        data-testid="menu-close-on-select-false"
+      >
+        <button type="button">Open Menu</button>
+      </CMenu>,
+    );
+
+    const menu = screen.getByTestId('menu-close-on-select-false');
+    const trigger = screen.getByRole('button', { name: 'Open Menu' });
+
+    fireEvent.click(trigger);
+    expect(menu).toHaveAttribute('data-menu-state', 'open');
+
+    fireEvent.click(screen.getByTestId('menu-item-parent-1'));
+    fireEvent.click(screen.getByRole('menuitem', { name: 'Leaf 1' }));
+
+    // onSelect still fires with the correct payload
+    expect(handleSelect).toHaveBeenCalledTimes(1);
+    expect(handleSelect).toHaveBeenCalledWith({ id: 'leaf-1', key: 'leaf-1', title: 'Leaf 1' });
+
+    // Root menu stays open (closeAllMenus NOT called)
+    expect(menu).toHaveAttribute('data-menu-state', 'open');
+    expect(screen.getAllByTestId('cm-menu-list').length).toBeGreaterThan(0);
+  });
+
+  it('closeOnSelect={true} explicitly closes menu after leaf selection (same as default)', () => {
+    const handleSelect = jest.fn();
+
+    render(
+      <CMenu
+        menuList={INTERACTION_MENU_LIST}
+        trigger="click"
+        onSelect={handleSelect}
+        closeOnSelect
+        data-testid="menu-close-on-select-true"
+      >
+        <button type="button">Open Menu</button>
+      </CMenu>,
+    );
+
+    const menu = screen.getByTestId('menu-close-on-select-true');
+    const trigger = screen.getByRole('button', { name: 'Open Menu' });
+
+    fireEvent.click(trigger);
+    expect(menu).toHaveAttribute('data-menu-state', 'open');
+
+    fireEvent.click(screen.getByRole('menuitem', { name: 'Leaf Root' }));
+
+    expect(handleSelect).toHaveBeenCalledTimes(1);
+    expect(handleSelect).toHaveBeenCalledWith({
+      id: 'leaf-root',
+      key: 'leaf-root',
+      title: 'Leaf Root',
+    });
+
+    // Menu closes — identical to default behavior
+    expect(menu).toHaveAttribute('data-menu-state', 'closed');
+    expect(screen.queryByTestId('cm-menu-list')).not.toBeInTheDocument();
+  });
+
   it('disabled leaf does not select or close', () => {
     const handleSelect = jest.fn();
 

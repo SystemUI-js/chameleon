@@ -31,6 +31,17 @@ const DISABLED_TREE_DATA: readonly CTreeDataNode[] = [
   },
 ];
 
+const HALF_SELECTED_TREE_DATA: readonly CTreeDataNode[] = [
+  {
+    key: 'parent',
+    title: 'Parent',
+    children: [
+      { key: 'child-1', title: 'Child 1' },
+      { key: 'child-2', title: 'Child 2' },
+    ],
+  },
+];
+
 describe('CTree', () => {
   it('exports CTree from package entry and direct component path', () => {
     render(<PackageEntryCTree treeData={TREE_DATA} data-testid="tree-package-entry" />);
@@ -105,11 +116,67 @@ describe('CTree', () => {
     expect(parent).toHaveClass('cm-tree__node', 'cm-tree__node--expanded');
     expect(parent).toHaveAttribute('aria-expanded', 'true');
     expect(parent).toHaveAttribute('aria-selected', 'false');
-    expect(parent).toHaveAttribute('aria-checked', 'false');
+    // Task 5 semantic correction: 1 of N checked descendants means the parent is mixed.
+    expect(parent).toHaveAttribute('aria-checked', 'mixed');
     expect(childA).toHaveClass('cm-tree__node--checked');
     expect(childA).toHaveAttribute('aria-checked', 'true');
     expect(sibling).not.toHaveAttribute('aria-expanded');
     expect(within(parent).getAllByRole('group')[0]).toHaveClass('cm-tree__children');
+  });
+
+  it('renders a mixed parent state when some checkable children are checked', () => {
+    render(
+      <CTree
+        checkable
+        treeData={HALF_SELECTED_TREE_DATA}
+        defaultCheckedKeys={['child-1']}
+        defaultExpandedKeys={['parent']}
+      />,
+    );
+
+    const parent = screen.getByRole('treeitem', { name: /Parent/ });
+    const parentCheckbox = within(parent).getAllByRole('checkbox')[0] as HTMLInputElement;
+
+    expect(parent).toHaveAttribute('aria-checked', 'mixed');
+    expect(parent).toHaveClass('cm-tree__node--indeterminate');
+    expect(parentCheckbox).toHaveClass('cm-checkbox__input');
+    expect(parentCheckbox.indeterminate).toBe(true);
+  });
+
+  it('renders a checked parent state when all checkable children are checked', () => {
+    render(
+      <CTree
+        checkable
+        treeData={HALF_SELECTED_TREE_DATA}
+        defaultCheckedKeys={['parent', 'child-1', 'child-2']}
+        defaultExpandedKeys={['parent']}
+      />,
+    );
+
+    const parent = screen.getByRole('treeitem', { name: /Parent/ });
+    const parentCheckbox = within(parent).getAllByRole('checkbox')[0] as HTMLInputElement;
+
+    expect(parent).toHaveAttribute('aria-checked', 'true');
+    expect(parent).not.toHaveClass('cm-tree__node--indeterminate');
+    expect(parentCheckbox.indeterminate).toBe(false);
+  });
+
+  it('renders an unchecked parent state when no checkable children are checked', () => {
+    render(
+      <CTree
+        checkable
+        treeData={HALF_SELECTED_TREE_DATA}
+        defaultCheckedKeys={[]}
+        defaultExpandedKeys={['parent']}
+      />,
+    );
+
+    const parent = screen.getByRole('treeitem', { name: /Parent/ });
+    const parentCheckbox = within(parent).getAllByRole('checkbox')[0] as HTMLInputElement;
+
+    expect(parent).toHaveAttribute('aria-checked', 'false');
+    expect(parent).not.toHaveClass('cm-tree__node--indeterminate');
+    expect(parentCheckbox.indeterminate).toBe(false);
   });
 
   it('expands and collapses uncontrolled nodes by clicking the switcher and calls onExpand', () => {
@@ -218,8 +285,9 @@ describe('CTree', () => {
 
     fireEvent.click(within(childA).getByRole('checkbox'));
 
-    expect(parent).toHaveAttribute('aria-checked', 'false');
+    expect(parent).toHaveAttribute('aria-checked', 'mixed');
     expect(parent).not.toHaveClass('cm-tree__node--checked');
+    expect(parent).toHaveClass('cm-tree__node--indeterminate');
   });
 
   it('keeps controlled checkedKeys stable while reporting cascaded next keys', () => {

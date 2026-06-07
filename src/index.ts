@@ -4,6 +4,8 @@ export {
   CButtonGroup,
   CButtonSeparator,
   CCheckbox,
+  CConfirm,
+  CDatePicker,
   CIcon,
   CLoading,
   CIconContainer,
@@ -11,6 +13,7 @@ export {
   CList,
   CListIcon,
   CMenu,
+  CModal,
   CRadio,
   CRadioGroup,
   CSelect,
@@ -25,6 +28,7 @@ export {
   CTransfer,
   CTree,
   Theme,
+  confirm,
 } from './components';
 export {
   defaultThemeDefinition,

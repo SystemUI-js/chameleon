@@ -41,7 +41,12 @@
 }
 
 .cm-tree__checkbox {
+    gap: 0;
     margin: 0;
+}
+
+.cm-tree__checkbox > .cm-checkbox__label {
+    display: none;
 }
 
 .cm-tree__title {

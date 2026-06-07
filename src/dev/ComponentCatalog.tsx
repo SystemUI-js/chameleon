@@ -4,6 +4,8 @@ import {
   CButtonGroup,
   CButtonSeparator,
   CCheckbox,
+  CConfirm,
+  CDatePicker,
   CDock,
   CGrid,
   CGridItem,
@@ -11,6 +13,7 @@ import {
   CInput,
   CList,
   CMenu,
+  CModal,
   CRadio,
   CRadioGroup,
   CScrollArea,
@@ -33,6 +36,7 @@ import {
   CWindow,
   CWindowBody,
   CWindowTitle,
+  confirm as imperativeConfirm,
   type MenuListItem,
   Theme,
   WidgetInteractionBehavior,
@@ -1810,6 +1814,179 @@ function TableShowcase(): React.ReactElement {
   );
 }
 
+const DATE_PICKER_SNIPPET = `
+const [date, setDate] = useState<string | null>('2026-01-15');
+
+return (
+  <>
+    <CDatePicker
+      value={date}
+      onChange={setDate}
+      minDate="2025-12-01"
+      maxDate="2026-12-31"
+      allowClear
+    />
+    <p>Selected date: {date ?? '(empty)'}</p>
+  </>
+);
+`.trim();
+
+function DatePickerShowcase(): React.ReactElement {
+  const [date, setDate] = React.useState<string | null>('2026-01-15');
+
+  return (
+    <ShowcaseSection
+      title="DatePicker"
+      testId="catalog-section-date-picker"
+      code={DATE_PICKER_SNIPPET}
+    >
+      <div className="cm-catalog__stack">
+        <div className="cm-catalog__row">
+          <CDatePicker
+            data-testid="date-picker-demo"
+            aria-label="Demo date picker"
+            value={date}
+            onChange={setDate}
+            minDate="2025-12-01"
+            maxDate="2026-12-31"
+            allowClear
+          />
+          <CDatePicker
+            data-testid="date-picker-demo-disabled"
+            aria-label="Disabled date picker"
+            defaultValue="2026-01-15"
+            disabled
+          />
+        </div>
+        <p className="cm-catalog__value" data-testid="date-picker-demo-value">
+          Selected date: {date ?? '(empty)'}
+        </p>
+      </div>
+    </ShowcaseSection>
+  );
+}
+
+const MODAL_SNIPPET = `
+const [open, setOpen] = useState(false);
+
+return (
+  <>
+    <CButton onClick={() => setOpen(true)}>Open modal</CButton>
+    <CModal open={open} title="Sample Modal" onClose={() => setOpen(false)}>
+      <p>Modal body content goes here.</p>
+    </CModal>
+  </>
+);
+`.trim();
+
+function ModalShowcase(): React.ReactElement {
+  const [open, setOpen] = React.useState(false);
+  const [defaultHeightOpen, setDefaultHeightOpen] = React.useState(false);
+
+  return (
+    <ShowcaseSection title="Modal" testId="catalog-section-modal" code={MODAL_SNIPPET}>
+      <div className="cm-catalog__stack">
+        <div className="cm-catalog__row">
+          <CButton data-testid="modal-demo-open" onClick={() => setOpen(true)}>
+            Open modal
+          </CButton>
+          {/* Default-height (no `height` prop) trigger — exercises the F3 regression case
+              where CModal passes cWindowHeight=0 to CWindow. Without the Modal-scoped
+              `height: auto !important` override the .cm-window would collapse to 0px. */}
+          <CButton data-testid="modal-demo-default-open" onClick={() => setDefaultHeightOpen(true)}>
+            Open default-height modal
+          </CButton>
+        </div>
+        <CModal
+          data-testid="modal-demo"
+          open={open}
+          title="Sample Modal"
+          width={420}
+          height={200}
+          onClose={() => setOpen(false)}
+        >
+          <p>Modal body content goes here.</p>
+          <p>Press ESC, click the mask, or click × to close.</p>
+        </CModal>
+        <CModal
+          data-testid="modal-demo-default"
+          open={defaultHeightOpen}
+          title="Default-height Modal"
+          onClose={() => setDefaultHeightOpen(false)}
+        >
+          <p>This modal has no explicit height prop and must render at intrinsic height.</p>
+        </CModal>
+      </div>
+    </ShowcaseSection>
+  );
+}
+
+const CONFIRM_SNIPPET = `
+const [open, setOpen] = useState(false);
+const [result, setResult] = useState<string>('none');
+
+const openImperative = async () => {
+  const ok = await confirm({ title: 'Delete?', content: 'Are you sure?' });
+  setResult(String(ok));
+};
+
+return (
+  <>
+    <CButton onClick={() => setOpen(true)}>Open inline CConfirm</CButton>
+    <CConfirm
+      open={open}
+      title="Inline confirm"
+      message="Click OK or Cancel."
+      onConfirm={() => setOpen(false)}
+      onCancel={() => setOpen(false)}
+    />
+
+    <CButton onClick={openImperative}>Call confirm()</CButton>
+    <p>Imperative result: {result}</p>
+  </>
+);
+`.trim();
+
+function ConfirmShowcase(): React.ReactElement {
+  const [inlineOpen, setInlineOpen] = React.useState(false);
+  const [imperativeResult, setImperativeResult] = React.useState<string>('none');
+
+  // 调用模块级 imperative confirm() 并把 Promise<boolean> 结果回填到 UI
+  const handleImperativeClick = React.useCallback(async () => {
+    const ok = await imperativeConfirm({
+      title: 'Delete item?',
+      content: 'Are you sure you want to delete this item?',
+    });
+    setImperativeResult(String(ok));
+  }, []);
+
+  return (
+    <ShowcaseSection title="Confirm" testId="catalog-section-confirm" code={CONFIRM_SNIPPET}>
+      <div className="cm-catalog__stack">
+        <div className="cm-catalog__row">
+          <CButton data-testid="confirm-demo-inline-open" onClick={() => setInlineOpen(true)}>
+            Open inline CConfirm
+          </CButton>
+          <CButton data-testid="confirm-demo-imperative-open" onClick={handleImperativeClick}>
+            Call confirm()
+          </CButton>
+        </div>
+        <p className="cm-catalog__value" data-testid="confirm-demo-imperative-result">
+          Imperative result: {imperativeResult}
+        </p>
+        <CConfirm
+          data-testid="confirm-demo-inline"
+          open={inlineOpen}
+          title="Inline confirm"
+          message="Click OK or Cancel to dismiss."
+          onConfirm={() => setInlineOpen(false)}
+          onCancel={() => setInlineOpen(false)}
+        />
+      </div>
+    </ShowcaseSection>
+  );
+}
+
 export function ComponentCatalog({
   theme,
   onThemeChange,
@@ -1849,6 +2026,9 @@ export function ComponentCatalog({
             <TreeShowcase />
             <TransferShowcase />
             <TableShowcase />
+            <DatePickerShowcase />
+            <ModalShowcase />
+            <ConfirmShowcase />
           </div>
         </DevThemeRoot>
       </main>

@@ -1,0 +1,82 @@
+/* CModal - base layout only (theme colors are added in Task 4). */
+
+.cm-modal {
+    position: fixed;
+    inset: 0;
+    z-index: 1000;
+    display: none;
+}
+
+.cm-modal--open {
+    display: block;
+}
+
+.cm-modal__mask {
+    position: absolute;
+    inset: 0;
+}
+
+.cm-modal__content {
+    position: absolute;
+    inset: 0;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    pointer-events: none;
+}
+
+/* The window host gives the absolutely-positioned CWindow a relative anchor.
+ * pointer-events re-enabled so the modal body is interactive. */
+.cm-modal__window-host {
+    position: relative;
+    pointer-events: auto;
+}
+
+/* Modal-scoped centering override.
+ * CWindow's frame is unconditionally rendered with inline
+ * `position: absolute; left: 0; top: 0` because CWidget.renderFrame
+ * always emits those styles (see src/components/Widget/Widget.tsx:836-844).
+ * Inside a Modal we want the frame to participate in the host's flex
+ * centering, not pin its top-left corner to the centered host origin.
+ * Neutralizing all three properties forces the frame back into normal
+ * flow so flex `align-items: center; justify-content: center` on
+ * `.cm-modal__content` centers the frame's actual geometric box. */
+.cm-modal .cm-window-frame {
+    position: static !important;
+    left: auto !important;
+    top: auto !important;
+    /* CWidget.renderFrame also emits inline `height: <number>px` derived from
+     * the `height` prop. CModal passes `cWindowHeight = 0` whenever no numeric
+     * `height` prop is supplied (src/components/Modal/CModal.tsx:192 — the
+     * documented default for intrinsic-height modals). Without this override,
+     * `.cm-window__inner` declared with height 100% resolves to 0 and the
+     * modal collapses to invisible. Mirrors the Confirm-scoped fix at
+     * src/components/Confirm/index.scss (`.cm-confirm .cm-window-frame`). */
+    height: auto !important;
+}
+
+/* Title bar layout inside CWindow children (no drag — not a CWindowTitle). */
+.cm-modal .cm-window__title-bar {
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    padding: 4px 8px;
+}
+
+.cm-modal__title {
+    flex: 1 1 auto;
+    min-width: 0;
+    overflow: hidden;
+    text-overflow: ellipsis;
+    white-space: nowrap;
+}
+
+.cm-modal__close-button {
+    flex: 0 0 auto;
+    margin-left: 8px;
+    padding: 0 6px;
+    border: 0;
+    background: transparent;
+    cursor: pointer;
+    font: inherit;
+}

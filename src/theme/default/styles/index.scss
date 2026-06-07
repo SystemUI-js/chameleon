@@ -1016,4 +1016,195 @@
     .cm-table__pagination-status {
         color: #9a6f3a;
     }
+
+    // ──────────────────────────────────────────────
+    // CDatePicker — warm orange/cream, pill input, soft calendar grid
+    // ──────────────────────────────────────────────
+    .cm-date-picker__input {
+        border: 1px solid #c9a67a;
+        border-radius: 999px;
+        background: #fffbf5;
+        color: #3d2810;
+        font-size: 13px;
+        box-shadow: 0 1px 3px rgba(160, 120, 60, 0.12);
+    }
+
+    .cm-date-picker__input:focus {
+        border-color: #f28c28;
+        outline: none;
+        box-shadow: 0 0 0 2px rgba(242, 140, 40, 0.2);
+    }
+
+    .cm-date-picker__input:disabled {
+        border-color: #d4bfa0;
+        background: #f5ede3;
+        color: #a68e6e;
+        cursor: not-allowed;
+    }
+
+    .cm-date-picker__clear {
+        color: #9a6f3a;
+        border-radius: 999px;
+    }
+
+    .cm-date-picker__clear:hover {
+        background: #fddcb5;
+        color: #d4720e;
+    }
+
+    .cm-date-picker__panel {
+        border: 1px solid #dec49e;
+        border-radius: 12px;
+        background: #fffbf5;
+        box-shadow: 0 4px 12px rgba(160, 120, 60, 0.14);
+        color: #3d2810;
+    }
+
+    .cm-date-picker__header {
+        margin-bottom: 8px;
+    }
+
+    .cm-date-picker__nav {
+        border-radius: 999px;
+        color: #9a6f3a;
+        font-weight: 600;
+    }
+
+    .cm-date-picker__nav:hover:not(:disabled) {
+        background: #fddcb5;
+        color: #d4720e;
+    }
+
+    .cm-date-picker__month-label {
+        color: #5c3d1a;
+        font-size: 13px;
+        font-weight: 700;
+    }
+
+    .cm-date-picker__weekdays {
+        color: #9a6f3a;
+        font-size: 11px;
+        font-weight: 600;
+    }
+
+    .cm-date-picker__cell {
+        border-radius: 8px;
+        color: #5c3d1a;
+        font-size: 12px;
+    }
+
+    .cm-date-picker__cell:hover:not(:disabled) {
+        background: linear-gradient(180deg, #fddcb5 0%, #f5d6a8 100%);
+        color: #3d2810;
+    }
+
+    .cm-date-picker__cell--today {
+        outline: 1px solid #f28c28;
+        outline-offset: -1px;
+    }
+
+    .cm-date-picker__cell--selected,
+    .cm-date-picker__cell--selected:hover:not(:disabled) {
+        background: linear-gradient(180deg, #f5a623 0%, #e67e22 100%);
+        color: #ffffff;
+        outline: none;
+    }
+
+    .cm-date-picker__cell--out-of-month {
+        color: #c2a47e;
+        opacity: 0.55;
+    }
+
+    .cm-date-picker__cell--disabled {
+        color: #c2a47e;
+        cursor: not-allowed;
+        opacity: 0.4;
+    }
+
+    // ──────────────────────────────────────────────
+    // CModal — soft amber mask, content matches window-frame chrome
+    // ──────────────────────────────────────────────
+    .cm-modal__mask {
+        background: rgba(80, 50, 20, 0.4);
+    }
+
+    .cm-modal__content {
+        color: #3d2810;
+    }
+
+    .cm-modal__title {
+        color: #ffffff;
+        font-size: 13px;
+        font-weight: 600;
+        letter-spacing: 0.02em;
+        text-shadow: 0 1px 0 rgba(0, 0, 0, 0.2);
+    }
+
+    .cm-modal__close-button {
+        width: 24px;
+        height: 24px;
+        border-radius: 999px;
+        color: #ffffff;
+        font-size: 14px;
+        line-height: 1;
+    }
+
+    .cm-modal__close-button:hover {
+        background: rgba(255, 255, 255, 0.2);
+    }
+
+    .cm-modal__close-button:focus-visible {
+        outline: 2px solid rgba(255, 255, 255, 0.65);
+        outline-offset: 1px;
+    }
+
+    // ──────────────────────────────────────────────
+    // CConfirm — message body + right-aligned action buttons (pill style)
+    // ──────────────────────────────────────────────
+    .cm-confirm__body {
+        color: #3d2810;
+        font-size: 13px;
+        line-height: 1.55;
+    }
+
+    .cm-confirm__actions {
+        border-top: 1px solid rgba(160, 120, 60, 0.18);
+        background: linear-gradient(180deg, #fffbf5 0%, #fff3e6 100%);
+    }
+
+    .cm-confirm__cancel,
+    .cm-confirm__ok {
+        border: 1px solid #c9a67a;
+        border-radius: 999px;
+        font-size: 12px;
+        font-weight: 600;
+        box-shadow: 0 1px 3px rgba(160, 120, 60, 0.12);
+    }
+
+    .cm-confirm__cancel {
+        background: linear-gradient(180deg, #fffbf5 0%, #fff8f0 100%);
+        color: #5c3d1a;
+    }
+
+    .cm-confirm__cancel:hover {
+        border-color: #b8894a;
+        background: linear-gradient(180deg, #fffbf5 0%, #fddcb5 100%);
+    }
+
+    .cm-confirm__ok {
+        background: linear-gradient(180deg, #f5a623 0%, #e67e22 100%);
+        border-color: #c46a0e;
+        color: #ffffff;
+        text-shadow: 0 1px 0 rgba(80, 40, 0, 0.2);
+    }
+
+    .cm-confirm__ok:hover {
+        background: linear-gradient(180deg, #f7b34a 0%, #ea8c33 100%);
+    }
+
+    .cm-confirm__cancel:focus-visible,
+    .cm-confirm__ok:focus-visible {
+        outline: 2px solid rgba(242, 140, 40, 0.55);
+        outline-offset: 2px;
+    }
 }

@@ -317,4 +317,124 @@ describe('CTimePicker', () => {
       );
     });
   });
+
+  /* ─── Document outside mousedown closes panel ─── */
+  it('closes panel on document body mousedown and calls onOpenChange(false)', () => {
+    const handleOpenChange = jest.fn();
+
+    render(
+      <CTimePicker
+        defaultValue="08:30"
+        defaultOpen
+        onOpenChange={handleOpenChange}
+        data-testid="outside-click-tp"
+      />,
+    );
+
+    expect(screen.getByTestId('outside-click-tp__panel')).toBeInTheDocument();
+    handleOpenChange.mockClear();
+
+    fireEvent.mouseDown(document.body);
+
+    expect(screen.queryByTestId('outside-click-tp__panel')).not.toBeInTheDocument();
+    expect(handleOpenChange).toHaveBeenCalledTimes(1);
+    expect(handleOpenChange).toHaveBeenCalledWith(false);
+  });
+
+  /* ─── Mousedown inside input keeps panel open ─── */
+  it('does not close panel when mousedown is inside the input', () => {
+    const handleOpenChange = jest.fn();
+
+    render(
+      <CTimePicker
+        defaultValue="08:30"
+        defaultOpen
+        onOpenChange={handleOpenChange}
+        data-testid="inside-input-tp"
+      />,
+    );
+
+    const { input } = getTimePickerParts('inside-input-tp');
+    handleOpenChange.mockClear();
+
+    fireEvent.mouseDown(input);
+
+    expect(screen.getByTestId('inside-input-tp__panel')).toBeInTheDocument();
+    expect(handleOpenChange).not.toHaveBeenCalled();
+  });
+
+  /* ─── Mousedown inside panel keeps panel open ─── */
+  it('does not close panel when mousedown is inside the panel', () => {
+    const handleOpenChange = jest.fn();
+
+    render(
+      <CTimePicker
+        defaultValue="08:30"
+        defaultOpen
+        onOpenChange={handleOpenChange}
+        data-testid="inside-panel-tp"
+      />,
+    );
+
+    const panel = screen.getByTestId('inside-panel-tp__panel');
+    handleOpenChange.mockClear();
+
+    fireEvent.mouseDown(panel);
+
+    expect(screen.getByTestId('inside-panel-tp__panel')).toBeInTheDocument();
+    expect(handleOpenChange).not.toHaveBeenCalled();
+  });
+
+  /* ─── Controlled mode: outside mousedown fires onOpenChange(false) but panel stays ─── */
+  it('fires onOpenChange(false) on outside mousedown in controlled mode but keeps panel until parent rerenders', () => {
+    const handleOpenChange = jest.fn();
+
+    const { rerender } = render(
+      <CTimePicker
+        value="08:30"
+        open
+        onOpenChange={handleOpenChange}
+        data-testid="controlled-outside-tp"
+      />,
+    );
+
+    expect(screen.getByTestId('controlled-outside-tp__panel')).toBeInTheDocument();
+    handleOpenChange.mockClear();
+
+    fireEvent.mouseDown(document.body);
+
+    expect(handleOpenChange).toHaveBeenCalledTimes(1);
+    expect(handleOpenChange).toHaveBeenCalledWith(false);
+    expect(screen.getByTestId('controlled-outside-tp__panel')).toBeInTheDocument();
+
+    rerender(
+      <CTimePicker
+        value="08:30"
+        open={false}
+        onOpenChange={handleOpenChange}
+        data-testid="controlled-outside-tp"
+      />,
+    );
+
+    expect(screen.queryByTestId('controlled-outside-tp__panel')).not.toBeInTheDocument();
+  });
+
+  /* ─── Listener not attached when panel is closed ─── */
+  it('does not call onOpenChange when panel is closed and document mousedown fires', () => {
+    const handleOpenChange = jest.fn();
+
+    render(
+      <CTimePicker
+        defaultValue="08:30"
+        onOpenChange={handleOpenChange}
+        data-testid="closed-listener-tp"
+      />,
+    );
+
+    expect(screen.queryByTestId('closed-listener-tp__panel')).not.toBeInTheDocument();
+
+    fireEvent.mouseDown(document.body);
+
+    expect(handleOpenChange).not.toHaveBeenCalled();
+  });
 });

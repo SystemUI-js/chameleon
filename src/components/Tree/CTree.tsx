@@ -1,4 +1,5 @@
 import React from 'react';
+import { CCheckbox } from '../Checkbox/Checkbox';
 import { mergeClasses } from '../Theme/mergeClasses';
 import { normalizeThemeClassName } from '../Theme/normalizeThemeClassName';
 import { useTheme } from '../Theme/useTheme';
@@ -108,6 +109,72 @@ function areAllCheckableDescendantsChecked(
   );
 
   return childKeys.length > 0 && childKeys.every((key) => checkedKeySet.has(key));
+}
+
+function areSomeCheckableDescendantsChecked(
+  node: CTreeDataNode,
+  checkedKeySet: ReadonlySet<string>,
+): boolean {
+  const childKeys = (node.children ?? []).flatMap((childNode) =>
+    collectCheckableDescendantKeys(childNode),
+  );
+
+  return (
+    childKeys.some((key) => checkedKeySet.has(key)) &&
+    !areAllCheckableDescendantsChecked(node, checkedKeySet)
+  );
+}
+
+function hasCheckableDescendants(node: CTreeDataNode): boolean {
+  return (node.children ?? []).some(
+    (childNode) => collectCheckableDescendantKeys(childNode).length > 0,
+  );
+}
+
+function getTreeItemAriaChecked(
+  checkable: boolean,
+  isChecked: boolean,
+  isIndeterminate: boolean,
+): React.AriaAttributes['aria-checked'] {
+  if (!checkable) {
+    return undefined;
+  }
+
+  if (isIndeterminate) {
+    return 'mixed';
+  }
+
+  return isChecked;
+}
+
+function getTreeNodeClassNames(
+  hasChildren: boolean,
+  isExpanded: boolean,
+  isSelected: boolean,
+  isChecked: boolean,
+  isIndeterminate: boolean,
+): string[] {
+  const classNames = ['cm-tree__item', 'cm-tree__node'];
+
+  classNames.push(hasChildren ? 'cm-tree__item--parent' : 'cm-tree__item--leaf');
+
+  if (isExpanded) {
+    classNames.push('cm-tree__node--expanded');
+  }
+
+  if (isSelected) {
+    classNames.push('cm-tree__node--selected cm-tree__item--selected');
+  }
+
+  if (isChecked) {
+    classNames.push('cm-tree__node--checked cm-tree__item--checked');
+  }
+
+  if (isIndeterminate) {
+    classNames.push('cm-tree__node--indeterminate');
+  }
+
+  return classNames;
 }
 
 function recalculateAncestorChecks(
@@ -363,6 +430,9 @@ export function CTree({
         {nodes.map((node) => {
           const hasChildren = Array.isArray(node.children) && node.children.length > 0;
           const isChecked = checkedKeySet.has(node.key);
+          const isIndeterminate =
+            hasCheckableDescendants(node) &&
+            areSomeCheckableDescendantsChecked(node, checkedKeySet);
           const isExpanded = expandedKeySet.has(node.key);
           const isSelected = selectedKeySet.has(node.key);
           const isCurrentNodeDisabled = isNodeDisabled(node);
@@ -372,20 +442,19 @@ export function CTree({
             <li
               key={node.key}
               ref={setNodeRef(node.key)}
-              aria-checked={checkable ? isChecked : undefined}
+              aria-checked={getTreeItemAriaChecked(checkable, isChecked, isIndeterminate)}
               aria-disabled={isCurrentNodeDisabled || undefined}
               aria-expanded={hasChildren ? isExpanded : undefined}
               aria-labelledby={titleId}
               aria-selected={selectable ? isSelected : undefined}
               className={mergeClasses(
-                [
-                  'cm-tree__item',
-                  'cm-tree__node',
-                  hasChildren ? 'cm-tree__item--parent' : 'cm-tree__item--leaf',
-                  isExpanded ? 'cm-tree__node--expanded' : undefined,
-                  isSelected ? 'cm-tree__node--selected cm-tree__item--selected' : undefined,
-                  isChecked ? 'cm-tree__node--checked cm-tree__item--checked' : undefined,
-                ].filter((itemClass): itemClass is string => itemClass !== undefined),
+                getTreeNodeClassNames(
+                  hasChildren,
+                  isExpanded,
+                  isSelected,
+                  isChecked,
+                  isIndeterminate,
+                ),
               )}
               data-tree-node-key={node.key}
               role="treeitem"
@@ -406,12 +475,12 @@ export function CTree({
                   />
                 ) : null}
                 {checkable ? (
-                  <input
+                  <CCheckbox
                     checked={isChecked}
                     className="cm-tree__checkbox"
                     disabled={isCheckboxDisabled(node)}
-                    onChange={(event) => handleCheck(node, event.target.checked)}
-                    type="checkbox"
+                    indeterminate={isIndeterminate}
+                    onChange={(nextChecked) => handleCheck(node, nextChecked)}
                   />
                 ) : null}
                 <button

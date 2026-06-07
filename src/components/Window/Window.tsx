@@ -13,10 +13,33 @@ export interface CWindowProps extends CWidgetProps {
   theme?: string;
   moveBehavior?: CWindowInteractionBehavior;
   resizeBehavior?: CWindowInteractionBehavior;
+  /** 全屏模式下自动禁用 resize */
+  readonly fullscreen?: boolean;
 }
 
 export class CWindow extends CWidget {
   declare public props: CWindowProps;
+
+  /** 判断当前是否处于全屏模式 */
+  protected isFullscreen(): boolean {
+    return this.props.fullscreen === true;
+  }
+
+  /** 全屏模式下禁用 resize handle 渲染 */
+  protected override renderResizeHandles(): React.ReactNode {
+    if (this.isFullscreen()) {
+      return null;
+    }
+    return super.renderResizeHandles();
+  }
+
+  /** 全屏模式下跳过 resize drag 初始化 */
+  protected override setupResizeDrags(): void {
+    if (this.isFullscreen()) {
+      return;
+    }
+    super.setupResizeDrags();
+  }
 
   protected isWindowTitleElement(type: unknown): boolean {
     if (type === CWindowTitle) {

@@ -11,11 +11,8 @@ export interface CSelectOption {
   disabled?: boolean;
 }
 
-export interface CSelectProps {
+interface CSelectBaseProps {
   options: readonly CSelectOption[];
-  value?: string;
-  defaultValue?: string;
-  onChange?: (nextValue: string) => void;
   name?: string;
   disabled?: boolean;
   required?: boolean;
@@ -26,37 +23,101 @@ export interface CSelectProps {
   'data-testid'?: string;
 }
 
+export type CSelectSingleProps = CSelectBaseProps & {
+  multiple?: false;
+  value?: string;
+  defaultValue?: string;
+  onChange?: (nextValue: string) => void;
+};
+
+export type CSelectMultiProps = CSelectBaseProps & {
+  multiple: true;
+  value?: string[];
+  defaultValue?: string[];
+  onChange?: (nextValue: string[]) => void;
+};
+
+export type CSelectProps = CSelectSingleProps | CSelectMultiProps;
+
 const INTERNAL_NATIVE_TEST_ID = 'cm-select-native-control';
 
-const resolveInitialValue = (
+const resolveInitialSingleValue = (
   defaultValue: string | undefined,
   placeholder: string | undefined,
   options: readonly CSelectOption[],
 ): string => defaultValue ?? (placeholder ? '' : (options[0]?.value ?? ''));
 
-export function CSelect({
-  options,
-  value,
-  defaultValue,
-  onChange,
-  name,
-  disabled,
-  required,
-  placeholder,
-  className,
-  theme,
-  'aria-label': ariaLabel,
-  'data-testid': dataTestId,
-}: CSelectProps): React.ReactElement {
+const resolveInitialMultiValues = (defaultValue: string[] | undefined): string[] =>
+  defaultValue === undefined ? [] : [...defaultValue];
+
+const resolveNextMultiValues = (
+  currentValues: readonly string[],
+  toggledValue: string,
+  options: readonly CSelectOption[],
+): string[] => {
+  const nextValueSet = new Set(currentValues);
+
+  if (nextValueSet.has(toggledValue)) {
+    nextValueSet.delete(toggledValue);
+  } else {
+    nextValueSet.add(toggledValue);
+  }
+
+  // Rebuild from options so multi-select callbacks are deterministic and match display order.
+  return options.filter((option) => nextValueSet.has(option.value)).map((option) => option.value);
+};
+
+export function CSelect(props: CSelectProps): React.ReactElement {
+  const {
+    options,
+    name,
+    disabled,
+    required,
+    placeholder,
+    className,
+    theme,
+    'aria-label': ariaLabel,
+    'data-testid': dataTestId,
+  } = props;
+  const multiple = props.multiple === true;
   const resolvedTheme = normalizeThemeClassName(useTheme(theme));
   const baseClasses = ['cm-select'];
-  const isControlled = value !== undefined;
+  const isControlled = props.value !== undefined;
   const nativeSelectRef = React.useRef<HTMLSelectElement | null>(null);
-  const initialValueRef = React.useRef(resolveInitialValue(defaultValue, placeholder, options));
-  const [uncontrolledValue, setUncontrolledValue] = React.useState(initialValueRef.current);
-  const selectedValue = isControlled ? value : uncontrolledValue;
+  const initialSingleValueRef = React.useRef(
+    props.multiple === true
+      ? resolveInitialSingleValue(undefined, placeholder, options)
+      : resolveInitialSingleValue(props.defaultValue, placeholder, options),
+  );
+  const initialMultiValuesRef = React.useRef(
+    props.multiple === true ? resolveInitialMultiValues(props.defaultValue) : [],
+  );
+  const [uncontrolledValue, setUncontrolledValue] = React.useState(initialSingleValueRef.current);
+  const [uncontrolledValues, setUncontrolledValues] = React.useState(initialMultiValuesRef.current);
+
+  let selectedValue = '';
+  let selectedValues: string[] = [];
+
+  if (props.multiple === true) {
+    selectedValues = props.value ?? uncontrolledValues;
+  } else {
+    selectedValue = props.value ?? uncontrolledValue;
+  }
+
+  const selectedValueSet = new Set(selectedValues);
   const selectedOption = options.find((option) => option.value === selectedValue);
-  const visibleLabel = selectedOption?.label ?? placeholder ?? '';
+  const selectedMultiLabels = options
+    .filter((option) => selectedValueSet.has(option.value))
+    .map((option) => option.label);
+  let visibleLabel = selectedOption?.label ?? placeholder ?? '';
+  let nativeValue: string | string[] = selectedValue;
+  let triggerValue = selectedValue;
+
+  if (multiple) {
+    visibleLabel = selectedMultiLabels.join(', ') || (placeholder ?? '');
+    nativeValue = selectedValues;
+    triggerValue = selectedValues.join(',');
+  }
   const menuList = React.useMemo<readonly MenuListItem[]>(
     () =>
       options.map((option) => ({
@@ -77,9 +138,16 @@ export function CSelect({
     }
 
     const handleReset = (): void => {
-      if (!isControlled) {
-        setUncontrolledValue(initialValueRef.current);
+      if (isControlled) {
+        return;
       }
+
+      if (multiple) {
+        setUncontrolledValues(initialMultiValuesRef.current);
+        return;
+      }
+
+      setUncontrolledValue(initialSingleValueRef.current);
     };
 
     parentForm.addEventListener('reset', handleReset);
@@ -87,10 +155,22 @@ export function CSelect({
     return () => {
       parentForm.removeEventListener('reset', handleReset);
     };
-  }, [isControlled]);
+  }, [isControlled, multiple]);
 
   const handleSelect = (item: MenuListItem): void => {
-    if (disabled) {
+    if (disabled || item.disabled) {
+      return;
+    }
+
+    if (props.multiple === true) {
+      const currentValues = props.value ?? uncontrolledValues;
+      const nextValues = resolveNextMultiValues(currentValues, item.id, options);
+
+      if (!isControlled) {
+        setUncontrolledValues(nextValues);
+      }
+
+      props.onChange?.(nextValues);
       return;
     }
 
@@ -98,7 +178,7 @@ export function CSelect({
       setUncontrolledValue(item.id);
     }
 
-    onChange?.(item.id);
+    props.onChange?.(item.id);
   };
 
   const keepHiddenSelectReactControlled = (): void => {};
@@ -116,7 +196,8 @@ export function CSelect({
         name={name}
         disabled={disabled}
         required={required}
-        value={selectedValue}
+        multiple={multiple}
+        value={nativeValue}
         onChange={keepHiddenSelectReactControlled}
         className="cm-select__native"
         aria-hidden="true"
@@ -138,14 +219,14 @@ export function CSelect({
           </option>
         ))}
       </select>
-      <CMenu menuList={menuList} trigger="click" onSelect={handleSelect}>
+      <CMenu menuList={menuList} trigger="click" onSelect={handleSelect} closeOnSelect={!multiple}>
         <button
           type="button"
           disabled={disabled}
           className={mergeClasses(baseClasses, resolvedTheme, className)}
           aria-label={ariaLabel}
           data-testid={dataTestId}
-          data-select-value={selectedValue}
+          data-select-value={triggerValue}
           onClick={handleTriggerClick}
         >
           <span className="cm-select__label">{visibleLabel}</span>

@@ -520,4 +520,41 @@ describe('ComponentCatalog', () => {
       expect(await within(listSection).findByText('Lazy retry branch child')).toBeInTheDocument();
     });
   });
+
+  it('DatePicker section exposes a Show code button and renders demo', () => {
+    render(<ComponentCatalog theme={DEV_THEME.default} onThemeChange={() => {}} />);
+
+    const datePickerSection = screen.getByTestId('catalog-section-date-picker');
+    const showCodeButton = within(datePickerSection).getByRole('button', { name: 'Show code' });
+    expect(showCodeButton).toBeInTheDocument();
+    expect(showCodeButton).toHaveAttribute('aria-expanded', 'false');
+    expect(within(datePickerSection).getByTestId('date-picker-demo')).toBeInTheDocument();
+    expect(within(datePickerSection).getByTestId('date-picker-demo-value')).toHaveTextContent(
+      'Selected date: 2026-01-15',
+    );
+  });
+
+  it('Modal section exposes a Show code button and renders open trigger', () => {
+    render(<ComponentCatalog theme={DEV_THEME.default} onThemeChange={() => {}} />);
+
+    const modalSection = screen.getByTestId('catalog-section-modal');
+    const showCodeButton = within(modalSection).getByRole('button', { name: 'Show code' });
+    expect(showCodeButton).toBeInTheDocument();
+    expect(showCodeButton).toHaveAttribute('aria-expanded', 'false');
+    expect(within(modalSection).getByTestId('modal-demo-open')).toBeInTheDocument();
+  });
+
+  it('Confirm section exposes a Show code button and renders both triggers', () => {
+    render(<ComponentCatalog theme={DEV_THEME.default} onThemeChange={() => {}} />);
+
+    const confirmSection = screen.getByTestId('catalog-section-confirm');
+    const showCodeButton = within(confirmSection).getByRole('button', { name: 'Show code' });
+    expect(showCodeButton).toBeInTheDocument();
+    expect(showCodeButton).toHaveAttribute('aria-expanded', 'false');
+    expect(within(confirmSection).getByTestId('confirm-demo-inline-open')).toBeInTheDocument();
+    expect(within(confirmSection).getByTestId('confirm-demo-imperative-open')).toBeInTheDocument();
+    expect(within(confirmSection).getByTestId('confirm-demo-imperative-result')).toHaveTextContent(
+      'Imperative result: none',
+    );
+  });
 });

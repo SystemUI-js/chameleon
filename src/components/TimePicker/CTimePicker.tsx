@@ -115,6 +115,7 @@ export function CTimePicker({
   const resolvedTheme = normalizeThemeClassName(useTheme(theme));
   const isControlled = value !== undefined;
   const isOpenControlled = open !== undefined;
+  const rootRef = React.useRef<HTMLFieldSetElement>(null);
   const initialValueRef = React.useRef(normalizeTimeValue(defaultValue, format));
   const [uncontrolledValue, setUncontrolledValue] = React.useState(initialValueRef.current);
   const [uncontrolledOpen, setUncontrolledOpen] = React.useState(defaultOpen);
@@ -126,17 +127,36 @@ export function CTimePicker({
   const minuteOptions = React.useMemo(() => createSteppedOptions(60, minuteStep), [minuteStep]);
   const secondOptions = React.useMemo(() => createSteppedOptions(60, secondStep), [secondStep]);
 
-  const setOpenState = (nextOpen: boolean): void => {
-    if (disabled) {
-      return;
-    }
+  const setOpenState = React.useCallback(
+    (nextOpen: boolean): void => {
+      if (disabled) {
+        return;
+      }
 
-    if (!isOpenControlled) {
-      setUncontrolledOpen(nextOpen);
-    }
+      if (!isOpenControlled) {
+        setUncontrolledOpen(nextOpen);
+      }
 
-    onOpenChange?.(nextOpen);
-  };
+      onOpenChange?.(nextOpen);
+    },
+    [disabled, isOpenControlled, onOpenChange],
+  );
+
+  React.useEffect(() => {
+    if (!isOpen) return;
+
+    const handleDocumentMouseDown = (event: MouseEvent): void => {
+      if (!(event.target instanceof Node)) return;
+      if (rootRef.current !== null && !rootRef.current.contains(event.target)) {
+        setOpenState(false);
+      }
+    };
+
+    document.addEventListener('mousedown', handleDocumentMouseDown);
+    return () => {
+      document.removeEventListener('mousedown', handleDocumentMouseDown);
+    };
+  }, [isOpen, setOpenState]);
 
   const emitChange = (nextParts: TimeParts): void => {
     if (disabled) {
@@ -206,7 +226,7 @@ export function CTimePicker({
         type="button"
         className={mergeClasses([
           'cm-time-picker__option',
-          isSelected ? 'cm-time-picker__option--selected' : null,
+          isSelected ? 'cm-time-picker__option--selected' : '',
         ])}
         aria-label={`${columnName} ${optionValue}`}
         role="option"
@@ -222,13 +242,14 @@ export function CTimePicker({
 
   return (
     <fieldset
+      ref={rootRef}
       aria-label={ariaLabel}
       aria-labelledby={ariaLabelledBy}
       className={mergeClasses(
         [
           'cm-time-picker',
           disabled ? 'cm-time-picker--disabled' : 'cm-time-picker--enabled',
-          isOpen ? 'cm-time-picker--open' : null,
+          isOpen ? 'cm-time-picker--open' : '',
         ],
         resolvedTheme,
         className,
