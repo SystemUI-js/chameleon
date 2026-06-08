@@ -19,7 +19,7 @@
  *   The fix must live here (not in Modal SCSS) per the Task 2 scope guardrail in
  *   .omo/plans/style-component-fixes.md. !important is required because the height
  *   comes from an inline style emitted by code we are forbidden from modifying. */
-.cm-confirm .cm-window-frame {
+.cm-confirm:not(.cm-modal--resizable) .cm-window-frame {
     height: auto !important;
 }
 

@@ -1,6 +1,7 @@
 import React from 'react';
 import { createRoot, type Root } from 'react-dom/client';
 import { CModal } from '../Modal';
+import { Theme } from '../Theme/Theme';
 import { mergeClasses } from '../Theme/mergeClasses';
 import './index.scss';
 
@@ -28,6 +29,10 @@ export interface CConfirmProps {
   /** 默认 360 */
   readonly width?: number;
   readonly height?: number;
+  /** 默认 false - 是否可拖拽移动 */
+  readonly draggable?: boolean;
+  /** 默认 false - 是否可调整大小 */
+  readonly resizable?: boolean;
 }
 
 const DEFAULT_WIDTH = 360;
@@ -94,6 +99,8 @@ export function CConfirm(props: CConfirmProps): React.ReactElement {
     'data-testid': dataTestId,
     width = DEFAULT_WIDTH,
     height,
+    draggable = false,
+    resizable = false,
   } = props;
 
   /* Confirm 路径：先回调 onConfirm，再回调 onClose(true)（顺序按 spec 要求）。
@@ -129,6 +136,8 @@ export function CConfirm(props: CConfirmProps): React.ReactElement {
       theme={theme}
       className={rootClassName}
       data-testid={dataTestId}
+      draggable={draggable}
+      resizable={resizable}
     >
       <div
         className="cm-confirm__body"
@@ -270,12 +279,14 @@ export function confirm(options: ConfirmOptions): Promise<boolean> {
     }
 
     root.render(
-      <ImperativeConfirmHost
-        options={options}
-        onConfirm={handleConfirm}
-        onCancel={handleCancel}
-        onClose={handleClose}
-      />,
+      <Theme name={options.theme ?? 'default'}>
+        <ImperativeConfirmHost
+          options={options}
+          onConfirm={handleConfirm}
+          onCancel={handleCancel}
+          onClose={handleClose}
+        />
+      </Theme>,
     );
   });
 }

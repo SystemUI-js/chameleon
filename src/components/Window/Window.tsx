@@ -1,7 +1,12 @@
 import type React from 'react';
-import { WidgetInteractionBehavior, type WidgetPreviewRect } from '../Widget/Widget';
-import type { CWidgetProps, CWidgetResizeOptions, ResizeDirection } from '../Widget/Widget';
-import { CWidget } from '../Widget/Widget';
+import {
+  CWidget,
+  type CWidgetProps,
+  type CWidgetResizeOptions,
+  type ResizeDirection,
+  WidgetInteractionBehavior,
+  type WidgetPreviewRect,
+} from '../Widget/Widget';
 import { CWindowTitle } from './WindowTitle';
 import './index.scss';
 
@@ -13,8 +18,19 @@ export interface CWindowProps extends CWidgetProps {
   theme?: string;
   moveBehavior?: CWindowInteractionBehavior;
   resizeBehavior?: CWindowInteractionBehavior;
+  /** 以父容器中心为原点定位，x/y 状态作为拖拽偏移量。 */
+  readonly centered?: boolean;
   /** 全屏模式下自动禁用 resize */
   readonly fullscreen?: boolean;
+}
+
+function formatCenteredOffset(offset: number): string {
+  if (offset === 0) {
+    return '50%';
+  }
+
+  const operator = offset > 0 ? '+' : '-';
+  return `calc(50% ${operator} ${Math.abs(offset)}px)`;
 }
 
 export class CWindow extends CWidget {
@@ -67,6 +83,18 @@ export class CWindow extends CWidget {
       this.mergeThemeClassName('cm-window-preview-frame', this.props.theme) ??
       'cm-window-preview-frame'
     );
+  }
+
+  protected getWindowFrameStyle(frame: { x: number; y: number }): React.CSSProperties | undefined {
+    if (this.props.centered !== true) {
+      return undefined;
+    }
+
+    return {
+      left: formatCenteredOffset(frame.x),
+      top: formatCenteredOffset(frame.y),
+      transform: 'translate(-50%, -50%)',
+    };
   }
 
   protected renderPreviewFrame(): React.ReactNode {
@@ -148,6 +176,7 @@ export class CWindow extends CWidget {
         className: this.getWindowFrameClassName(),
         theme: this.props.theme,
         testId: 'window-frame',
+        style: this.getWindowFrameStyle(frame),
       },
     );
   }

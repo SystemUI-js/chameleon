@@ -4,6 +4,7 @@ import { mergeClasses } from '../Theme/mergeClasses';
 import { normalizeThemeClassName } from '../Theme/normalizeThemeClassName';
 import { useTheme } from '../Theme/useTheme';
 import { CWindow } from '../Window/Window';
+import { CWindowTitle } from '../Window/WindowTitle';
 import './index.scss';
 
 export interface CModalProps {
@@ -27,6 +28,10 @@ export interface CModalProps {
   readonly closeOnMaskClick?: boolean;
   /** 默认 true */
   readonly showCloseButton?: boolean;
+  /** 默认 false - 是否可拖拽移动 */
+  readonly draggable?: boolean;
+  /** 默认 false - 是否可调整大小 */
+  readonly resizable?: boolean;
   readonly theme?: string;
   readonly className?: string;
   readonly maskClassName?: string;
@@ -36,6 +41,19 @@ export interface CModalProps {
 }
 
 const DEFAULT_WIDTH = 420;
+const RESIZABLE_DIMENSION_WARNING =
+  'CModal: resizable requires numeric width and height. Resize has been disabled.';
+
+function canUseResizable(width: number | string, height: number | string | undefined): boolean {
+  return typeof width === 'number' && typeof height === 'number';
+}
+
+function getViewportCenteredFramePosition(width: number, height: number): { x: number; y: number } {
+  return {
+    x: (window.innerWidth - width) / 2,
+    y: (window.innerHeight - height) / 2,
+  };
+}
 
 /* ── 模块级 ESC 栈：仅栈顶的 modal 响应 ESC ──
  * 每一项是一个稳定的回调引用，模态打开时 push，卸载/关闭时 pop。 */
@@ -135,6 +153,8 @@ interface ModalBodyProps {
   readonly contentClassName?: string;
   readonly maskClassName?: string;
   readonly closeOnMaskClick: boolean;
+  readonly draggable: boolean;
+  readonly resizable: boolean;
   readonly dataTestId?: string;
   readonly children?: React.ReactNode;
 }
@@ -171,6 +191,8 @@ function ModalBody({
   contentClassName,
   maskClassName,
   closeOnMaskClick,
+  draggable,
+  resizable,
   dataTestId,
   children,
 }: ModalBodyProps): React.ReactElement {
@@ -190,6 +212,11 @@ function ModalBody({
    * 并把用户的字符串值通过内联样式应用到 .cm-modal__window-host 上以覆盖尺寸。 */
   const cWindowWidth = typeof width === 'number' ? width : DEFAULT_WIDTH;
   const cWindowHeight = typeof height === 'number' ? (height ?? 0) : 0;
+  const useCenterOffsetPosition = draggable && !resizable;
+  const framePosition =
+    draggable && resizable
+      ? getViewportCenteredFramePosition(cWindowWidth, cWindowHeight)
+      : { x: 0, y: 0 };
 
   const hostStyle: React.CSSProperties | undefined =
     typeof width === 'string' || typeof height === 'string'
@@ -258,6 +285,44 @@ function ModalBody({
     };
   }, []);
 
+  /* 根据 draggable 决定标题栏实现：
+   * - true: 使用 CWindowTitle 支持拖拽
+   * - false: 使用简单的 ModalTitleBar */
+  const renderTitleBar = (): React.ReactNode => {
+    if (draggable) {
+      return (
+        <CWindowTitle theme={theme}>
+          <span
+            className="cm-modal__title"
+            data-testid={dataTestId ? `${dataTestId}__title` : undefined}
+          >
+            {title}
+          </span>
+          {showCloseButton ? (
+            <button
+              type="button"
+              className="cm-modal__close-button"
+              aria-label="Close"
+              onClick={onClose}
+              data-testid={dataTestId ? `${dataTestId}__close` : undefined}
+            >
+              ×
+            </button>
+          ) : null}
+        </CWindowTitle>
+      );
+    }
+
+    return (
+      <ModalTitleBar
+        title={title}
+        showCloseButton={showCloseButton}
+        onClose={onClose}
+        dataTestId={dataTestId}
+      />
+    );
+  };
+
   return (
     <>
       <button
@@ -273,22 +338,16 @@ function ModalBody({
         data-testid={dataTestId ? `${dataTestId}__content` : undefined}
       >
         <div className="cm-modal__window-host" style={hostStyle} ref={windowHostRef}>
-          {/* CWindow 是 class 组件，按 number 传 width/height；
-              不使用 CWindowTitle 以保持非拖拽。 */}
           <CWindow
-            x={0}
-            y={0}
+            x={framePosition.x}
+            y={framePosition.y}
             width={cWindowWidth}
             height={cWindowHeight}
             theme={theme}
-            resizable={false}
+            centered={useCenterOffsetPosition}
+            resizable={resizable}
           >
-            <ModalTitleBar
-              title={title}
-              showCloseButton={showCloseButton}
-              onClose={onClose}
-              dataTestId={dataTestId}
-            />
+            {renderTitleBar()}
             {children}
           </CWindow>
         </div>
@@ -310,6 +369,8 @@ export function CModal(props: CModalProps): React.ReactElement | null {
     closeOnEsc = true,
     closeOnMaskClick = true,
     showCloseButton = true,
+    draggable = false,
+    resizable = false,
     theme,
     className,
     maskClassName,
@@ -319,6 +380,7 @@ export function CModal(props: CModalProps): React.ReactElement | null {
   } = props;
 
   const resolvedTheme = normalizeThemeClassName(useTheme(theme));
+  const effectiveResizable = resizable && canUseResizable(width, height);
 
   /* SSR 守卫：服务端渲染时直接返回 null，不创建 portal、不访问 document。 */
   const isBrowser = typeof document !== 'undefined';
@@ -379,11 +441,28 @@ export function CModal(props: CModalProps): React.ReactElement | null {
     };
   }, [isBrowser, open]);
 
+  React.useEffect(() => {
+    if (!open) return;
+    if (!resizable) return;
+    if (effectiveResizable) return;
+
+    console.warn(RESIZABLE_DIMENSION_WARNING);
+  }, [effectiveResizable, open, resizable]);
+
   if (!isBrowser) return null;
   if (!open) return null;
   if (!portalContainer) return null;
 
-  const rootClassName = mergeClasses(['cm-modal', 'cm-modal--open'], resolvedTheme, className);
+  const rootClassName = mergeClasses(
+    [
+      'cm-modal',
+      'cm-modal--open',
+      ...(draggable ? ['cm-modal--draggable'] : []),
+      ...(effectiveResizable ? ['cm-modal--resizable'] : []),
+    ],
+    resolvedTheme,
+    className,
+  );
 
   return (
     <>
@@ -404,6 +483,8 @@ export function CModal(props: CModalProps): React.ReactElement | null {
           contentClassName={contentClassName}
           maskClassName={maskClassName}
           closeOnMaskClick={closeOnMaskClick}
+          draggable={draggable}
+          resizable={effectiveResizable}
           dataTestId={dataTestId}
         >
           {children}

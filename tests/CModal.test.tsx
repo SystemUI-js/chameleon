@@ -1,16 +1,72 @@
 import '@testing-library/jest-dom';
-import { fireEvent, render } from '@testing-library/react';
 import { readFileSync } from 'node:fs';
 import { resolve } from 'node:path';
-import React from 'react';
+import { act, fireEvent, render } from '@testing-library/react';
+import type React from 'react';
 import { CModal, type CModalProps } from '../src/components/Modal';
+
+type MockPose = {
+  position?: {
+    x: number;
+    y: number;
+  };
+};
+
+type MockDragOptions = {
+  getPose?: (element: HTMLElement) => MockPose & { width: number; height: number };
+  setPose?: (element: HTMLElement, pose: MockPose) => void;
+  setPoseOnEnd?: (element: HTMLElement, pose: MockPose) => void;
+};
+
+type MockDragInstance = {
+  readonly element: HTMLElement;
+  readonly options: MockDragOptions;
+  disabled: boolean;
+  setDisabled: () => void;
+  move: (position: { x: number; y: number }) => void;
+  end: (position: { x: number; y: number }) => void;
+};
+
+const mockDragInstances: MockDragInstance[] = [];
+
+jest.mock('@system-ui-js/multi-drag', () => {
+  class MockDrag {
+    public disabled = false;
+
+    public constructor(
+      public readonly element: HTMLElement,
+      public readonly options: MockDragOptions,
+    ) {
+      mockDragInstances.push(this);
+    }
+
+    public setDisabled(): void {
+      this.disabled = true;
+    }
+
+    public move(position: { x: number; y: number }): void {
+      if (this.disabled) return;
+      this.options.setPose?.(this.element, { position });
+    }
+
+    public end(position: { x: number; y: number }): void {
+      if (this.disabled) return;
+      this.options.setPoseOnEnd?.(this.element, { position });
+    }
+  }
+
+  return {
+    __esModule: true,
+    Drag: MockDrag,
+  };
+});
 
 /* jsdom 未提供 react-dom/server.browser 需要的 MessageChannel / TextEncoder。
  * 这里使用 node 端口（server.node.js）以避免浏览器构建产物的全局依赖。
  * 必须在文件顶层 require，而不是 import，以保证 polyfill 顺序。 */
 if (typeof (globalThis as { TextEncoder?: unknown }).TextEncoder === 'undefined') {
   /* eslint-disable-next-line @typescript-eslint/no-require-imports -- polyfill 必须用 require */
-  const { TextEncoder, TextDecoder } = require('util') as typeof import('util');
+  const { TextEncoder, TextDecoder } = require('node:util') as typeof import('node:util');
   (globalThis as unknown as { TextEncoder: typeof TextEncoder }).TextEncoder = TextEncoder;
   (globalThis as unknown as { TextDecoder: typeof TextDecoder }).TextDecoder = TextDecoder;
 }
@@ -22,6 +78,7 @@ if (typeof (globalThis as { MessageChannel?: unknown }).MessageChannel === 'unde
   (globalThis as unknown as { MessageChannel: typeof FakeMessageChannel }).MessageChannel =
     FakeMessageChannel;
 }
+
 /* eslint-disable-next-line @typescript-eslint/no-require-imports -- 受 polyfill 顺序约束需在 polyfill 之后 require */
 const { renderToString } = require('react-dom/server') as typeof import('react-dom/server');
 
@@ -38,6 +95,12 @@ function queryAllModalRoots(): readonly HTMLElement[] {
 }
 
 describe('CModal', () => {
+  beforeEach(() => {
+    mockDragInstances.length = 0;
+    Object.defineProperty(window, 'innerWidth', { configurable: true, value: 1024 });
+    Object.defineProperty(window, 'innerHeight', { configurable: true, value: 768 });
+  });
+
   /* ── 渲染条件 ── */
 
   it('returns null portal output when open=false', () => {
@@ -84,13 +147,13 @@ describe('CModal', () => {
     /* 必须有作用域选择器，且必须把 position/left/top 三者全部归零，
      * 否则居中只对了一半，inline `left: 0; top: 0` 仍会生效。 */
     expect(css).toMatch(
-      /\.cm-modal\s+\.cm-window-frame\s*\{[^}]*position\s*:\s*static\s*!important[^}]*\}/,
+      /\.cm-modal(?::not\(\.cm-modal--draggable\))?\s+\.cm-window-frame\s*\{[^}]*position\s*:\s*static\s*!important[^}]*\}/,
     );
     expect(css).toMatch(
-      /\.cm-modal\s+\.cm-window-frame\s*\{[^}]*left\s*:\s*auto\s*!important[^}]*\}/,
+      /\.cm-modal(?::not\(\.cm-modal--draggable\))?\s+\.cm-window-frame\s*\{[^}]*left\s*:\s*auto\s*!important[^}]*\}/,
     );
     expect(css).toMatch(
-      /\.cm-modal\s+\.cm-window-frame\s*\{[^}]*top\s*:\s*auto\s*!important[^}]*\}/,
+      /\.cm-modal(?::not\(\.cm-modal--draggable\))?\s+\.cm-window-frame\s*\{[^}]*top\s*:\s*auto\s*!important[^}]*\}/,
     );
   });
 
@@ -106,8 +169,112 @@ describe('CModal', () => {
     const css = readFileSync(scssPath, 'utf8');
 
     expect(css).toMatch(
-      /\.cm-modal\s+\.cm-window-frame\s*\{[^}]*height\s*:\s*auto\s*!important[^}]*\}/,
+      /\.cm-modal:not\(\.cm-modal--resizable\)\s+\.cm-window-frame\s*\{[^}]*height\s*:\s*auto\s*!important[^}]*\}/,
     );
+  });
+
+  it('centers draggable windows from the viewport center and stores drag as center offsets', () => {
+    render(
+      <CModal open draggable onClose={() => undefined} title="x" data-testid="m1">
+        body
+      </CModal>,
+    );
+
+    const root = queryModalRoot();
+    const frame = root?.querySelector<HTMLElement>('[data-testid="window-frame"]');
+    expect(root).toHaveClass('cm-modal--draggable');
+    expect(frame).toHaveStyle({
+      left: '50%',
+      top: '50%',
+      transform: 'translate(-50%, -50%)',
+    });
+    expect(mockDragInstances).toHaveLength(1);
+
+    act(() => {
+      mockDragInstances[0].move({ x: 1, y: 1 });
+    });
+
+    expect(frame).toHaveStyle({
+      left: 'calc(50% + 1px)',
+      top: 'calc(50% + 1px)',
+      transform: 'translate(-50%, -50%)',
+    });
+  });
+
+  it('disables resizable and warns when width and height are not both numeric', () => {
+    const warn = jest.spyOn(console, 'warn').mockImplementation(() => undefined);
+
+    render(
+      <CModal open resizable onClose={() => undefined} title="x" data-testid="m1">
+        body
+      </CModal>,
+    );
+
+    const root = queryModalRoot();
+    expect(root).not.toHaveClass('cm-modal--resizable');
+    expect(root?.querySelector('[data-testid="window-resize-s"]')).toBeNull();
+    expect(warn).toHaveBeenCalledWith(
+      'CModal: resizable requires numeric width and height. Resize has been disabled.',
+    );
+
+    warn.mockRestore();
+  });
+
+  it('enables resizable when width and height are both numeric', () => {
+    const warn = jest.spyOn(console, 'warn').mockImplementation(() => undefined);
+
+    render(
+      <CModal open resizable width={420} height={200} onClose={() => undefined} title="x">
+        body
+      </CModal>,
+    );
+
+    const root = queryModalRoot();
+    expect(root).toHaveClass('cm-modal--resizable');
+    expect(root?.querySelector('[data-testid="window-resize-s"]')).not.toBeNull();
+    expect(warn).not.toHaveBeenCalled();
+
+    warn.mockRestore();
+  });
+
+  it('uses viewport px coordinates without transform for draggable resizable windows', () => {
+    render(
+      <CModal
+        open
+        draggable
+        resizable
+        width={420}
+        height={200}
+        onClose={() => undefined}
+        title="x"
+        data-testid="m1"
+      >
+        body
+      </CModal>,
+    );
+
+    const root = queryModalRoot();
+    const frame = root?.querySelector<HTMLElement>('[data-testid="window-frame"]');
+    expect(root).toHaveClass('cm-modal--draggable', 'cm-modal--resizable');
+    expect(frame).toHaveStyle({
+      left: '302px',
+      top: '284px',
+    });
+    expect(frame?.style.transform).toBe('');
+    const titleDrag = mockDragInstances.find(
+      (instance) => instance.element.dataset.testid === 'window-title',
+    );
+    expect(titleDrag).toBeDefined();
+
+    act(() => {
+      titleDrag?.move({ x: 303, y: 285 });
+    });
+
+    expect(frame).toHaveStyle({
+      left: '303px',
+      top: '285px',
+    });
+    expect(frame?.style.transform).toBe('');
   });
 
   it('places the CWindow frame as a direct flex child of cm-modal__content via cm-modal__window-host', () => {
@@ -298,8 +465,12 @@ describe('CModal', () => {
     expect(host).not.toBeNull();
 
     /* 收集 host 内的可聚焦元素，顺序为：close 按钮 → inner 按钮。 */
+    if (host == null) {
+      throw new Error('Expected modal window host to be rendered');
+    }
+
     const focusables = Array.from(
-      host!.querySelectorAll<HTMLElement>(
+      host.querySelectorAll<HTMLElement>(
         'button:not([disabled]), [href], input:not([disabled]), select:not([disabled]), textarea:not([disabled]), [tabindex]:not([tabindex="-1"])',
       ),
     );

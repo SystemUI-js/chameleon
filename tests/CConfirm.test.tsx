@@ -1,7 +1,7 @@
 import { readFileSync } from 'node:fs';
 import { resolve } from 'node:path';
 import { act, fireEvent, render } from '@testing-library/react';
-import { CConfirm, confirm, type CConfirmProps } from '../src/components/Confirm';
+import { CConfirm, type CConfirmProps, confirm } from '../src/components/Confirm';
 
 function queryConfirmRoot(): HTMLElement | null {
   return document.body.querySelector('.cm-confirm');
@@ -166,6 +166,36 @@ describe('CConfirm component', () => {
     expect(queryConfirmRoot()?.querySelector('.cm-confirm__body')?.textContent).toBe(
       'from-message',
     );
+  });
+
+  it('disables inherited resize and warns when height is missing', () => {
+    const warn = jest.spyOn(console, 'warn').mockImplementation(() => undefined);
+
+    render(<CConfirm open message="x" resizable onClose={() => undefined} />);
+
+    const root = queryConfirmRoot();
+    expect(root).not.toHaveClass('cm-modal--resizable');
+    expect(root?.querySelector('[data-testid="window-resize-s"]')).toBeNull();
+    expect(warn).toHaveBeenCalledWith(
+      'CModal: resizable requires numeric width and height. Resize has been disabled.',
+    );
+
+    warn.mockRestore();
+  });
+
+  it('enables inherited resize when width and height are both provided', () => {
+    const warn = jest.spyOn(console, 'warn').mockImplementation(() => undefined);
+
+    render(
+      <CConfirm open message="x" resizable width={360} height={180} onClose={() => undefined} />,
+    );
+
+    const root = queryConfirmRoot();
+    expect(root).toHaveClass('cm-modal--resizable');
+    expect(root?.querySelector('[data-testid="window-resize-s"]')).not.toBeNull();
+    expect(warn).not.toHaveBeenCalled();
+
+    warn.mockRestore();
   });
 });
 
@@ -358,7 +388,7 @@ describe('CConfirm visibility (Task 2 regression)', () => {
      * Must use !important because the height comes from an inline style we
      * are forbidden from editing (CWidget.renderFrame). */
     expect(css).toMatch(
-      /\.cm-confirm\s+\.cm-window-frame\s*\{[^}]*height\s*:\s*auto\s*!important[^}]*\}/,
+      /\.cm-confirm:not\(\.cm-modal--resizable\)\s+\.cm-window-frame\s*\{[^}]*height\s*:\s*auto\s*!important[^}]*\}/,
     );
   });
 

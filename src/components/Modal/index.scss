@@ -32,27 +32,32 @@
     pointer-events: auto;
 }
 
-/* Modal-scoped centering override.
- * CWindow's frame is unconditionally rendered with inline
- * `position: absolute; left: 0; top: 0` because CWidget.renderFrame
- * always emits those styles (see src/components/Widget/Widget.tsx:836-844).
- * Inside a Modal we want the frame to participate in the host's flex
- * centering, not pin its top-left corner to the centered host origin.
- * Neutralizing all three properties forces the frame back into normal
- * flow so flex `align-items: center; justify-content: center` on
- * `.cm-modal__content` centers the frame's actual geometric box. */
-.cm-modal .cm-window-frame {
+/* Modal-scoped centering override (non-draggable only).
+ * When draggable=true, the frame uses absolute positioning for movement. */
+.cm-modal:not(.cm-modal--draggable) .cm-window-frame {
     position: static !important;
     left: auto !important;
     top: auto !important;
-    /* CWidget.renderFrame also emits inline `height: <number>px` derived from
-     * the `height` prop. CModal passes `cWindowHeight = 0` whenever no numeric
-     * `height` prop is supplied (src/components/Modal/CModal.tsx:192 — the
-     * documented default for intrinsic-height modals). Without this override,
-     * `.cm-window__inner` declared with height 100% resolves to 0 and the
-     * modal collapses to invisible. Mirrors the Confirm-scoped fix at
-     * src/components/Confirm/index.scss (`.cm-confirm .cm-window-frame`). */
+}
+
+.cm-modal:not(.cm-modal--resizable) .cm-window-frame {
     height: auto !important;
+}
+
+/* Draggable modal: frame uses absolute positioning for drag movement */
+.cm-modal--draggable .cm-modal__window-host {
+    position: absolute;
+    inset: 0;
+    pointer-events: none;
+}
+
+.cm-modal--draggable .cm-window-frame {
+    position: absolute !important;
+    pointer-events: auto;
+}
+
+.cm-modal--draggable .cm-modal__content {
+    display: block;
 }
 
 /* Title bar layout inside CWindow children (no drag — not a CWindowTitle). */

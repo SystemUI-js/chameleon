@@ -830,8 +830,9 @@ export class CWidget<TState extends WidgetState = WidgetState> extends React.Com
       moveBehavior: _mb,
       resizeBehavior: _rb,
       resizeOptions: _ro,
+      centered: _centered,
       ...restProps
-    } = this.props;
+    } = this.props as CWidgetProps & { centered?: boolean };
     /* eslint-enable sonarjs/no-unused-vars */
     const frameStyle: React.CSSProperties = {
       ...this.filterLayoutStyle(style),

@@ -1868,11 +1868,13 @@ function DatePickerShowcase(): React.ReactElement {
 
 const MODAL_SNIPPET = `
 const [open, setOpen] = useState(false);
+const [draggable, setDraggable] = useState(false);
+const [resizable, setResizable] = useState(false);
 
 return (
   <>
     <CButton onClick={() => setOpen(true)}>Open modal</CButton>
-    <CModal open={open} title="Sample Modal" onClose={() => setOpen(false)}>
+    <CModal open={open} title="Sample Modal" draggable={draggable} resizable={resizable} onClose={() => setOpen(false)}>
       <p>Modal body content goes here.</p>
     </CModal>
   </>
@@ -1882,6 +1884,9 @@ return (
 function ModalShowcase(): React.ReactElement {
   const [open, setOpen] = React.useState(false);
   const [defaultHeightOpen, setDefaultHeightOpen] = React.useState(false);
+  const [draggableOpen, setDraggableOpen] = React.useState(false);
+  const [modalDraggable, setModalDraggable] = React.useState(true);
+  const [modalResizable, setModalResizable] = React.useState(true);
 
   return (
     <ShowcaseSection title="Modal" testId="catalog-section-modal" code={MODAL_SNIPPET}>
@@ -1896,6 +1901,25 @@ function ModalShowcase(): React.ReactElement {
           <CButton data-testid="modal-demo-default-open" onClick={() => setDefaultHeightOpen(true)}>
             Open default-height modal
           </CButton>
+          <CButton data-testid="modal-demo-draggable-open" onClick={() => setDraggableOpen(true)}>
+            Open draggable modal
+          </CButton>
+        </div>
+        <div className="cm-catalog__row">
+          <CCheckbox
+            data-testid="modal-demo-draggable"
+            checked={modalDraggable}
+            onChange={setModalDraggable}
+          >
+            Draggable
+          </CCheckbox>
+          <CCheckbox
+            data-testid="modal-demo-resizable"
+            checked={modalResizable}
+            onChange={setModalResizable}
+          >
+            Resizable
+          </CCheckbox>
         </div>
         <CModal
           data-testid="modal-demo"
@@ -1916,6 +1940,19 @@ function ModalShowcase(): React.ReactElement {
         >
           <p>This modal has no explicit height prop and must render at intrinsic height.</p>
         </CModal>
+        <CModal
+          data-testid="modal-demo-draggable"
+          open={draggableOpen}
+          title="Draggable & Resizable Modal"
+          width={400}
+          height={250}
+          draggable={modalDraggable}
+          resizable={modalResizable}
+          onClose={() => setDraggableOpen(false)}
+        >
+          <p>This modal supports drag and resize when enabled.</p>
+          <p>Try dragging the title bar or resizing from edges.</p>
+        </CModal>
       </div>
     </ShowcaseSection>
   );
@@ -1924,6 +1961,8 @@ function ModalShowcase(): React.ReactElement {
 const CONFIRM_SNIPPET = `
 const [open, setOpen] = useState(false);
 const [result, setResult] = useState<string>('none');
+const [draggable, setDraggable] = useState(false);
+const [resizable, setResizable] = useState(false);
 
 const openImperative = async () => {
   const ok = await confirm({ title: 'Delete?', content: 'Are you sure?' });
@@ -1937,6 +1976,8 @@ return (
       open={open}
       title="Inline confirm"
       message="Click OK or Cancel."
+      draggable={draggable}
+      resizable={resizable}
       onConfirm={() => setOpen(false)}
       onCancel={() => setOpen(false)}
     />
@@ -1950,6 +1991,8 @@ return (
 function ConfirmShowcase(): React.ReactElement {
   const [inlineOpen, setInlineOpen] = React.useState(false);
   const [imperativeResult, setImperativeResult] = React.useState<string>('none');
+  const [confirmDraggable, setConfirmDraggable] = React.useState(true);
+  const [confirmResizable, setConfirmResizable] = React.useState(true);
 
   // 调用模块级 imperative confirm() 并把 Promise<boolean> 结果回填到 UI
   const handleImperativeClick = React.useCallback(async () => {
@@ -1971,6 +2014,22 @@ function ConfirmShowcase(): React.ReactElement {
             Call confirm()
           </CButton>
         </div>
+        <div className="cm-catalog__row">
+          <CCheckbox
+            data-testid="confirm-demo-draggable"
+            checked={confirmDraggable}
+            onChange={setConfirmDraggable}
+          >
+            Draggable
+          </CCheckbox>
+          <CCheckbox
+            data-testid="confirm-demo-resizable"
+            checked={confirmResizable}
+            onChange={setConfirmResizable}
+          >
+            Resizable
+          </CCheckbox>
+        </div>
         <p className="cm-catalog__value" data-testid="confirm-demo-imperative-result">
           Imperative result: {imperativeResult}
         </p>
@@ -1979,6 +2038,9 @@ function ConfirmShowcase(): React.ReactElement {
           open={inlineOpen}
           title="Inline confirm"
           message="Click OK or Cancel to dismiss."
+          height={180}
+          draggable={confirmDraggable}
+          resizable={confirmResizable}
           onConfirm={() => setInlineOpen(false)}
           onCancel={() => setInlineOpen(false)}
         />
