@@ -1,0 +1,37 @@
+# Task 1 CSlider Scope Verification Evidence
+
+Generated: 2026-06-09T05:01:21Z
+
+## CSlider Step Scope Verification
+
+### Search Results
+
+Searched OpenSpec changes/specs for new CSlider step algorithm requirements:
+
+**openspec/changes/component-enhancements/specs/cslider-step-verify/spec.md**
+- Purpose: "验证 CSlider 组件已支持的 step 功能"
+- Requirement 1: "CSlider 已支持 step 属性，外部传入的 value 会自动对齐到最近的 step 倍数"
+- Requirement 2: "现有测试已覆盖 step 行为，无需新增算法实现"
+- Explicitly states: VERIFICATION ONLY
+
+**openspec/changes/add-cslider-component/specs/cslider-component/spec.md**
+- Already contains step support specification
+- No new step algorithm requirements introduced
+
+**openspec/changes/component-enhancements/proposal.md**
+- CSlider scope: "仅做回归验证，不重新实现 step 逻辑"
+
+**openspec/changes/component-enhancements/design.md**
+- CSlider section: "Verification Only - 验证现有 step 支持"
+- Documents: normalizeSliderValue, keyboard handling, track click, drag all already support step
+
+### Verification
+
+No new CSlider step algorithm rewrite is specified. All OpenSpec documents confirm:
+1. CSlider step support is existing behavior
+2. Only verification and regression coverage are required
+3. No implementation changes needed
+
+### Conclusion
+
+CSlider step scope is correctly limited to verification-only. No new algorithm implementation is requested in any OpenSpec document.

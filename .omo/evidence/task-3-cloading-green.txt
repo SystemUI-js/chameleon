@@ -1,0 +1,25 @@
+Task: CLoading Component - Test Evidence
+Date: 2026-06-05
+Command: yarn test -- CLoading.test.tsx --runInBand
+Result: PASS
+
+Tests: 16 passed, 16 total
+Test Suites: 1 passed, 1 total
+
+Coverage:
+- exports CLoading from package entry
+- renders spinner variant by default
+- renders dots variant
+- renders bar variant determinate with progress and aria values
+- renders bar variant indeterminate without aria-valuenow and with indeterminate class
+- clamps progress -1 to 0
+- keeps progress 50 as is
+- clamps progress 101 to 100
+- renders string label visibly and sets aria-label
+- renders non-string label visibly without aria-label
+- does not render label wrapper when label is absent
+- applies theme class from explicit theme prop
+- defaults to medium size
+- applies named size classes
+- sets --cm-loading-size CSS variable for numeric size
+- sets --cm-loading-size CSS variable for string size

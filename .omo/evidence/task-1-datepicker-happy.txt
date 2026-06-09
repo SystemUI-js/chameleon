@@ -1,0 +1,31 @@
+yarn run v1.22.22
+warning package.json: No license field
+$ jest tests/CDatePicker.test.tsx --runInBand
+PASS tests/CDatePicker.test.tsx
+  CDatePicker
+    ✓ exports CDatePicker and props from component barrel (39 ms)
+    ✓ has ARIA combobox attributes when closed (6 ms)
+    ✓ has ARIA combobox attributes when open (23 ms)
+    ✓ opens panel on input click, selects a date, closes panel (30 ms)
+    ✓ updates displayed date and selected cell when rerendered with new value (29 ms)
+    ✓ shows defaultValue when no value prop is given (3 ms)
+    ✓ clears value when allowClear is true and clear button is clicked (4 ms)
+    ✓ does not render clear button when allowClear is false (2 ms)
+    ✓ disabled prevents panel open and hides clear (3 ms)
+    ✓ disables out-of-range cells and prevents click (30 ms)
+    ✓ navigates months without changing selected value (49 ms)
+    ✓ calls onOpenChange when panel opens and closes (15 ms)
+    ✓ marks today cell with --today class (9 ms)
+    ✓ marks out-of-month cells with --out-of-month class (9 ms)
+    ✓ renders with theme class from explicit theme prop (1 ms)
+    ✓ renders with theme class from Theme provider (1 ms)
+    ✓ clear button does not open panel (stops propagation) (2 ms)
+    ✓ renders aria-label and placeholder on input (1 ms)
+    ✓ clicking out-of-month cell does nothing (16 ms)
+
+Test Suites: 1 passed, 1 total
+Tests:       19 passed, 19 total
+Snapshots:   0 total
+Time:        0.965 s, estimated 1 s
+Ran all test suites matching /tests\/CDatePicker.test.tsx/i.
+Done in 2.67s.

@@ -1,0 +1,42 @@
+# Task 7 Merge-Hardening + Scope Evidence
+
+Timestamp: 2026-06-06T21:17:23+08:00
+
+## A. Conflict-sensitive file inspection
+
+| File | Required preservation | Preserved? | Evidence lines |
+|---|---|---|---|
+| `src/index.ts` | `CSlider` plus `CDatePicker`, `CModal`, `CConfirm`, `confirm` | Y | `CConfirm` line 7; `CDatePicker` line 8; `CModal` line 16; `CSlider` line 20; `confirm` line 31 |
+| `src/components/index.ts` | `export * from './CSlider'` plus new component barrels | Y | `Confirm` line 5; `DatePicker` line 6; `CSlider` line 10; `Modal` line 18 |
+| `src/dev/ComponentCatalog.tsx` | CSlider ShowcaseSection plus DatePicker/Modal/Confirm sections | Y | `CSlider` import line 22; `SliderShowcase` line 703; `catalog-section-slider` line 707; `DatePickerShowcase` line 1834 / `catalog-section-date-picker` line 1840; `ModalShowcase` line 1882 / `catalog-section-modal` line 1886; `ConfirmShowcase` line 1935 / `catalog-section-confirm` line 1949 |
+| `tests/PublicThemeMatrix.test.tsx` | Existing public matrix plus three new components | Y | `CConfirm` import line 5; `CDatePicker` import line 6; `CModal` import line 12; DatePicker theme matrix line 218; Modal line 227; Confirm line 239. No prior CSlider entry was present in this file during inspection. |
+| `tests/ComponentCatalog.test.tsx` | CSlider section tests plus new sections | Y | Slider show-code test line 67; slider behavior test line 249; DatePicker section test line 524; Modal section test line 537; Confirm section test line 547 |
+| `tests/ui/*` | Pre-existing specs plus `new-components.smoke.spec.ts` component specs | Y | Existing specs present: `common-controls.smoke.spec.ts`, `component-catalog-code.spec.ts`, `icon-container.interactions.spec.ts`, `menu.spec.ts`, `scroll-area.spec.ts`, `window.*.spec.ts`; new component specs in `new-components.smoke.spec.ts`: Input line 8, TimePicker line 39, Tree line 65, Transfer line 82, Table line 100, DatePicker line 117, Modal line 149, Confirm line 174 |
+
+## B. Scope-creep static scan
+
+| Scan | Result | Evidence |
+|---|---|---|
+| DatePicker forbidden API scan: `format|locale|i18n|rangePicker|TimePicker.*Date|range` under `src/components/DatePicker/` | PASS | No matches found after renaming internal helper and direct string comparison. No range picker, time picker, i18n/locale API, or `format` prop. |
+| Legacy system/window APIs: `SystemHost|SYSTEM_TYPE|WindowManager` under Modal/DatePicker/Confirm | PASS | No matches found in `src/components/Modal/`, `src/components/DatePicker/`, `src/components/Confirm/`. |
+| Type escape scan: `as any|@ts-ignore` under Modal/DatePicker/Confirm | PASS | No matches found. |
+| Imperative confirm root ownership | PASS | `src/components/Confirm/CConfirm.tsx`: `export function confirm` line 199; per-call `createRoot(container)` line 209. Import at line 2 only; no module-level singleton root. |
+| CSS-in-JS | PASS | No CSS-in-JS introduced in inspected component source; styling remains SCSS/className based. |
+| New npm dependencies | PASS | `package.json` inspected: `dependencies` remains only `@system-ui-js/multi-drag` line 80; no new deps added for DatePicker/Modal/Confirm. |
+
+## C. Targeted regression tests
+
+| Command | Exit | Result | Counts / Notes |
+|---|---:|---|---|
+| `yarn test tests/CDatePicker.test.tsx tests/CModal.test.tsx tests/CConfirm.test.tsx --runInBand` | 0 | PASS | 52/52 passed across 3 suites. CConfirm act warnings are pre-existing noise documented in Task 4. |
+| `yarn test tests/PublicThemeMatrix.test.tsx tests/ComponentCatalog.test.tsx --runInBand` | 0 | PASS | 65/65 passed across 2 suites. CDock `defaultHeight` React warning is pre-existing/unrelated. |
+| `yarn test tests/ThemeExports.test.tsx --runInBand` | N/A | SKIPPED | `tests/ThemeExports.test.tsx` does not exist. Existing file is `tests/ThemeExports.test.ts` and was covered by full `yarn test`. |
+| `yarn test tests/CDatePicker.test.tsx --runInBand` after narrow DatePicker hardening fix | 0 | PASS | 19/19 passed. |
+
+## D. Narrow fixes made during Task 7
+
+| File | Change | Reason | Verification |
+|---|---|---|---|
+| `src/components/DatePicker/CDatePicker.tsx` | Renamed internal `formatDate` helper to `toDateString`; replaced `localeCompare` with direct YYYY-MM-DD string comparison | Required scope-creep grep to have no `format`/`locale` hits; no public API change | Scope scan empty; DatePicker 19/19; lint pass |
+| `src/components/DatePicker/CDatePicker.tsx` | Removed unsupported root `aria-label` and removed `role="grid"` from layout div | LSP/biome diagnostics reported unsupported ARIA semantics; input combobox/dialog ARIA remains intact | LSP diagnostics 0; DatePicker 19/19 |
+| `src/components/DatePicker/CDatePicker.tsx` | Converted conditional class entries from `null` to `string[]` spreads | Removed new vite-dts diagnostics from CDatePicker while keeping class output equivalent | Final build has no CDatePicker diagnostics; build exit 0 |

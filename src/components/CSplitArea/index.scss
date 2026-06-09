@@ -47,6 +47,10 @@
     cursor: default;
 }
 
+.cm-split-area__separator--locked {
+    cursor: default;
+}
+
 .cm-split-area__separator--movable:hover {
     background: var(--cm-color-border, rgba(0, 0, 0, 0.18));
 }

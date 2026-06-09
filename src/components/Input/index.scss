@@ -1,4 +1,5 @@
 .cm-input {
+    position: relative;
     display: inline-flex;
     align-items: center;
     box-sizing: border-box;
@@ -93,5 +94,46 @@
 
     &:disabled {
         cursor: not-allowed;
+    }
+}
+
+.cm-input__suggestions {
+    position: absolute;
+    z-index: 10;
+    top: calc(100% + 2px);
+    left: 0;
+    right: 0;
+    box-sizing: border-box;
+    max-height: 180px;
+    overflow-y: auto;
+    padding: 2px 0;
+    border: 1px solid #ccc;
+    border-radius: 2px;
+    background: #fff;
+    color: #000;
+    box-shadow: 0 2px 4px rgb(0 0 0 / 12%);
+}
+
+.cm-input__suggestion {
+    box-sizing: border-box;
+    padding: 4px 8px;
+    cursor: pointer;
+    user-select: none;
+
+    &:hover {
+        background: #f2f6ff;
+    }
+}
+
+.cm-input__suggestion--active {
+    background: #e8f0fe;
+}
+
+.cm-input__suggestion--disabled {
+    color: #999;
+    cursor: not-allowed;
+
+    &:hover {
+        background: transparent;
     }
 }

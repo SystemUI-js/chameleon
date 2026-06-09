@@ -1,6 +1,6 @@
 import '@testing-library/jest-dom';
-import { fireEvent, render, screen } from '@testing-library/react';
-import type { CInputProps } from '../src';
+import { act, fireEvent, render, screen } from '@testing-library/react';
+import type { CInputProps, CInputSuggestionOption } from '../src';
 import { CInput as PackageEntryCInput, Theme } from '../src';
 import { CInput } from '../src/components/Input/CInput';
 
@@ -381,6 +381,283 @@ describe('CInput', () => {
         'bar',
         'baz',
       );
+    });
+  });
+
+  describe('suggestions', () => {
+    const suggestionOptions = [
+      { value: 'apple', label: 'Apple' },
+      { value: 'banana', label: 'Banana', disabled: true },
+      { value: 'cherry', label: 'Cherry' },
+    ] as const;
+
+    afterEach(() => {
+      jest.useRealTimers();
+    });
+
+    it('exports CInputSuggestionOption through the package entry type surface', () => {
+      const option: import('../src').CInputSuggestionOption = {
+        value: 'typed-option',
+        label: <span>Typed option</span>,
+        disabled: false,
+      };
+
+      expect(option.value).toBe('typed-option');
+    });
+
+    it('renders combobox and listbox ARIA attributes while focused', () => {
+      render(
+        <CInput
+          id="fruit-input"
+          suggestionOptions={suggestionOptions}
+          data-testid="input-aria-list"
+        />,
+      );
+
+      const input = screen.getByTestId('input-aria-list');
+
+      expect(input).toHaveAttribute('role', 'combobox');
+      expect(input).toHaveAttribute('aria-expanded', 'false');
+      expect(input).toHaveAttribute('aria-controls', 'fruit-input-suggestions');
+
+      fireEvent.focus(input);
+
+      const listbox = screen.getByRole('listbox');
+      const options = screen.getAllByRole('option');
+
+      expect(input).toHaveAttribute('aria-expanded', 'true');
+      expect(input).toHaveAttribute('aria-controls', listbox.id);
+      expect(listbox).toHaveClass('cm-input__suggestions');
+      expect(options).toHaveLength(3);
+      expect(options[1]).toHaveAttribute('aria-disabled', 'true');
+    });
+
+    it('debounces onSearch, keeps only latest value, clears through same pipeline, and cleans timers', () => {
+      jest.useFakeTimers();
+      const handleSearch = jest.fn<void, [string]>();
+      const handleChange = jest.fn<void, [string, React.ChangeEvent<HTMLInputElement>]>();
+      const { unmount } = render(
+        <CInput
+          allowClear
+          defaultValue="seed"
+          suggestionDebounce={50}
+          suggestionOptions={suggestionOptions}
+          onChange={handleChange}
+          onSearch={handleSearch}
+          data-testid="input-debounced"
+        />,
+      );
+
+      const input = screen.getByTestId('input-debounced');
+      fireEvent.change(input, { target: { value: 'a' } });
+      fireEvent.change(input, { target: { value: 'ap' } });
+
+      expect(handleChange).toHaveBeenLastCalledWith(
+        'ap',
+        expect.objectContaining({ target: input }),
+      );
+      expect(handleSearch).not.toHaveBeenCalled();
+
+      act(() => {
+        jest.advanceTimersByTime(49);
+      });
+      expect(handleSearch).not.toHaveBeenCalled();
+
+      act(() => {
+        jest.advanceTimersByTime(1);
+      });
+      expect(handleSearch).toHaveBeenCalledTimes(1);
+      expect(handleSearch).toHaveBeenLastCalledWith('ap');
+
+      fireEvent.click(screen.getByRole('button', { name: 'Clear input' }));
+      expect(input).toHaveValue('');
+      expect(handleChange).toHaveBeenLastCalledWith('', expect.objectContaining({ target: input }));
+      expect(handleSearch).toHaveBeenCalledTimes(1);
+
+      act(() => {
+        jest.advanceTimersByTime(50);
+      });
+      expect(handleSearch).toHaveBeenCalledTimes(2);
+      expect(handleSearch).toHaveBeenLastCalledWith('');
+
+      fireEvent.change(input, { target: { value: 'pending' } });
+      expect(jest.getTimerCount()).toBe(1);
+      unmount();
+      expect(jest.getTimerCount()).toBe(0);
+    });
+
+    it('uses zero debounce by default and calls onSearch immediately', () => {
+      const handleSearch = jest.fn<void, [string]>();
+
+      render(
+        <CInput
+          suggestionOptions={suggestionOptions}
+          onSearch={handleSearch}
+          data-testid="input-zero-debounce"
+        />,
+      );
+
+      fireEvent.change(screen.getByTestId('input-zero-debounce'), { target: { value: 'now' } });
+
+      expect(handleSearch).toHaveBeenCalledTimes(1);
+      expect(handleSearch).toHaveBeenLastCalledWith('now');
+    });
+
+    it('selects enabled options by mouse and closes the dropdown', () => {
+      const handleChange = jest.fn<void, [string, React.ChangeEvent<HTMLInputElement>]>();
+      const handleSelect = jest.fn<void, [string, CInputSuggestionOption]>();
+
+      render(
+        <CInput
+          suggestionOptions={suggestionOptions}
+          onChange={handleChange}
+          onSelect={handleSelect}
+          data-testid="input-mouse-select"
+        />,
+      );
+
+      const input = screen.getByTestId('input-mouse-select');
+      fireEvent.focus(input);
+      fireEvent.click(screen.getByRole('option', { name: 'Cherry' }));
+
+      expect(input).toHaveValue('cherry');
+      expect(handleChange).toHaveBeenLastCalledWith(
+        'cherry',
+        expect.objectContaining({ target: input }),
+      );
+      expect(handleSelect).toHaveBeenLastCalledWith('cherry', suggestionOptions[2]);
+      expect(screen.queryByRole('listbox')).not.toBeInTheDocument();
+    });
+
+    it('skips disabled options during keyboard navigation and selects highlighted option with Enter', () => {
+      const handleChange = jest.fn<void, [string, React.ChangeEvent<HTMLInputElement>]>();
+      const handleSelect = jest.fn<void, [string, CInputSuggestionOption]>();
+      const handlePressEnter = jest.fn<void, [React.KeyboardEvent<HTMLInputElement>]>();
+
+      render(
+        <CInput
+          suggestionOptions={suggestionOptions}
+          onChange={handleChange}
+          onPressEnter={handlePressEnter}
+          onSelect={handleSelect}
+          data-testid="input-keyboard-select"
+        />,
+      );
+
+      const input = screen.getByTestId('input-keyboard-select');
+      fireEvent.focus(input);
+      fireEvent.keyDown(input, { key: 'ArrowDown' });
+
+      const appleOption = screen.getByRole('option', { name: 'Apple' });
+      expect(appleOption).toHaveAttribute('aria-selected', 'true');
+      expect(input).toHaveAttribute('aria-activedescendant', appleOption.id);
+
+      fireEvent.keyDown(input, { key: 'ArrowDown' });
+      expect(screen.getByRole('option', { name: 'Cherry' })).toHaveAttribute(
+        'aria-selected',
+        'true',
+      );
+      expect(screen.getByRole('option', { name: 'Banana' })).toHaveAttribute(
+        'aria-disabled',
+        'true',
+      );
+
+      fireEvent.keyDown(input, { key: 'Enter' });
+
+      expect(input).toHaveValue('cherry');
+      expect(handleChange).toHaveBeenLastCalledWith(
+        'cherry',
+        expect.objectContaining({ target: input }),
+      );
+      expect(handleSelect).toHaveBeenLastCalledWith('cherry', suggestionOptions[2]);
+      expect(handlePressEnter).not.toHaveBeenCalled();
+      expect(screen.queryByRole('listbox')).not.toBeInTheDocument();
+    });
+
+    it('wraps ArrowUp over enabled options and preserves onPressEnter without a highlight', () => {
+      const handlePressEnter = jest.fn<void, [React.KeyboardEvent<HTMLInputElement>]>();
+
+      render(
+        <CInput
+          suggestionOptions={suggestionOptions}
+          onPressEnter={handlePressEnter}
+          data-testid="input-keyboard-wrap"
+        />,
+      );
+
+      const input = screen.getByTestId('input-keyboard-wrap');
+      fireEvent.focus(input);
+      fireEvent.keyDown(input, { key: 'Enter' });
+      expect(handlePressEnter).toHaveBeenCalledTimes(1);
+
+      fireEvent.keyDown(input, { key: 'ArrowUp' });
+      expect(screen.getByRole('option', { name: 'Cherry' })).toHaveAttribute(
+        'aria-selected',
+        'true',
+      );
+
+      fireEvent.keyDown(input, { key: 'ArrowDown' });
+      expect(screen.getByRole('option', { name: 'Apple' })).toHaveAttribute(
+        'aria-selected',
+        'true',
+      );
+    });
+
+    it('does not select disabled options by click and closes on Escape and outside click', () => {
+      const handleChange = jest.fn<void, [string, React.ChangeEvent<HTMLInputElement>]>();
+      const handleSelect = jest.fn<void, [string, CInputSuggestionOption]>();
+
+      render(
+        <CInput
+          suggestionOptions={suggestionOptions}
+          onChange={handleChange}
+          onSelect={handleSelect}
+          data-testid="input-disabled-option"
+        />,
+      );
+
+      const input = screen.getByTestId('input-disabled-option');
+      fireEvent.focus(input);
+      fireEvent.click(screen.getByRole('option', { name: 'Banana' }));
+
+      expect(input).toHaveValue('');
+      expect(handleChange).not.toHaveBeenCalled();
+      expect(handleSelect).not.toHaveBeenCalled();
+      expect(screen.getByRole('listbox')).toBeInTheDocument();
+
+      fireEvent.keyDown(input, { key: 'Escape' });
+      expect(screen.queryByRole('listbox')).not.toBeInTheDocument();
+
+      fireEvent.focus(input);
+      expect(screen.getByRole('listbox')).toBeInTheDocument();
+      fireEvent.mouseDown(document.body);
+      expect(screen.queryByRole('listbox')).not.toBeInTheDocument();
+    });
+
+    it('keeps controlled value rendered until parent updates after selection', () => {
+      const handleChange = jest.fn<void, [string, React.ChangeEvent<HTMLInputElement>]>();
+      const handleSelect = jest.fn<void, [string, CInputSuggestionOption]>();
+
+      render(
+        <CInput
+          value="controlled"
+          suggestionOptions={suggestionOptions}
+          onChange={handleChange}
+          onSelect={handleSelect}
+          data-testid="input-controlled-suggestion"
+        />,
+      );
+
+      const input = screen.getByTestId('input-controlled-suggestion');
+      fireEvent.focus(input);
+      fireEvent.click(screen.getByRole('option', { name: 'Apple' }));
+
+      expect(handleChange).toHaveBeenLastCalledWith(
+        'apple',
+        expect.objectContaining({ target: input }),
+      );
+      expect(handleSelect).toHaveBeenLastCalledWith('apple', suggestionOptions[0]);
+      expect(input).toHaveValue('controlled');
     });
   });
 

@@ -1,0 +1,6 @@
+yarn run v1.22.22
+warning package.json: No license field
+$ eslint "{src,tests}/**/*.{ts,tsx}"
+(node:848516) ESLintIgnoreWarning: The ".eslintignore" file is no longer supported. Switch to using the "ignores" property in "eslint.config.js": https://eslint.org/docs/latest/use/configure/migration-guide#ignoring-files
+(Use `node --trace-warnings ...` to show where the warning was created)
+Done in 13.16s.

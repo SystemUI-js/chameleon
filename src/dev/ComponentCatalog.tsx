@@ -11,7 +11,10 @@ import {
   CGridItem,
   CIconContainer,
   CInput,
+  type CInputSuggestionOption,
   CList,
+  CListIcon,
+  CLoading,
   CMenu,
   CModal,
   CRadio,
@@ -136,6 +139,39 @@ const LIST_ICON_ITEMS: readonly CatalogListItem[] = [
     name: 'Settings',
     description: 'Keyboard drag handle remains focusable',
     icon: '⚙',
+  },
+] as const;
+
+interface CatalogListIconDemoItem {
+  readonly id: string;
+  readonly label: string;
+  readonly visual: string;
+  readonly helper: string;
+  readonly disabled?: boolean;
+  readonly draggable?: boolean;
+}
+
+const LIST_ICON_DEMO_ITEMS: readonly CatalogListIconDemoItem[] = [
+  {
+    id: 'documents',
+    label: 'Documents',
+    visual: '▤',
+    helper: 'Click selects the shortcut',
+    draggable: true,
+  },
+  {
+    id: 'network',
+    label: 'Network',
+    visual: '◈',
+    helper: 'Double-click opens the target',
+    draggable: true,
+  },
+  {
+    id: 'locked',
+    label: 'Locked',
+    visual: '◆',
+    helper: 'Disabled icon keeps layout affordance',
+    disabled: true,
   },
 ] as const;
 
@@ -350,6 +386,21 @@ const [showInspector, setShowInspector] = useState(true);
   <section>Left</section>
   <section>Right</section>
 </CSplitArea>
+
+// lockCurrent — 仅锁定当前层分割线，不影响子级
+<CSplitArea direction="horizontal" separatorMovable lockCurrent>
+  <section>Locked current</section>
+  <section>Freely resizable</section>
+</CSplitArea>
+
+// lock — 递归锁定当前层及所有子级分割线
+<CSplitArea direction="horizontal" separatorMovable lock>
+  <section>Locked recursively</section>
+  <CSplitArea direction="vertical" separatorMovable>
+    <section>Also locked</section>
+    <section>Also locked</section>
+  </CSplitArea>
+</CSplitArea>
 `.trim();
 
 const LIST_SNIPPET = `
@@ -374,7 +425,14 @@ return (
     />
 
     <CList type="grid" iconSize={32} items={gridItems} renderItem={(item) => <ListLabel item={item} />} />
-    <CList type="icon" iconSize={40} items={iconItems} renderItem={(item) => <ListLabel item={item} />} />
+    <CList
+      type="icon"
+      iconSize={40}
+      items={iconItems}
+      renderItem={(item) => (
+        <CListIcon visual={<span aria-hidden="true">{item.icon}</span>} label={item.name} />
+      )}
+    />
 
     <CList
       items={lazyItems}
@@ -387,6 +445,32 @@ return (
     <p>Selected: {selectedItem?.name ?? 'none'}</p>
     <p>Intent: {lastIntent}</p>
   </>
+);
+`.trim();
+
+const LIST_ICON_SNIPPET = `
+const [activeIcon, setActiveIcon] = useState('documents');
+const [lastIconEvent, setLastIconEvent] = useState('none');
+
+return (
+  <div className="cm-catalog__list-icon-strip">
+    {items.map((item) => (
+      <CListIcon
+        key={item.id}
+        visual={<span aria-hidden="true">{item.visual}</span>}
+        label={item.label}
+        active={activeIcon === item.id}
+        disabled={item.disabled}
+        draggable={item.draggable}
+        aria-label={item.label}
+        onClick={() => {
+          setActiveIcon(item.id);
+          setLastIconEvent(item.label + ' clicked');
+        }}
+        onDoubleClick={() => setLastIconEvent(item.label + ' opened')}
+      />
+    ))}
+  </div>
 );
 `.trim();
 
@@ -450,6 +534,49 @@ function ButtonGroupShowcase(): React.ReactElement {
             <CButton variant="ghost">Reset</CButton>
           </CButtonGroup>
         </div>
+      </div>
+    </ShowcaseSection>
+  );
+}
+
+function ListIconShowcase(): React.ReactElement {
+  const [activeIcon, setActiveIcon] = React.useState('documents');
+  const [lastIconEvent, setLastIconEvent] = React.useState('none');
+
+  return (
+    <ShowcaseSection title="ListIcon" testId="catalog-section-list-icon" code={LIST_ICON_SNIPPET}>
+      <div className="cm-catalog__stack">
+        <p className="cm-catalog__value">
+          Standalone shortcut icons: click to activate, double-click to open, and keep disabled
+          items visible in the same desktop-style strip.
+        </p>
+        <div className="cm-catalog__list-icon-strip" data-testid="list-icon-demo-strip">
+          {LIST_ICON_DEMO_ITEMS.map((item) => (
+            <div key={item.id} className="cm-catalog__list-icon-card">
+              <CListIcon
+                data-testid={`list-icon-demo-${item.id}`}
+                visual={<span aria-hidden="true">{item.visual}</span>}
+                label={item.label}
+                active={activeIcon === item.id}
+                disabled={item.disabled}
+                draggable={item.draggable}
+                aria-label={item.label}
+                onClick={() => {
+                  setActiveIcon(item.id);
+                  setLastIconEvent(`${item.label} clicked`);
+                }}
+                onDoubleClick={() => setLastIconEvent(`${item.label} opened`)}
+              />
+              <span className="cm-catalog__list-icon-helper">{item.helper}</span>
+            </div>
+          ))}
+        </div>
+        <p className="cm-catalog__value" data-testid="list-icon-demo-active">
+          Active icon: {activeIcon}
+        </p>
+        <p className="cm-catalog__value" data-testid="list-icon-demo-event">
+          Event: {lastIconEvent}
+        </p>
       </div>
     </ShowcaseSection>
   );
@@ -541,12 +668,22 @@ function CheckboxShowcase(): React.ReactElement {
 
 const SELECT_SNIPPET = `
 const [selectedSize, setSelectedSize] = useState('medium');
+const [selectedSizes, setSelectedSizes] = useState<string[]>(['small', 'large']);
 
 return (
   <>
     <CSelect name="size" value={selectedSize} options={sizeOptions} onChange={setSelectedSize} />
+    <CSelect
+      multiple
+      name="sizes"
+      value={selectedSizes}
+      options={sizeOptions}
+      placeholder="Select sizes"
+      onChange={setSelectedSizes}
+    />
 
     <p>Selected size: {selectedSize}</p>
+    <p>Selected sizes: {selectedSizes.join(', ') || 'none'}</p>
   </>
 );
 `.trim();
@@ -561,6 +698,16 @@ return (
     <p>Volume: {volume}</p>
   </>
 );
+`.trim();
+
+const LOADING_SNIPPET = `
+<CLoading variant="spinner" label="Loading..." />
+
+<CLoading variant="dots" label="Please wait" />
+
+<CLoading variant="bar" progress={65} indeterminate={false} label="65%" />
+
+<CLoading variant="bar" indeterminate label="Working..." />
 `.trim();
 
 const SCROLL_AREA_SNIPPET = `
@@ -675,6 +822,7 @@ const TAB_SNIPPET = `
 
 function SelectShowcase(): React.ReactElement {
   const [selectedSize, setSelectedSize] = React.useState('medium');
+  const [selectedSizes, setSelectedSizes] = React.useState<string[]>(['small', 'large']);
 
   return (
     <ShowcaseSection title="Select" testId="catalog-section-select" code={SELECT_SNIPPET}>
@@ -688,6 +836,16 @@ function SelectShowcase(): React.ReactElement {
           onChange={setSelectedSize}
         />
         <CSelect
+          multiple
+          aria-label="Catalog sizes"
+          data-testid="select-demo-sizes"
+          name="sizes"
+          value={selectedSizes}
+          options={SIZE_OPTIONS}
+          placeholder="Select sizes"
+          onChange={setSelectedSizes}
+        />
+        <CSelect
           aria-label="Disabled catalog size"
           name="size-disabled"
           value="large"
@@ -695,6 +853,7 @@ function SelectShowcase(): React.ReactElement {
           disabled
         />
         <p className="cm-catalog__value">Selected size: {selectedSize}</p>
+        <p className="cm-catalog__value">Selected sizes: {selectedSizes.join(', ') || 'none'}</p>
       </div>
     </ShowcaseSection>
   );
@@ -733,6 +892,65 @@ function SliderShowcase(): React.ReactElement {
           </CButton>
           <CButton data-testid="slider-demo-max" size="compact" onClick={() => setVolume(100)}>
             Max
+          </CButton>
+        </div>
+      </div>
+    </ShowcaseSection>
+  );
+}
+
+function LoadingShowcase(): React.ReactElement {
+  const [barProgress, setBarProgress] = React.useState(45);
+
+  return (
+    <ShowcaseSection title="Loading" testId="catalog-section-loading" code={LOADING_SNIPPET}>
+      <div className="cm-catalog__stack">
+        <div className="cm-catalog__row">
+          <div>
+            <p className="cm-catalog__value">Spinner</p>
+            <CLoading variant="spinner" label="Loading..." data-testid="loading-demo-spinner" />
+          </div>
+          <div>
+            <p className="cm-catalog__value">Dots</p>
+            <CLoading variant="dots" label="Please wait" data-testid="loading-demo-dots" />
+          </div>
+        </div>
+        <div className="cm-catalog__row">
+          <div>
+            <p className="cm-catalog__value">Bar — determinate ({barProgress}%)</p>
+            <CLoading
+              variant="bar"
+              progress={barProgress}
+              indeterminate={false}
+              label={`${barProgress}%`}
+              data-testid="loading-demo-bar"
+            />
+          </div>
+          <div>
+            <p className="cm-catalog__value">Bar — indeterminate</p>
+            <CLoading
+              variant="bar"
+              indeterminate
+              label="Working..."
+              data-testid="loading-demo-bar-indeterminate"
+            />
+          </div>
+        </div>
+        <div className="cm-catalog__slider-presets">
+          <CButton size="compact" onClick={() => setBarProgress(0)}>
+            0%
+          </CButton>
+          <CButton size="compact" onClick={() => setBarProgress(25)}>
+            25%
+          </CButton>
+          <CButton size="compact" onClick={() => setBarProgress(50)}>
+            50%
+          </CButton>
+          <CButton size="compact" onClick={() => setBarProgress(75)}>
+            75%
+          </CButton>
+          <CButton size="compact" onClick={() => setBarProgress(100)}>
+            100%
           </CButton>
         </div>
       </div>
@@ -1361,7 +1579,14 @@ function ListShowcase(): React.ReactElement {
             draggable
             items={LIST_ICON_ITEMS}
             getItemKey={(item) => item.id}
-            renderItem={renderCatalogListItem}
+            renderItem={(item) => (
+              <CListIcon
+                className="cm-catalog__list-demo-icon"
+                visual={<span aria-hidden="true">{item.icon}</span>}
+                label={item.name}
+                aria-label={item.name}
+              />
+            )}
             onItemHover={(payload) => setLastIntent(`Icon hover ${payload.item.name}`)}
             onItemDoubleClick={(payload) => setLastIntent(`Icon open ${payload.item.name}`)}
             onItemDrag={(payload) =>
@@ -1409,6 +1634,8 @@ function ListShowcase(): React.ReactElement {
 
 function SplitAreaShowcase(): React.ReactElement {
   const [showInspector, setShowInspector] = React.useState(true);
+  const [lockCurrentEnabled, setLockCurrentEnabled] = React.useState(false);
+  const [lockEnabled, setLockEnabled] = React.useState(false);
 
   return (
     <ShowcaseSection
@@ -1526,6 +1753,96 @@ function SplitAreaShowcase(): React.ReactElement {
             </CSplitArea>
           </div>
         </div>
+
+        <div className="cm-catalog__stack">
+          <div className="cm-catalog__row">
+            <CCheckbox
+              data-testid="split-area-demo-lock-current-toggle"
+              checked={lockCurrentEnabled}
+              onChange={setLockCurrentEnabled}
+            >
+              lockCurrent
+            </CCheckbox>
+            <CCheckbox
+              data-testid="split-area-demo-lock-toggle"
+              checked={lockEnabled}
+              onChange={setLockEnabled}
+            >
+              lock
+            </CCheckbox>
+          </div>
+          <p className="cm-catalog__value">
+            lockCurrent locks only the current level; lock recursively locks all descendants
+          </p>
+
+          <div className="cm-catalog__row" style={{ gap: 16 }}>
+            <div className="cm-split-area-demo-shell" style={{ flex: 1 }}>
+              <CSplitArea
+                data-testid="split-area-demo-lock-current"
+                direction="horizontal"
+                separatorMovable
+                lockCurrent={lockCurrentEnabled}
+                className="cm-split-area-demo"
+              >
+                <section className="cm-split-area-demo__panel cm-split-area-demo__panel--sidebar">
+                  <h3 className="cm-split-area-demo__title">lockCurrent</h3>
+                  <p className="cm-split-area-demo__text">
+                    {lockCurrentEnabled ? 'Current locked' : 'Current movable'}
+                  </p>
+                </section>
+                <CSplitArea
+                  direction="vertical"
+                  separatorMovable
+                  className="cm-split-area-demo__nested"
+                >
+                  <section className="cm-split-area-demo__panel cm-split-area-demo__panel--editor">
+                    <h3 className="cm-split-area-demo__title">Child</h3>
+                    <p className="cm-split-area-demo__text">Always movable</p>
+                  </section>
+                  <section className="cm-split-area-demo__panel cm-split-area-demo__panel--preview">
+                    <h3 className="cm-split-area-demo__title">Child</h3>
+                    <p className="cm-split-area-demo__text">Always movable</p>
+                  </section>
+                </CSplitArea>
+              </CSplitArea>
+            </div>
+
+            <div className="cm-split-area-demo-shell" style={{ flex: 1 }}>
+              <CSplitArea
+                data-testid="split-area-demo-lock-recursive"
+                direction="horizontal"
+                separatorMovable
+                lock={lockEnabled}
+                className="cm-split-area-demo"
+              >
+                <section className="cm-split-area-demo__panel cm-split-area-demo__panel--sidebar">
+                  <h3 className="cm-split-area-demo__title">lock</h3>
+                  <p className="cm-split-area-demo__text">
+                    {lockEnabled ? 'Locked recursively' : 'Movable'}
+                  </p>
+                </section>
+                <CSplitArea
+                  direction="vertical"
+                  separatorMovable
+                  className="cm-split-area-demo__nested"
+                >
+                  <section className="cm-split-area-demo__panel cm-split-area-demo__panel--editor">
+                    <h3 className="cm-split-area-demo__title">Child</h3>
+                    <p className="cm-split-area-demo__text">
+                      {lockEnabled ? 'Inherited lock' : 'Movable'}
+                    </p>
+                  </section>
+                  <section className="cm-split-area-demo__panel cm-split-area-demo__panel--preview">
+                    <h3 className="cm-split-area-demo__title">Child</h3>
+                    <p className="cm-split-area-demo__text">
+                      {lockEnabled ? 'Inherited lock' : 'Movable'}
+                    </p>
+                  </section>
+                </CSplitArea>
+              </CSplitArea>
+            </div>
+          </div>
+        </div>
       </div>
     </ShowcaseSection>
   );
@@ -1533,6 +1850,16 @@ function SplitAreaShowcase(): React.ReactElement {
 
 const INPUT_SNIPPET = `
 const [inputValue, setInputValue] = useState('');
+const [searchValue, setSearchValue] = useState('');
+const [selectedValue, setSelectedValue] = useState('');
+
+const suggestionOptions = [
+  { value: 'apple', label: 'Apple' },
+  { value: 'banana', label: 'Banana' },
+  { value: 'cherry', label: 'Cherry' },
+  { value: 'date', label: 'Date', disabled: true },
+  { value: 'elderberry', label: 'Elderberry' },
+];
 
 return (
   <>
@@ -1543,12 +1870,32 @@ return (
     />
     <CButton size="compact" onClick={() => setInputValue('')}>Clear</CButton>
     <CInput placeholder="Disabled input" disabled />
+
+    <CInput
+      placeholder="Search fruits…"
+      suggestionOptions={suggestionOptions}
+      suggestionDebounce={300}
+      onSearch={(value) => setSearchValue(value)}
+      onSelect={(value) => setSelectedValue(value)}
+    />
+    <p>Search: {searchValue}</p>
+    <p>Selected: {selectedValue}</p>
   </>
 );
 `.trim();
 
+const INPUT_SUGGESTION_OPTIONS: readonly CInputSuggestionOption[] = [
+  { value: 'apple', label: 'Apple' },
+  { value: 'banana', label: 'Banana' },
+  { value: 'cherry', label: 'Cherry' },
+  { value: 'date', label: 'Date', disabled: true },
+  { value: 'elderberry', label: 'Elderberry' },
+];
+
 function InputShowcase(): React.ReactElement {
   const [inputValue, setInputValue] = React.useState('');
+  const [searchValue, setSearchValue] = React.useState('');
+  const [selectedValue, setSelectedValue] = React.useState('');
 
   return (
     <ShowcaseSection title="Input" testId="catalog-section-input" code={INPUT_SNIPPET}>
@@ -1568,6 +1915,23 @@ function InputShowcase(): React.ReactElement {
           <CInput data-testid="input-demo-disabled" placeholder="Disabled input" disabled />
         </div>
         <p className="cm-catalog__value">Value: {inputValue || '(empty)'}</p>
+
+        <div className="cm-catalog__row">
+          <CInput
+            data-testid="input-demo-suggestions"
+            placeholder="Search fruits…"
+            suggestionOptions={INPUT_SUGGESTION_OPTIONS}
+            suggestionDebounce={300}
+            onSearch={(value) => setSearchValue(value)}
+            onSelect={(value) => setSelectedValue(value)}
+          />
+        </div>
+        <p className="cm-catalog__value" data-testid="input-demo-search-value">
+          Search (debounced): {searchValue || '(none)'}
+        </p>
+        <p className="cm-catalog__value" data-testid="input-demo-selected-value">
+          Selected: {selectedValue || '(none)'}
+        </p>
       </div>
     </ShowcaseSection>
   );
@@ -1616,7 +1980,7 @@ return (
 `.trim();
 
 function TimePickerShowcase(): React.ReactElement {
-  const [time, setTime] = React.useState('09:30');
+  const [time, setTime] = React.useState<string | null>('09:30');
 
   return (
     <ShowcaseSection
@@ -1629,7 +1993,7 @@ function TimePickerShowcase(): React.ReactElement {
           <CTimePicker data-testid="time-picker-demo" value={time} onChange={setTime} />
           <CTimePicker data-testid="time-picker-demo-disabled" disabled />
         </div>
-        <p className="cm-catalog__value">Selected time: {time}</p>
+        <p className="cm-catalog__value">Selected time: {time ?? '(empty)'}</p>
       </div>
     </ShowcaseSection>
   );
@@ -2072,9 +2436,11 @@ export function ComponentCatalog({
             <CheckboxShowcase />
             <SelectShowcase />
             <SliderShowcase />
+            <LoadingShowcase />
             <ScrollAreaShowcase />
             <TabShowcase />
             <IconShowcase />
+            <ListIconShowcase />
             <MenuShowcase />
             <WindowShowcase />
             <DockShowcase />

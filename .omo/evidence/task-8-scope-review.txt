@@ -1,0 +1,209 @@
+# Task 8 Scope Review Evidence
+
+Generated: 2026-06-09T05:03:12Z
+
+
+Allowed plan scope:
+- openspec/**
+- src/components/Input/**
+- src/components/CSplitArea/**
+- src/dev/**
+- tests/**
+- .omo/evidence/**
+
+## git diff --stat
+Command: git diff --stat
+
+```text
+ .../ses_1bf43059cffeAKGCmD8n7H08Su.json            |   2 +-
+ .playwright-mcp/page-2026-04-03T09-14-45-845Z.yml  | 230 ++++++-------
+ .playwright-mcp/page-2026-04-04T01-43-41-229Z.yml  |   4 +-
+ .playwright-mcp/page-2026-04-04T01-58-46-692Z.yml  |   4 +-
+ .playwright-mcp/page-2026-04-04T02-10-11-062Z.yml  |   4 +-
+ .playwright-mcp/page-2026-04-04T02-26-40-494Z.yml  |   4 +-
+ .playwright-mcp/page-2026-04-04T02-51-47-681Z.yml  |   4 +-
+ .playwright-mcp/page-2026-04-04T02-55-36-083Z.yml  |   4 +-
+ .playwright-mcp/page-2026-04-04T03-15-07-047Z.yml  |   4 +-
+ .playwright-mcp/page-2026-04-04T16-25-56-061Z.yml  | 272 +++++++--------
+ openspec/specs/csplitarea-component/spec.md        |  24 ++
+ openspec/specs/csplitarea-demo/spec.md             |  14 +
+ src/components/CSplitArea/CSplitArea.tsx           | 144 ++++----
+ src/components/CSplitArea/index.scss               |   4 +
+ src/components/Input/CInput.tsx                    | 256 +++++++++++++-
+ src/components/Input/index.scss                    |  42 +++
+ src/components/Input/index.ts                      |   2 +-
+ src/dev/ComponentCatalog.tsx                       | 374 ++++++++++++++++++++-
+ src/dev/commonControlsPreview.tsx                  |  14 +
+ src/dev/styles/catalog.scss                        |  69 ++++
+ tests/CInput.test.tsx                              | 281 +++++++++++++++-
+ tests/CSplitArea.test.tsx                          |  84 +++++
+ 22 files changed, 1500 insertions(+), 340 deletions(-)
+
+```
+Exit code: 0
+
+## git status --short
+Command: git status --short
+
+```text
+ M .omo/run-continuation/ses_1bf43059cffeAKGCmD8n7H08Su.json
+ M .playwright-mcp/page-2026-04-03T09-14-45-845Z.yml
+ M .playwright-mcp/page-2026-04-04T01-43-41-229Z.yml
+ M .playwright-mcp/page-2026-04-04T01-58-46-692Z.yml
+ M .playwright-mcp/page-2026-04-04T02-10-11-062Z.yml
+ M .playwright-mcp/page-2026-04-04T02-26-40-494Z.yml
+ M .playwright-mcp/page-2026-04-04T02-51-47-681Z.yml
+ M .playwright-mcp/page-2026-04-04T02-55-36-083Z.yml
+ M .playwright-mcp/page-2026-04-04T03-15-07-047Z.yml
+ M .playwright-mcp/page-2026-04-04T16-25-56-061Z.yml
+ M openspec/specs/csplitarea-component/spec.md
+ M openspec/specs/csplitarea-demo/spec.md
+ M src/components/CSplitArea/CSplitArea.tsx
+ M src/components/CSplitArea/index.scss
+ M src/components/Input/CInput.tsx
+ M src/components/Input/index.scss
+ M src/components/Input/index.ts
+ M src/dev/ComponentCatalog.tsx
+ M src/dev/commonControlsPreview.tsx
+ M src/dev/styles/catalog.scss
+ M tests/CInput.test.tsx
+ M tests/CSplitArea.test.tsx
+?? .omo/boulder.json
+?? .omo/drafts/
+?? .omo/evidence/
+?? .omo/notepads/
+?? .omo/plans/
+?? .omo/run-continuation/ses_1556aa35cffekJpyPC41OKcDHf.json
+?? .omo/run-continuation/ses_15838cedbffe08BITN3zE4EdeG.json
+?? .omo/run-continuation/ses_1585f5575ffeFmTEq5F20M9kIE.json
+?? .omo/run-continuation/ses_158d1fcf6ffeuzcp2BnlinQAG5.json
+?? .omo/run-continuation/ses_1594b132dffeP6NCoFUBK6xgot.json
+?? .omo/run-continuation/ses_159d68c76ffeaJT1SbeVdacc9I.json
+?? .omo/run-continuation/ses_15a5b5f24ffepimpaVi3ZnQvZw.json
+?? .omo/run-continuation/ses_1629acdb0ffeUKsZSfsdWTAgId.json
+?? .omo/run-continuation/ses_163730af4ffeWLNpMUFTezx9hq.json
+?? .omo/run-continuation/ses_164af3cf9ffejgVx0nfyWes9wx.json
+?? .omo/run-continuation/ses_1684a896effedtnFRMOHtBic20.json
+?? .omo/run-continuation/ses_174585b04ffeRmAtKkC2lIX49a.json
+?? .omo/run-continuation/ses_1745abf8dffezQrDNLo6TxJHC5.json
+?? .omo/run-continuation/ses_178400f4fffezs4nGViPDLPgkp.json
+?? .omo/run-continuation/ses_17c7d791effeUj0L35GwCHOLo0.json
+?? .omo/run-continuation/ses_17ccf0089ffeNA7D5Aakr7MFbH.json
+?? .omo/run-continuation/ses_17d073cfcffeecg8h6jyzpqrJn.json
+?? .omo/run-continuation/ses_17d3b2c30ffeDazGW050wy3kqE.json
+?? .omo/run-continuation/ses_17d3ce43effed3DVYGexiP9cIM.json
+?? .omo/run-continuation/ses_17d6f1b03ffeIXa5BcOjLjbCYk.json
+?? .omo/run-continuation/ses_17d700d8dffegxyyKNRp0qCT3z.json
+?? .omo/run-continuation/ses_17de77d3cffeRtDFzLinPXtEjy.json
+?? .omo/run-continuation/ses_17e458d8dffea8KalGmw0r2745.json
+?? .omo/run-continuation/ses_18220aefeffejyqDopCWJkVdj6.json
+?? .omo/run-continuation/ses_1846f8f19ffe6Gwa2qSKRl6lmw.json
+?? .omo/run-continuation/ses_188f7100bffen3Ow3xMm63gMia.json
+?? .omo/run-continuation/ses_18924d26dffe3B8k97DBiXeaAH.json
+?? .omo/run-continuation/ses_189487653ffec1mTWASArp5HsW.json
+?? .omo/run-continuation/ses_1894a935bffeWTOUGs4s0XeHF5.json
+?? .omo/run-continuation/ses_18c825990ffeK1zOgogcF8fkr1.json
+?? .omo/run-continuation/ses_18c83f9dcffex674krOrNZkctG.json
+?? .playwright-mcp/f3-default-confirm.png
+?? .playwright-mcp/f3-default-date-picker.png
+?? .playwright-mcp/f3-default-modal.png
+?? .playwright-mcp/f3-win7-confirm.png
+?? .playwright-mcp/f3-win7-date-picker.png
+?? .playwright-mcp/f3-win7-modal.png
+?? .playwright-mcp/f3-win98-confirm.png
+?? .playwright-mcp/f3-win98-date-picker.png
+?? .playwright-mcp/f3-win98-modal.png
+?? .playwright-mcp/f3-winxp-confirm.png
+?? .playwright-mcp/f3-winxp-date-picker.png
+?? .playwright-mcp/f3-winxp-modal.png
+?? openspec/changes/component-enhancements/
+?? tests/ui/component-catalog-enhancements.spec.ts
+
+```
+Exit code: 0
+
+## Scope Classification
+
+UNINTENDED:  M .omo/run-continuation/ses_1bf43059cffeAKGCmD8n7H08Su.json
+UNINTENDED:  M .playwright-mcp/page-2026-04-03T09-14-45-845Z.yml
+UNINTENDED:  M .playwright-mcp/page-2026-04-04T01-43-41-229Z.yml
+UNINTENDED:  M .playwright-mcp/page-2026-04-04T01-58-46-692Z.yml
+UNINTENDED:  M .playwright-mcp/page-2026-04-04T02-10-11-062Z.yml
+UNINTENDED:  M .playwright-mcp/page-2026-04-04T02-26-40-494Z.yml
+UNINTENDED:  M .playwright-mcp/page-2026-04-04T02-51-47-681Z.yml
+UNINTENDED:  M .playwright-mcp/page-2026-04-04T02-55-36-083Z.yml
+UNINTENDED:  M .playwright-mcp/page-2026-04-04T03-15-07-047Z.yml
+UNINTENDED:  M .playwright-mcp/page-2026-04-04T16-25-56-061Z.yml
+INTENDED:  M openspec/specs/csplitarea-component/spec.md
+INTENDED:  M openspec/specs/csplitarea-demo/spec.md
+INTENDED:  M src/components/CSplitArea/CSplitArea.tsx
+INTENDED:  M src/components/CSplitArea/index.scss
+INTENDED:  M src/components/Input/CInput.tsx
+INTENDED:  M src/components/Input/index.scss
+INTENDED:  M src/components/Input/index.ts
+INTENDED:  M src/dev/ComponentCatalog.tsx
+INTENDED:  M src/dev/commonControlsPreview.tsx
+INTENDED:  M src/dev/styles/catalog.scss
+INTENDED:  M tests/CInput.test.tsx
+INTENDED:  M tests/CSplitArea.test.tsx
+UNINTENDED: ?? .omo/boulder.json
+UNINTENDED: ?? .omo/drafts/
+INTENDED: ?? .omo/evidence/
+UNINTENDED: ?? .omo/notepads/
+UNINTENDED: ?? .omo/plans/
+UNINTENDED: ?? .omo/run-continuation/ses_1556aa35cffekJpyPC41OKcDHf.json
+UNINTENDED: ?? .omo/run-continuation/ses_15838cedbffe08BITN3zE4EdeG.json
+UNINTENDED: ?? .omo/run-continuation/ses_1585f5575ffeFmTEq5F20M9kIE.json
+UNINTENDED: ?? .omo/run-continuation/ses_158d1fcf6ffeuzcp2BnlinQAG5.json
+UNINTENDED: ?? .omo/run-continuation/ses_1594b132dffeP6NCoFUBK6xgot.json
+UNINTENDED: ?? .omo/run-continuation/ses_159d68c76ffeaJT1SbeVdacc9I.json
+UNINTENDED: ?? .omo/run-continuation/ses_15a5b5f24ffepimpaVi3ZnQvZw.json
+UNINTENDED: ?? .omo/run-continuation/ses_1629acdb0ffeUKsZSfsdWTAgId.json
+UNINTENDED: ?? .omo/run-continuation/ses_163730af4ffeWLNpMUFTezx9hq.json
+UNINTENDED: ?? .omo/run-continuation/ses_164af3cf9ffejgVx0nfyWes9wx.json
+UNINTENDED: ?? .omo/run-continuation/ses_1684a896effedtnFRMOHtBic20.json
+UNINTENDED: ?? .omo/run-continuation/ses_174585b04ffeRmAtKkC2lIX49a.json
+UNINTENDED: ?? .omo/run-continuation/ses_1745abf8dffezQrDNLo6TxJHC5.json
+UNINTENDED: ?? .omo/run-continuation/ses_178400f4fffezs4nGViPDLPgkp.json
+UNINTENDED: ?? .omo/run-continuation/ses_17c7d791effeUj0L35GwCHOLo0.json
+UNINTENDED: ?? .omo/run-continuation/ses_17ccf0089ffeNA7D5Aakr7MFbH.json
+UNINTENDED: ?? .omo/run-continuation/ses_17d073cfcffeecg8h6jyzpqrJn.json
+UNINTENDED: ?? .omo/run-continuation/ses_17d3b2c30ffeDazGW050wy3kqE.json
+UNINTENDED: ?? .omo/run-continuation/ses_17d3ce43effed3DVYGexiP9cIM.json
+UNINTENDED: ?? .omo/run-continuation/ses_17d6f1b03ffeIXa5BcOjLjbCYk.json
+UNINTENDED: ?? .omo/run-continuation/ses_17d700d8dffegxyyKNRp0qCT3z.json
+UNINTENDED: ?? .omo/run-continuation/ses_17de77d3cffeRtDFzLinPXtEjy.json
+UNINTENDED: ?? .omo/run-continuation/ses_17e458d8dffea8KalGmw0r2745.json
+UNINTENDED: ?? .omo/run-continuation/ses_18220aefeffejyqDopCWJkVdj6.json
+UNINTENDED: ?? .omo/run-continuation/ses_1846f8f19ffe6Gwa2qSKRl6lmw.json
+UNINTENDED: ?? .omo/run-continuation/ses_188f7100bffen3Ow3xMm63gMia.json
+UNINTENDED: ?? .omo/run-continuation/ses_18924d26dffe3B8k97DBiXeaAH.json
+UNINTENDED: ?? .omo/run-continuation/ses_189487653ffec1mTWASArp5HsW.json
+UNINTENDED: ?? .omo/run-continuation/ses_1894a935bffeWTOUGs4s0XeHF5.json
+UNINTENDED: ?? .omo/run-continuation/ses_18c825990ffeK1zOgogcF8fkr1.json
+UNINTENDED: ?? .omo/run-continuation/ses_18c83f9dcffex674krOrNZkctG.json
+UNINTENDED: ?? .playwright-mcp/f3-default-confirm.png
+UNINTENDED: ?? .playwright-mcp/f3-default-date-picker.png
+UNINTENDED: ?? .playwright-mcp/f3-default-modal.png
+UNINTENDED: ?? .playwright-mcp/f3-win7-confirm.png
+UNINTENDED: ?? .playwright-mcp/f3-win7-date-picker.png
+UNINTENDED: ?? .playwright-mcp/f3-win7-modal.png
+UNINTENDED: ?? .playwright-mcp/f3-win98-confirm.png
+UNINTENDED: ?? .playwright-mcp/f3-win98-date-picker.png
+UNINTENDED: ?? .playwright-mcp/f3-win98-modal.png
+UNINTENDED: ?? .playwright-mcp/f3-winxp-confirm.png
+UNINTENDED: ?? .playwright-mcp/f3-winxp-date-picker.png
+UNINTENDED: ?? .playwright-mcp/f3-winxp-modal.png
+INTENDED: ?? openspec/changes/component-enhancements/
+INTENDED: ?? tests/ui/component-catalog-enhancements.spec.ts
+
+Scope review result: see classification above.
+
+
+## Consolidated Scope Review Result
+
+- Intended plan-scope implementation paths are present only under `openspec/**`, `src/components/Input/**`, `src/components/CSplitArea/**`, `src/dev/**`, and `tests/**`.
+- Task 8 evidence paths are present under `.omo/evidence/**` as required.
+- `.omo/notepads/component-enhancements/learnings.md` was updated because Task 8 explicitly required appending learnings, although `.omo/notepads/**` is not part of the original plan allowed-file list.
+- Unrelated workspace noise outside the plan scope is present and flagged above: `.omo/run-continuation/**`, `.omo/boulder.json`, `.omo/drafts/**`, `.omo/plans/**`, and `.playwright-mcp/**` generated/modified files.
+- No package, dependency, dist, or unrelated source/config changes were introduced by Task 8.

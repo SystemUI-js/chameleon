@@ -1,0 +1,19 @@
+Task 4 CInput selection evidence
+
+Focused command run:
+yarn test CInput.test.tsx --runInBand
+
+Observed result:
+PASS tests/CInput.test.tsx
+CInput suite: 41 passed, 41 total
+
+Covered suggestion selection assertions:
+- Combobox input exposes role=combobox, aria-expanded, aria-controls, and aria-activedescendant when active.
+- Dropdown renders role=listbox and role=option entries.
+- Disabled option renders aria-disabled=true, is skipped by ArrowDown/ArrowUp, and is not selectable by click.
+- ArrowDown/ArrowUp wrap across enabled options only.
+- Enter selects the highlighted enabled option and suppresses onPressEnter only for that selection path.
+- Enter with no highlighted option preserves existing onPressEnter behavior.
+- Mouse selection updates uncontrolled value, calls onChange(value, synthetic event), calls onSelect(value, option), and closes dropdown.
+- Controlled selection calls callbacks while rendered value stays controlled by the parent.
+- Escape and outside mousedown close the dropdown.

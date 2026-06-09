@@ -1,0 +1,85 @@
+{
+  "baseUrl": "http://127.0.0.1:5673/",
+  "generatedAt": "2026-06-09T05:10:28.906Z",
+  "screenshots": {
+    "loading": ".omo/evidence/f3-real-manual-qa-loading.png",
+    "input": ".omo/evidence/f3-real-manual-qa-input-suggestions.png",
+    "splitBefore": ".omo/evidence/f3-real-manual-qa-splitarea-unlocked.png",
+    "splitAfter": ".omo/evidence/f3-real-manual-qa-splitarea-locked.png",
+    "slider": ".omo/evidence/f3-real-manual-qa-slider.png"
+  },
+  "consoleMessages": [
+    {
+      "type": "debug",
+      "text": "[vite] connecting..."
+    },
+    {
+      "type": "debug",
+      "text": "[vite] connected."
+    },
+    {
+      "type": "info",
+      "text": "%cDownload the React DevTools for a better development experience: https://react.dev/link/react-devtools font-weight:bold"
+    }
+  ],
+  "results": [
+    {
+      "status": "PASS",
+      "name": "Component catalog loads",
+      "details": {
+        "url": "http://127.0.0.1:5673/"
+      }
+    },
+    {
+      "status": "PASS",
+      "name": "CLoading demo shows spinner, dots, and determinate bar",
+      "details": {
+        "screenshot": ".omo/evidence/f3-real-manual-qa-loading.png"
+      }
+    },
+    {
+      "status": "PASS",
+      "name": "CInput suggestions accept \"ap\", show dropdown, select Apple, and update selected value",
+      "details": {
+        "searchText": "Search (debounced): ap",
+        "selectedText": "Selected: apple",
+        "screenshot": ".omo/evidence/f3-real-manual-qa-input-suggestions.png"
+      }
+    },
+    {
+      "status": "PASS",
+      "name": "CSplitArea lock demo toggles locks, changes cursor, and blocks current separator drag",
+      "details": {
+        "unlockedCursor": "col-resize",
+        "lockedCursor": "default",
+        "unlockedClass": "cm-split-area__separator cm-split-area__separator--horizontal cm-split-area__separator--movable",
+        "lockedClass": "cm-split-area__separator cm-split-area__separator--horizontal cm-split-area__separator--locked",
+        "widthBeforeUnlockedDrag": 325.5,
+        "widthAfterUnlockedDrag": 405.25,
+        "widthBeforeLockedDrag": 405.25,
+        "widthAfterLockedDrag": 405.25,
+        "screenshots": [
+          ".omo/evidence/f3-real-manual-qa-splitarea-unlocked.png",
+          ".omo/evidence/f3-real-manual-qa-splitarea-locked.png"
+        ]
+      }
+    },
+    {
+      "status": "PASS",
+      "name": "CSlider demo with step={5} is visible and steps from 40 to 45",
+      "details": {
+        "initialText": "Volume: 40",
+        "steppedText": "Volume: 45",
+        "screenshot": ".omo/evidence/f3-real-manual-qa-slider.png"
+      }
+    },
+    {
+      "status": "PASS",
+      "name": "No browser console errors",
+      "details": {
+        "consoleErrors": []
+      }
+    }
+  ],
+  "verdict": "APPROVE"
+}

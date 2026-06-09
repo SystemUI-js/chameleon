@@ -11,6 +11,7 @@ export function CommonControlsPreview(): React.ReactElement {
   const [buttonClicks, setButtonClicks] = React.useState(0);
   const [selectedFruit, setSelectedFruit] = React.useState('apple');
   const [selectedSize, setSelectedSize] = React.useState('medium');
+  const [selectedSizes, setSelectedSizes] = React.useState<string[]>(['small', 'large']);
 
   return (
     <div className="cm-common-controls-preview">
@@ -88,6 +89,16 @@ export function CommonControlsPreview(): React.ReactElement {
               onChange={setSelectedSize}
             />
             <CSelect
+              multiple
+              aria-label="Select demo sizes"
+              data-testid="select-demo-sizes"
+              name="sizes"
+              value={selectedSizes}
+              options={SIZE_OPTIONS}
+              placeholder="Select sizes"
+              onChange={setSelectedSizes}
+            />
+            <CSelect
               aria-label="Disabled select demo size"
               name="size-disabled"
               value="large"
@@ -95,6 +106,9 @@ export function CommonControlsPreview(): React.ReactElement {
               disabled
             />
             <p className="cm-common-controls-preview__value">Selected size: {selectedSize}</p>
+            <p className="cm-common-controls-preview__value">
+              Selected sizes: {selectedSizes.join(', ') || 'none'}
+            </p>
           </div>
         </section>
       </div>

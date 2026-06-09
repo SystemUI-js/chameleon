@@ -1,0 +1,30 @@
+    ✓ renders slider showcase and updates preset value text (35 ms)
+    ✓ renders scroll area showcase with stable test ids and accessibility label (56 ms)
+    ✓ DatePicker section exposes a Show code button and renders demo (44 ms)
+    ✓ Modal section exposes a Show code button and renders open trigger (66 ms)
+    ✓ Confirm section exposes a Show code button and renders both triggers (64 ms)
+    Theme showcase isolation boundary
+      ✓ theme-root exists (35 ms)
+      ✓ catalog-section-theme is NOT inside theme-root (isolation boundary) (35 ms)
+      ✓ catalog-section-button IS still inside theme-root (reference baseline) (47 ms)
+    Icon showcase section
+      ✓ renders icon showcase section with stable test ids and coordinate status (58 ms)
+    SplitArea showcase section
+      ✓ renders split area showcase section with toggle controls (58 ms)
+      ✓ updates split area demo status and outer panel count after toggle (71 ms)
+      ✓ renders split area hover visibility demo (59 ms)
+      ✓ renders split area separator-hover mode demo with separatorHoverMode prop (57 ms)
+      ✓ SplitArea section code snippet includes separatorHoverMode examples (71 ms)
+    List showcase section
+      ✓ renders list showcase section with basic, mode, lazy, and empty demos (57 ms)
+      ✓ updates selected item text after clicking a list item (115 ms)
+      ✓ renders list item action buttons without changing selected item (38 ms)
+      ✓ reports hover, double-click, and keyboard drag intent without reordering items (94 ms)
+      ✓ shows lazy loading success and retry states from caller-owned loader (275 ms)
+
+Test Suites: 1 passed, 1 total
+Tests:       38 passed, 38 total
+Snapshots:   0 total
+Time:        3.458 s, estimated 4 s
+Ran all test suites matching /tests\/ComponentCatalog.test.tsx/i.
+Done in 4.92s.
