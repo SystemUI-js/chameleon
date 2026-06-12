@@ -49,6 +49,11 @@
 
 .cm-split-area__separator--locked {
     cursor: default;
+    background: transparent;
+
+    .cm-split-area__separator-handle {
+        opacity: 0;
+    }
 }
 
 .cm-split-area__separator--movable:hover {
