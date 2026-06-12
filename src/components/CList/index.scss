@@ -1,6 +1,8 @@
 .cm-list {
     --cm-list-icon-size: 32px;
     --cm-list-gap: 8px;
+    --cm-clist-row-gap: var(--cm-list-gap);
+    --cm-clist-column-gap: var(--cm-list-gap);
     --cm-list-item-padding-y: 12px;
     --cm-list-item-padding-x: 16px;
     --cm-list-grid-min-column-size: 160px;
@@ -20,10 +22,25 @@
     color: var(--cm-color-text-secondary, #666);
 }
 
+.cm-clist--direction-horizontal:not(.cm-list--grid):not(.cm-list--icon) {
+    display: flex;
+    flex-direction: row;
+    align-items: center;
+    gap: var(--cm-clist-row-gap) var(--cm-clist-column-gap);
+}
+
+.cm-clist--wrap:not(.cm-list--grid):not(.cm-list--icon) {
+    flex-wrap: wrap;
+}
+
+.cm-clist--wrap-reverse:not(.cm-list--grid):not(.cm-list--icon) {
+    flex-wrap: wrap-reverse;
+}
+
 .cm-list--grid,
 .cm-list--icon {
     display: grid;
-    gap: var(--cm-list-gap);
+    gap: var(--cm-clist-row-gap) var(--cm-clist-column-gap);
     padding: var(--cm-list-gap);
     overflow: visible;
 }
@@ -261,7 +278,7 @@
 .cm-list__children--grid,
 .cm-list__children--icon {
     display: grid;
-    gap: var(--cm-list-gap);
+    gap: var(--cm-clist-row-gap) var(--cm-clist-column-gap);
     padding: var(--cm-list-gap);
 }
 

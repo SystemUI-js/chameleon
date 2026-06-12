@@ -5,6 +5,7 @@ import {
   CButtonSeparator,
   CCheckbox,
   CConfirm,
+  CContextMenu,
   CDatePicker,
   CDock,
   CGrid,
@@ -17,6 +18,7 @@ import {
   CLoading,
   CMenu,
   CModal,
+  CProgress,
   CRadio,
   CRadioGroup,
   CScrollArea,
@@ -448,6 +450,37 @@ return (
 );
 `.trim();
 
+const CLIST_LAYOUT_SNIPPET = `
+<CList items={items} renderItem={renderItem} />
+
+<CList
+  data-testid="clist-horizontal"
+  direction="horizontal"
+  draggable
+  gap="12px"
+  items={items}
+  renderItem={renderItem}
+/>
+
+<CList direction="horizontal" wrap gap={8} items={items} renderItem={renderItem} />
+<CList gap={10} items={items} renderItem={renderItem} />
+<CList direction="horizontal" wrap="wrap-reverse" gap={{ row: 10, column: '18px' }} items={items} renderItem={renderItem} />
+`.trim();
+
+const CCONTEXT_MENU_SNIPPET = `
+const [selectedItem, setSelectedItem] = useState<MenuListItem | null>(null);
+
+return (
+  <>
+    <CContextMenu menuList={CONTEXT_MENU_ITEMS} onSelect={setSelectedItem}>
+      <CButton>Right-click or long-press me</CButton>
+    </CContextMenu>
+
+    <p>Selected: {selectedItem?.title ?? 'none'}</p>
+  </>
+);
+`.trim();
+
 const LIST_ICON_SNIPPET = `
 const [activeIcon, setActiveIcon] = useState('documents');
 const [lastIconEvent, setLastIconEvent] = useState('none');
@@ -710,6 +743,20 @@ const LOADING_SNIPPET = `
 <CLoading variant="bar" indeterminate label="Working..." />
 `.trim();
 
+const CPROGRESS_SNIPPET = `
+<CProgress
+  variant="bar"
+  value={64}
+  label="Deployment"
+  showValue
+  format={(percent, value, max) => Math.round(percent) + '% (' + value + '/' + max + ')'}
+/>
+
+<CProgress variant="circle" value={82} size="large" status="success" showValue />
+<CProgress variant="ring" value={35} size="small" status="exception" showValue />
+<CProgress variant="bar" indeterminate label="Syncing records" status="active" />
+`.trim();
+
 const SCROLL_AREA_SNIPPET = `
 <CScrollArea aria-label="Activity feed" style={{ height: 180 }}>
   {activityItems.map((item) => (
@@ -952,6 +999,112 @@ function LoadingShowcase(): React.ReactElement {
           <CButton size="compact" onClick={() => setBarProgress(100)}>
             100%
           </CButton>
+        </div>
+      </div>
+    </ShowcaseSection>
+  );
+}
+
+function ProgressShowcase(): React.ReactElement {
+  return (
+    <ShowcaseSection title="CProgress" testId="catalog-section-cprogress" code={CPROGRESS_SNIPPET}>
+      <div className="cm-catalog__stack">
+        <p className="cm-catalog__value">
+          CProgress is for business progress display such as rollout, quota, or task completion.
+          Keep <code>CLoading variant=&quot;bar&quot;</code> for loading indicators.
+        </p>
+
+        <div className="cm-catalog__stack">
+          <p className="cm-catalog__value">Bar variants: sizes, status colors, and formatting</p>
+          <CProgress
+            data-testid="cprogress-bar"
+            variant="bar"
+            value={64}
+            max={120}
+            label="Deployment"
+            showValue
+            format={(percent, value, max) => `${Math.round(percent)}% (${value}/${max})`}
+            size="medium"
+            status="active"
+          />
+          <CProgress
+            data-testid="cprogress-bar-small"
+            variant="bar"
+            value={28}
+            label="Small default"
+            showValue
+            size="small"
+            status="default"
+          />
+          <CProgress
+            data-testid="cprogress-bar-large"
+            variant="bar"
+            value={100}
+            label="Large success"
+            showValue
+            size="large"
+            status="success"
+          />
+          <CProgress
+            data-testid="cprogress-bar-exception"
+            variant="bar"
+            value={42}
+            label="Exception status"
+            showValue
+            status="exception"
+          />
+          <CProgress
+            data-testid="cprogress-bar-indeterminate"
+            variant="bar"
+            indeterminate
+            label="Indeterminate business job"
+            status="active"
+          />
+        </div>
+
+        <div className="cm-catalog__row">
+          <div className="cm-catalog__stack">
+            <p className="cm-catalog__value">Circle</p>
+            <CProgress
+              data-testid="cprogress-circle"
+              variant="circle"
+              value={82}
+              label="Circle success"
+              showValue
+              size="large"
+              status="success"
+            />
+            <CProgress
+              data-testid="cprogress-circle-indeterminate"
+              variant="circle"
+              indeterminate
+              label="Circle active"
+              size="medium"
+              status="active"
+            />
+          </div>
+
+          <div className="cm-catalog__stack">
+            <p className="cm-catalog__value">Ring</p>
+            <CProgress
+              data-testid="cprogress-ring"
+              variant="ring"
+              value={35}
+              label="Ring exception"
+              showValue
+              size="small"
+              status="exception"
+            />
+            <CProgress
+              data-testid="cprogress-ring-default"
+              variant="ring"
+              value={55}
+              label="Ring default"
+              showValue
+              size="medium"
+              status="default"
+            />
+          </div>
         </div>
       </div>
     </ShowcaseSection>
@@ -2413,6 +2566,156 @@ function ConfirmShowcase(): React.ReactElement {
   );
 }
 
+interface LayoutListItem {
+  readonly id: string;
+  readonly name: string;
+  readonly description: string;
+  readonly icon: string;
+}
+
+const LAYOUT_ITEMS: readonly LayoutListItem[] = [
+  {
+    id: 'alpha',
+    name: 'Alpha',
+    description: 'First layout item',
+    icon: '▣',
+  },
+  {
+    id: 'beta',
+    name: 'Beta',
+    description: 'Second layout item',
+    icon: '▤',
+  },
+  {
+    id: 'gamma',
+    name: 'Gamma',
+    description: 'Third layout item',
+    icon: '▥',
+  },
+] as const;
+
+const CONTEXT_MENU_ITEMS: readonly MenuListItem[] = [
+  { id: 'open', key: 'open', title: 'Open' },
+  { id: 'edit', key: 'edit', title: 'Edit' },
+  { id: 'delete', key: 'delete', title: 'Delete' },
+] as const;
+
+function CListLayoutShowcase(): React.ReactElement {
+  const renderLayoutItem = React.useCallback((item: LayoutListItem): React.ReactNode => {
+    return (
+      <div>
+        <strong>
+          <span aria-hidden="true">{item.icon}</span> {item.name}
+        </strong>
+        <p>{item.description}</p>
+      </div>
+    );
+  }, []);
+
+  return (
+    <ShowcaseSection
+      title="CList layout"
+      testId="catalog-section-clist-layout"
+      code={CLIST_LAYOUT_SNIPPET}
+    >
+      <div className="cm-catalog__stack">
+        <p className="cm-catalog__value">
+          CList layout props: direction, wrap, and gap. Default is vertical non-wrapping.
+        </p>
+        <div className="cm-catalog__row">
+          <div className="cm-catalog__list-demo" style={{ width: '100%' }}>
+            <CList
+              data-testid="clist-layout-default"
+              items={LAYOUT_ITEMS}
+              getItemKey={(item) => item.id}
+              renderItem={renderLayoutItem}
+            />
+          </div>
+        </div>
+        <div className="cm-catalog__row">
+          <div className="cm-catalog__list-demo" style={{ width: '100%' }}>
+            <CList
+              data-testid="clist-layout-horizontal"
+              direction="horizontal"
+              draggable
+              gap="12px"
+              items={LAYOUT_ITEMS}
+              getItemKey={(item) => item.id}
+              renderItem={renderLayoutItem}
+            />
+          </div>
+        </div>
+        <div className="cm-catalog__row">
+          <div className="cm-catalog__list-demo" style={{ width: '100%' }}>
+            <CList
+              data-testid="clist-layout-wrap"
+              direction="horizontal"
+              wrap
+              gap={8}
+              items={LAYOUT_ITEMS}
+              getItemKey={(item) => item.id}
+              renderItem={renderLayoutItem}
+            />
+          </div>
+        </div>
+        <div className="cm-catalog__row">
+          <div className="cm-catalog__list-demo" style={{ width: '100%' }}>
+            <CList
+              data-testid="clist-layout-object-gap"
+              gap={10}
+              items={LAYOUT_ITEMS}
+              getItemKey={(item) => item.id}
+              renderItem={renderLayoutItem}
+            />
+          </div>
+        </div>
+        <div className="cm-catalog__row">
+          <div className="cm-catalog__list-demo" style={{ width: '240px' }}>
+            <CList
+              data-testid="clist-layout-wrap-reverse"
+              direction="horizontal"
+              wrap="wrap-reverse"
+              gap={{ row: 10, column: '18px' }}
+              items={LAYOUT_ITEMS}
+              getItemKey={(item) => item.id}
+              renderItem={renderLayoutItem}
+            />
+          </div>
+        </div>
+      </div>
+    </ShowcaseSection>
+  );
+}
+
+function CContextMenuShowcase(): React.ReactElement {
+  const [lastSelected, setLastSelected] = React.useState<MenuListItem | null>(null);
+
+  return (
+    <ShowcaseSection
+      title="CContextMenu"
+      testId="catalog-section-ccontext-menu"
+      code={CCONTEXT_MENU_SNIPPET}
+    >
+      <div className="cm-catalog__stack">
+        <p className="cm-catalog__value">
+          Right-click the button (or long-press on touch) to open a context menu. Keyboard users can
+          focus the button and press Shift+F10 or the ContextMenu key.
+        </p>
+        <CContextMenu
+          data-testid="ccontext-menu-demo"
+          menuList={CONTEXT_MENU_ITEMS}
+          onSelect={setLastSelected}
+        >
+          <CButton data-testid="ccontext-menu-demo-trigger">Open context menu</CButton>
+        </CContextMenu>
+        <p className="cm-catalog__value" data-testid="ccontext-menu-demo-selected">
+          Selected: {lastSelected?.title ?? 'none'}
+        </p>
+      </div>
+    </ShowcaseSection>
+  );
+}
+
 export function ComponentCatalog({
   theme,
   onThemeChange,
@@ -2437,16 +2740,19 @@ export function ComponentCatalog({
             <SelectShowcase />
             <SliderShowcase />
             <LoadingShowcase />
+            <ProgressShowcase />
             <ScrollAreaShowcase />
             <TabShowcase />
             <IconShowcase />
             <ListIconShowcase />
             <MenuShowcase />
+            <CContextMenuShowcase />
             <WindowShowcase />
             <DockShowcase />
             <StartBarShowcase />
             <SplitAreaShowcase />
             <ListShowcase />
+            <CListLayoutShowcase />
             <GridShowcase />
             <InputShowcase />
             <TooltipShowcase />

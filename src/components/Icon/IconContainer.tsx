@@ -1,5 +1,6 @@
 import { Drag, DragOperationType, type Pose } from '@system-ui-js/multi-drag';
 import React from 'react';
+import { createLongPressController, type UseLongPressResult } from '../shared/useLongPress';
 import { mergeClasses } from '../Theme/mergeClasses';
 import { resolveThemeClassName } from '../Theme/themeName';
 import { useTheme } from '../Theme/useTheme';
@@ -25,30 +26,13 @@ export type CIconContainerItem = CIconProps;
 
 type CIconContainerRuntimeItem = CIconContainerItem & CIconDragCallbacks;
 
-type IconSlotPointerSession = {
-  pointerId: number;
-  firedLongPress: boolean;
-  dragTakenOver: boolean;
-  timerId?: number;
-  cleanupDocumentListeners: () => void;
-};
-
 type IconSlotRecord = {
   element: HTMLDivElement;
   drag: Drag;
   generation: number;
-  pointerSession?: IconSlotPointerSession;
-  suppressedContextMenu?: {
-    x: number;
-    y: number;
-    expiresAt: number;
-  };
+  longPress: UseLongPressResult;
   removeDragStartListener: () => void;
 };
-
-const TOUCH_LONG_PRESS_DELAY_MS = 500;
-const TOUCH_LONG_PRESS_MOVE_THRESHOLD_PX = 6;
-const SYNTHETIC_CONTEXT_MENU_SUPPRESSION_MS = 1000;
 
 function getResolvedPosition(
   item: CIconContainerItem | undefined,
@@ -58,16 +42,6 @@ function getResolvedPosition(
   const mergedPosition = explicitPosition ?? (item ? getMergedPosition(item, config) : undefined);
 
   return mergedPosition ?? { x: 0, y: 0 };
-}
-
-function hasMovedBeyondLongPressThreshold(
-  start: { x: number; y: number },
-  next: { x: number; y: number },
-): boolean {
-  return (
-    Math.abs(next.x - start.x) > TOUCH_LONG_PRESS_MOVE_THRESHOLD_PX ||
-    Math.abs(next.y - start.y) > TOUCH_LONG_PRESS_MOVE_THRESHOLD_PX
-  );
 }
 
 export interface CIconContainerProps {
@@ -165,38 +139,19 @@ export function CIconContainer({
     positionsRef.current = positions;
   }, [config, iconList, positions]);
 
-  const clearPointerSession = React.useCallback((record: IconSlotRecord): void => {
-    const activeSession = record.pointerSession;
+  const cleanupSlotRecord = React.useCallback((index: number): void => {
+    const record = slotRecordsRef.current.get(index);
 
-    if (!activeSession) {
+    if (!record) {
       return;
     }
 
-    if (activeSession.timerId !== undefined) {
-      window.clearTimeout(activeSession.timerId);
-    }
-
-    activeSession.cleanupDocumentListeners();
-    record.pointerSession = undefined;
+    record.longPress.cancel();
+    record.generation += 1;
+    record.removeDragStartListener();
+    record.drag.setDisabled();
+    slotRecordsRef.current.delete(index);
   }, []);
-
-  const cleanupSlotRecord = React.useCallback(
-    (index: number): void => {
-      const record = slotRecordsRef.current.get(index);
-
-      if (!record) {
-        return;
-      }
-
-      clearPointerSession(record);
-      record.suppressedContextMenu = undefined;
-      record.generation += 1;
-      record.removeDragStartListener();
-      record.drag.setDisabled();
-      slotRecordsRef.current.delete(index);
-    },
-    [clearPointerSession],
-  );
 
   React.useEffect(() => {
     const nextPropPositions = iconList.map((item) => getMergedPosition(item, config));
@@ -293,8 +248,8 @@ export function CIconContainer({
             return;
           }
 
-          if (currentRecord.pointerSession) {
-            currentRecord.pointerSession.dragTakenOver = true;
+          if (currentRecord.longPress) {
+            currentRecord.longPress.cancel();
           }
 
           const nextPosition = { x: pose.position.x, y: pose.position.y };
@@ -315,7 +270,7 @@ export function CIconContainer({
             return;
           }
 
-          clearPointerSession(currentRecord);
+          currentRecord.longPress.cancel();
 
           if (!pose.position) {
             return;
@@ -330,9 +285,54 @@ export function CIconContainer({
         element,
         drag,
         generation: 0,
-        suppressedContextMenu: undefined,
+        longPress: null as unknown as UseLongPressResult,
         removeDragStartListener: () => undefined,
       };
+
+      const handleLongPress = (clientX: number, clientY: number): void => {
+        if (!isMountedRef.current) {
+          return;
+        }
+
+        const currentRecord = slotRecordsRef.current.get(index);
+
+        if (
+          !currentRecord ||
+          currentRecord.element !== element ||
+          currentRecord.generation !== record.generation
+        ) {
+          return;
+        }
+
+        const buttonElement = currentRecord.element.querySelector('button');
+
+        if (!(buttonElement instanceof HTMLButtonElement)) {
+          currentRecord.longPress.cancel();
+          return;
+        }
+
+        setActiveIndex(index);
+        buttonElement.dispatchEvent(
+          new MouseEvent('contextmenu', {
+            bubbles: true,
+            cancelable: true,
+            clientX,
+            clientY,
+            button: 2,
+          }),
+        );
+        currentRecord.longPress.suppressContextMenuAt({ x: clientX, y: clientY });
+        currentRecord.longPress.cancel();
+      };
+
+      const longPress = createLongPressController({
+        onLongPress: ({ clientX, clientY }) => {
+          handleLongPress(clientX, clientY);
+        },
+        pointerType: 'touch',
+      });
+
+      record.longPress = longPress;
 
       const handleDragStart = (): void => {
         const currentRecord = slotRecordsRef.current.get(index);
@@ -352,9 +352,7 @@ export function CIconContainer({
           positionsRef.current[index],
         );
 
-        if (currentRecord.pointerSession) {
-          currentRecord.pointerSession.dragTakenOver = true;
-        }
+        currentRecord.longPress.cancel();
 
         latestIconListRef.current[index]?.onDragStart?.(nextPosition);
       };
@@ -372,169 +370,6 @@ export function CIconContainer({
       }
     }
   });
-
-  const handleTouchPointerDown = React.useCallback(
-    (index: number, event: React.PointerEvent<HTMLDivElement>): void => {
-      if (event.pointerType !== 'touch' || !isMountedRef.current) {
-        return;
-      }
-
-      const record = slotRecordsRef.current.get(index);
-
-      if (!record) {
-        return;
-      }
-
-      clearPointerSession(record);
-      record.suppressedContextMenu = undefined;
-
-      const pointerId = event.pointerId;
-      const startPoint = { x: event.clientX, y: event.clientY };
-
-      const handlePointerMove = (nativeEvent: PointerEvent): void => {
-        const currentRecord = slotRecordsRef.current.get(index);
-        const activeSession = currentRecord?.pointerSession;
-
-        if (
-          !isMountedRef.current ||
-          !currentRecord ||
-          currentRecord !== record ||
-          !activeSession ||
-          nativeEvent.pointerId !== pointerId
-        ) {
-          return;
-        }
-
-        if (
-          hasMovedBeyondLongPressThreshold(startPoint, {
-            x: nativeEvent.clientX,
-            y: nativeEvent.clientY,
-          })
-        ) {
-          activeSession.dragTakenOver = true;
-          clearPointerSession(currentRecord);
-        }
-      };
-
-      const handlePointerEndLike = (nativeEvent: PointerEvent): void => {
-        const currentRecord = slotRecordsRef.current.get(index);
-
-        if (!currentRecord?.pointerSession || nativeEvent.pointerId !== pointerId) {
-          return;
-        }
-
-        clearPointerSession(currentRecord);
-      };
-
-      document.addEventListener('pointermove', handlePointerMove);
-      document.addEventListener('pointerup', handlePointerEndLike);
-      document.addEventListener('pointercancel', handlePointerEndLike);
-
-      const cleanupDocumentListeners = (): void => {
-        document.removeEventListener('pointermove', handlePointerMove);
-        document.removeEventListener('pointerup', handlePointerEndLike);
-        document.removeEventListener('pointercancel', handlePointerEndLike);
-      };
-
-      const timerId = window.setTimeout(() => {
-        const currentRecord = slotRecordsRef.current.get(index);
-        const activeSession = currentRecord?.pointerSession;
-
-        if (
-          !isMountedRef.current ||
-          !currentRecord ||
-          currentRecord !== record ||
-          !activeSession ||
-          activeSession.pointerId !== pointerId ||
-          activeSession.dragTakenOver ||
-          activeSession.firedLongPress
-        ) {
-          return;
-        }
-
-        const buttonElement = currentRecord.element.querySelector('button');
-
-        if (!(buttonElement instanceof HTMLButtonElement)) {
-          clearPointerSession(currentRecord);
-          return;
-        }
-
-        activeSession.firedLongPress = true;
-        setActiveIndex(index);
-        buttonElement.dispatchEvent(
-          new MouseEvent('contextmenu', {
-            bubbles: true,
-            cancelable: true,
-            clientX: startPoint.x,
-            clientY: startPoint.y,
-            button: 2,
-          }),
-        );
-        currentRecord.suppressedContextMenu = {
-          x: startPoint.x,
-          y: startPoint.y,
-          expiresAt: Date.now() + SYNTHETIC_CONTEXT_MENU_SUPPRESSION_MS,
-        };
-        clearPointerSession(currentRecord);
-      }, TOUCH_LONG_PRESS_DELAY_MS);
-
-      record.pointerSession = {
-        pointerId,
-        firedLongPress: false,
-        dragTakenOver: false,
-        timerId,
-        cleanupDocumentListeners,
-      };
-    },
-    [clearPointerSession],
-  );
-
-  const handleTouchPointerCancel = React.useCallback(
-    (index: number): void => {
-      const record = slotRecordsRef.current.get(index);
-
-      if (!record) {
-        return;
-      }
-
-      clearPointerSession(record);
-    },
-    [clearPointerSession],
-  );
-
-  const handleContextMenuCapture = React.useCallback(
-    (index: number, event: React.SyntheticEvent<HTMLDivElement, MouseEvent>): void => {
-      const record = slotRecordsRef.current.get(index);
-
-      if (!record) {
-        return;
-      }
-
-      if (!record.suppressedContextMenu) {
-        return;
-      }
-
-      if (Date.now() > record.suppressedContextMenu.expiresAt) {
-        record.suppressedContextMenu = undefined;
-        return;
-      }
-
-      const isSameLongPressLocation =
-        Math.abs(event.nativeEvent.clientX - record.suppressedContextMenu.x) <=
-          TOUCH_LONG_PRESS_MOVE_THRESHOLD_PX &&
-        Math.abs(event.nativeEvent.clientY - record.suppressedContextMenu.y) <=
-          TOUCH_LONG_PRESS_MOVE_THRESHOLD_PX;
-
-      if (!isSameLongPressLocation) {
-        return;
-      }
-
-      record.suppressedContextMenu = undefined;
-      event.preventDefault();
-      event.stopPropagation();
-    },
-    [],
-  );
 
   return (
     <div
@@ -565,13 +400,16 @@ export function CIconContainer({
             }}
             style={{ display: 'inline-flex' }}
             onPointerDown={(event) => {
-              handleTouchPointerDown(index, event);
+              slotRecordsRef.current.get(index)?.longPress.onPointerDown(event);
             }}
-            onPointerCancel={() => {
-              handleTouchPointerCancel(index);
+            onPointerCancel={(event) => {
+              slotRecordsRef.current.get(index)?.longPress.onPointerCancel(event);
+            }}
+            onPointerLeave={(event) => {
+              slotRecordsRef.current.get(index)?.longPress.onPointerLeave(event);
             }}
             onContextMenuCapture={(event) => {
-              handleContextMenuCapture(index, event);
+              slotRecordsRef.current.get(index)?.longPress.onContextMenuCapture(event);
             }}
           >
             <CIcon

@@ -350,6 +350,173 @@ describe('CList', () => {
     });
   });
 
+  describe('layout props', () => {
+    it('maps numeric gap to px CSS variables for both axes', () => {
+      render(
+        <CList
+          items={TEST_ITEMS}
+          gap={12}
+          renderItem={(item) => <span>{item.name}</span>}
+          data-testid="list-numeric-gap"
+        />,
+      );
+
+      expect(screen.getByTestId('list-numeric-gap')).toHaveStyle({
+        '--cm-clist-row-gap': '12px',
+        '--cm-clist-column-gap': '12px',
+      });
+    });
+
+    it('passes string gap through as CSS length values', () => {
+      render(
+        <CList
+          items={TEST_ITEMS}
+          gap="1.5rem"
+          renderItem={(item) => <span>{item.name}</span>}
+          data-testid="list-string-gap"
+        />,
+      );
+
+      expect(screen.getByTestId('list-string-gap')).toHaveStyle({
+        '--cm-clist-row-gap': '1.5rem',
+        '--cm-clist-column-gap': '1.5rem',
+      });
+    });
+
+    it('maps object gap to axis-specific CSS variables', () => {
+      render(
+        <CList
+          items={TEST_ITEMS}
+          gap={{ row: 8, column: '2rem' }}
+          renderItem={(item) => <span>{item.name}</span>}
+          data-testid="list-object-gap"
+        />,
+      );
+
+      expect(screen.getByTestId('list-object-gap')).toHaveStyle({
+        '--cm-clist-row-gap': '8px',
+        '--cm-clist-column-gap': '2rem',
+      });
+    });
+
+    it('applies horizontal direction modifier class', () => {
+      render(
+        <CList
+          direction="horizontal"
+          items={TEST_ITEMS}
+          renderItem={(item) => <span>{item.name}</span>}
+          data-testid="list-direction-horizontal"
+        />,
+      );
+
+      expect(screen.getByTestId('list-direction-horizontal')).toHaveClass(
+        'cm-list--list',
+        'cm-clist--direction-horizontal',
+      );
+    });
+
+    it('does not apply horizontal direction modifier by default', () => {
+      render(
+        <CList
+          items={TEST_ITEMS}
+          renderItem={(item) => <span>{item.name}</span>}
+          data-testid="list-direction-default"
+        />,
+      );
+
+      expect(screen.getByTestId('list-direction-default')).not.toHaveClass(
+        'cm-clist--direction-horizontal',
+      );
+    });
+
+    it('applies vertical direction modifier by default', () => {
+      render(
+        <CList
+          items={TEST_ITEMS}
+          renderItem={(item) => <span>{item.name}</span>}
+          data-testid="list-direction-vertical-default"
+        />,
+      );
+
+      expect(screen.getByTestId('list-direction-vertical-default')).toHaveClass(
+        'cm-clist--direction-vertical',
+      );
+    });
+
+    it('applies wrap modifier when wrapping is enabled', () => {
+      render(
+        <CList
+          wrap
+          items={TEST_ITEMS}
+          renderItem={(item) => <span>{item.name}</span>}
+          data-testid="list-wrap"
+        />,
+      );
+
+      expect(screen.getByTestId('list-wrap')).toHaveClass('cm-clist--wrap');
+      expect(screen.getByTestId('list-wrap')).not.toHaveClass('cm-clist--nowrap');
+    });
+
+    it('applies wrap modifier when wrap is the string "wrap"', () => {
+      render(
+        <CList
+          wrap="wrap"
+          items={TEST_ITEMS}
+          renderItem={(item) => <span>{item.name}</span>}
+          data-testid="list-wrap-string"
+        />,
+      );
+
+      expect(screen.getByTestId('list-wrap-string')).toHaveClass('cm-clist--wrap');
+      expect(screen.getByTestId('list-wrap-string')).not.toHaveClass('cm-clist--nowrap');
+    });
+
+    it('applies wrap-reverse modifier when wrap is wrap-reverse', () => {
+      render(
+        <CList
+          wrap="wrap-reverse"
+          items={TEST_ITEMS}
+          renderItem={(item) => <span>{item.name}</span>}
+          data-testid="list-wrap-reverse"
+        />,
+      );
+
+      expect(screen.getByTestId('list-wrap-reverse')).toHaveClass('cm-clist--wrap-reverse');
+      expect(screen.getByTestId('list-wrap-reverse')).not.toHaveClass(
+        'cm-clist--wrap',
+        'cm-clist--nowrap',
+      );
+    });
+
+    it('applies nowrap modifier when wrapping is disabled', () => {
+      const { rerender } = render(
+        <CList
+          items={TEST_ITEMS}
+          renderItem={(item) => <span>{item.name}</span>}
+          data-testid="list-no-wrap"
+        />,
+      );
+
+      expect(screen.getByTestId('list-no-wrap')).toHaveClass('cm-clist--nowrap');
+      expect(screen.getByTestId('list-no-wrap')).not.toHaveClass('cm-clist--wrap');
+
+      rerender(
+        <CList
+          wrap="nowrap"
+          items={TEST_ITEMS}
+          renderItem={(item) => <span>{item.name}</span>}
+          data-testid="list-no-wrap"
+        />,
+      );
+
+      expect(screen.getByTestId('list-no-wrap')).toHaveClass('cm-clist--nowrap');
+      expect(screen.getByTestId('list-no-wrap')).not.toHaveClass(
+        'cm-clist--wrap',
+        'cm-clist--wrap-reverse',
+      );
+    });
+  });
+
   describe('custom rendering', () => {
     it('calls renderItem for each item with correct item and index', () => {
       const renderItem = jest.fn((item: TestItem, _index: number) => <span>{item.name}</span>);
@@ -1125,6 +1292,76 @@ describe('CList', () => {
         source: { item: TEST_ITEMS[0], key: '1', index: 0 },
         target: { item: TEST_ITEMS[1], key: '2', index: 1 },
         position: 'after',
+        input: 'keyboard',
+      });
+    });
+
+    it('maps horizontal keyboard arrows to before/after reorder', () => {
+      const onItemDrag = jest.fn();
+
+      render(
+        <CList
+          draggable
+          direction="horizontal"
+          items={TEST_ITEMS}
+          renderItem={(item) => <span>{item.name}</span>}
+          getItemKey={(item) => item.id}
+          onItemDrag={onItemDrag}
+          data-testid="list-horizontal-keyboard-reorder"
+        />,
+      );
+
+      const handle = screen.getByRole('button', { name: 'Move item 2' });
+
+      fireEvent.keyDown(handle, { key: 'ArrowLeft' });
+
+      expect(onItemDrag).toHaveBeenCalledTimes(1);
+      expect(onItemDrag).toHaveBeenCalledWith({
+        source: { item: TEST_ITEMS[1], key: '2', index: 1 },
+        target: { item: TEST_ITEMS[0], key: '1', index: 0 },
+        position: 'before',
+        input: 'keyboard',
+      });
+
+      onItemDrag.mockClear();
+      fireEvent.keyDown(handle, { key: 'ArrowRight' });
+
+      expect(onItemDrag).toHaveBeenCalledTimes(1);
+      expect(onItemDrag).toHaveBeenCalledWith({
+        source: { item: TEST_ITEMS[1], key: '2', index: 1 },
+        target: { item: TEST_ITEMS[2], key: '3', index: 2 },
+        position: 'after',
+        input: 'keyboard',
+      });
+    });
+
+    it('preserves Alt+ArrowRight drag-into intent in horizontal direction', () => {
+      const onItemDrag = jest.fn();
+      const onItemDragInto = jest.fn();
+
+      render(
+        <CList
+          draggable
+          direction="horizontal"
+          items={TEST_ITEMS}
+          renderItem={(item) => <span>{item.name}</span>}
+          getItemKey={(item) => item.id}
+          onItemDrag={onItemDrag}
+          onItemDragInto={onItemDragInto}
+          data-testid="list-horizontal-alt-inside"
+        />,
+      );
+
+      const handle = screen.getByRole('button', { name: 'Move item 1' });
+
+      fireEvent.keyDown(handle, { key: 'ArrowRight', altKey: true });
+
+      expect(onItemDrag).not.toHaveBeenCalled();
+      expect(onItemDragInto).toHaveBeenCalledTimes(1);
+      expect(onItemDragInto).toHaveBeenCalledWith({
+        source: { item: TEST_ITEMS[0], key: '1', index: 0 },
+        target: { item: TEST_ITEMS[1], key: '2', index: 1 },
+        position: 'inside',
         input: 'keyboard',
       });
     });

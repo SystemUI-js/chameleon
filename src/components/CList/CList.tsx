@@ -35,6 +35,12 @@ ensureDragEventWithMouseCoordinates();
 export type CListItemKey = string | number;
 export type CListType = 'list' | 'grid' | 'icon';
 export type CListIconArrangement = 'grid' | 'free';
+export type CListDirection = 'vertical' | 'horizontal';
+export type CListWrap = boolean | 'wrap' | 'nowrap' | 'wrap-reverse';
+export interface CListGap {
+  readonly row?: number | string;
+  readonly column?: number | string;
+}
 export type CListItemDragPosition = 'before' | 'after' | 'inside';
 export type CListItemDragInput = 'pointer' | 'keyboard';
 
@@ -99,6 +105,8 @@ interface CListIconDragStart<T> {
 
 type CListStyle = React.CSSProperties & {
   readonly '--cm-list-icon-size'?: string;
+  readonly '--cm-clist-row-gap'?: string;
+  readonly '--cm-clist-column-gap'?: string;
 };
 
 export interface CListProps<T> {
@@ -124,6 +132,9 @@ export interface CListProps<T> {
   readonly theme?: string;
   readonly style?: React.CSSProperties;
   readonly type?: CListType;
+  readonly direction?: CListDirection;
+  readonly wrap?: CListWrap;
+  readonly gap?: number | string | CListGap;
   readonly iconSize?: number | string;
   readonly iconArrangement?: CListIconArrangement;
   readonly iconPositions?: Readonly<Record<CListItemKey, CListIconPosition>>;
@@ -140,17 +151,63 @@ const normalizeIconSize = (iconSize: number | string): string => {
   return typeof iconSize === 'number' ? `${iconSize}px` : iconSize;
 };
 
+const normalizeGapLength = (value: number | string | undefined): string | undefined => {
+  if (value === undefined) {
+    return undefined;
+  }
+
+  return typeof value === 'number' ? `${value}px` : value;
+};
+
+const normalizeGap = (
+  gap: number | string | CListGap | undefined,
+): { readonly row?: string; readonly column?: string } => {
+  if (gap === undefined) {
+    return {};
+  }
+
+  if (typeof gap === 'number' || typeof gap === 'string') {
+    const normalized = normalizeGapLength(gap);
+
+    return { row: normalized, column: normalized };
+  }
+
+  return {
+    row: normalizeGapLength(gap.row),
+    column: normalizeGapLength(gap.column),
+  };
+};
+
+const normalizeWrap = (wrap: CListWrap | undefined): 'wrap' | 'nowrap' | 'wrap-reverse' => {
+  if (wrap === true) {
+    return 'wrap';
+  }
+
+  if (wrap === false || wrap === undefined) {
+    return 'nowrap';
+  }
+
+  return wrap;
+};
+
 const getListStyle = (
   style: React.CSSProperties | undefined,
   iconSize: number | string | undefined,
+  gap: number | string | CListGap | undefined,
 ): CListStyle | undefined => {
-  if (iconSize === undefined) {
+  const gapVars = normalizeGap(gap);
+  const hasIconSize = iconSize !== undefined;
+  const hasGap = gapVars.row !== undefined || gapVars.column !== undefined;
+
+  if (!hasIconSize && !hasGap) {
     return style;
   }
 
   return {
     ...style,
-    '--cm-list-icon-size': normalizeIconSize(iconSize),
+    ...(hasIconSize ? { '--cm-list-icon-size': normalizeIconSize(iconSize) } : {}),
+    ...(gapVars.row !== undefined ? { '--cm-clist-row-gap': gapVars.row } : {}),
+    ...(gapVars.column !== undefined ? { '--cm-clist-column-gap': gapVars.column } : {}),
   };
 };
 
@@ -213,6 +270,9 @@ export function CList<T>({
   theme,
   style,
   type = 'list',
+  direction = 'vertical',
+  wrap = false,
+  gap,
   iconSize,
   iconArrangement = 'grid',
   iconPositions,
@@ -228,10 +288,16 @@ export function CList<T>({
   const modeClassName = `cm-list--${type}`;
   const isFreeIconMode = type === 'icon' && iconArrangement === 'free';
   const iconArrangementClassName = type === 'icon' ? `cm-list--icon-${iconArrangement}` : undefined;
-  const modeClassNames = iconArrangementClassName
-    ? [modeClassName, iconArrangementClassName]
-    : [modeClassName];
-  const mergedStyle = getListStyle(style, iconSize);
+  const normalizedWrap = normalizeWrap(wrap);
+  const directionClassName = `cm-clist--direction-${direction}`;
+  const wrapClassName = `cm-clist--${normalizedWrap}`;
+  const modeClassNames = [
+    modeClassName,
+    iconArrangementClassName,
+    directionClassName,
+    wrapClassName,
+  ].filter((value): value is string => value !== undefined && value.length > 0);
+  const mergedStyle = getListStyle(style, iconSize, gap);
   const dragSourceRef = useRef<CListInternalItemReference<T> | null>(null);
   const iconDragStartRef = useRef<CListIconDragStart<T> | null>(null);
   const dropPositionRef = useRef<CListItemDragPosition | null>(null);
@@ -633,7 +699,10 @@ export function CList<T>({
                         return;
                       }
 
-                      if (event.key === 'ArrowUp' && previousItem !== undefined) {
+                      const moveBeforeKey = direction === 'horizontal' ? 'ArrowLeft' : 'ArrowUp';
+                      const moveAfterKey = direction === 'horizontal' ? 'ArrowRight' : 'ArrowDown';
+
+                      if (event.key === moveBeforeKey && previousItem !== undefined) {
                         event.preventDefault();
                         emitMovementIntent(
                           internalItemReference,
@@ -649,7 +718,7 @@ export function CList<T>({
                         return;
                       }
 
-                      if (event.key === 'ArrowDown' && nextItem !== undefined) {
+                      if (event.key === moveAfterKey && nextItem !== undefined) {
                         event.preventDefault();
                         emitMovementIntent(
                           internalItemReference,

@@ -1,0 +1,93 @@
+# OpenSpec 归档元数据
+# 归档自 .omo/ 目录（Sisyphus 工作流）的 4 个计划
+
+change_id: progress-list-context-components
+status: archived
+created: 2026-06-06
+archived: 2026-06-12
+description: "批量组件增强：CProgress、CList布局、CContextMenu、CDatePicker、CModal、CConfirm、样式修复"
+priority: high
+author: zhangxiao
+
+# 归档的源计划
+source_plans:
+  - slug: progress-list-context-components
+    file: .omo/plans/progress-list-context-components.md
+    tasks_completed: 13/13
+    components:
+      - CProgress (bar/circle/ring 变体)
+      - CList 横向布局 (direction/wrap/gap)
+      - CContextMenu 右键菜单包装器
+  - slug: component-enhancements
+    file: .omo/plans/component-enhancements.md
+    tasks_completed: 8/8
+    components:
+      - CLoading Demo 展示
+      - CSplitArea separator 锁定 (lockCurrent/lock)
+      - CInput 建议下拉 + 防抖
+      - CSlider 步进验证
+  - slug: style-component-fixes
+    file: .omo/plans/style-component-fixes.md
+    tasks_completed: 7/7 (F1-F4 验证完成)
+    components:
+      - Modal 窗口居中修复
+      - Confirm 内容高度修复
+      - DatePicker/TimePicker 外部点击关闭
+      - Checkbox 半选状态 (indeterminate)
+      - Tree 父节点半选
+      - Select 多选支持
+      - Menu closeOnSelect
+  - slug: add-datepicker-modal-confirm
+    file: .omo/plans/add-datepicker-modal-confirm.md
+    tasks_completed: 11/11
+    components:
+      - CDatePicker 日期选择器
+      - CModal 模态窗口 (CWindow视觉壳+portal)
+      - CConfirm 确认对话框 (组件+imperative confirm())
+
+# 涉及的主要文件
+affected_files:
+  components:
+    - src/components/CProgress/
+    - src/components/CContextMenu/
+    - src/components/DatePicker/
+    - src/components/Modal/
+    - src/components/Confirm/
+    - src/components/Menu/Menu.tsx
+    - src/components/Menu/MenuTree.tsx
+    - src/components/Checkbox/Checkbox.tsx
+    - src/components/Tree/CTree.tsx
+    - src/components/Select/CSelect.tsx
+    - src/components/Input/CInput.tsx
+    - src/components/CSplitArea/CSplitArea.tsx
+    - src/components/List/CList.tsx
+    - src/components/shared/useLongPress.ts
+  themes:
+    - src/theme/default/styles/index.scss
+    - src/theme/win98/styles/index.scss
+    - src/theme/winxp/styles/index.scss
+    - src/theme/win7/styles/index.scss
+  tests:
+    - tests/CProgress.test.tsx
+    - tests/CContextMenu.test.tsx
+    - tests/CDatePicker.test.tsx
+    - tests/CModal.test.tsx
+    - tests/CConfirm.test.tsx
+    - tests/Menu.test.tsx
+    - tests/Checkbox.test.tsx
+    - tests/CTree.test.tsx
+    - tests/Select.test.tsx
+    - tests/CInput.test.tsx
+    - tests/CSplitArea.test.tsx
+    - tests/ui/progress.spec.ts
+    - tests/ui/context-menu.spec.ts
+    - tests/ui/list-layout.spec.ts
+    - tests/ui/modal.visibility.spec.ts
+    - tests/ui/confirm.visibility.spec.ts
+
+# 验证状态
+verification:
+  lint: passed
+  unit_tests: passed (300+ tests)
+  ui_tests: passed (109 Playwright specs)
+  build: passed
