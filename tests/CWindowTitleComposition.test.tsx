@@ -203,6 +203,19 @@ describe('CWindow and CWindowTitle composition', () => {
     expect(frame).not.toHaveClass('cm-widget--inactive');
   });
 
+  it('preserves custom frame className with window and active classes', () => {
+    const { getByTestId } = render(
+      <CWindow active className="custom-window-frame">
+        <CWindowTitle>Custom Window</CWindowTitle>
+      </CWindow>,
+    );
+
+    const frame = getByTestId('window-frame');
+    expect(frame).toHaveClass('cm-window-frame');
+    expect(frame).toHaveClass('custom-window-frame');
+    expect(frame).toHaveClass('cm-widget--active');
+  });
+
   it('does not render title controls when actionButton is omitted', () => {
     const { getByTestId, queryByTestId } = render(
       <CWindow>

@@ -114,6 +114,7 @@ export const getResizeCursor = (direction: ResizeDirection): React.CSSProperties
 
 type WidgetFrameOptions = {
   className?: string;
+  domProps?: React.HTMLAttributes<HTMLDivElement>;
   theme?: string;
   testId?: string;
   style?: React.CSSProperties;
@@ -340,6 +341,19 @@ export class CWidget<TState extends WidgetState = WidgetState> extends React.Com
 
   protected getWidgetActive(): boolean {
     return this.props.active ?? this.state.active;
+  }
+
+  protected setWidgetActive(active: boolean): void {
+    this.props.onActive?.(active);
+
+    if (this.isWidgetActiveControlled()) {
+      return;
+    }
+
+    this.setState((prevState) => ({
+      ...prevState,
+      active,
+    }));
   }
 
   protected getPreviewBehavior(source: WidgetPreviewSource): WidgetInteractionBehavior {
@@ -831,9 +845,11 @@ export class CWidget<TState extends WidgetState = WidgetState> extends React.Com
       resizeBehavior: _rb,
       resizeOptions: _ro,
       centered: _centered,
+      className,
       ...restProps
     } = this.props as CWidgetProps & { centered?: boolean };
     /* eslint-enable sonarjs/no-unused-vars */
+    const frameDomProps = options?.domProps ?? restProps;
     const frameStyle: React.CSSProperties = {
       ...this.filterLayoutStyle(style),
       left: x,
@@ -846,8 +862,15 @@ export class CWidget<TState extends WidgetState = WidgetState> extends React.Com
 
     const preview = this.renderPreviewFrame(options);
     const active = this.getWidgetActive();
+    const onPointerDown: React.PointerEventHandler<HTMLDivElement> = (event) => {
+      frameDomProps.onPointerDown?.(event);
+
+      if (!event.defaultPrevented) {
+        this.setWidgetActive(true);
+      }
+    };
     const frameClassName = this.mergeThemeClassName(
-      [options?.className, active ? 'cm-widget--active' : 'cm-widget--inactive']
+      [options?.className, className, active ? 'cm-widget--active' : 'cm-widget--inactive']
         .filter((className): className is string => Boolean(className))
         .join(' '),
       options?.theme,
@@ -855,10 +878,11 @@ export class CWidget<TState extends WidgetState = WidgetState> extends React.Com
     return (
       <>
         <div
+          {...frameDomProps}
           data-testid={options?.testId ?? 'widget-frame'}
           className={frameClassName}
+          onPointerDown={onPointerDown}
           style={frameStyle}
-          {...restProps}
         >
           {content}
         </div>

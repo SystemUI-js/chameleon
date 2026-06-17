@@ -1,7 +1,8 @@
-import { render, screen, waitFor } from '@testing-library/react';
 import '@testing-library/jest-dom';
+import { render, screen, waitFor } from '@testing-library/react';
 import { CDock as PackageEntryCDock, Theme } from '../src';
 import { CDock, type CDockProps } from '../src/components/Dock/Dock';
+import { WidgetInteractionBehavior } from '../src/components/Widget/Widget';
 
 describe('CDock', () => {
   it('exports CDock from package entry', () => {
@@ -59,6 +60,39 @@ describe('CDock', () => {
       position: 'absolute',
     });
     expect(dock).toHaveTextContent('dock-content');
+  });
+
+  it('keeps widget-only props out of the rendered dock DOM node', () => {
+    const onActive = jest.fn();
+
+    render(
+      <CDock
+        data-testid="dock-filtered-props"
+        active={false}
+        defaultHeight={32}
+        moveBehavior={WidgetInteractionBehavior.Outline}
+        onActive={onActive}
+        resizable={false}
+        resizeBehavior={WidgetInteractionBehavior.Live}
+        resizeOptions={{ edgeWidth: 8 }}
+        width={240}
+        x={10}
+        y={20}
+      />,
+    );
+
+    const dock = screen.getByTestId('dock-filtered-props');
+
+    expect(dock).toHaveClass('cm-widget--inactive');
+    expect(dock).not.toHaveAttribute('active');
+    expect(dock).not.toHaveAttribute('movebehavior');
+    expect(dock).not.toHaveAttribute('onactive');
+    expect(dock).not.toHaveAttribute('resizable');
+    expect(dock).not.toHaveAttribute('resizebehavior');
+    expect(dock).not.toHaveAttribute('resizeoptions');
+    expect(dock).not.toHaveAttribute('width');
+    expect(dock).not.toHaveAttribute('x');
+    expect(dock).not.toHaveAttribute('y');
   });
 
   it('renders children inside dock frame', () => {

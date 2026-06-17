@@ -60,23 +60,50 @@ export class CDock extends CWidget<DockState> {
   }
 
   public render() {
+    /* eslint-disable sonarjs/no-unused-vars -- 解构排除 Dock 专属 props，避免透传到 DOM */
+    const {
+      active: _active,
+      children,
+      className,
+      defaultHeight: _defaultHeight,
+      defaultPosition: _defaultPosition,
+      gapEnd: _gapEnd,
+      gapStart: _gapStart,
+      height: _height,
+      moveBehavior: _moveBehavior,
+      onActive: _onActive,
+      onHeightChange: _onHeightChange,
+      onPositionChange: _onPositionChange,
+      position: _position,
+      resizable: _resizable,
+      resizeBehavior: _resizeBehavior,
+      resizeOptions: _resizeOptions,
+      style,
+      theme,
+      width: _width,
+      x: _x,
+      y: _y,
+      ...domProps
+    } = this.props;
+    /* eslint-enable sonarjs/no-unused-vars */
     const { resolvedPosition, resolvedHeight } = this.state;
     const gapStart = this.props.gapStart ?? 0;
     const gapEnd = this.props.gapEnd ?? 0;
     const dockEdgeStyle = getDockEdgeStyle(resolvedPosition, gapStart, gapEnd, resolvedHeight);
 
     const frameClassName = this.mergeThemeClassName(
-      getDockFrameClassName(resolvedPosition, this.props.className),
-      this.props.theme,
+      getDockFrameClassName(resolvedPosition, className),
+      theme,
     );
 
     return this.renderFrame(
-      this.props.children,
+      children,
       {},
       {
         className: frameClassName,
-        theme: this.props.theme,
-        style: getDockFrameStyle(dockEdgeStyle, this.props.style),
+        domProps,
+        theme,
+        style: getDockFrameStyle(dockEdgeStyle, style),
         testId: this.props['data-testid'] ?? 'dock-frame',
       },
     );
