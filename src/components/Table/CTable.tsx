@@ -416,6 +416,7 @@ export function CTable<T extends CTableRecord>({
               ) : null}
               {columns.map((column) => {
                 const columnKey = getColumnKey(column);
+                const columnWidth = getWidthValue(column.width);
                 const sortable = column.sorter !== undefined && column.sorter !== false;
                 const activeDirection =
                   sortState?.columnKey === columnKey ? sortState.direction : null;
@@ -426,7 +427,7 @@ export function CTable<T extends CTableRecord>({
                     role="columnheader"
                     scope="col"
                     aria-sort={getAriaSortValue(activeDirection, sortable)}
-                    width={getWidthValue(column.width)}
+                    {...(columnWidth === undefined ? {} : { width: columnWidth })}
                     className={getColumnClasses(
                       column,
                       [
