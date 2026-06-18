@@ -1,0 +1,56 @@
+/* CConfirm - base layout only (theme colors are added in Task 4). */
+
+/* Confirm-scoped CWindow frame height override.
+ *
+ * Why this exists:
+ *   CWidget.renderFrame (src/components/Widget/Widget.tsx:836-844) unconditionally
+ *   emits inline `height: <number>px` on the .cm-window-frame element. CModal passes
+ *   `cWindowHeight = 0` whenever the consumer does not supply an explicit numeric
+ *   height (src/components/Modal/CModal.tsx:192), which is the common case for
+ *   Confirm dialogs (intrinsic-height content).
+ *
+ *   Task 1 added a Modal-scoped override neutralizing `position/left/top` on the
+ *   frame to fix off-center placement, but did NOT touch `height`. The result for
+ *   Confirm: frame renders with inline `height: 0px`, `.cm-window__inner { height: 100% }`
+ *   resolves to 0, and the entire Confirm body+actions area collapses to invisibility
+ *   even though .cm-confirm__body has its own `min-height: 32px` (a min-height of
+ *   0 inside a height:0 container is still 0).
+ *
+ *   The fix must live here (not in Modal SCSS) per the Task 2 scope guardrail in
+ *   .omo/plans/style-component-fixes.md. !important is required because the height
+ *   comes from an inline style emitted by code we are forbidden from modifying. */
+.cm-confirm:not(.cm-modal--resizable) .cm-window-frame {
+    height: auto !important;
+}
+
+/* .cm-window is `display: flex; flex-direction: column` (src/components/Window/index.scss).
+ * `flex: 0 0 auto` prevents flex shrinking from collapsing body/actions to 0
+ * if any future change to the window inner makes children compete for space. */
+.cm-confirm__body {
+    flex: 0 0 auto;
+    padding: 12px 16px;
+    min-height: 32px;
+    word-wrap: break-word;
+    overflow-wrap: anywhere;
+}
+
+.cm-confirm__actions {
+    flex: 0 0 auto;
+    display: flex;
+    align-items: center;
+    justify-content: flex-end;
+    gap: 8px;
+    padding: 8px 12px;
+}
+
+/* Base button reset — visual theming lives in src/theme/*. */
+.cm-confirm__cancel,
+.cm-confirm__ok {
+    flex: 0 0 auto;
+    min-width: 64px;
+    padding: 4px 12px;
+    border: 0;
+    background: transparent;
+    cursor: pointer;
+    font: inherit;
+}

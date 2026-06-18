@@ -38,7 +38,7 @@ export function ScrollbarHorizontal({
       data-scrollbar-orientation="horizontal"
     >
       <CButton
-        compact
+        size="compact"
         className="cm-scroll-area__scrollbar-horizontal-decrement"
         data-testid="scroll-area-scrollbar-horizontal-decrement"
         onClick={handleDecrement}
@@ -48,7 +48,7 @@ export function ScrollbarHorizontal({
       </CButton>
       <div className="cm-scroll-area__scrollbar-horizontal-track">
         <CButton
-          compact
+          size="compact"
           className="cm-scroll-area__scrollbar-horizontal-thumb"
           data-testid="scroll-area-scrollbar-horizontal-thumb"
           style={{
@@ -63,7 +63,7 @@ export function ScrollbarHorizontal({
         />
       </div>
       <CButton
-        compact
+        size="compact"
         className="cm-scroll-area__scrollbar-horizontal-increment"
         data-testid="scroll-area-scrollbar-horizontal-increment"
         onClick={handleIncrement}

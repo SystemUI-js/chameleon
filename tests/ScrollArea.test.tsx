@@ -203,7 +203,7 @@ describe('CScrollArea', () => {
 
     const root = screen.getByTestId('scroll-area-hidden-x');
 
-    expect(root).toHaveAttribute('data-scrollbar-horizontal-eligible', 'false');
+    expect(root).toHaveAttribute('data-scrollbar-horizontal-visible', 'false');
     expect(root.querySelector('[data-scrollbar-orientation="horizontal"]')).not.toBeInTheDocument();
   });
 

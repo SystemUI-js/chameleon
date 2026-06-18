@@ -1,0 +1,951 @@
+# Task 8 Quality Gates Evidence
+
+Generated: 2026-06-09T05:01:21Z
+
+Allowed scope checked separately in task-8-scope-review.txt
+
+## yarn lint
+Command: yarn lint
+
+```text
+yarn run v1.22.22
+warning package.json: No license field
+$ eslint "{src,tests}/**/*.{ts,tsx}"
+(node:552654) ESLintIgnoreWarning: The ".eslintignore" file is no longer supported. Switch to using the "ignores" property in "eslint.config.js": https://eslint.org/docs/latest/use/configure/migration-guide#ignoring-files
+(Use `node --trace-warnings ...` to show where the warning was created)
+Done in 13.97s.
+
+```
+Exit code: 0
+
+## yarn test
+Command: yarn test
+
+```text
+yarn run v1.22.22
+warning package.json: No license field
+$ jest
+FAIL tests/Widget.test.tsx
+  ● CWidget active state › updates uncontrolled active state, toggles class name, and fires onActive
+
+    TypeError: this.setWidgetActive is not a function
+
+       6 | class TestWidget extends CWidget {
+       7 |   public setActiveFromTest(active: boolean): void {
+    >  8 |     this.setWidgetActive(active);
+         |          ^
+       9 |   }
+      10 |
+      11 |   public render(): React.ReactElement {
+
+      at TestWidget.setActiveFromTest (tests/Widget.test.tsx:8:10)
+      at tests/Widget.test.tsx:49:26
+      at node_modules/@testing-library/react/dist/act-compat.js:48:24
+      at Object.<anonymous>.process.env.NODE_ENV.exports.act (node_modules/react/cjs/react.development.js:814:22)
+      at node_modules/@testing-library/react/dist/act-compat.js:47:25
+      at Object.<anonymous> (tests/Widget.test.tsx:48:8)
+
+PASS tests/CLoading.test.tsx
+FAIL tests/Dock.test.tsx
+  ● Console
+
+    console.error
+      React does not recognize the `defaultHeight` prop on a DOM element. If you intentionally want it to appear in the DOM as a custom attribute, spell it as lowercase `defaultheight` instead. If you accidentally passed it from a parent component, remove it from the DOM element.
+
+       6 | describe('CDock', () => {
+       7 |   it('exports CDock from package entry', () => {
+    >  8 |     render(<PackageEntryCDock data-testid="dock-package-entry" defaultHeight={24} />);
+         |           ^
+       9 |
+      10 |     const dock = screen.getByTestId('dock-package-entry');
+      11 |
+
+      at validateProperty (node_modules/react-dom/cjs/react-dom-client.development.js:3001:19)
+      at warnUnknownProperties (node_modules/react-dom/cjs/react-dom-client.development.js:3146:9)
+      at validatePropertiesInDevelopment (node_modules/react-dom/cjs/react-dom-client.development.js:19868:9)
+      at setInitialProperties (node_modules/react-dom/cjs/react-dom-client.development.js:20491:7)
+      at completeWork (node_modules/react-dom/cjs/react-dom-client.development.js:12662:18)
+      at runWithFiberInDEV (node_modules/react-dom/cjs/react-dom-client.development.js:874:13)
+      at completeUnitOfWork (node_modules/react-dom/cjs/react-dom-client.development.js:17777:19)
+      at performUnitOfWork (node_modules/react-dom/cjs/react-dom-client.development.js:17658:11)
+      at workLoopSync (node_modules/react-dom/cjs/react-dom-client.development.js:17469:41)
+      at renderRootSync (node_modules/react-dom/cjs/react-dom-client.development.js:17450:11)
+      at performWorkOnRoot (node_modules/react-dom/cjs/react-dom-client.development.js:16504:11)
+      at performWorkOnRootViaSchedulerTask (node_modules/react-dom/cjs/react-dom-client.development.js:18957:7)
+      at flushActQueue (node_modules/react/cjs/react.development.js:590:34)
+      at Object.<anonymous>.process.env.NODE_ENV.exports.act (node_modules/react/cjs/react.development.js:884:10)
+      at node_modules/@testing-library/react/dist/act-compat.js:47:25
+      at renderRoot (node_modules/@testing-library/react/dist/pure.js:190:26)
+      at render (node_modules/@testing-library/react/dist/pure.js:292:10)
+      at Object.<anonymous> (tests/Dock.test.tsx:8:11)
+
+    console.error
+      React does not recognize the `defaultPosition` prop on a DOM element. If you intentionally want it to appear in the DOM as a custom attribute, spell it as lowercase `defaultposition` instead. If you accidentally passed it from a parent component, remove it from the DOM element.
+
+      46 |     };
+      47 |
+    > 48 |     render(<CDock {...props} />);
+         |           ^
+      49 |
+      50 |     const dock = screen.getByTestId('dock-under-test');
+      51 |
+
+      at validateProperty (node_modules/react-dom/cjs/react-dom-client.development.js:3001:19)
+      at warnUnknownProperties (node_modules/react-dom/cjs/react-dom-client.development.js:3146:9)
+      at validatePropertiesInDevelopment (node_modules/react-dom/cjs/react-dom-client.development.js:19868:9)
+      at setInitialProperties (node_modules/react-dom/cjs/react-dom-client.development.js:20491:7)
+      at completeWork (node_modules/react-dom/cjs/react-dom-client.development.js:12662:18)
+      at runWithFiberInDEV (node_modules/react-dom/cjs/react-dom-client.development.js:874:13)
+      at completeUnitOfWork (node_modules/react-dom/cjs/react-dom-client.development.js:17777:19)
+      at performUnitOfWork (node_modules/react-dom/cjs/react-dom-client.development.js:17658:11)
+      at workLoopSync (node_modules/react-dom/cjs/react-dom-client.development.js:17469:41)
+      at renderRootSync (node_modules/react-dom/cjs/react-dom-client.development.js:17450:11)
+      at performWorkOnRoot (node_modules/react-dom/cjs/react-dom-client.development.js:16504:11)
+      at performWorkOnRootViaSchedulerTask (node_modules/react-dom/cjs/react-dom-client.development.js:18957:7)
+      at flushActQueue (node_modules/react/cjs/react.development.js:590:34)
+      at Object.<anonymous>.process.env.NODE_ENV.exports.act (node_modules/react/cjs/react.development.js:884:10)
+      at node_modules/@testing-library/react/dist/act-compat.js:47:25
+      at renderRoot (node_modules/@testing-library/react/dist/pure.js:190:26)
+      at render (node_modules/@testing-library/react/dist/pure.js:292:10)
+      at Object.<anonymous> (tests/Dock.test.tsx:48:11)
+
+    console.error
+      React does not recognize the `gapStart` prop on a DOM element. If you intentionally want it to appear in the DOM as a custom attribute, spell it as lowercase `gapstart` instead. If you accidentally passed it from a parent component, remove it from the DOM element.
+
+      46 |     };
+      47 |
+    > 48 |     render(<CDock {...props} />);
+         |           ^
+      49 |
+      50 |     const dock = screen.getByTestId('dock-under-test');
+      51 |
+
+      at validateProperty (node_modules/react-dom/cjs/react-dom-client.development.js:3001:19)
+      at warnUnknownProperties (node_modules/react-dom/cjs/react-dom-client.development.js:3146:9)
+      at validatePropertiesInDevelopment (node_modules/react-dom/cjs/react-dom-client.development.js:19868:9)
+      at setInitialProperties (node_modules/react-dom/cjs/react-dom-client.development.js:20491:7)
+      at completeWork (node_modules/react-dom/cjs/react-dom-client.development.js:12662:18)
+      at runWithFiberInDEV (node_modules/react-dom/cjs/react-dom-client.development.js:874:13)
+      at completeUnitOfWork (node_modules/react-dom/cjs/react-dom-client.development.js:17777:19)
+      at performUnitOfWork (node_modules/react-dom/cjs/react-dom-client.development.js:17658:11)
+      at workLoopSync (node_modules/react-dom/cjs/react-dom-client.development.js:17469:41)
+      at renderRootSync (node_modules/react-dom/cjs/react-dom-client.development.js:17450:11)
+      at performWorkOnRoot (node_modules/react-dom/cjs/react-dom-client.development.js:16504:11)
+      at performWorkOnRootViaSchedulerTask (node_modules/react-dom/cjs/react-dom-client.development.js:18957:7)
+      at flushActQueue (node_modules/react/cjs/react.development.js:590:34)
+      at Object.<anonymous>.process.env.NODE_ENV.exports.act (node_modules/react/cjs/react.development.js:884:10)
+      at node_modules/@testing-library/react/dist/act-compat.js:47:25
+      at renderRoot (node_modules/@testing-library/react/dist/pure.js:190:26)
+      at render (node_modules/@testing-library/react/dist/pure.js:292:10)
+      at Object.<anonymous> (tests/Dock.test.tsx:48:11)
+
+    console.error
+      React does not recognize the `gapEnd` prop on a DOM element. If you intentionally want it to appear in the DOM as a custom attribute, spell it as lowercase `gapend` instead. If you accidentally passed it from a parent component, remove it from the DOM element.
+
+      46 |     };
+      47 |
+    > 48 |     render(<CDock {...props} />);
+         |           ^
+      49 |
+      50 |     const dock = screen.getByTestId('dock-under-test');
+      51 |
+
+      at validateProperty (node_modules/react-dom/cjs/react-dom-client.development.js:3001:19)
+      at warnUnknownProperties (node_modules/react-dom/cjs/react-dom-client.development.js:3146:9)
+      at validatePropertiesInDevelopment (node_modules/react-dom/cjs/react-dom-client.development.js:19868:9)
+      at setInitialProperties (node_modules/react-dom/cjs/react-dom-client.development.js:20491:7)
+      at completeWork (node_modules/react-dom/cjs/react-dom-client.development.js:12662:18)
+      at runWithFiberInDEV (node_modules/react-dom/cjs/react-dom-client.development.js:874:13)
+      at completeUnitOfWork (node_modules/react-dom/cjs/react-dom-client.development.js:17777:19)
+      at performUnitOfWork (node_modules/react-dom/cjs/react-dom-client.development.js:17658:11)
+      at workLoopSync (node_modules/react-dom/cjs/react-dom-client.development.js:17469:41)
+      at renderRootSync (node_modules/react-dom/cjs/react-dom-client.development.js:17450:11)
+      at performWorkOnRoot (node_modules/react-dom/cjs/react-dom-client.development.js:16504:11)
+      at performWorkOnRootViaSchedulerTask (node_modules/react-dom/cjs/react-dom-client.development.js:18957:7)
+      at flushActQueue (node_modules/react/cjs/react.development.js:590:34)
+      at Object.<anonymous>.process.env.NODE_ENV.exports.act (node_modules/react/cjs/react.development.js:884:10)
+      at node_modules/@testing-library/react/dist/act-compat.js:47:25
+      at renderRoot (node_modules/@testing-library/react/dist/pure.js:190:26)
+      at render (node_modules/@testing-library/react/dist/pure.js:292:10)
+      at Object.<anonymous> (tests/Dock.test.tsx:48:11)
+
+    console.error
+      Unknown event handler property `onPositionChange`. It will be ignored.
+
+      46 |     };
+      47 |
+    > 48 |     render(<CDock {...props} />);
+         |           ^
+      49 |
+      50 |     const dock = screen.getByTestId('dock-under-test');
+      51 |
+
+      at validateProperty (node_modules/react-dom/cjs/react-dom-client.development.js:2935:21)
+      at warnUnknownProperties (node_modules/react-dom/cjs/react-dom-client.development.js:3146:9)
+      at validatePropertiesInDevelopment (node_modules/react-dom/cjs/react-dom-client.development.js:19868:9)
+      at setInitialProperties (node_modules/react-dom/cjs/react-dom-client.development.js:20491:7)
+      at completeWork (node_modules/react-dom/cjs/react-dom-client.development.js:12662:18)
+      at runWithFiberInDEV (node_modules/react-dom/cjs/react-dom-client.development.js:874:13)
+      at completeUnitOfWork (node_modules/react-dom/cjs/react-dom-client.development.js:17777:19)
+      at performUnitOfWork (node_modules/react-dom/cjs/react-dom-client.development.js:17658:11)
+      at workLoopSync (node_modules/react-dom/cjs/react-dom-client.development.js:17469:41)
+      at renderRootSync (node_modules/react-dom/cjs/react-dom-client.development.js:17450:11)
+      at performWorkOnRoot (node_modules/react-dom/cjs/react-dom-client.development.js:16504:11)
+      at performWorkOnRootViaSchedulerTask (node_modules/react-dom/cjs/react-dom-client.development.js:18957:7)
+      at flushActQueue (node_modules/react/cjs/react.development.js:590:34)
+      at Object.<anonymous>.process.env.NODE_ENV.exports.act (node_modules/react/cjs/react.development.js:884:10)
+      at node_modules/@testing-library/react/dist/act-compat.js:47:25
+      at renderRoot (node_modules/@testing-library/react/dist/pure.js:190:26)
+      at render (node_modules/@testing-library/react/dist/pure.js:292:10)
+      at Object.<anonymous> (tests/Dock.test.tsx:48:11)
+
+    console.error
+      Unknown event handler property `onHeightChange`. It will be ignored.
+
+      46 |     };
+      47 |
+    > 48 |     render(<CDock {...props} />);
+         |           ^
+      49 |
+      50 |     const dock = screen.getByTestId('dock-under-test');
+      51 |
+
+      at validateProperty (node_modules/react-dom/cjs/react-dom-client.development.js:2935:21)
+      at warnUnknownProperties (node_modules/react-dom/cjs/react-dom-client.development.js:3146:9)
+      at validatePropertiesInDevelopment (node_modules/react-dom/cjs/react-dom-client.development.js:19868:9)
+      at setInitialProperties (node_modules/react-dom/cjs/react-dom-client.development.js:20491:7)
+      at completeWork (node_modules/react-dom/cjs/react-dom-client.development.js:12662:18)
+      at runWithFiberInDEV (node_modules/react-dom/cjs/react-dom-client.development.js:874:13)
+      at completeUnitOfWork (node_modules/react-dom/cjs/react-dom-client.development.js:17777:19)
+      at performUnitOfWork (node_modules/react-dom/cjs/react-dom-client.development.js:17658:11)
+      at workLoopSync (node_modules/react-dom/cjs/react-dom-client.development.js:17469:41)
+      at renderRootSync (node_modules/react-dom/cjs/react-dom-client.development.js:17450:11)
+      at performWorkOnRoot (node_modules/react-dom/cjs/react-dom-client.development.js:16504:11)
+      at performWorkOnRootViaSchedulerTask (node_modules/react-dom/cjs/react-dom-client.development.js:18957:7)
+      at flushActQueue (node_modules/react/cjs/react.development.js:590:34)
+      at Object.<anonymous>.process.env.NODE_ENV.exports.act (node_modules/react/cjs/react.development.js:884:10)
+      at node_modules/@testing-library/react/dist/act-compat.js:47:25
+      at renderRoot (node_modules/@testing-library/react/dist/pure.js:190:26)
+      at render (node_modules/@testing-library/react/dist/pure.js:292:10)
+      at Object.<anonymous> (tests/Dock.test.tsx:48:11)
+
+  ● CDock › renders with supported dock props
+
+    expect(element).toHaveClass("cm-dock")
+
+    Expected the element to have class:
+      cm-dock
+    Received:
+      dock-shell
+
+      51 |
+      52 |     expect(dock).toBeInTheDocument();
+    > 53 |     expect(dock).toHaveClass('cm-dock');
+         |                  ^
+      54 |     expect(dock).toHaveClass('cm-dock--bottom');
+      55 |     expect(dock).toHaveClass('dock-shell');
+      56 |     expect(dock).toHaveStyle({
+
+      at Object.<anonymous> (tests/Dock.test.tsx:53:18)
+
+  ● CDock › applies dock base and modifier classes
+
+    expect(element).toHaveClass("cm-dock")
+
+    Expected the element to have class:
+      cm-dock
+    Received:
+      dock-shell
+
+      83 |     const dock = screen.getByTestId('dock-custom');
+      84 |
+    > 85 |     expect(dock).toHaveClass('cm-dock');
+         |                  ^
+      86 |     expect(dock).toHaveClass('cm-dock--left');
+      87 |     expect(dock).toHaveClass('dock-shell');
+      88 |     expect(dock).not.toHaveClass('cm-dock--top');
+
+      at Object.<anonymous> (tests/Dock.test.tsx:85:18)
+
+PASS tests/CInput.test.tsx
+PASS tests/CTransfer.test.tsx
+PASS tests/ScrollArea.test.tsx
+PASS tests/CTimePicker.test.tsx
+PASS tests/CList.test.tsx
+PASS tests/CTable.test.tsx
+PASS tests/CDatePicker.test.tsx
+PASS tests/CWindowTitleComposition.test.tsx
+PASS tests/Menu.test.tsx
+PASS tests/Select.test.tsx
+PASS tests/CTab.test.tsx
+PASS tests/Radio.test.tsx
+PASS tests/CTooltip.test.tsx
+PASS tests/PublicThemeMatrix.test.tsx
+  ● Console
+
+    console.error
+      React does not recognize the `defaultHeight` prop on a DOM element. If you intentionally want it to appear in the DOM as a custom attribute, spell it as lowercase `defaultheight` instead. If you accidentally passed it from a parent component, remove it from the DOM element.
+
+       99 |
+      100 |   it('covers CDock explicit theme', () => {
+    > 101 |     render(<CDock data-testid="theme-matrix-dock" defaultHeight={24} theme="cm-theme--win98" />);
+          |           ^
+      102 |
+      103 |     expect(screen.getByTestId('theme-matrix-dock')).toHaveClass('cm-theme--win98');
+      104 |   });
+
+      at validateProperty (node_modules/react-dom/cjs/react-dom-client.development.js:3001:19)
+      at warnUnknownProperties (node_modules/react-dom/cjs/react-dom-client.development.js:3146:9)
+      at validatePropertiesInDevelopment (node_modules/react-dom/cjs/react-dom-client.development.js:19868:9)
+      at setInitialProperties (node_modules/react-dom/cjs/react-dom-client.development.js:20491:7)
+      at completeWork (node_modules/react-dom/cjs/react-dom-client.development.js:12662:18)
+      at runWithFiberInDEV (node_modules/react-dom/cjs/react-dom-client.development.js:874:13)
+      at completeUnitOfWork (node_modules/react-dom/cjs/react-dom-client.development.js:17777:19)
+      at performUnitOfWork (node_modules/react-dom/cjs/react-dom-client.development.js:17658:11)
+      at workLoopSync (node_modules/react-dom/cjs/react-dom-client.development.js:17469:41)
+      at renderRootSync (node_modules/react-dom/cjs/react-dom-client.development.js:17450:11)
+      at performWorkOnRoot (node_modules/react-dom/cjs/react-dom-client.development.js:16504:11)
+      at performWorkOnRootViaSchedulerTask (node_modules/react-dom/cjs/react-dom-client.development.js:18957:7)
+      at flushActQueue (node_modules/react/cjs/react.development.js:590:34)
+      at Object.<anonymous>.process.env.NODE_ENV.exports.act (node_modules/react/cjs/react.development.js:884:10)
+      at node_modules/@testing-library/react/dist/act-compat.js:47:25
+      at renderRoot (node_modules/@testing-library/react/dist/pure.js:190:26)
+      at render (node_modules/@testing-library/react/dist/pure.js:292:10)
+      at Object.<anonymous> (tests/PublicThemeMatrix.test.tsx:101:11)
+
+PASS tests/CConfirm.test.tsx
+  ● Console
+
+    console.error
+      An update to Root inside a test was not wrapped in act(...).
+      
+      When testing, code that causes React state updates should be wrapped into act(...):
+      
+      act(() => {
+        /* fire events that update state */
+      });
+      /* assert on the output */
+      
+      This ensures that you're testing the behavior the user would see in the browser. Learn more at https://react.dev/link/wrap-tests-with-act
+
+      279 |     }
+      280 |
+    > 281 |     root.render(
+          |          ^
+      282 |       <Theme name={options.theme ?? 'default'}>
+      283 |         <ImperativeConfirmHost
+      284 |           options={options}
+
+      at node_modules/react-dom/cjs/react-dom-client.development.js:18758:19
+      at runWithFiberInDEV (node_modules/react-dom/cjs/react-dom-client.development.js:874:13)
+      at warnIfUpdatesNotWrappedWithActDEV (node_modules/react-dom/cjs/react-dom-client.development.js:18757:9)
+      at scheduleUpdateOnFiber (node_modules/react-dom/cjs/react-dom-client.development.js:16409:11)
+      at updateContainerImpl (node_modules/react-dom/cjs/react-dom-client.development.js:23509:9)
+      at ReactDOMRoot.Object.<anonymous>.process.env.NODE_ENV.ReactDOMHydrationRoot.render.ReactDOMRoot.render [as render] (node_modules/react-dom/cjs/react-dom-client.development.js:27893:9)
+      at src/components/Confirm/CConfirm.tsx:281:10
+      at confirm (src/components/Confirm/CConfirm.tsx:239:10)
+      at Object.<anonymous> (tests/CConfirm.test.tsx:204:28)
+
+    console.error
+      An update to Root inside a test was not wrapped in act(...).
+      
+      When testing, code that causes React state updates should be wrapped into act(...):
+      
+      act(() => {
+        /* fire events that update state */
+      });
+      /* assert on the output */
+      
+      This ensures that you're testing the behavior the user would see in the browser. Learn more at https://react.dev/link/wrap-tests-with-act
+
+      279 |     }
+      280 |
+    > 281 |     root.render(
+          |          ^
+      282 |       <Theme name={options.theme ?? 'default'}>
+      283 |         <ImperativeConfirmHost
+      284 |           options={options}
+
+      at node_modules/react-dom/cjs/react-dom-client.development.js:18758:19
+      at runWithFiberInDEV (node_modules/react-dom/cjs/react-dom-client.development.js:874:13)
+      at warnIfUpdatesNotWrappedWithActDEV (node_modules/react-dom/cjs/react-dom-client.development.js:18757:9)
+      at scheduleUpdateOnFiber (node_modules/react-dom/cjs/react-dom-client.development.js:16409:11)
+      at updateContainerImpl (node_modules/react-dom/cjs/react-dom-client.development.js:23509:9)
+      at ReactDOMRoot.Object.<anonymous>.process.env.NODE_ENV.ReactDOMHydrationRoot.render.ReactDOMRoot.render [as render] (node_modules/react-dom/cjs/react-dom-client.development.js:27893:9)
+      at src/components/Confirm/CConfirm.tsx:281:10
+      at confirm (src/components/Confirm/CConfirm.tsx:239:10)
+      at Object.<anonymous> (tests/CConfirm.test.tsx:219:28)
+
+    console.error
+      An update to Root inside a test was not wrapped in act(...).
+      
+      When testing, code that causes React state updates should be wrapped into act(...):
+      
+      act(() => {
+        /* fire events that update state */
+      });
+      /* assert on the output */
+      
+      This ensures that you're testing the behavior the user would see in the browser. Learn more at https://react.dev/link/wrap-tests-with-act
+
+      279 |     }
+      280 |
+    > 281 |     root.render(
+          |          ^
+      282 |       <Theme name={options.theme ?? 'default'}>
+      283 |         <ImperativeConfirmHost
+      284 |           options={options}
+
+      at node_modules/react-dom/cjs/react-dom-client.development.js:18758:19
+      at runWithFiberInDEV (node_modules/react-dom/cjs/react-dom-client.development.js:874:13)
+      at warnIfUpdatesNotWrappedWithActDEV (node_modules/react-dom/cjs/react-dom-client.development.js:18757:9)
+      at scheduleUpdateOnFiber (node_modules/react-dom/cjs/react-dom-client.development.js:16409:11)
+      at updateContainerImpl (node_modules/react-dom/cjs/react-dom-client.development.js:23509:9)
+      at ReactDOMRoot.Object.<anonymous>.process.env.NODE_ENV.ReactDOMHydrationRoot.render.ReactDOMRoot.render [as render] (node_modules/react-dom/cjs/react-dom-client.development.js:27893:9)
+      at src/components/Confirm/CConfirm.tsx:281:10
+      at confirm (src/components/Confirm/CConfirm.tsx:239:10)
+      at Object.<anonymous> (tests/CConfirm.test.tsx:233:28)
+
+    console.error
+      An update to Root inside a test was not wrapped in act(...).
+      
+      When testing, code that causes React state updates should be wrapped into act(...):
+      
+      act(() => {
+        /* fire events that update state */
+      });
+      /* assert on the output */
+      
+      This ensures that you're testing the behavior the user would see in the browser. Learn more at https://react.dev/link/wrap-tests-with-act
+
+      279 |     }
+      280 |
+    > 281 |     root.render(
+          |          ^
+      282 |       <Theme name={options.theme ?? 'default'}>
+      283 |         <ImperativeConfirmHost
+      284 |           options={options}
+
+      at node_modules/react-dom/cjs/react-dom-client.development.js:18758:19
+      at runWithFiberInDEV (node_modules/react-dom/cjs/react-dom-client.development.js:874:13)
+      at warnIfUpdatesNotWrappedWithActDEV (node_modules/react-dom/cjs/react-dom-client.development.js:18757:9)
+      at scheduleUpdateOnFiber (node_modules/react-dom/cjs/react-dom-client.development.js:16409:11)
+      at updateContainerImpl (node_modules/react-dom/cjs/react-dom-client.development.js:23509:9)
+      at ReactDOMRoot.Object.<anonymous>.process.env.NODE_ENV.ReactDOMHydrationRoot.render.ReactDOMRoot.render [as render] (node_modules/react-dom/cjs/react-dom-client.development.js:27893:9)
+      at src/components/Confirm/CConfirm.tsx:281:10
+      at confirm (src/components/Confirm/CConfirm.tsx:239:10)
+      at Object.<anonymous> (tests/CConfirm.test.tsx:245:28)
+
+    console.error
+      An update to Root inside a test was not wrapped in act(...).
+      
+      When testing, code that causes React state updates should be wrapped into act(...):
+      
+      act(() => {
+        /* fire events that update state */
+      });
+      /* assert on the output */
+      
+      This ensures that you're testing the behavior the user would see in the browser. Learn more at https://react.dev/link/wrap-tests-with-act
+
+      279 |     }
+      280 |
+    > 281 |     root.render(
+          |          ^
+      282 |       <Theme name={options.theme ?? 'default'}>
+      283 |         <ImperativeConfirmHost
+      284 |           options={options}
+
+      at node_modules/react-dom/cjs/react-dom-client.development.js:18758:19
+      at runWithFiberInDEV (node_modules/react-dom/cjs/react-dom-client.development.js:874:13)
+      at warnIfUpdatesNotWrappedWithActDEV (node_modules/react-dom/cjs/react-dom-client.development.js:18757:9)
+      at scheduleUpdateOnFiber (node_modules/react-dom/cjs/react-dom-client.development.js:16409:11)
+      at updateContainerImpl (node_modules/react-dom/cjs/react-dom-client.development.js:23509:9)
+      at ReactDOMRoot.Object.<anonymous>.process.env.NODE_ENV.ReactDOMHydrationRoot.render.ReactDOMRoot.render [as render] (node_modules/react-dom/cjs/react-dom-client.development.js:27893:9)
+      at src/components/Confirm/CConfirm.tsx:281:10
+      at confirm (src/components/Confirm/CConfirm.tsx:239:10)
+      at Object.<anonymous> (tests/CConfirm.test.tsx:257:28)
+
+    console.error
+      An update to Root inside a test was not wrapped in act(...).
+      
+      When testing, code that causes React state updates should be wrapped into act(...):
+      
+      act(() => {
+        /* fire events that update state */
+      });
+      /* assert on the output */
+      
+      This ensures that you're testing the behavior the user would see in the browser. Learn more at https://react.dev/link/wrap-tests-with-act
+
+      279 |     }
+      280 |
+    > 281 |     root.render(
+          |          ^
+      282 |       <Theme name={options.theme ?? 'default'}>
+      283 |         <ImperativeConfirmHost
+      284 |           options={options}
+
+      at node_modules/react-dom/cjs/react-dom-client.development.js:18758:19
+      at runWithFiberInDEV (node_modules/react-dom/cjs/react-dom-client.development.js:874:13)
+      at warnIfUpdatesNotWrappedWithActDEV (node_modules/react-dom/cjs/react-dom-client.development.js:18757:9)
+      at scheduleUpdateOnFiber (node_modules/react-dom/cjs/react-dom-client.development.js:16409:11)
+      at updateContainerImpl (node_modules/react-dom/cjs/react-dom-client.development.js:23509:9)
+      at ReactDOMRoot.Object.<anonymous>.process.env.NODE_ENV.ReactDOMHydrationRoot.render.ReactDOMRoot.render [as render] (node_modules/react-dom/cjs/react-dom-client.development.js:27893:9)
+      at src/components/Confirm/CConfirm.tsx:281:10
+      at confirm (src/components/Confirm/CConfirm.tsx:239:10)
+      at Object.<anonymous> (tests/CConfirm.test.tsx:274:23)
+
+    console.error
+      An update to Root inside a test was not wrapped in act(...).
+      
+      When testing, code that causes React state updates should be wrapped into act(...):
+      
+      act(() => {
+        /* fire events that update state */
+      });
+      /* assert on the output */
+      
+      This ensures that you're testing the behavior the user would see in the browser. Learn more at https://react.dev/link/wrap-tests-with-act
+
+      279 |     }
+      280 |
+    > 281 |     root.render(
+          |          ^
+      282 |       <Theme name={options.theme ?? 'default'}>
+      283 |         <ImperativeConfirmHost
+      284 |           options={options}
+
+      at node_modules/react-dom/cjs/react-dom-client.development.js:18758:19
+      at runWithFiberInDEV (node_modules/react-dom/cjs/react-dom-client.development.js:874:13)
+      at warnIfUpdatesNotWrappedWithActDEV (node_modules/react-dom/cjs/react-dom-client.development.js:18757:9)
+      at scheduleUpdateOnFiber (node_modules/react-dom/cjs/react-dom-client.development.js:16409:11)
+      at updateContainerImpl (node_modules/react-dom/cjs/react-dom-client.development.js:23509:9)
+      at ReactDOMRoot.Object.<anonymous>.process.env.NODE_ENV.ReactDOMHydrationRoot.render.ReactDOMRoot.render [as render] (node_modules/react-dom/cjs/react-dom-client.development.js:27893:9)
+      at src/components/Confirm/CConfirm.tsx:281:10
+      at confirm (src/components/Confirm/CConfirm.tsx:239:10)
+      at Object.<anonymous> (tests/CConfirm.test.tsx:275:23)
+
+    console.error
+      An update to Root inside a test was not wrapped in act(...).
+      
+      When testing, code that causes React state updates should be wrapped into act(...):
+      
+      act(() => {
+        /* fire events that update state */
+      });
+      /* assert on the output */
+      
+      This ensures that you're testing the behavior the user would see in the browser. Learn more at https://react.dev/link/wrap-tests-with-act
+
+      279 |     }
+      280 |
+    > 281 |     root.render(
+          |          ^
+      282 |       <Theme name={options.theme ?? 'default'}>
+      283 |         <ImperativeConfirmHost
+      284 |           options={options}
+
+      at node_modules/react-dom/cjs/react-dom-client.development.js:18758:19
+      at runWithFiberInDEV (node_modules/react-dom/cjs/react-dom-client.development.js:874:13)
+      at warnIfUpdatesNotWrappedWithActDEV (node_modules/react-dom/cjs/react-dom-client.development.js:18757:9)
+      at scheduleUpdateOnFiber (node_modules/react-dom/cjs/react-dom-client.development.js:16409:11)
+      at updateContainerImpl (node_modules/react-dom/cjs/react-dom-client.development.js:23509:9)
+      at ReactDOMRoot.Object.<anonymous>.process.env.NODE_ENV.ReactDOMHydrationRoot.render.ReactDOMRoot.render [as render] (node_modules/react-dom/cjs/react-dom-client.development.js:27893:9)
+      at src/components/Confirm/CConfirm.tsx:281:10
+      at confirm (src/components/Confirm/CConfirm.tsx:239:10)
+      at Object.<anonymous> (tests/CConfirm.test.tsx:311:22)
+
+    console.error
+      An update to Root inside a test was not wrapped in act(...).
+      
+      When testing, code that causes React state updates should be wrapped into act(...):
+      
+      act(() => {
+        /* fire events that update state */
+      });
+      /* assert on the output */
+      
+      This ensures that you're testing the behavior the user would see in the browser. Learn more at https://react.dev/link/wrap-tests-with-act
+
+      279 |     }
+      280 |
+    > 281 |     root.render(
+          |          ^
+      282 |       <Theme name={options.theme ?? 'default'}>
+      283 |         <ImperativeConfirmHost
+      284 |           options={options}
+
+      at node_modules/react-dom/cjs/react-dom-client.development.js:18758:19
+      at runWithFiberInDEV (node_modules/react-dom/cjs/react-dom-client.development.js:874:13)
+      at warnIfUpdatesNotWrappedWithActDEV (node_modules/react-dom/cjs/react-dom-client.development.js:18757:9)
+      at scheduleUpdateOnFiber (node_modules/react-dom/cjs/react-dom-client.development.js:16409:11)
+      at updateContainerImpl (node_modules/react-dom/cjs/react-dom-client.development.js:23509:9)
+      at ReactDOMRoot.Object.<anonymous>.process.env.NODE_ENV.ReactDOMHydrationRoot.render.ReactDOMRoot.render [as render] (node_modules/react-dom/cjs/react-dom-client.development.js:27893:9)
+      at src/components/Confirm/CConfirm.tsx:281:10
+      at confirm (src/components/Confirm/CConfirm.tsx:239:10)
+      at Object.<anonymous> (tests/CConfirm.test.tsx:325:28)
+
+PASS tests/CTree.test.tsx
+PASS tests/CSplitArea.test.tsx
+PASS tests/CModal.test.tsx
+PASS tests/Checkbox.test.tsx
+PASS tests/Button.test.tsx
+PASS tests/Theme.test.tsx
+PASS tests/Icon.test.tsx
+PASS tests/IconContainer.test.tsx
+PASS tests/ButtonGroup.test.tsx
+PASS tests/CSlider.test.tsx
+PASS tests/StartBar.test.tsx
+PASS tests/CListIcon.test.tsx
+PASS tests/CStatusBar.test.tsx
+PASS tests/ShowcaseCodeDisclosure.test.tsx
+PASS tests/ThemeExports.test.ts
+PASS tests/Grid.test.tsx
+PASS tests/ComponentCatalog.test.tsx (5.198 s)
+
+Summary of all failing tests
+FAIL tests/Widget.test.tsx
+  ● CWidget active state › updates uncontrolled active state, toggles class name, and fires onActive
+
+    TypeError: this.setWidgetActive is not a function
+
+       6 | class TestWidget extends CWidget {
+       7 |   public setActiveFromTest(active: boolean): void {
+    >  8 |     this.setWidgetActive(active);
+         |          ^
+       9 |   }
+      10 |
+      11 |   public render(): React.ReactElement {
+
+      at TestWidget.setActiveFromTest (tests/Widget.test.tsx:8:10)
+      at tests/Widget.test.tsx:49:26
+      at node_modules/@testing-library/react/dist/act-compat.js:48:24
+      at Object.<anonymous>.process.env.NODE_ENV.exports.act (node_modules/react/cjs/react.development.js:814:22)
+      at node_modules/@testing-library/react/dist/act-compat.js:47:25
+      at Object.<anonymous> (tests/Widget.test.tsx:48:8)
+
+FAIL tests/Dock.test.tsx
+  ● CDock › renders with supported dock props
+
+    expect(element).toHaveClass("cm-dock")
+
+    Expected the element to have class:
+      cm-dock
+    Received:
+      dock-shell
+
+      51 |
+      52 |     expect(dock).toBeInTheDocument();
+    > 53 |     expect(dock).toHaveClass('cm-dock');
+         |                  ^
+      54 |     expect(dock).toHaveClass('cm-dock--bottom');
+      55 |     expect(dock).toHaveClass('dock-shell');
+      56 |     expect(dock).toHaveStyle({
+
+      at Object.<anonymous> (tests/Dock.test.tsx:53:18)
+
+  ● CDock › applies dock base and modifier classes
+
+    expect(element).toHaveClass("cm-dock")
+
+    Expected the element to have class:
+      cm-dock
+    Received:
+      dock-shell
+
+      83 |     const dock = screen.getByTestId('dock-custom');
+      84 |
+    > 85 |     expect(dock).toHaveClass('cm-dock');
+         |                  ^
+      86 |     expect(dock).toHaveClass('cm-dock--left');
+      87 |     expect(dock).toHaveClass('dock-shell');
+      88 |     expect(dock).not.toHaveClass('cm-dock--top');
+
+      at Object.<anonymous> (tests/Dock.test.tsx:85:18)
+
+
+Test Suites: 2 failed, 33 passed, 35 total
+Tests:       3 failed, 701 passed, 704 total
+Snapshots:   0 total
+Time:        6.221 s
+Ran all test suites.
+error Command failed with exit code 1.
+info Visit https://yarnpkg.com/en/docs/cli/run for documentation about this command.
+
+```
+Exit code: 1
+
+## yarn test:ui
+Command: NO_PROXY=127.0.0.1,localhost no_proxy=127.0.0.1,localhost yarn test:ui
+
+```text
+yarn run v1.22.22
+warning package.json: No license field
+$ playwright test --config=playwright.config.ts --pass-with-no-tests
+[2m[WebServer] [22m[2K[2m[WebServer] [22m[1G[33mwarning[39m package.json: No license field
+[2m[WebServer] [22m[baseline-browser-mapping] The data in this module is over two months old.  To ensure accurate Baseline data, please update: `npm i baseline-browser-mapping@latest -D`
+
+Running 95 tests using 6 workers
+
+  ✓   1 [chromium] › tests/ui/menu.spec.ts:15:1 › click fixture exposes menu trigger (1.4s)
+  ✓   4 [chromium] › tests/ui/common-controls.smoke.spec.ts:17:1 › default fixture exposes baseline controls state (1.3s)
+  ✓   6 [chromium] › tests/ui/component-catalog-enhancements.spec.ts:25:1 › ComponentCatalog exposes CLoading demo spinner (1.8s)
+  ✓   2 [chromium] › tests/ui/component-catalog-code.spec.ts:3:1 › Show/Hide code toggles code region visibility in Button showcase (2.0s)
+  ✓   7 [chromium] › tests/ui/menu.spec.ts:21:1 › hover fixture exposes menu trigger (971ms)
+  ✓   8 [chromium] › tests/ui/common-controls.smoke.spec.ts:26:1 › default fixture selects CSelect options through the visible CMenu trigger (1.2s)
+  ✓   5 [chromium] › tests/ui/confirm.visibility.spec.ts:17:3 › CConfirm visibility regression (Task 2 evidence) › imperative confirm() renders body and actions with measurable nonzero height (2.6s)
+  ✓  11 [chromium] › tests/ui/menu.spec.ts:27:1 › click fixture renders trigger as direct root child (869ms)
+  ✓  12 [chromium] › tests/ui/common-controls.smoke.spec.ts:43:1 › disabled fixture exposes disabled controls state (873ms)
+  ✓  10 [chromium] › tests/ui/component-catalog-code.spec.ts:34:1 › Show/Hide code toggles code region visibility in Theme showcase (1.6s)
+  ✓   9 [chromium] › tests/ui/component-catalog-enhancements.spec.ts:35:1 › ComponentCatalog CInput suggestions can select Apple (2.0s)
+  ✓  14 [chromium] › tests/ui/menu.spec.ts:46:1 › unknown fixture shows explicit error (813ms)
+  ✓  13 [chromium] › tests/ui/confirm.visibility.spec.ts:55:3 › CConfirm visibility regression (Task 2 evidence) › declarative <CConfirm> renders body and actions with measurable nonzero height (1.7s)
+  ✓  15 [chromium] › tests/ui/common-controls.smoke.spec.ts:52:1 › disabled CSelect trigger does not open a CMenu popup or mutate value (1.1s)
+  ✓  18 [chromium] › tests/ui/menu.spec.ts:56:3 › Menu interactions › clicking menu trigger opens popup (1.1s)
+  ✓  16 [chromium] › tests/ui/modal.visibility.spec.ts:30:3 › CModal visibility regression (F3 Issue 1) › default-height modal (no height prop) renders .cm-window with nonzero height (1.9s)
+  ✓  20 [chromium] › tests/ui/common-controls.smoke.spec.ts:66:1 › unknown fixture shows explicit error (972ms)
+  ✓  19 [chromium] › tests/ui/new-components.smoke.spec.ts:8:3 › new component showcases › Input section is visible and interacts (1.5s)
+  ✓   3 [chromium] › tests/ui/icon-container.interactions.spec.ts:51:1 › drag moves only the targeted icon and leaves siblings untouched (4.1s)
+  ✓  21 [chromium] › tests/ui/menu.spec.ts:66:3 › Menu interactions › clicking parent item opens submenu (992ms)
+  ✓  23 [chromium] › tests/ui/common-controls.smoke.spec.ts:76:3 › grouped buttons › grouped buttons default theme applies grouped edge styling (878ms)
+  ✓  22 [chromium] › tests/ui/modal.visibility.spec.ts:66:3 › CModal visibility regression (F3 Issue 1) › explicit-height modal continues to render at requested height (no regression) (1.5s)
+  ✓  26 [chromium] › tests/ui/menu.spec.ts:79:3 › Menu interactions › selection value shows selected item title (1.0s)
+  ✓  24 [chromium] › tests/ui/new-components.smoke.spec.ts:24:3 › new component showcases › Tooltip section is visible and shows on hover (1.3s)
+  ✓  27 [chromium] › tests/ui/common-controls.smoke.spec.ts:103:3 › grouped buttons › grouped buttons fixture renders grouped buttons and separators (846ms)
+  ✓  28 [chromium] › tests/ui/scroll-area.spec.ts:22:3 › ScrollArea Playwright Harness › vertical fixture renders host and viewport with correct structure (953ms)
+  ✓  29 [chromium] › tests/ui/window.action-buttons.spec.ts:11:1 › right fixture renders title controls to the right of the title text (1.0s)
+  ✓  31 [chromium] › tests/ui/common-controls.smoke.spec.ts:116:3 › grouped buttons › grouped buttons disabled fixture enforces disabled state (907ms)
+  ✓  17 [chromium] › tests/ui/component-catalog-enhancements.spec.ts:53:1 › ComponentCatalog locked SplitArea ignores current-level drag attempts (4.7s)
+  ✓  25 [chromium] › tests/ui/icon-container.interactions.spec.ts:66:1 › catalog icon showcase updates status and drag coordinates (2.8s)
+  ✓  32 [chromium] › tests/ui/scroll-area.spec.ts:36:3 › ScrollArea Playwright Harness › horizontal fixture renders host and viewport with horizontal overflow (968ms)
+  ✓  30 [chromium] › tests/ui/new-components.smoke.spec.ts:39:3 › new component showcases › TimePicker section is visible and changes time (1.8s)
+  ✓  33 [chromium] › tests/ui/window.action-buttons.spec.ts:34:1 › left fixture renders title controls to the left of the title text (1.0s)
+  ✓  34 [chromium] › tests/ui/common-controls.smoke.spec.ts:128:3 › grouped buttons › grouped buttons Win98 theme applies grouped edge and separator styling (999ms)
+  ✓  37 [chromium] › tests/ui/scroll-area.spec.ts:52:3 › ScrollArea Playwright Harness › both fixture renders host and viewport with overflow on both axes (1.0s)
+  ✓  35 [chromium] › tests/ui/component-catalog-enhancements.spec.ts:79:1 › ComponentCatalog exposes stepped CSlider demo value (1.7s)
+  ✓  40 [chromium] › tests/ui/common-controls.smoke.spec.ts:165:3 › Win98 controls › applies Win98 theme classes to container (1.0s)
+  ✓  39 [chromium] › tests/ui/window.action-buttons.spec.ts:57:1 › no-op button clicks keep frame metrics unchanged (1.4s)
+  ✓  38 [chromium] › tests/ui/new-components.smoke.spec.ts:65:3 › new component showcases › Tree section is visible and checks nodes (1.6s)
+  ✓  36 [chromium] › tests/ui/window.move.spec.ts:13:1 › title drag moves window from (10,20) to (30,60) (2.0s)
+  ✓  43 [chromium] › tests/ui/common-controls.smoke.spec.ts:172:5 › Win98 controls › Button › has correct Win98 background color (1.0s)
+  ✓  41 [chromium] › tests/ui/scroll-area.spec.ts:66:3 › ScrollArea Playwright Harness › shrink fixture renders host and viewport with shrinking content capability (1.3s)
+  ✓  44 [chromium] › tests/ui/window.action-buttons.spec.ts:76:1 › dragging from an action button does not move the window (1.3s)
+  ✓  42 [chromium] › tests/ui/window.resize-guards.spec.ts:13:1 › drag-only fixture hides resize handles when resizable={false} and title drag still moves frame exactly (2.0s)
+  ✓  48 [chromium] › tests/ui/scroll-area.spec.ts:87:3 › ScrollArea Playwright Harness › invalid fixture renders fixture-error text (831ms)
+  ✓  45 [chromium] › tests/ui/new-components.smoke.spec.ts:82:3 › new component showcases › Transfer section is visible and moves items (1.5s)
+  ✓  47 [chromium] › tests/ui/common-controls.smoke.spec.ts:183:5 › Win98 controls › Button › has focus dotted outline (928ms)
+  ✓  46 [chromium] › tests/ui/window.move.spec.ts:30:1 › outline-move title drag keeps committed frame stable, renders preview, and cleans it up on release (1.9s)
+  ✓  53 [chromium] › tests/ui/common-controls.smoke.spec.ts:202:5 › Win98 controls › Button › has min-width 75px and min-height 23px (940ms)
+  ✓  51 [chromium] › tests/ui/scroll-area.spec.ts:98:3 › ScrollArea Interaction Tests › vertical button stepping increments and decrements scrollTop (1.3s)
+  ✓  49 [chromium] › tests/ui/window.resize.spec.ts:122:5 › Window drag matrix › drag e (1.5s)
+  ✓  52 [chromium] › tests/ui/new-components.smoke.spec.ts:100:3 › new component showcases › Table section is visible and paginates (1.5s)
+  ✓  55 [chromium] › tests/ui/common-controls.smoke.spec.ts:217:5 › Win98 controls › Button › has border-radius 0 (924ms)
+  ✓  56 [chromium] › tests/ui/scroll-area.spec.ts:120:3 › ScrollArea Interaction Tests › horizontal button stepping increments and decrements scrollLeft (985ms)
+  ✓  54 [chromium] › tests/ui/window.move.spec.ts:64:1 › outline-both title drag keeps committed frame stable, renders preview, and cleans it up on release (1.8s)
+  ✓  57 [chromium] › tests/ui/window.resize.spec.ts:122:5 › Window drag matrix › drag w (1.3s)
+  ✓  59 [chromium] › tests/ui/common-controls.smoke.spec.ts:230:5 › Win98 controls › Radio › has correct Win98 radio appearance (872ms)
+  ✓  58 [chromium] › tests/ui/new-components.smoke.spec.ts:117:3 › new component showcases › DatePicker section opens panel, selects a cell, and clears value (1.7s)
+  ✓  60 [chromium] › tests/ui/scroll-area.spec.ts:142:3 › ScrollArea Interaction Tests › vertical thumb drag updates scrollTop proportionally (1.1s)
+  ✓  50 [chromium] › tests/ui/window.resize-guards.spec.ts:34:1 › min-clamp fixture clamps outline preview and committed size to 1px (3.6s)
+  ✓  63 [chromium] › tests/ui/common-controls.smoke.spec.ts:248:5 › Win98 controls › Radio › checked radio shows centered black dot (837ms)
+  ✓  62 [chromium] › tests/ui/window.resize.spec.ts:122:5 › Window drag matrix › drag n (1.2s)
+  ✓  61 [chromium] › tests/ui/window.move.spec.ts:98:1 › window content drag is a no-op (does not move window) (1.7s)
+  ✓  65 [chromium] › tests/ui/scroll-area.spec.ts:168:3 › ScrollArea Interaction Tests › horizontal thumb drag updates scrollLeft proportionally (1.0s)
+  ✓  67 [chromium] › tests/ui/common-controls.smoke.spec.ts:264:5 › Win98 controls › Radio › has 12px size (807ms)
+  ✓  68 [chromium] › tests/ui/window.resize.spec.ts:122:5 › Window drag matrix › drag s (1.2s)
+  ✓  64 [chromium] › tests/ui/new-components.smoke.spec.ts:149:3 › new component showcases › Modal section opens and closes via ESC, mask, and close button (1.9s)
+  ✓  71 [chromium] › tests/ui/common-controls.smoke.spec.ts:281:5 › Win98 controls › Radio › has 6px label gap (895ms)
+  ✓  70 [chromium] › tests/ui/scroll-area.spec.ts:194:3 › ScrollArea Interaction Tests › drag release outside viewport allows subsequent drag (1.2s)
+  ✓  69 [chromium] › tests/ui/window.move.spec.ts:131:1 › outline-move keeps resize live without rendering a preview frame (1.5s)
+  ✓  74 [chromium] › tests/ui/common-controls.smoke.spec.ts:292:5 › Win98 controls › Radio › has focus outline (802ms)
+  ✓  72 [chromium] › tests/ui/window.resize.spec.ts:122:5 › Window drag matrix › drag ne (1.3s)
+  ✓  75 [chromium] › tests/ui/scroll-area.spec.ts:235:3 › ScrollArea Interaction Tests › corner cell is present and positioned at intersection of both scrollbars (910ms)
+  ✓  76 [chromium] › tests/ui/window.smoke.spec.ts:8:1 › default fixture exposes baseline metrics (909ms)
+  ✓  73 [chromium] › tests/ui/new-components.smoke.spec.ts:174:3 › new component showcases › Confirm section: imperative confirm() resolves true on OK and false on Cancel/ESC (2.0s)
+  ✓  77 [chromium] › tests/ui/common-controls.smoke.spec.ts:313:5 › Win98 controls › Select › has Win98 sunken border style (847ms)
+  ✓  80 [chromium] › tests/ui/window.smoke.spec.ts:22:1 › unknown fixture shows explicit error (827ms)
+  ✓  79 [chromium] › tests/ui/scroll-area.spec.ts:258:3 › ScrollArea Interaction Tests › shrink after drag cleanup preserves scroll position from completed interactions only (1.0s)
+  ✓  78 [chromium] › tests/ui/window.resize.spec.ts:122:5 › Window drag matrix › drag nw (1.2s)
+  ✓  66 [chromium] › tests/ui/window.resize-guards.spec.ts:83:1 › max-clamp fixture clamps outline preview and preserves north-west anchor behavior (4.1s)
+  ✓  81 [chromium] › tests/ui/common-controls.smoke.spec.ts:329:5 › Win98 controls › Select › has white background (627ms)
+  ✓  83 [chromium] › tests/ui/common-controls.smoke.spec.ts:340:5 › Win98 controls › Select › has dropdown arrow background (471ms)
+  ✓  82 [chromium] › tests/ui/window.resize.spec.ts:122:5 › Window drag matrix › drag se (934ms)
+  ✓  84 [chromium] › tests/ui/common-controls.smoke.spec.ts:351:5 › Win98 controls › Select › has 21px height (525ms)
+  ✓  86 [chromium] › tests/ui/common-controls.smoke.spec.ts:362:5 › Win98 controls › Select › has border-radius 0 (528ms)
+  ✓  85 [chromium] › tests/ui/window.resize.spec.ts:122:5 › Window drag matrix › drag sw (978ms)
+  ✓  87 [chromium] › tests/ui/common-controls.smoke.spec.ts:373:5 › Win98 controls › Select › has arrow reserve area (493ms)
+  ✓  89 [chromium] › tests/ui/common-controls.smoke.spec.ts:384:5 › Win98 controls › Select › has focus inner dotted outline (481ms)
+  ✓  88 [chromium] › tests/ui/window.resize.spec.ts:135:1 › outline-resize keeps committed frame stable, renders preview, and cleans it up on release (947ms)
+  ✓  90 [chromium] › tests/ui/common-controls.smoke.spec.ts:408:3 › Win98 disabled controls › applies Win98 theme classes to container (502ms)
+  ✓  92 [chromium] › tests/ui/common-controls.smoke.spec.ts:414:3 › Win98 disabled controls › Button is disabled with Win98 styling (501ms)
+  ✓  91 [chromium] › tests/ui/window.resize.spec.ts:169:1 › outline-both resize keeps committed frame stable, renders preview, and cleans it up on release (953ms)
+  ✓  93 [chromium] › tests/ui/common-controls.smoke.spec.ts:427:3 › Win98 disabled controls › Radio disabled option is greyed out (488ms)
+  ✓  95 [chromium] › tests/ui/common-controls.smoke.spec.ts:433:3 › Win98 disabled controls › Select is disabled with Win98 styling (452ms)
+  ✓  94 [chromium] › tests/ui/window.resize.spec.ts:203:1 › outline-resize keeps title drag live without rendering a preview frame (1.2s)
+
+  95 passed (28.7s)
+Done in 29.65s.
+
+```
+Exit code: 0
+
+## yarn build
+Command: yarn build
+
+```text
+yarn run v1.22.22
+warning package.json: No license field
+$ vite build
+vite v5.4.21 building for production...
+transforming...
+✓ 127 modules transformed.
+rendering chunks...
+
+[vite:dts] Start generate declaration files...
+[96msrc/components/Table/CTable.tsx[0m:[93m429[0m:[93m21[0m - [91merror[0m[90m TS2322: [0mType '{ children: string | number | bigint | boolean | Iterable<ReactNode> | Promise<AwaitedReactNode> | Element | null | undefined; ... 5 more ...; className: string; }' is not assignable to type 'DetailedHTMLProps<ThHTMLAttributes<HTMLTableHeaderCellElement>, HTMLTableHeaderCellElement>'.
+  Property 'width' does not exist on type 'DetailedHTMLProps<ThHTMLAttributes<HTMLTableHeaderCellElement>, HTMLTableHeaderCellElement>'.
+
+[7m429[0m                     width={getWidthValue(column.width)}
+[7m   [0m [91m                    ~~~~~[0m
+[96mtests/Widget.test.tsx[0m:[93m8[0m:[93m10[0m - [91merror[0m[90m TS2551: [0mProperty 'setWidgetActive' does not exist on type 'TestWidget'. Did you mean 'getWidgetActive'?
+
+[7m8[0m     this.setWidgetActive(active);
+[7m [0m [91m         ~~~~~~~~~~~~~~~[0m
+
+  [96msrc/components/Widget/Widget.tsx[0m:[93m341[0m:[93m13[0m
+    [7m341[0m   protected getWidgetActive(): boolean {
+    [7m   [0m [96m            ~~~~~~~~~~~~~~~[0m
+    'getWidgetActive' is declared here.
+
+computing gzip size...
+[vite:dts] Outside emitted: /home/zhangxiao/frontend/worktrees/chameleon/feature-add-win-7-theme/tests/Button.test.d.ts
+[vite:dts] Outside emitted: /home/zhangxiao/frontend/worktrees/chameleon/feature-add-win-7-theme/tests/ButtonGroup.test.d.ts
+[vite:dts] Outside emitted: /home/zhangxiao/frontend/worktrees/chameleon/feature-add-win-7-theme/tests/CConfirm.test.d.ts
+[vite:dts] Outside emitted: /home/zhangxiao/frontend/worktrees/chameleon/feature-add-win-7-theme/tests/CDatePicker.test.d.ts
+[vite:dts] Outside emitted: /home/zhangxiao/frontend/worktrees/chameleon/feature-add-win-7-theme/tests/CInput.test.d.ts
+[vite:dts] Outside emitted: /home/zhangxiao/frontend/worktrees/chameleon/feature-add-win-7-theme/tests/CList.test.d.ts
+[vite:dts] Outside emitted: /home/zhangxiao/frontend/worktrees/chameleon/feature-add-win-7-theme/tests/CListIcon.test.d.ts
+[vite:dts] Outside emitted: /home/zhangxiao/frontend/worktrees/chameleon/feature-add-win-7-theme/tests/CLoading.test.d.ts
+[vite:dts] Outside emitted: /home/zhangxiao/frontend/worktrees/chameleon/feature-add-win-7-theme/tests/CModal.test.d.ts
+[vite:dts] Outside emitted: /home/zhangxiao/frontend/worktrees/chameleon/feature-add-win-7-theme/tests/CSlider.test.d.ts
+[vite:dts] Outside emitted: /home/zhangxiao/frontend/worktrees/chameleon/feature-add-win-7-theme/tests/CSplitArea.test.d.ts
+[vite:dts] Outside emitted: /home/zhangxiao/frontend/worktrees/chameleon/feature-add-win-7-theme/tests/CStatusBar.test.d.ts
+[vite:dts] Outside emitted: /home/zhangxiao/frontend/worktrees/chameleon/feature-add-win-7-theme/tests/CTab.test.d.ts
+[vite:dts] Outside emitted: /home/zhangxiao/frontend/worktrees/chameleon/feature-add-win-7-theme/tests/CTable.test.d.ts
+[vite:dts] Outside emitted: /home/zhangxiao/frontend/worktrees/chameleon/feature-add-win-7-theme/tests/CTimePicker.test.d.ts
+[vite:dts] Outside emitted: /home/zhangxiao/frontend/worktrees/chameleon/feature-add-win-7-theme/tests/CTooltip.test.d.ts
+[vite:dts] Outside emitted: /home/zhangxiao/frontend/worktrees/chameleon/feature-add-win-7-theme/tests/CTransfer.test.d.ts
+[vite:dts] Outside emitted: /home/zhangxiao/frontend/worktrees/chameleon/feature-add-win-7-theme/tests/CTree.test.d.ts
+[vite:dts] Outside emitted: /home/zhangxiao/frontend/worktrees/chameleon/feature-add-win-7-theme/tests/CWindowTitleComposition.test.d.ts
+[vite:dts] Outside emitted: /home/zhangxiao/frontend/worktrees/chameleon/feature-add-win-7-theme/tests/Checkbox.test.d.ts
+[vite:dts] Outside emitted: /home/zhangxiao/frontend/worktrees/chameleon/feature-add-win-7-theme/tests/ComponentCatalog.test.d.ts
+[vite:dts] Outside emitted: /home/zhangxiao/frontend/worktrees/chameleon/feature-add-win-7-theme/tests/Dock.test.d.ts
+[vite:dts] Outside emitted: /home/zhangxiao/frontend/worktrees/chameleon/feature-add-win-7-theme/tests/Grid.test.d.ts
+[vite:dts] Outside emitted: /home/zhangxiao/frontend/worktrees/chameleon/feature-add-win-7-theme/tests/Icon.test.d.ts
+[vite:dts] Outside emitted: /home/zhangxiao/frontend/worktrees/chameleon/feature-add-win-7-theme/tests/IconContainer.test.d.ts
+[vite:dts] Outside emitted: /home/zhangxiao/frontend/worktrees/chameleon/feature-add-win-7-theme/tests/Menu.test.d.ts
+[vite:dts] Outside emitted: /home/zhangxiao/frontend/worktrees/chameleon/feature-add-win-7-theme/tests/PublicThemeMatrix.test.d.ts
+[vite:dts] Outside emitted: /home/zhangxiao/frontend/worktrees/chameleon/feature-add-win-7-theme/tests/Radio.test.d.ts
+[vite:dts] Outside emitted: /home/zhangxiao/frontend/worktrees/chameleon/feature-add-win-7-theme/tests/ScrollArea.test.d.ts
+[vite:dts] Outside emitted: /home/zhangxiao/frontend/worktrees/chameleon/feature-add-win-7-theme/tests/Select.test.d.ts
+[vite:dts] Outside emitted: /home/zhangxiao/frontend/worktrees/chameleon/feature-add-win-7-theme/tests/ShowcaseCodeDisclosure.test.d.ts
+[vite:dts] Outside emitted: /home/zhangxiao/frontend/worktrees/chameleon/feature-add-win-7-theme/tests/StartBar.test.d.ts
+[vite:dts] Outside emitted: /home/zhangxiao/frontend/worktrees/chameleon/feature-add-win-7-theme/tests/Theme.test.d.ts
+[vite:dts] Outside emitted: /home/zhangxiao/frontend/worktrees/chameleon/feature-add-win-7-theme/tests/ThemeExports.test.d.ts
+[vite:dts] Outside emitted: /home/zhangxiao/frontend/worktrees/chameleon/feature-add-win-7-theme/tests/Widget.test.d.ts
+[vite:dts] Outside emitted: /home/zhangxiao/frontend/worktrees/chameleon/feature-add-win-7-theme/tests/ui/common-controls.helpers.d.ts
+[vite:dts] Outside emitted: /home/zhangxiao/frontend/worktrees/chameleon/feature-add-win-7-theme/tests/ui/common-controls.smoke.spec.d.ts
+[vite:dts] Outside emitted: /home/zhangxiao/frontend/worktrees/chameleon/feature-add-win-7-theme/tests/ui/component-catalog-code.spec.d.ts
+[vite:dts] Outside emitted: /home/zhangxiao/frontend/worktrees/chameleon/feature-add-win-7-theme/tests/ui/window.helpers.d.ts
+[vite:dts] Outside emitted: /home/zhangxiao/frontend/worktrees/chameleon/feature-add-win-7-theme/tests/ui/component-catalog-enhancements.spec.d.ts
+[vite:dts] Outside emitted: /home/zhangxiao/frontend/worktrees/chameleon/feature-add-win-7-theme/tests/ui/confirm.visibility.spec.d.ts
+[vite:dts] Outside emitted: /home/zhangxiao/frontend/worktrees/chameleon/feature-add-win-7-theme/tests/ui/icon-container.interactions.spec.d.ts
+[vite:dts] Outside emitted: /home/zhangxiao/frontend/worktrees/chameleon/feature-add-win-7-theme/tests/ui/menu.helpers.d.ts
+[vite:dts] Outside emitted: /home/zhangxiao/frontend/worktrees/chameleon/feature-add-win-7-theme/tests/ui/menu.spec.d.ts
+[vite:dts] Outside emitted: /home/zhangxiao/frontend/worktrees/chameleon/feature-add-win-7-theme/tests/ui/modal.visibility.spec.d.ts
+[vite:dts] Outside emitted: /home/zhangxiao/frontend/worktrees/chameleon/feature-add-win-7-theme/tests/ui/new-components.smoke.spec.d.ts
+[vite:dts] Outside emitted: /home/zhangxiao/frontend/worktrees/chameleon/feature-add-win-7-theme/tests/ui/scroll-area.helpers.d.ts
+[vite:dts] Outside emitted: /home/zhangxiao/frontend/worktrees/chameleon/feature-add-win-7-theme/tests/ui/scroll-area.spec.d.ts
+[vite:dts] Outside emitted: /home/zhangxiao/frontend/worktrees/chameleon/feature-add-win-7-theme/tests/ui/window.action-buttons.spec.d.ts
+[vite:dts] Outside emitted: /home/zhangxiao/frontend/worktrees/chameleon/feature-add-win-7-theme/tests/ui/window.move.spec.d.ts
+[vite:dts] Outside emitted: /home/zhangxiao/frontend/worktrees/chameleon/feature-add-win-7-theme/tests/ui/window.resize-guards.spec.d.ts
+[vite:dts] Outside emitted: /home/zhangxiao/frontend/worktrees/chameleon/feature-add-win-7-theme/tests/ui/window.resize.spec.d.ts
+[vite:dts] Outside emitted: /home/zhangxiao/frontend/worktrees/chameleon/feature-add-win-7-theme/tests/ui/window.smoke.spec.d.ts
+[vite:dts] Outside emitted: /home/zhangxiao/frontend/worktrees/chameleon/feature-add-win-7-theme/vite.config.d.ts
+[vite:dts] Outside emitted: /home/zhangxiao/frontend/worktrees/chameleon/feature-add-win-7-theme/jest.config.d.ts
+[vite:dts] Outside emitted: /home/zhangxiao/frontend/worktrees/chameleon/feature-add-win-7-theme/tests/Button.test.d.ts.map
+[vite:dts] Outside emitted: /home/zhangxiao/frontend/worktrees/chameleon/feature-add-win-7-theme/tests/ButtonGroup.test.d.ts.map
+[vite:dts] Outside emitted: /home/zhangxiao/frontend/worktrees/chameleon/feature-add-win-7-theme/tests/CConfirm.test.d.ts.map
+[vite:dts] Outside emitted: /home/zhangxiao/frontend/worktrees/chameleon/feature-add-win-7-theme/tests/CDatePicker.test.d.ts.map
+[vite:dts] Outside emitted: /home/zhangxiao/frontend/worktrees/chameleon/feature-add-win-7-theme/tests/CInput.test.d.ts.map
+[vite:dts] Outside emitted: /home/zhangxiao/frontend/worktrees/chameleon/feature-add-win-7-theme/tests/CList.test.d.ts.map
+[vite:dts] Outside emitted: /home/zhangxiao/frontend/worktrees/chameleon/feature-add-win-7-theme/tests/CListIcon.test.d.ts.map
+[vite:dts] Outside emitted: /home/zhangxiao/frontend/worktrees/chameleon/feature-add-win-7-theme/tests/CLoading.test.d.ts.map
+[vite:dts] Outside emitted: /home/zhangxiao/frontend/worktrees/chameleon/feature-add-win-7-theme/tests/CModal.test.d.ts.map
+[vite:dts] Outside emitted: /home/zhangxiao/frontend/worktrees/chameleon/feature-add-win-7-theme/tests/CSlider.test.d.ts.map
+[vite:dts] Outside emitted: /home/zhangxiao/frontend/worktrees/chameleon/feature-add-win-7-theme/tests/CSplitArea.test.d.ts.map
+[vite:dts] Outside emitted: /home/zhangxiao/frontend/worktrees/chameleon/feature-add-win-7-theme/tests/CStatusBar.test.d.ts.map
+[vite:dts] Outside emitted: /home/zhangxiao/frontend/worktrees/chameleon/feature-add-win-7-theme/tests/CTab.test.d.ts.map
+[vite:dts] Outside emitted: /home/zhangxiao/frontend/worktrees/chameleon/feature-add-win-7-theme/tests/CTable.test.d.ts.map
+[vite:dts] Outside emitted: /home/zhangxiao/frontend/worktrees/chameleon/feature-add-win-7-theme/tests/CTimePicker.test.d.ts.map
+[vite:dts] Outside emitted: /home/zhangxiao/frontend/worktrees/chameleon/feature-add-win-7-theme/tests/CTooltip.test.d.ts.map
+[vite:dts] Outside emitted: /home/zhangxiao/frontend/worktrees/chameleon/feature-add-win-7-theme/tests/CTransfer.test.d.ts.map
+[vite:dts] Outside emitted: /home/zhangxiao/frontend/worktrees/chameleon/feature-add-win-7-theme/tests/CTree.test.d.ts.map
+[vite:dts] Outside emitted: /home/zhangxiao/frontend/worktrees/chameleon/feature-add-win-7-theme/tests/CWindowTitleComposition.test.d.ts.map
+[vite:dts] Outside emitted: /home/zhangxiao/frontend/worktrees/chameleon/feature-add-win-7-theme/tests/Checkbox.test.d.ts.map
+[vite:dts] Outside emitted: /home/zhangxiao/frontend/worktrees/chameleon/feature-add-win-7-theme/tests/ComponentCatalog.test.d.ts.map
+[vite:dts] Outside emitted: /home/zhangxiao/frontend/worktrees/chameleon/feature-add-win-7-theme/tests/Dock.test.d.ts.map
+[vite:dts] Outside emitted: /home/zhangxiao/frontend/worktrees/chameleon/feature-add-win-7-theme/tests/Grid.test.d.ts.map
+[vite:dts] Outside emitted: /home/zhangxiao/frontend/worktrees/chameleon/feature-add-win-7-theme/tests/Icon.test.d.ts.map
+[vite:dts] Outside emitted: /home/zhangxiao/frontend/worktrees/chameleon/feature-add-win-7-theme/tests/IconContainer.test.d.ts.map
+[vite:dts] Outside emitted: /home/zhangxiao/frontend/worktrees/chameleon/feature-add-win-7-theme/tests/Menu.test.d.ts.map
+[vite:dts] Outside emitted: /home/zhangxiao/frontend/worktrees/chameleon/feature-add-win-7-theme/tests/PublicThemeMatrix.test.d.ts.map
+[vite:dts] Outside emitted: /home/zhangxiao/frontend/worktrees/chameleon/feature-add-win-7-theme/tests/Radio.test.d.ts.map
+[vite:dts] Outside emitted: /home/zhangxiao/frontend/worktrees/chameleon/feature-add-win-7-theme/tests/ScrollArea.test.d.ts.map
+[vite:dts] Outside emitted: /home/zhangxiao/frontend/worktrees/chameleon/feature-add-win-7-theme/tests/Select.test.d.ts.map
+[vite:dts] Outside emitted: /home/zhangxiao/frontend/worktrees/chameleon/feature-add-win-7-theme/tests/ShowcaseCodeDisclosure.test.d.ts.map
+[vite:dts] Outside emitted: /home/zhangxiao/frontend/worktrees/chameleon/feature-add-win-7-theme/tests/StartBar.test.d.ts.map
+[vite:dts] Outside emitted: /home/zhangxiao/frontend/worktrees/chameleon/feature-add-win-7-theme/tests/Theme.test.d.ts.map
+[vite:dts] Outside emitted: /home/zhangxiao/frontend/worktrees/chameleon/feature-add-win-7-theme/tests/ThemeExports.test.d.ts.map
+[vite:dts] Outside emitted: /home/zhangxiao/frontend/worktrees/chameleon/feature-add-win-7-theme/tests/Widget.test.d.ts.map
+[vite:dts] Outside emitted: /home/zhangxiao/frontend/worktrees/chameleon/feature-add-win-7-theme/tests/ui/common-controls.helpers.d.ts.map
+[vite:dts] Outside emitted: /home/zhangxiao/frontend/worktrees/chameleon/feature-add-win-7-theme/tests/ui/common-controls.smoke.spec.d.ts.map
+[vite:dts] Outside emitted: /home/zhangxiao/frontend/worktrees/chameleon/feature-add-win-7-theme/tests/ui/component-catalog-code.spec.d.ts.map
+[vite:dts] Outside emitted: /home/zhangxiao/frontend/worktrees/chameleon/feature-add-win-7-theme/tests/ui/window.helpers.d.ts.map
+[vite:dts] Outside emitted: /home/zhangxiao/frontend/worktrees/chameleon/feature-add-win-7-theme/tests/ui/component-catalog-enhancements.spec.d.ts.map
+[vite:dts] Outside emitted: /home/zhangxiao/frontend/worktrees/chameleon/feature-add-win-7-theme/tests/ui/confirm.visibility.spec.d.ts.map
+[vite:dts] Outside emitted: /home/zhangxiao/frontend/worktrees/chameleon/feature-add-win-7-theme/tests/ui/icon-container.interactions.spec.d.ts.map
+[vite:dts] Outside emitted: /home/zhangxiao/frontend/worktrees/chameleon/feature-add-win-7-theme/tests/ui/menu.helpers.d.ts.map
+[vite:dts] Outside emitted: /home/zhangxiao/frontend/worktrees/chameleon/feature-add-win-7-theme/tests/ui/menu.spec.d.ts.map
+[vite:dts] Outside emitted: /home/zhangxiao/frontend/worktrees/chameleon/feature-add-win-7-theme/tests/ui/modal.visibility.spec.d.ts.map
+[vite:dts] Outside emitted: /home/zhangxiao/frontend/worktrees/chameleon/feature-add-win-7-theme/tests/ui/new-components.smoke.spec.d.ts.map
+[vite:dts] Outside emitted: /home/zhangxiao/frontend/worktrees/chameleon/feature-add-win-7-theme/tests/ui/scroll-area.helpers.d.ts.map
+[vite:dts] Outside emitted: /home/zhangxiao/frontend/worktrees/chameleon/feature-add-win-7-theme/tests/ui/scroll-area.spec.d.ts.map
+[vite:dts] Outside emitted: /home/zhangxiao/frontend/worktrees/chameleon/feature-add-win-7-theme/tests/ui/window.action-buttons.spec.d.ts.map
+[vite:dts] Outside emitted: /home/zhangxiao/frontend/worktrees/chameleon/feature-add-win-7-theme/tests/ui/window.move.spec.d.ts.map
+[vite:dts] Outside emitted: /home/zhangxiao/frontend/worktrees/chameleon/feature-add-win-7-theme/tests/ui/window.resize-guards.spec.d.ts.map
+[vite:dts] Outside emitted: /home/zhangxiao/frontend/worktrees/chameleon/feature-add-win-7-theme/tests/ui/window.resize.spec.d.ts.map
+[vite:dts] Outside emitted: /home/zhangxiao/frontend/worktrees/chameleon/feature-add-win-7-theme/tests/ui/window.smoke.spec.d.ts.map
+[vite:dts] Outside emitted: /home/zhangxiao/frontend/worktrees/chameleon/feature-add-win-7-theme/vite.config.d.ts.map
+[vite:dts] Outside emitted: /home/zhangxiao/frontend/worktrees/chameleon/feature-add-win-7-theme/jest.config.d.ts.map
+[vite:dts] Declaration files built in 4151ms.
+
+dist/style.css          133.21 kB │ gzip:  17.02 kB
+dist/chameleon.es.js  1,199.75 kB │ gzip: 273.18 kB
+dist/style.css          133.21 kB │ gzip:  17.02 kB
+dist/chameleon.umd.cjs  734.07 kB │ gzip: 228.18 kB
+✓ built in 6.84s
+Done in 7.80s.
+
+```
+Exit code: 0
+
+
+## Consolidated Task 8 Result
+
+- `yarn lint`: exit 0.
+- `yarn test`: exit 1. Failures are `tests/Widget.test.tsx` (`setWidgetActive` missing) and `tests/Dock.test.tsx` (`cm-dock` class expectations); these match inherited/pre-existing unrelated failures and were not fixed because Task 8 guardrails forbid source changes outside this plan.
+- `yarn test:ui`: exit 0 when run with `NO_PROXY=127.0.0.1,localhost no_proxy=127.0.0.1,localhost`; 95/95 Playwright tests passed.
+- `yarn build`: exit 0. The dts phase still prints unrelated `CTable`/`Widget` type diagnostics, matching prior learnings, but Vite build completed successfully.
+- Scope review evidence is recorded in `.omo/evidence/task-8-scope-review.txt`.

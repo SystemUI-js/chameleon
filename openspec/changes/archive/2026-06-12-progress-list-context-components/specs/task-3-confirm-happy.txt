@@ -1,0 +1,28 @@
+PASS tests/CConfirm.test.tsx
+  CConfirm component
+    ✓ renders title, message, and both buttons when open=true (32 ms)
+    ✓ returns null portal output when open=false (2 ms)
+    ✓ OK click invokes onConfirm then onClose(true) in that order (10 ms)
+    ✓ Cancel button invokes onCancel then onClose(false) in that order (4 ms)
+    ✓ ESC keydown invokes onCancel then onClose(false) (inherited from CModal) (4 ms)
+    ✓ mask click invokes onCancel then onClose(false) (inherited from CModal) (4 ms)
+    ✓ applies className merged with cm-confirm, theme, and data-testid (4 ms)
+    ✓ respects confirmText and cancelText overrides (3 ms)
+    ✓ OK and Cancel buttons have explicit type="button" (4 ms)
+    ✓ renders children as body when provided (children takes precedence over message) (6 ms)
+    ✓ renders message when no children provided (4 ms)
+  confirm() imperative API
+    ✓ shows a dialog and resolves true when OK is clicked (32 ms)
+    ✓ resolves false when Cancel is clicked (7 ms)
+    ✓ resolves false when ESC is pressed (5 ms)
+    ✓ resolves false when mask is clicked (6 ms)
+    ✓ removes its container from document.body after resolve (7 ms)
+    ✓ two concurrent confirm() calls each get independent container/root (16 ms)
+    ✓ confirm() export is a function and returns a Promise (8 ms)
+    ✓ accepts content field as body alias (ConfirmOptions.content) (10 ms)
+    ✓ returns false when document is undefined (SSR safety)
+Test Suites: 1 passed, 1 total
+Tests:       20 passed, 20 total
+Snapshots:   0 total
+Time:        0.807 s, estimated 1 s
+Ran all test suites matching /tests\/CConfirm.test.tsx/i.

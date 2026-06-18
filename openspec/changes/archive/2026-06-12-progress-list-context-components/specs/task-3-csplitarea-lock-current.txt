@@ -1,0 +1,24 @@
+Task 3 - CSplitArea lockCurrent evidence
+Date: 2026-06-09
+
+Implementation checked:
+- `CSplitAreaProps` now exposes `lockCurrent?: boolean` and `lock?: boolean`.
+- `lockCurrent` participates only in the current instance effective separator lock.
+- Recursive context value deliberately excludes `lockCurrent`, so nested `CSplitArea` descendants remain independently movable unless an ancestor `lock` is active.
+- Locked current-level separators render `cm-split-area__separator--locked` and no `Drag` instance is created for that level.
+
+Targeted test evidence:
+- Command: `yarn test CSplitArea.test.tsx`
+- Result: PASS, 20/20 tests.
+- Relevant scenario: `locks only current separators with lockCurrent and keeps nested separators draggable`.
+- Assertions covered:
+  - outer separator has `cm-split-area__separator--locked`
+  - nested separator keeps `cm-split-area__separator--movable`
+  - only the nested separator creates a mock `Drag` instance
+  - nested drag updates ratios from `0.5/0.5` to `0.65/0.35`
+
+Static checks:
+- `lsp_diagnostics` on `src/components/CSplitArea/CSplitArea.tsx`: No diagnostics found.
+- `lsp_diagnostics` on `tests/CSplitArea.test.tsx`: No diagnostics found.
+- Command: `yarn eslint src/components/CSplitArea/CSplitArea.tsx tests/CSplitArea.test.tsx`
+- Result: exit 0.

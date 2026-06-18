@@ -4,11 +4,13 @@ import { defaultThemeDefinition } from '@/theme/default';
 import type { ThemeDefinition, ThemeId } from '@/theme/types';
 import { win98ThemeDefinition } from '@/theme/win98';
 import { winXpThemeDefinition } from '@/theme/winxp';
+import { win7ThemeDefinition } from '@/theme/win7';
 
 export const DEV_THEME = {
   default: 'default',
   win98: 'win98',
   winxp: 'winxp',
+  win7: 'win7',
 } as const satisfies Record<ThemeId, ThemeId>;
 
 export type DevThemeId = (typeof DEV_THEME)[keyof typeof DEV_THEME];
@@ -21,6 +23,7 @@ const DEV_THEME_DEFINITIONS: Record<DevThemeId, ThemeDefinition> = {
   default: defaultThemeDefinition,
   win98: win98ThemeDefinition,
   winxp: winXpThemeDefinition,
+  win7: win7ThemeDefinition,
 };
 
 export function resolveDevThemeDefinition(

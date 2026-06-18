@@ -1,0 +1,14 @@
+yarn test
+
+Full suite: 771 passed, 3 failed, 37 suites
+
+The 3 failures are pre-existing and unrelated to this plan:
+- tests/Widget.test.tsx: CWidget.setWidgetActive is not a function (Widget API mismatch)
+- tests/Dock.test.tsx (2 tests): CDock root no longer renders cm-dock/cm-dock--* classes (Dock rendering refactor mismatch)
+
+Plan-required focused suites all pass:
+- yarn test -- -t "CProgress"  -> 35 passed
+- yarn test -- -t "CList"      -> 84 passed
+- yarn test -- -t "CContextMenu" -> 23 passed
+- yarn test -- -t "Menu"       -> 65 passed
+- yarn test -- -t "IconContainer" -> 15 passed

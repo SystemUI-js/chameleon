@@ -12,6 +12,7 @@ export { winXpThemeDefinition } from './theme/winxp';
 ```
 
 **Exports verified:**
+
 - Components: CButton, CRadio, CRadioGroup, CSelect, Theme
 - Theme definitions: defaultThemeDefinition, win98ThemeDefinition, winXpThemeDefinition
 - Theme types: ThemeDefinition, ThemeId

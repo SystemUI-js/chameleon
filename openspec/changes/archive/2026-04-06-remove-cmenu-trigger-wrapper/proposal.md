@@ -12,9 +12,11 @@
 ## Capabilities
 
 ### New Capabilities
+
 - `cmenu-direct-child-trigger`: 定义 `CMenu` 根触发器以传入的 `children` 元素直接承载触发交互与 ARIA 语义，而不引入额外 wrapper DOM。
 
 ### Modified Capabilities
+
 - None.
 
 ## Impact

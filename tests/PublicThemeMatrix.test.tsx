@@ -2,9 +2,14 @@ import '@testing-library/jest-dom';
 import { render, screen } from '@testing-library/react';
 import {
   CButton,
+  CConfirm,
+  CDatePicker,
   CDock,
   CGrid,
   CGridItem,
+  CListIcon,
+  CLoading,
+  CModal,
   CRadio,
   CRadioGroup,
   CSelect,
@@ -17,6 +22,8 @@ import {
 } from '../src';
 import { Theme as DirectTheme } from '../src/components';
 import { CButton as DirectCButton } from '../src/components/Button/Button';
+import { CListIcon as DirectCListIcon } from '../src/components/CListIcon/CListIcon';
+import { CLoading as DirectCLoading } from '../src/components/CLoading/CLoading';
 import { CRadio as DirectCRadio } from '../src/components/Radio/Radio';
 import { CRadioGroup as DirectCRadioGroup } from '../src/components/Radio/RadioGroup';
 import { CSelect as DirectCSelect } from '../src/components/Select/Select';
@@ -33,6 +40,8 @@ describe('public package entry exports', () => {
     expect(CRadio).toBe(DirectCRadio);
     expect(CRadioGroup).toBe(DirectCRadioGroup);
     expect(CSelect).toBe(DirectCSelect);
+    expect(CListIcon).toBe(DirectCListIcon);
+    expect(CLoading).toBe(DirectCLoading);
   });
 });
 
@@ -178,5 +187,60 @@ describe('public component theme matrix', () => {
     render(<CWindowTitle theme="cm-theme--win98">Title</CWindowTitle>);
 
     expect(screen.getByTestId('window-title')).toHaveClass('cm-theme--win98');
+  });
+
+  it('covers CListIcon explicit theme', () => {
+    render(
+      <CListIcon
+        data-testid="theme-matrix-list-icon"
+        visual={<span>icon</span>}
+        label="List Icon"
+        theme="cm-theme--win98"
+      />,
+    );
+
+    expect(screen.getByTestId('theme-matrix-list-icon')).toHaveClass('cm-theme--win98');
+  });
+
+  it('covers CLoading explicit theme', () => {
+    render(<CLoading data-testid="theme-matrix-loading" theme="cm-theme--win98" />);
+
+    expect(screen.getByTestId('theme-matrix-loading')).toHaveClass('cm-theme--win98');
+  });
+
+  const THEMES = [
+    'cm-theme--default',
+    'cm-theme--win98',
+    'cm-theme--winxp',
+    'cm-theme--win7',
+  ] as const;
+
+  it.each(THEMES.map((t) => [t]))('covers CDatePicker explicit theme (%s)', (theme) => {
+    const { container } = render(
+      <CDatePicker defaultValue="2026-01-15" defaultOpen theme={theme} />,
+    );
+
+    const root = container.querySelector('.cm-date-picker') as HTMLElement;
+    expect(root).toHaveClass(theme);
+  });
+
+  it.each(THEMES.map((t) => [t]))('covers CModal explicit theme (%s)', (theme) => {
+    render(
+      <CModal open theme={theme}>
+        <div>Modal content</div>
+      </CModal>,
+    );
+
+    // CModal renders via portal to document.body
+    const root = document.body.querySelector('.cm-modal') as HTMLElement;
+    expect(root).toHaveClass(theme);
+  });
+
+  it.each(THEMES.map((t) => [t]))('covers CConfirm explicit theme (%s)', (theme) => {
+    render(<CConfirm open message="test" theme={theme} />);
+
+    // CConfirm renders via portal to document.body
+    const root = document.body.querySelector('.cm-confirm') as HTMLElement;
+    expect(root).toHaveClass(theme);
   });
 });

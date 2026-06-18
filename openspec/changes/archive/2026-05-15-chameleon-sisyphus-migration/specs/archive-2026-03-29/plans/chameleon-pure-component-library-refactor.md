@@ -1,21 +1,26 @@
 # Chameleon Pure Component Library Refactor
 
 ## TL;DR
+
 > **Summary**: Reposition Chameleon from a desktop-shell flavored library into a pure component library by removing `WindowManager` / `Screen` / `SystemHost` / `systemType` orchestration while preserving reusable components (`CWindow`, `CGrid`, `CDock`, `CStartBar`, `CWidget`) and rebuilding the dev demo as a themeable component catalog.
 > **Deliverables**:
+>
 > - Shell/runtime-manager concepts removed from source, exports, tests, harnesses, and docs
 > - Theme model simplified to pure themes: `default`, `win98`, `winxp`
 > - Demo rebuilt as component catalog with theme switching and interactive examples
 > - Jest + Playwright coverage rewritten around standalone components instead of system shells
-> **Effort**: Large
-> **Parallel**: YES - 2 waves
-> **Critical Path**: 1 → 2 → 3 → 4 → 6 → 8
+>   **Effort**: Large
+>   **Parallel**: YES - 2 waves
+>   **Critical Path**: 1 → 2 → 3 → 4 → 6 → 8
 
 ## Context
+
 ### Original Request
+
 将当前项目重构为“纯粹的组件库项目”；剔除 `WindowManager`、`Screen` 概念；Demo 页面以展示组件和主题为主。
 
 ### Interview Summary
+
 - 保留 `CWindow` 的拖拽与缩放能力；移除 `WindowManager` 能力。
 - `Grid / Dock / StartBar / Widget` 都属于纯组件库范围，保留。
 - Demo 采用“组件目录 + 主题切换 + 交互示例”。
@@ -23,22 +28,27 @@
 - 测试策略采用 **tests-after**：先重构，再补齐 Jest / Playwright 覆盖。
 
 ### Metis Review (gaps addressed)
+
 - 明确默认假设：`Screen` 直接删除，不做重命名保留。
 - 明确 breaking change 允许一次性落地：不提供临时兼容层，直接收缩公开 API。
 - 明确 `CWindow` 尽量保持现有组件 API 与行为，仅删除对 manager/screen 的依赖。
 - 明确主题切换时 Demo 内交互状态 **应保留**，避免反复修改验收与测试。
 
 ### Oracle Review (gaps addressed)
+
 - 最高风险在主题根契约与导出面收口，而非组件交互本身。
 - 必须先把主题选择器从 `.cm-system--*.cm-theme--*` 改成纯 `.cm-theme--*` 根类，否则删掉 system 语义后主题会直接失效。
 - `package.json:17` 为 `sideEffects: false`，主题样式导入路径必须在新入口中保持稳定可达，否则消费者可能拿到“有组件无样式”的产物。
 - `CDock` / `CStartBar` 依赖相对定位容器与边缘布局；新 Demo 必须显式提供 catalog stage 容器，不可再隐式依赖 `CScreen`。
 
 ## Work Objectives
+
 ### Core Objective
+
 把 Chameleon 改造成纯组件库：组件本身保留，桌面系统壳层与运行时管理模型移除，Demo 和测试全部围绕“独立组件 + 纯主题”重建。
 
 ### Deliverables
+
 - 删除 `WindowManager` / `Screen` / `SystemHost` / `system/registry` / `system/types` 相关实现与公开导出
 - 保留并重定位 `CWindow`、`CWindowTitle`、`CWindowBody`、`CGrid`、`CDock`、`CStartBar`、`CWidget`
 - 重构主题定义，去掉 `systemType` 字段与 system-root 依赖
@@ -47,6 +57,7 @@
 - 更新 README、AGENTS、CHANGELOG 的定位与 API 说明
 
 ### Definition of Done (verifiable conditions with commands)
+
 - `yarn lint` 通过
 - `yarn test` 通过
 - `yarn test:ui` 通过
@@ -55,6 +66,7 @@
 - `grep -R "cm-system--" src` 无匹配
 
 ### Must Have
+
 - `CWindow` 继续支持标题栏拖拽与 8 方向 resize
 - Demo 有统一主题切换控件与组件目录
 - Demo 中常用组件至少包含 Button、RadioGroup、Select、Window、Dock、StartBar、Grid
@@ -62,6 +74,7 @@
 - Win98 / WinXP / Default 三套主题继续可见且可测试
 
 ### Must NOT Have (guardrails, AI slop patterns, scope boundaries)
+
 - 不新增 ThemeProvider / hook / runtime registry 设计
 - 不保留 `SystemHost`、`systemType`、`SYSTEM_TYPE`、`DEFAULT_THEME_BY_SYSTEM` 等系统壳层遗留语义
 - 不让 Demo 继续依赖 `querySelector('[data-testid="*-window-body"]')` 这类挂载方式
@@ -69,13 +82,17 @@
 - 不把 `Grid / Dock / StartBar / Widget` 误删为桌面专用组件
 
 ## Verification Strategy
+
 > ZERO HUMAN INTERVENTION — all verification is agent-executed.
+
 - Test decision: tests-after + Jest + Playwright
 - QA policy: Every task contains agent-executed scenarios
 - Evidence: `.sisyphus/evidence/task-{N}-{slug}.{ext}`
 
 ## Execution Strategy
+
 ### Parallel Execution Waves
+
 > Target: 5-8 tasks per wave. <3 per wave (except final) = under-splitting.
 > Extract shared dependencies as Wave-1 tasks for max parallelism.
 
@@ -85,26 +102,27 @@ Wave 2: docs/changelog + dependency cleanup + end-to-end verification alignment 
 
 ### Dependency Matrix (full, all tasks)
 
-| Task | Depends On | Blocks |
-|---|---|---|
-| 1. Public API reset | - | 2, 3, 4, 6, 7, 8 |
-| 2. Theme contract refactor | 1 | 4, 5, 6, 7, 8 |
-| 3. Remove manager/screen layer | 1 | 4, 5, 6, 7, 8 |
-| 4. Rebuild demo catalog | 1, 2, 3 | 5, 6, 7, 8 |
-| 5. Refactor Playwright harnesses/tests | 2, 3, 4 | 8 |
-| 6. Rewrite Jest coverage | 1, 2, 3, 4 | 8 |
-| 7. Docs + knowledge-base update | 1, 2, 3, 4 | 8 |
-| 8. Dependency/build/release cleanup | 1, 2, 3, 5, 6, 7 | Final Verification |
+| Task                                   | Depends On       | Blocks             |
+| -------------------------------------- | ---------------- | ------------------ |
+| 1. Public API reset                    | -                | 2, 3, 4, 6, 7, 8   |
+| 2. Theme contract refactor             | 1                | 4, 5, 6, 7, 8      |
+| 3. Remove manager/screen layer         | 1                | 4, 5, 6, 7, 8      |
+| 4. Rebuild demo catalog                | 1, 2, 3          | 5, 6, 7, 8         |
+| 5. Refactor Playwright harnesses/tests | 2, 3, 4          | 8                  |
+| 6. Rewrite Jest coverage               | 1, 2, 3, 4       | 8                  |
+| 7. Docs + knowledge-base update        | 1, 2, 3, 4       | 8                  |
+| 8. Dependency/build/release cleanup    | 1, 2, 3, 5, 6, 7 | Final Verification |
 
 ### Agent Dispatch Summary
 
-| Wave | Task Count | Categories |
-|---|---:|---|
-| Wave 1 | 5 | unspecified-high, visual-engineering |
-| Wave 2 | 3 | writing, quick, unspecified-high |
-| Final | 4 | oracle, unspecified-high, deep |
+| Wave   | Task Count | Categories                           |
+| ------ | ---------: | ------------------------------------ |
+| Wave 1 |          5 | unspecified-high, visual-engineering |
+| Wave 2 |          3 | writing, quick, unspecified-high     |
+| Final  |          4 | oracle, unspecified-high, deep       |
 
 ## TODOs
+
 > Implementation + Test = ONE task. Never separate.
 > EVERY task MUST have: Agent Profile + Parallelization + QA Scenarios.
 
@@ -155,9 +173,9 @@ Wave 2: docs/changelog + dependency cleanup + end-to-end verification alignment 
     Steps: run `grep -n "createWindow\|CWindow\|CWindowTitle\|CWindowResizeOptions" src/components/Window/index.ts src/index.ts src/components/index.ts`
     Expected: matches exist for preserved pure-component exports only
     Evidence: .sisyphus/evidence/task-1-api-surface-preserved.txt
-  ```
+```
 
-  **Commit**: YES | Message: `refactor(api): remove shell-oriented public exports` | Files: `src/index.ts`, `src/components/index.ts`, related type files
+**Commit**: YES | Message: `refactor(api): remove shell-oriented public exports` | Files: `src/index.ts`, `src/components/index.ts`, related type files
 
 - [x] 2. Refactor theme contract to pure themes without system roots
 
@@ -206,9 +224,9 @@ Wave 2: docs/changelog + dependency cleanup + end-to-end verification alignment 
     Steps: run `yarn build && grep -R "cm-theme--win98\|cm-theme--winxp\|cm-theme--default" dist`
     Expected: built assets still contain theme root selectors
     Evidence: .sisyphus/evidence/task-2-theme-build.txt
-  ```
+```
 
-  **Commit**: YES | Message: `refactor(theme): decouple themes from system semantics` | Files: `src/theme/**/*`, theme type files, `src/index.ts`, related tests
+**Commit**: YES | Message: `refactor(theme): decouple themes from system semantics` | Files: `src/theme/**/*`, theme type files, `src/index.ts`, related tests
 
 - [x] 3. Remove manager and screen abstractions while preserving standalone components
 
@@ -260,9 +278,9 @@ Wave 2: docs/changelog + dependency cleanup + end-to-end verification alignment 
     Steps: run `grep -R "from './Screen/Grid'\|from '../Screen/Grid'\|components/Screen/Grid" src tests`
     Expected: no matches; imports point to neutral Grid location
     Evidence: .sisyphus/evidence/task-3-grid-relocation.txt
-  ```
+```
 
-  **Commit**: YES | Message: `refactor(core): remove screen and manager abstractions` | Files: `src/system/**/*`, `src/components/**/*`, moved Grid files, related tests
+**Commit**: YES | Message: `refactor(core): remove screen and manager abstractions` | Files: `src/system/**/*`, `src/components/**/*`, moved Grid files, related tests
 
 - [x] 4. Rebuild dev demo as a themeable component catalog
 
@@ -314,9 +332,9 @@ Wave 2: docs/changelog + dependency cleanup + end-to-end verification alignment 
     Steps: open dev page and assert presence of `[data-testid="catalog-section-button"]`, `catalog-section-radio`, `catalog-section-select`, `catalog-section-window`, `catalog-section-dock`, `catalog-section-start-bar`, `catalog-section-grid`
     Expected: all seven section containers are visible
     Evidence: .sisyphus/evidence/task-4-catalog-sections.txt
-  ```
+```
 
-  **Commit**: YES | Message: `refactor(dev): replace system demo with component catalog` | Files: `src/dev/**/*`, demo styles, supporting helpers
+**Commit**: YES | Message: `refactor(dev): replace system demo with component catalog` | Files: `src/dev/**/*`, demo styles, supporting helpers
 
 - [ ] 5. Refactor Playwright harnesses and UI tests to pure-theme standalone fixtures
 
@@ -363,9 +381,9 @@ Wave 2: docs/changelog + dependency cleanup + end-to-end verification alignment 
     Steps: run `grep -R "screen-root\|systemType\|PopStateEvent" tests/ui/window.helpers.ts src/dev/playwright`
     Expected: no matches for removed shell semantics
     Evidence: .sisyphus/evidence/task-5-window-harness.txt
-  ```
+```
 
-  **Commit**: YES | Message: `test(ui): rewrite harnesses for pure theme fixtures` | Files: `playwright-*.html`, `src/dev/playwright/**/*`, `tests/ui/**/*`
+**Commit**: YES | Message: `test(ui): rewrite harnesses for pure theme fixtures` | Files: `playwright-*.html`, `src/dev/playwright/**/*`, `tests/ui/**/*`
 
 - [ ] 6. Rewrite Jest coverage around standalone components and breaking API removal
 
@@ -413,9 +431,9 @@ Wave 2: docs/changelog + dependency cleanup + end-to-end verification alignment 
     Steps: run `yarn test -- --runInBand`
     Expected: all Jest suites pass
     Evidence: .sisyphus/evidence/task-6-jest-pass.txt
-  ```
+```
 
-  **Commit**: YES | Message: `test(unit): replace shell coverage with component tests` | Files: `tests/**/*`, related fixtures/helpers
+**Commit**: YES | Message: `test(unit): replace shell coverage with component tests` | Files: `tests/**/*`, related fixtures/helpers
 
 - [ ] 7. Update docs and project knowledge to match the new component-library definition
 
@@ -462,9 +480,9 @@ Wave 2: docs/changelog + dependency cleanup + end-to-end verification alignment 
     Steps: run `grep -n "\[UnReleased\]" CHANGELOG.md && grep -n "pure component library\|remove SystemHost\|remove WindowManager" CHANGELOG.md`
     Expected: both matches exist
     Evidence: .sisyphus/evidence/task-7-changelog.txt
-  ```
+```
 
-  **Commit**: YES | Message: `docs: redefine chameleon as pure component library` | Files: `README.md`, `AGENTS.md`, `CHANGELOG.md`
+**Commit**: YES | Message: `docs: redefine chameleon as pure component library` | Files: `README.md`, `AGENTS.md`, `CHANGELOG.md`
 
 - [ ] 8. Clean dependencies, CI expectations, and release verification around the new model
 
@@ -511,25 +529,29 @@ Wave 2: docs/changelog + dependency cleanup + end-to-end verification alignment 
     Steps: run `yarn lint && yarn test -- --runInBand && yarn test:ui && yarn build`
     Expected: all commands exit 0
     Evidence: .sisyphus/evidence/task-8-release-gates.txt
-  ```
+```
 
-  **Commit**: YES | Message: `chore: finalize pure component library cleanup` | Files: `package.json`, lockfile, CI/docs/test leftovers as needed
+**Commit**: YES | Message: `chore: finalize pure component library cleanup` | Files: `package.json`, lockfile, CI/docs/test leftovers as needed
 
 ## Final Verification Wave (MANDATORY — after ALL implementation tasks)
+
 > 4 review agents run in PARALLEL. ALL must APPROVE. Present consolidated results to user and get explicit "okay" before completing.
 > **Do NOT auto-proceed after verification. Wait for user's explicit approval before marking work complete.**
 > **Never mark F1-F4 as checked before getting user's okay.** Rejection or user feedback -> fix -> re-run -> present again -> wait for okay.
+
 - [ ] F1. Plan Compliance Audit — oracle
 - [ ] F2. Code Quality Review — unspecified-high
 - [ ] F3. Real Manual QA — unspecified-high (+ playwright if UI)
 - [ ] F4. Scope Fidelity Check — deep
 
 ## Commit Strategy
+
 - Commit 1: API/theme contract reset (`refactor(api): ...`, `refactor(theme): ...`)
 - Commit 2: core source + demo/harness rewrite (`refactor(core): ...`, `refactor(dev): ...`, `test(ui): ...`)
 - Commit 3: Jest/docs/cleanup finish (`test(unit): ...`, `docs: ...`, `chore: ...`)
 
 ## Success Criteria
+
 - Chameleon no longer models itself as a desktop shell or system host.
 - Consumers import standalone components and pure theme definitions from the package root.
 - Demo is a direct component catalog with preserved interaction state across theme changes.

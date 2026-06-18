@@ -1,0 +1,122 @@
+.cm-loading {
+    display: inline-flex;
+    flex-direction: column;
+    align-items: center;
+    gap: 8px;
+}
+
+.cm-loading__indicator {
+    position: relative;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+}
+
+.cm-loading__label {
+    font-size: 12px;
+    line-height: 1.4;
+}
+
+// Variant: spinner
+.cm-loading--spinner .cm-loading__indicator {
+    width: var(--cm-loading-size, 32px);
+    height: var(--cm-loading-size, 32px);
+    border: 3px solid currentColor;
+    border-top-color: transparent;
+    border-radius: 50%;
+    animation: cm-loading-spin 0.8s linear infinite;
+}
+
+// Variant: dots
+.cm-loading--dots .cm-loading__indicator {
+    display: flex;
+    gap: 4px;
+
+    &::before,
+    &::after {
+        content: '';
+        display: block;
+        width: var(--cm-loading-size, 8px);
+        height: var(--cm-loading-size, 8px);
+        background: currentColor;
+        border-radius: 50%;
+        animation: cm-loading-bounce 1.4s ease-in-out infinite both;
+    }
+
+    &::before {
+        animation-delay: -0.32s;
+    }
+
+    &::after {
+        animation-delay: -0.16s;
+    }
+}
+
+.cm-loading--dots .cm-loading__indicator::before {
+    // first dot
+}
+
+// Variant: bar
+.cm-loading--bar .cm-loading__indicator {
+    width: 120px;
+    height: 8px;
+    background: rgba(128, 128, 128, 0.2);
+    border-radius: 4px;
+    overflow: hidden;
+}
+
+.cm-loading--bar .cm-loading__fill {
+    height: 100%;
+    background: currentColor;
+    border-radius: 4px;
+    transition: width 0.2s ease;
+}
+
+.cm-loading--bar.cm-loading--indeterminate .cm-loading__fill {
+    width: 40%;
+    animation: cm-loading-indeterminate 1.5s ease-in-out infinite;
+}
+
+// Size modifiers (named sizes)
+.cm-loading--small .cm-loading__indicator {
+    --cm-loading-size: 16px;
+}
+
+.cm-loading--medium .cm-loading__indicator {
+    --cm-loading-size: 32px;
+}
+
+.cm-loading--large .cm-loading__indicator {
+    --cm-loading-size: 48px;
+}
+
+// Animations
+@keyframes cm-loading-spin {
+    to {
+        transform: rotate(360deg);
+    }
+}
+
+@keyframes cm-loading-bounce {
+    0%,
+    80%,
+    100% {
+        transform: scale(0.6);
+        opacity: 0.4;
+    }
+
+    40% {
+        transform: scale(1);
+        opacity: 1;
+    }
+}
+
+@keyframes cm-loading-indeterminate {
+    0% {
+        transform: translateX(-150%);
+    }
+
+    100% {
+        transform: translateX(250%);
+    }
+}

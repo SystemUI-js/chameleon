@@ -38,7 +38,7 @@ export function ScrollbarVertical({
       data-scrollbar-orientation="vertical"
     >
       <CButton
-        compact
+        size="compact"
         className="cm-scroll-area__scrollbar-vertical-decrement"
         data-testid="scroll-area-scrollbar-vertical-decrement"
         onClick={handleDecrement}
@@ -48,7 +48,7 @@ export function ScrollbarVertical({
       </CButton>
       <div className="cm-scroll-area__scrollbar-vertical-track">
         <CButton
-          compact
+          size="compact"
           className="cm-scroll-area__scrollbar-vertical-thumb"
           data-testid="scroll-area-scrollbar-vertical-thumb"
           style={{
@@ -63,7 +63,7 @@ export function ScrollbarVertical({
         />
       </div>
       <CButton
-        compact
+        size="compact"
         className="cm-scroll-area__scrollbar-vertical-increment"
         data-testid="scroll-area-scrollbar-vertical-increment"
         onClick={handleIncrement}

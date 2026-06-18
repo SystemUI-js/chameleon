@@ -262,6 +262,81 @@
     color: var(--cm-color-text-muted, #666);
 }
 
+.cm-catalog__list-demo {
+    max-width: 500px;
+    border: 1px solid var(--cm-color-border-light, rgba(0, 0, 0, 0.08));
+    border-radius: 4px;
+}
+
+.cm-catalog__list-icon-strip {
+    display: flex;
+    flex-wrap: wrap;
+    gap: 12px;
+    align-items: stretch;
+}
+
+.cm-catalog__list-icon-card {
+    width: 112px;
+    padding: 10px;
+    box-sizing: border-box;
+    border: 1px solid var(--cm-color-border-light, #eee);
+    border-radius: 6px;
+    background: var(--cm-color-surface-raised, #f5f5f5);
+}
+
+.cm-catalog__list-icon-card .cm-list-icon,
+.cm-catalog__list-demo-icon {
+    width: 100%;
+    min-height: 76px;
+    gap: 8px;
+    padding: 8px;
+    box-sizing: border-box;
+    color: var(--cm-color-text, #000);
+    background: transparent;
+    border: 1px solid transparent;
+    border-radius: 4px;
+    font: inherit;
+    cursor: pointer;
+}
+
+.cm-catalog__list-icon-card .cm-list-icon:hover:not(:disabled),
+.cm-catalog__list-demo-icon:hover:not(:disabled) {
+    background: var(--cm-color-background-hover, #f5f5f5);
+    border-color: var(--cm-color-border-light, #ddd);
+}
+
+.cm-catalog__list-icon-card .cm-list-icon--active,
+.cm-catalog__list-demo-icon.cm-list-icon--active {
+    background: var(--cm-color-primary-subtle, #dbeafe);
+    border-color: var(--cm-color-focus, #007bff);
+}
+
+.cm-catalog__list-icon-card .cm-list-icon__visual,
+.cm-catalog__list-demo-icon .cm-list-icon__visual {
+    width: 40px;
+    height: 40px;
+    border: 1px solid var(--cm-color-border-light, #ddd);
+    border-radius: 6px;
+    background: var(--cm-color-surface, #fff);
+    font-size: 24px;
+    line-height: 1;
+}
+
+.cm-catalog__list-icon-card .cm-list-icon__label,
+.cm-catalog__list-demo-icon .cm-list-icon__label {
+    font-size: 12px;
+    font-weight: 600;
+}
+
+.cm-catalog__list-icon-helper {
+    display: block;
+    margin-top: 8px;
+    font-size: 11px;
+    line-height: 1.4;
+    color: var(--cm-color-text-muted, #666);
+    text-align: center;
+}
+
 .cm-split-area-demo-shell {
     min-height: 280px;
     height: 280px;

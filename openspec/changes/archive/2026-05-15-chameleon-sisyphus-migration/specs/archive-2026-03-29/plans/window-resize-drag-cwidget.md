@@ -1,47 +1,58 @@
 # Window Drag Resize Into CWidget
 
 ## TL;DR
+
 > **Summary**: Move `CWindow`'s drag and resize mechanics into `CWidget`, make `CWidget` the single owner of interactive frame state, and keep window-specific rendering/theme behavior in `CWindow`.
 > **Deliverables**:
+>
 > - `CWidget` owns frame state, pose helpers, resize lifecycle, and resize handle rendering
 > - `CWindow` delegates drag/resize to `CWidget` and keeps only window-specific composition/styling behavior
 > - Jest + Playwright regressions prove title drag, content no-op, 8-direction resize, clamp rules, and manager/theme compatibility
-> **Effort**: Large
-> **Parallel**: YES - 1 final review wave only; implementation is intentionally serialized
-> **Critical Path**: Task 1 -> Task 2 -> Task 3 -> Task 4 -> Task 5
+>   **Effort**: Large
+>   **Parallel**: YES - 1 final review wave only; implementation is intentionally serialized
+>   **Critical Path**: Task 1 -> Task 2 -> Task 3 -> Task 4 -> Task 5
 
 ## Context
+
 ### Original Request
+
 - 把 `Window` 的 `Resize` 和拖动功能，抽象到 `CWidget` 组件里面。
 
 ### Interview Summary
+
 - 现状已经是 `CWidget -> CWindow` 继承关系，标题栏拖动由 `CWindowTitle` 注入式回调驱动，真正重耦合的是 `CWindow` 内部 resize 实现。
 - 用户确认允许顺手整理 drag/resize 直接相关的 `CWindow` API/DOM 契约，不要求严格限制为纯内部重构。
 - 用户确认测试策略为“测试后补”，但仍需复用现有 Jest、Playwright、CI 流程完成自动化验证。
 
 ### Metis Review (gaps addressed)
+
 - 先固定一个明确结论：`CWidget` 作为交互 frame 的唯一状态拥有者，统一维护 `x/y/width/height` 与 gesture lifecycle，避免 `CWidget`/`CWindow` 双重写入。
 - 为避免 scope creep，本次不引入 hooks、context、全新手势架构，也不替换 `@system-ui-js/multi-drag`。
 - DOM/test 约定采用“保留测试可见契约，清理内部实现”的策略：保留 `window-frame`、`window-content`、`window-title`、`window-resize-*`、`data-window-uuid`，只清理 `CWindow` 内部 drag/resize 方法与注入路径。
 - `CWindowTitle` 的对外 props 名称本次保持兼容；重构目标是把注入责任转移到 `CWidget`，不是同时发起命名迁移。
 
 ## Work Objectives
+
 ### Core Objective
+
 - 让 `CWidget` 成为可复用的交互底座，统一承载 frame state、拖动 pose、resize 句柄与生命周期管理；`CWindow` 只保留 window-specific 的 className、内容结构、标题栏识别规则与主题扩展点。
 
 ### Deliverables
+
 - `src/components/Widget/Widget.tsx` 承担 frame state ownership、受控 props 同步、generic pose helpers、resize 选项归一化、handle ref/Drag 实例生命周期。
 - `src/components/Window/Window.tsx` 删除本地 drag/resize 核心逻辑，改为通过 `CWidget` 的受保护扩展点输出当前窗口 DOM。
 - `src/components/Window/WindowTitle.tsx` 继续作为标题栏拖动句柄，但由 widget-level 注入链路驱动窗口移动。
 - `src/components/Window/WindowManager.tsx`、`src/theme/default/index.tsx`、相关测试与 Playwright 夹具在新抽象下保持兼容。
 
 ### Definition of Done (verifiable conditions with commands)
+
 - `yarn test --runInBand tests/CWindowTitleComposition.test.tsx` 通过，且覆盖 title drag、content no-op、8 向 resize、min/max clamp、`resizable={false}`。
 - `yarn test --runInBand tests/WindowManager.test.tsx tests/DefaultTheme.test.tsx` 通过，且无 `CWidget` 注册/主题 class 回归。
 - `yarn playwright test tests/ui/window.smoke.spec.ts tests/ui/window.move.spec.ts tests/ui/window.resize.spec.ts tests/ui/window.resize-guards.spec.ts` 通过。
 - `yarn lint && yarn build` 通过。
 
 ### Must Have
+
 - `CWidget` 成为 `x/y/width/height` 的单一事实来源，`CWindow` 不再维护独立 frame state。
 - `CWindowTitle` 仍只能在显式组合时触发窗口移动，拖动内容区域必须保持无效。
 - 8 个 resize 方向继续保持现有 anchor 语义；west/north 方向继续同步修正 `x/y`。
@@ -49,19 +60,24 @@
 - `CWindowManager` 对 `CWidget`/`CWindow`/子类的注册识别继续成立。
 
 ### Must NOT Have (guardrails, AI slop patterns, scope boundaries)
+
 - 不把本次重构扩展成 hooks/context 重写。
 - 不修改 `WindowManager` 的业务语义，不改主题系统结构，不新增视觉改版。
 - 不删除现有 test IDs 与 `data-window-uuid`，除非有测试同步迁移且只影响 drag/resize 内部实现；本计划默认不删除。
 - 不引入第二套拖拽库或浏览器原生 pointer-gesture 重写。
 
 ## Verification Strategy
+
 > ZERO HUMAN INTERVENTION — all verification is agent-executed.
+
 - Test decision: tests-after + Jest 29 / React Testing Library / Playwright
 - QA policy: Every task includes agent-executed command or browser scenario; no visual-only checks
 - Evidence: `.sisyphus/evidence/task-{N}-{slug}.{ext}`
 
 ## Execution Strategy
+
 ### Parallel Execution Waves
+
 > This refactor is intentionally serialized because every implementation task mutates the same `CWidget`/`CWindow` inheritance chain. Parallelism is reserved for the final review wave after Task 5 is complete.
 
 Wave 1: Task 1 `CWidget frame ownership`
@@ -72,19 +88,20 @@ Wave 5: Task 5 `Playwright contract refresh`
 
 ### Dependency Matrix (full, all tasks)
 
-| Task | Depends On | Blocks |
-|---|---|---|
-| 1 | none | 2, 3, 4, 5 |
-| 2 | 1 | 3, 4, 5 |
-| 3 | 1, 2 | 4, 5 |
-| 4 | 1, 2, 3 | 5 |
-| 5 | 1, 2, 3, 4 | F1-F4 |
-| F1 | 1, 2, 3, 4, 5 | complete |
-| F2 | 1, 2, 3, 4, 5 | complete |
-| F3 | 1, 2, 3, 4, 5 | complete |
-| F4 | 1, 2, 3, 4, 5 | complete |
+| Task | Depends On    | Blocks     |
+| ---- | ------------- | ---------- |
+| 1    | none          | 2, 3, 4, 5 |
+| 2    | 1             | 3, 4, 5    |
+| 3    | 1, 2          | 4, 5       |
+| 4    | 1, 2, 3       | 5          |
+| 5    | 1, 2, 3, 4    | F1-F4      |
+| F1   | 1, 2, 3, 4, 5 | complete   |
+| F2   | 1, 2, 3, 4, 5 | complete   |
+| F3   | 1, 2, 3, 4, 5 | complete   |
+| F4   | 1, 2, 3, 4, 5 | complete   |
 
 ### Agent Dispatch Summary (wave → task count → categories)
+
 - Wave 1 -> 1 task -> `unspecified-high`
 - Wave 2 -> 1 task -> `unspecified-high`
 - Wave 3 -> 1 task -> `unspecified-high`
@@ -93,6 +110,7 @@ Wave 5: Task 5 `Playwright contract refresh`
 - Final Verification -> 4 tasks -> `deep`, `unspecified-high`, `visual-engineering`, `deep`
 
 ## TODOs
+
 > Implementation + Test = ONE task. Never separate.
 > EVERY task MUST have: Agent Profile + Parallelization + QA Scenarios.
 
@@ -332,11 +350,13 @@ Wave 5: Task 5 `Playwright contract refresh`
   **Commit**: YES | Message: `test(window): refresh regression coverage for cwidget interactions` | Files: `tests/ui/window.helpers.ts`, `tests/ui/window.smoke.spec.ts`, `tests/ui/window.move.spec.ts`, `tests/ui/window.resize.spec.ts`, `tests/ui/window.resize-guards.spec.ts`, `tests/CWindowTitleComposition.test.tsx`, `tests/WindowManager.test.tsx`, `tests/DefaultTheme.test.tsx`
 
 ## Final Verification Wave (MANDATORY — after ALL implementation tasks)
+
 > 4 review agents run in PARALLEL. ALL must APPROVE. Present consolidated results to user and get explicit "okay" before completing.
 > **Do NOT auto-proceed after verification. Wait for user's explicit approval before marking work complete.**
 > **Never mark F1-F4 as checked before getting user's okay.** Rejection or user feedback -> fix -> re-run -> present again -> wait for okay.
 > Review-agent scenarios below use `Read`, `Grep`, and `Bash` inside the assigned review agent; browser scenarios use `Bash` to start the preview server and `Playwright` to drive the page.
 > User confirmation required before re-checking F1-F4: <approver>@<timestamp> (<link>)
+
 - [ ] F1. Plan Compliance Audit — deep ✅ PASSED
 
   **What to do**: Run a final plan-vs-implementation audit after Tasks 1-5 finish. Use `.sisyphus/plans/window-resize-drag-cwidget.md` as the source of truth, compare delivered files and evidence against every task's acceptance criteria, and treat any omitted requirement as a blocker instead of a review note.
@@ -518,11 +538,13 @@ Wave 5: Task 5 `Playwright contract refresh`
   **Commit**: NO | Message: `n/a` | Files: none
 
 ## Commit Strategy
+
 - Commit 1 (after Tasks 1-2): `refactor(widget): centralize frame ownership and resize lifecycle in cwidget`
 - Commit 2 (after Tasks 3-4): `refactor(window): delegate drag resize to cwidget and preserve compatibility`
 - Commit 3 (after Task 5): `test(window): refresh unit and ui regression for cwidget interactions`
 
 ## Success Criteria
+
 - `CWindow` 不再直接持有 resize Drag 实例、resize start map、resize handle refs、drag pose/setState 逻辑。
 - `CWidget` 可以在不依赖 window-specific className 的前提下复用 frame interaction 机制。
 - `CWindowManager`、默认主题窗口、Playwright fixtures 与现有 test ids 全部继续工作。

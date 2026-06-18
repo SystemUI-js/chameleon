@@ -55,6 +55,30 @@
 - **WHEN** 一个已渲染的中间区域从 `CSplitArea` 的子节点列表中被移除
 - **THEN** 系统 MUST 立即移除该区域及其失效分割线，并让剩余区域重新组成连续布局
 
+### Requirement: `CSplitArea` 支持锁定当前实例及递归锁定子区域
+
+`CSplitArea` SHALL 支持通过 `lockCurrent` 与 `lock` 属性控制分割线锁定行为。`lockCurrent` 为 `true` 时，当前实例的分割线 MUST 进入锁定态，禁止拖动；`lock` 为 `true` 时，当前实例及其所有后代 `CSplitArea` 的分割线 MUST 同步进入锁定态。`lock` 的优先级 MUST 高于 `lockCurrent`；当祖先节点已设置 `lock` 时，后代节点 MUST 继承锁定态，且不得通过自身属性覆盖。
+
+#### Scenario: 仅锁定当前实例分割线
+
+- **WHEN** 使用方为当前 `CSplitArea` 设置 `lockCurrent={true}` 且未设置 `lock`
+- **THEN** 当前实例的所有分割线 MUST 进入锁定态，禁止拖动；后代 `CSplitArea` 的分割线状态 MUST 保持独立，不受当前实例影响
+
+#### Scenario: 递归锁定当前实例及所有后代
+
+- **WHEN** 使用方为当前 `CSplitArea` 设置 `lock={true}`
+- **THEN** 当前实例及其所有后代 `CSplitArea` 的分割线 MUST 全部进入锁定态，禁止拖动
+
+#### Scenario: `lock` 优先级高于 `lockCurrent`
+
+- **WHEN** 同一实例同时设置 `lock={true}` 与 `lockCurrent={false}`
+- **THEN** 当前实例 MUST 进入锁定态，且所有后代 MUST 同步继承锁定态
+
+#### Scenario: 后代无法覆盖祖先的 `lock`
+
+- **WHEN** 祖先 `CSplitArea` 已设置 `lock={true}`，且后代实例设置 `lockCurrent={false}`
+- **THEN** 后代实例 MUST 保持锁定态，不得通过自身 `lockCurrent` 覆盖祖先的递归锁定
+
 ### Requirement: `CSplitArea` 可从组件库公共入口导出
 
 组件库 SHALL 通过公共导出入口暴露 `CSplitArea`，使消费者可以直接从包入口导入并使用该组件，而无需依赖内部路径。

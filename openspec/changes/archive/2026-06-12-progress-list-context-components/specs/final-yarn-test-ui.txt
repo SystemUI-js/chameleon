@@ -1,0 +1,7 @@
+yarn test:ui
+
+109 passed (46.0s)
+All Playwright specs pass, including the new:
+- tests/ui/progress.spec.ts
+- tests/ui/list-layout.spec.ts
+- tests/ui/context-menu.spec.ts

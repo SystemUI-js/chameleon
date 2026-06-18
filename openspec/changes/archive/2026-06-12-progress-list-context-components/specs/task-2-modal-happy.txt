@@ -1,0 +1,116 @@
+yarn run v1.22.22
+warning package.json: No license field
+$ jest tests/CModal.test.tsx --runInBand
+PASS tests/CModal.test.tsx
+  CModal
+    ✓ returns null portal output when open=false (18 ms)
+    ✓ portals to document.body when open=true (15 ms)
+    ✓ renders title and children inside the window shell (6 ms)
+    ✓ shows close button by default and invokes onClose when clicked (7 ms)
+    ✓ hides close button when showCloseButton=false (3 ms)
+    ✓ invokes onClose when clicking the mask directly (4 ms)
+    ✓ does NOT invoke onClose when clicking inner content (3 ms)
+    ✓ does NOT close on mask click when closeOnMaskClick=false (3 ms)
+    ✓ invokes onClose on Escape keydown (4 ms)
+    ✓ does NOT close on Escape when closeOnEsc=false (3 ms)
+    ✓ only closes the topmost modal when two modals are stacked (4 ms)
+    ✓ restores focus to the previously focused element on unmount (2 ms)
+    ✓ renderToString does not throw and produces empty output (portal returns null) (3 ms)
+    ✓ removes its portal container on unmount (3 ms)
+    ✓ removes its portal container when open toggles back to false (3 ms)
+    ✓ applies className, maskClassName, contentClassName, data-testid and aria-label (3 ms)
+
+Test Suites: 1 passed, 1 total
+Tests:       16 passed, 16 total
+Snapshots:   0 total
+Time:        0.679 s, estimated 1 s
+Ran all test suites matching /tests\/CModal.test.tsx/i.
+Done in 2.11s.
+      103 |     expect(screen.getByTestId('theme-matrix-dock')).toHaveClass('cm-theme--win98');
+      104 |   });
+
+      at validateProperty (node_modules/react-dom/cjs/react-dom-client.development.js:3001:19)
+      at warnUnknownProperties (node_modules/react-dom/cjs/react-dom-client.development.js:3146:9)
+      at validatePropertiesInDevelopment (node_modules/react-dom/cjs/react-dom-client.development.js:19868:9)
+      at setInitialProperties (node_modules/react-dom/cjs/react-dom-client.development.js:20491:7)
+      at completeWork (node_modules/react-dom/cjs/react-dom-client.development.js:12662:18)
+      at runWithFiberInDEV (node_modules/react-dom/cjs/react-dom-client.development.js:874:13)
+      at completeUnitOfWork (node_modules/react-dom/cjs/react-dom-client.development.js:17777:19)
+      at performUnitOfWork (node_modules/react-dom/cjs/react-dom-client.development.js:17658:11)
+      at workLoopSync (node_modules/react-dom/cjs/react-dom-client.development.js:17469:41)
+      at renderRootSync (node_modules/react-dom/cjs/react-dom-client.development.js:17450:11)
+      at performWorkOnRoot (node_modules/react-dom/cjs/react-dom-client.development.js:16504:11)
+      at performWorkOnRootViaSchedulerTask (node_modules/react-dom/cjs/react-dom-client.development.js:18957:7)
+      at flushActQueue (node_modules/react/cjs/react.development.js:590:34)
+      at Object.<anonymous>.process.env.NODE_ENV.exports.act (node_modules/react/cjs/react.development.js:884:10)
+      at node_modules/@testing-library/react/dist/act-compat.js:47:25
+      at renderRoot (node_modules/@testing-library/react/dist/pure.js:190:26)
+      at render (node_modules/@testing-library/react/dist/pure.js:292:10)
+      at Object.<anonymous> (tests/PublicThemeMatrix.test.tsx:101:11)
+
+PASS tests/CModal.test.tsx
+
+Test Suites: 5 passed, 5 total
+Tests:       121 passed, 121 total
+Snapshots:   0 total
+Time:        4.898 s, estimated 5 s
+Ran all test suites matching /tests\/CModal.test.tsx|tests\/CDatePicker.test.tsx|tests\/CConfirm.test.tsx|tests\/PublicThemeMatrix.test.tsx|tests\/ComponentCatalog.test.tsx/i.
+Done in 6.48s.
+[vite:dts] Outside emitted: /home/zhangxiao/frontend/worktrees/chameleon/feature-add-win-7-theme/vite.config.d.ts.map
+[vite:dts] Outside emitted: /home/zhangxiao/frontend/worktrees/chameleon/feature-add-win-7-theme/jest.config.d.ts.map
+dist/style.css          131.89 kB │ gzip:  16.80 kB
+dist/chameleon.es.js  1,190.45 kB │ gzip: 270.64 kB
+[vite:dts] Declaration files built in 4785ms.
+
+dist/style.css          131.89 kB │ gzip:  16.80 kB
+dist/chameleon.umd.cjs  727.46 kB │ gzip: 226.00 kB
+✓ built in 7.62s
+Done in 8.68s.
+
+================================================================
+[2026-06-06] CModal Focus Trap (F2 a11y fix)
+================================================================
+
+## Implementation
+- Added inline focus trap in ModalBody via useRef<HTMLDivElement> + useEffect
+- Selector: 'button:not([disabled]), [href], input:not([disabled]), select:not([disabled]), textarea:not([disabled]), [tabindex]:not([tabindex="-1"])'
+- Behavior: auto-focus first focusable on mount; Tab from last → first; Shift+Tab from first → last
+- Re-queries focusable elements per Tab press (dynamic children)
+- Cleanup removes document keydown listener
+- Existing focus-restore (previouslyFocusedRef) untouched
+- No new npm deps
+
+## Verification
+
+### Targeted tests
+yarn test tests/CModal.test.tsx tests/CConfirm.test.tsx tests/CDatePicker.test.tsx tests/PublicThemeMatrix.test.tsx tests/ComponentCatalog.test.tsx --runInBand
+→ Test Suites: 5 passed, 5 total
+→ Tests: 123 passed, 123 total
+→ Exit code: 0
+
+### CModal tests detail (17 original + 2 new = 19/19)
+✓ returns null portal output when open=false
+✓ portals to document.body when open=true
+✓ renders title and children inside the window shell
+✓ shows close button by default and invokes onClose when clicked
+✓ hides close button when showCloseButton=false
+✓ invokes onClose when clicking the mask directly
+✓ does NOT invoke onClose when clicking inner content
+✓ does NOT close on mask click when closeOnMaskClick=false
+✓ invokes onClose on Escape keydown
+✓ does NOT close on Escape when closeOnEsc=false
+✓ only closes the topmost modal when two modals are stacked
+✓ auto-focuses the close button when opened                                 [NEW]
+✓ traps Tab focus within modal content (cycles last → first, first ← last)  [NEW]
+✓ restores focus to the previously focused element on unmount
+✓ renderToString does not throw and produces empty output
+✓ removes its portal container on unmount
+✓ removes its portal container when open toggles back to false
+✓ applies string width as inline style on cm-modal__window-host
+✓ applies className, maskClassName, contentClassName, data-testid, aria-label
+
+### Lint
+yarn lint → exit 0
+
+### Build
+yarn build → exit 0 (style.css 131.89 kB, chameleon.umd.cjs 728.34 kB)

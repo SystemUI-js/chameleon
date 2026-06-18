@@ -1,9 +1,7 @@
 .cm-scroll-area {
     --cm-scroll-area-scrollbar-size: 20px;
 
-    display: grid;
-    grid-template-columns: minmax(0, 1fr) var(--cm-scroll-area-scrollbar-size);
-    grid-template-rows: minmax(0, 1fr) var(--cm-scroll-area-scrollbar-size);
+    position: relative;
     min-width: 0;
     min-height: 0;
     box-sizing: border-box;
@@ -11,8 +9,6 @@
 }
 
 .cm-scroll-area__viewport {
-    grid-column: 1;
-    grid-row: 1;
     min-width: 0;
     min-height: 0;
     width: 100%;
@@ -35,14 +31,21 @@
 }
 
 .cm-scroll-area__scrollbar-vertical {
-    grid-column: 2;
-    grid-row: 1;
+    position: absolute;
+    top: 0;
+    right: 0;
+    bottom: 0;
+    z-index: 1;
     display: flex;
     flex-direction: column;
     width: var(--cm-scroll-area-scrollbar-size);
     min-width: 0;
     min-height: 0;
     overflow: hidden;
+}
+
+.cm-scroll-area--has-horizontal .cm-scroll-area__scrollbar-vertical {
+    bottom: var(--cm-scroll-area-scrollbar-size);
 }
 
 .cm-scroll-area__scrollbar-vertical-decrement,
@@ -67,14 +70,21 @@
 }
 
 .cm-scroll-area__scrollbar-horizontal {
-    grid-column: 1;
-    grid-row: 2;
+    position: absolute;
+    left: 0;
+    right: 0;
+    bottom: 0;
+    z-index: 1;
     display: flex;
     flex-direction: row;
     height: var(--cm-scroll-area-scrollbar-size);
     min-width: 0;
     min-height: 0;
     overflow: hidden;
+}
+
+.cm-scroll-area--has-vertical .cm-scroll-area__scrollbar-horizontal {
+    right: var(--cm-scroll-area-scrollbar-size);
 }
 
 .cm-scroll-area__scrollbar-horizontal-decrement,
@@ -99,8 +109,10 @@
 }
 
 .cm-scroll-area__scrollbar-corner {
-    grid-column: 2;
-    grid-row: 2;
+    position: absolute;
+    right: 0;
+    bottom: 0;
+    z-index: 2;
     width: var(--cm-scroll-area-scrollbar-size);
     height: var(--cm-scroll-area-scrollbar-size);
     box-sizing: border-box;

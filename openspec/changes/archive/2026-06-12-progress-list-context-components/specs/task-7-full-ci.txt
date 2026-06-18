@@ -1,0 +1,86 @@
+# Task 7 Full CI Evidence
+
+Timestamp: 2026-06-06T21:17:23+08:00
+Scope: Wave 4 Task 7 merge-hardening + full gate for CDatePicker/CModal/CConfirm.
+
+## Gate Summary
+
+| Gate | Command | Exit | Result | Timing / Counts | Notes |
+|---|---|---:|---|---|---|
+| 1 | `yarn lint` | 0 | PASS | 13.04s | Only existing ESLintIgnoreWarning about `.eslintignore`. |
+| 2 | `yarn test` | 1 | BASELINE FAIL ONLY | 6.083s; 642 passed / 645 total; 33 passed suites / 35 total | Failures limited to documented pre-existing `tests/Dock.test.tsx` and `tests/Widget.test.tsx`; no CDatePicker/CModal/CConfirm/PublicThemeMatrix/ComponentCatalog failures. Continued per Task 7 instruction. |
+| 3 | `NO_PROXY=127.0.0.1,localhost yarn test:ui` | 0 | PASS | 27.99s; 87/87 passed | Ubuntu/proxy workaround applied; Chromium symlink not required. |
+| 4 | `yarn build` | 0 | PASS | 7.78s; 127 modules; declaration files built in 4161ms | Vite build emitted dist files. vite-dts still prints pre-existing type diagnostics in CTable/CTimePicker/Widget/tests, but process exits 0. CDatePicker dts diagnostics were fixed and absent on final build. |
+
+## Tail Evidence (~20 lines / concise tail per gate)
+
+### yarn lint tail
+```text
+$ eslint "{src,tests}/**/*.{ts,tsx}"
+(node:893785) ESLintIgnoreWarning: The ".eslintignore" file is no longer supported. Switch to using the "ignores" property in "eslint.config.js": https://eslint.org/docs/latest/use/configure/migration-guide#ignoring-files
+(Use `node --trace-warnings ...` to show where the warning was created)
+Done in 13.04s.
+```
+
+### yarn test tail
+```text
+PASS tests/ThemeExports.test.ts
+PASS tests/CStatusBar.test.tsx
+PASS tests/ComponentCatalog.test.tsx (5.02 s)
+
+Summary of all failing tests
+FAIL tests/Widget.test.tsx
+  ● CWidget active state › updates uncontrolled active state, toggles class name, and fires onActive
+    TypeError: this.setWidgetActive is not a function
+    at TestWidget.setActiveFromTest (tests/Widget.test.tsx:8:10)
+
+FAIL tests/Dock.test.tsx
+  ● CDock › renders with supported dock props
+    expect(element).toHaveClass("cm-dock")
+    Received: dock-shell
+  ● CDock › applies dock base and modifier classes
+    expect(element).toHaveClass("cm-dock")
+    Received: dock-shell
+
+Test Suites: 2 failed, 33 passed, 35 total
+Tests:       3 failed, 642 passed, 645 total
+Time:        6.083 s
+Ran all test suites.
+error Command failed with exit code 1.
+```
+
+Baseline note: `tests/Dock.test.tsx` and `tests/Widget.test.tsx` are pre-existing, unrelated to this change, and explicitly allowed by Task 7 instructions. New component suites passed in the same full run.
+
+### yarn test:ui tail
+```text
+✓ 80 [chromium] › tests/ui/common-controls.smoke.spec.ts:362:5 › Win98 controls › Select › has border-radius 0 (471ms)
+✓ 79 [chromium] › tests/ui/window.resize.spec.ts:169:1 › outline-both resize keeps committed frame stable, renders preview, and cleans it up on release (915ms)
+✓ 81 [chromium] › tests/ui/common-controls.smoke.spec.ts:373:5 › Win98 controls › Select › has arrow reserve area (495ms)
+✓ 83 [chromium] › tests/ui/common-controls.smoke.spec.ts:384:5 › Win98 controls › Select › has focus inner dotted outline (465ms)
+✓ 82 [chromium] › tests/ui/window.resize.spec.ts:203:1 › outline-resize keeps title drag live without rendering a preview frame (1.2s)
+✓ 84 [chromium] › tests/ui/common-controls.smoke.spec.ts:408:3 › Win98 disabled controls › applies Win98 theme classes to container (496ms)
+✓ 85 [chromium] › tests/ui/common-controls.smoke.spec.ts:414:3 › Win98 disabled controls › Button is disabled with Win98 styling (535ms)
+✓ 86 [chromium] › tests/ui/common-controls.smoke.spec.ts:427:3 › Win98 disabled controls › Radio disabled option is greyed out (466ms)
+✓ 87 [chromium] › tests/ui/common-controls.smoke.spec.ts:433:3 › Win98 disabled controls › Select is disabled with Win98 styling (428ms)
+
+87 passed (27.0s)
+Done in 27.99s.
+```
+
+### yarn build tail
+```text
+[vite:dts] Outside emitted: .../tests/ui/window.resize.spec.d.ts.map
+[vite:dts] Outside emitted: .../tests/ui/window.smoke.spec.d.ts.map
+[vite:dts] Outside emitted: .../vite.config.d.ts.map
+[vite:dts] Outside emitted: .../jest.config.d.ts.map
+dist/style.css          131.89 kB │ gzip:  16.80 kB
+dist/chameleon.es.js  1,189.82 kB │ gzip: 270.50 kB
+[vite:dts] Declaration files built in 4161ms.
+
+dist/style.css          131.89 kB │ gzip:  16.80 kB
+dist/chameleon.umd.cjs  727.11 kB │ gzip: 225.89 kB
+✓ built in 6.83s
+Done in 7.78s.
+```
+
+Build diagnostics note: final build has no `src/components/DatePicker/CDatePicker.tsx` diagnostics. Remaining vite-dts diagnostics are pre-existing/unrelated (`src/components/Table/CTable.tsx` width prop, `src/components/TimePicker/CTimePicker.tsx` null class entries, `src/dev/ComponentCatalog.tsx` TimePicker `onChange`, `tests/CConfirm.test.tsx` unused React import, `tests/Widget.test.tsx` missing `setWidgetActive`) and do not fail the build process.

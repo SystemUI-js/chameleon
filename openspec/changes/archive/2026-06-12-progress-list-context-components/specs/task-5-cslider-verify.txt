@@ -1,0 +1,47 @@
+Task 5: CSlider Step Verification
+===================================
+Status: VERIFICATION ONLY - NO CHANGES NEEDED
+
+Test Coverage Analysis (tests/CSlider.test.tsx)
+------------------------------------------------
+✓ External value alignment: "aligns external values to the nearest step" (line 258)
+  - Tests step={25}, value=63 → expects 75% (nearest multiple of 25 from min=0)
+✓ Decimal step: "keeps decimal step alignment stable across external values and interactions" (line 267)
+  - Tests step={0.1}, min=0.1, max=0.5, includes track click and drag with precision handling
+✓ Track click: "updates value consistently for track press and thumb drag" (line 303)
+  - Tests track click at clientX=176 → value=40 (step=10 alignment)
+✓ Drag: Same test covers drag + "keeps dragging after first update..." (line 332)
+  - Tests drag move to x=249 → value=80
+✓ Keyboard step: "exposes slider semantics and supports keyboard interaction" (line 413)
+  - Tests ArrowRight (50→60), Home (→0), End (→100) with step={10}
+✓ Bonus - Fractional keyboard: "supports fine-grained keyboard adjustment..." (line 448)
+  - Tests ArrowRight (0.2→0.205), PageUp (→0.255) without explicit step
+
+Component API Verification (src/components/CSlider/CSlider.tsx)
+---------------------------------------------------------------
+✓ step prop exists: line 18, `readonly step?: number;`
+✓ normalizeSliderValue handles step alignment with precision: lines 107-124
+✓ getPrecision handles scientific notation: lines 47-59
+✓ toScaledInteger prevents floating-point drift: lines 97-105
+
+Catalog Demo Verification (src/dev/ComponentCatalog.tsx)
+--------------------------------------------------------
+✓ step={5} used in catalog slider: line 680, line 847
+
+Test Execution Results
+----------------------
+Test Suites: 1 passed, 1 total
+Tests:       10 passed, 10 total
+Snapshots:   0 total
+Time:        0.714s
+
+Conclusion
+----------
+All required step behaviors are covered by existing tests:
+- External value alignment ✓
+- Decimal step precision ✓
+- Track click step snapping ✓
+- Drag step snapping ✓
+- Keyboard step increment/decrement ✓
+
+Catalog demo correctly uses step={5}. No gaps found. No test additions needed.

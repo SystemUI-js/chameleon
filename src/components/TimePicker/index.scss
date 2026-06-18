@@ -1,0 +1,97 @@
+.cm-time-picker {
+    position: relative;
+    display: inline-flex;
+    align-items: center;
+    gap: 4px;
+    margin: 0;
+    padding: 0;
+    border: 0;
+}
+
+.cm-time-picker--disabled {
+    opacity: 0.6;
+}
+
+.cm-time-picker__input {
+    min-width: 80px;
+    padding: 4px 8px;
+    font: inherit;
+    cursor: pointer;
+}
+
+.cm-time-picker__input:disabled {
+    cursor: not-allowed;
+}
+
+.cm-time-picker__clear {
+    display: inline-flex;
+    align-items: center;
+    justify-content: center;
+    width: 20px;
+    height: 20px;
+    padding: 0;
+    border: 0;
+    background: transparent;
+    cursor: pointer;
+    font: inherit;
+}
+
+.cm-time-picker__panel {
+    position: absolute;
+    top: 100%;
+    left: 0;
+    z-index: 1000;
+    display: flex;
+    gap: 4px;
+    margin-top: 4px;
+    padding: 8px;
+    border: 1px solid #ccc;
+    background: #fff;
+}
+
+.cm-time-picker__column {
+    display: flex;
+    flex-direction: column;
+    gap: 2px;
+    max-height: 200px;
+    overflow-y: auto;
+}
+
+.cm-time-picker__option {
+    display: block;
+    min-width: 40px;
+    padding: 4px 8px;
+    border: 0;
+    background: transparent;
+    cursor: pointer;
+    font: inherit;
+    text-align: center;
+}
+
+.cm-time-picker__option:hover {
+    background: #e6e6e6;
+}
+
+.cm-time-picker__option--selected {
+    background: #1a73e8;
+    color: #fff;
+}
+
+.cm-time-picker__option--selected:hover {
+    background: #1557b0;
+}
+
+// Legacy styles kept for backward compatibility
+.cm-time-picker__select {
+    min-width: 48px;
+    font: inherit;
+}
+
+.cm-time-picker__select:disabled {
+    cursor: not-allowed;
+}
+
+.cm-time-picker__separator {
+    line-height: 1;
+    user-select: none;
+}

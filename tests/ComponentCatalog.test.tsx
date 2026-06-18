@@ -1,4 +1,4 @@
-import { act, render, screen, within } from '@testing-library/react';
+import { act, fireEvent, render, screen, within } from '@testing-library/react';
 import '@testing-library/jest-dom';
 import { ComponentCatalog } from '../src/dev/ComponentCatalog';
 import { DEV_THEME } from '../src/dev/themeSwitcher';
@@ -364,5 +364,197 @@ describe('ComponentCatalog', () => {
       expect(getOuterSplitAreaPanelCount(root)).toBe(2);
       expect(status).toHaveTextContent('当前为双栏布局');
     });
+
+    it('renders split area hover visibility demo', () => {
+      render(<ComponentCatalog theme={DEV_THEME.default} onThemeChange={() => {}} />);
+
+      const splitAreaSection = screen.getByTestId('catalog-section-split-area');
+      expect(within(splitAreaSection).getByTestId('split-area-demo-hover')).toBeInTheDocument();
+    });
+
+    it('renders split area separator-hover mode demo with separatorHoverMode prop', () => {
+      render(<ComponentCatalog theme={DEV_THEME.default} onThemeChange={() => {}} />);
+
+      const splitAreaSection = screen.getByTestId('catalog-section-split-area');
+      const separatorHoverDemo = within(splitAreaSection).getByTestId(
+        'split-area-demo-separator-hover',
+      );
+      expect(separatorHoverDemo).toBeInTheDocument();
+    });
+
+    it('SplitArea section code snippet includes separatorHoverMode examples', () => {
+      render(<ComponentCatalog theme={DEV_THEME.default} onThemeChange={() => {}} />);
+
+      const splitAreaSection = screen.getByTestId('catalog-section-split-area');
+      const showCodeButton = within(splitAreaSection).getByRole('button', { name: 'Show code' });
+
+      act(() => {
+        showCodeButton.click();
+      });
+
+      expect(showCodeButton).toHaveAttribute('aria-expanded', 'true');
+      expect(
+        within(splitAreaSection).getAllByText(/separatorHoverMode/).length,
+      ).toBeGreaterThanOrEqual(2);
+    });
+  });
+
+  describe('List showcase section', () => {
+    it('renders list showcase section with basic, mode, lazy, and empty demos', () => {
+      render(<ComponentCatalog theme={DEV_THEME.default} onThemeChange={() => {}} />);
+
+      const listSection = screen.getByTestId('catalog-section-list');
+      expect(listSection).toBeInTheDocument();
+      expect(within(listSection).getByTestId('list-demo-basic')).toHaveClass('cm-list--list');
+      expect(within(listSection).getByTestId('list-demo-grid')).toHaveClass('cm-list--grid');
+      expect(within(listSection).getByTestId('list-demo-icon')).toHaveClass('cm-list--icon');
+      expect(within(listSection).getByTestId('list-demo-lazy')).toBeInTheDocument();
+      expect(within(listSection).getByTestId('list-demo-empty')).toBeInTheDocument();
+    });
+
+    it('updates selected item text after clicking a list item', () => {
+      render(<ComponentCatalog theme={DEV_THEME.default} onThemeChange={() => {}} />);
+
+      const listSection = screen.getByTestId('catalog-section-list');
+      const listBasic = within(listSection).getByTestId('list-demo-basic');
+      const firstItemButton = within(listBasic).getByRole('button', { name: /Item 1/ });
+
+      expect(firstItemButton).toBeInTheDocument();
+      expect(listSection).toHaveTextContent('Selected: none');
+
+      act(() => {
+        firstItemButton.click();
+      });
+
+      expect(listSection).toHaveTextContent('Selected: Item 1');
+    });
+
+    it('renders list item action buttons without changing selected item', () => {
+      render(<ComponentCatalog theme={DEV_THEME.default} onThemeChange={() => {}} />);
+
+      const listSection = screen.getByTestId('catalog-section-list');
+      const editButton = within(listSection).getByTestId('list-demo-action-1-edit');
+      const deleteButton = within(listSection).getByTestId('list-demo-action-1-delete');
+
+      expect(editButton).toBeInTheDocument();
+      expect(deleteButton).toBeInTheDocument();
+      expect(listSection).toHaveTextContent('Selected: none');
+
+      act(() => {
+        editButton.click();
+      });
+
+      expect(listSection).toHaveTextContent('Selected: none');
+      expect(listSection).toHaveTextContent('Action: Edit Item 1');
+    });
+
+    it('reports hover, double-click, and keyboard drag intent without reordering items', () => {
+      render(<ComponentCatalog theme={DEV_THEME.default} onThemeChange={() => {}} />);
+
+      const listSection = screen.getByTestId('catalog-section-list');
+      const listBasic = within(listSection).getByTestId('list-demo-basic');
+      const firstItem = within(listBasic).getByText('Item 1').closest('li');
+      const firstMoveHandle = within(listBasic).getByRole('button', { name: 'Move item 1' });
+
+      expect(firstItem).not.toBeNull();
+      expect(listSection).toHaveTextContent('Intent: none');
+
+      act(() => {
+        if (firstItem !== null) {
+          fireEvent.mouseEnter(firstItem);
+        }
+      });
+
+      expect(within(listSection).getByTestId('list-demo-intent')).toHaveTextContent(
+        'Intent: Hover Item 1',
+      );
+
+      act(() => {
+        if (firstItem !== null) {
+          fireEvent.doubleClick(firstItem);
+        }
+      });
+
+      expect(within(listSection).getByTestId('list-demo-intent')).toHaveTextContent(
+        'Intent: Open Item 1',
+      );
+
+      act(() => {
+        fireEvent.keyDown(firstMoveHandle, { key: 'ArrowDown' });
+      });
+
+      expect(within(listSection).getByTestId('list-demo-intent')).toHaveTextContent(
+        'Intent: Move 1 after 2 by keyboard',
+      );
+      expect(
+        within(listBasic)
+          .getAllByText(/Item [123]/)
+          .map((node) => node.textContent),
+      ).toEqual(['□ Item 1', '◇ Item 2', '○ Item 3']);
+    });
+
+    it('shows lazy loading success and retry states from caller-owned loader', async () => {
+      render(<ComponentCatalog theme={DEV_THEME.default} onThemeChange={() => {}} />);
+
+      const listSection = screen.getByTestId('catalog-section-list');
+      const lazyList = within(listSection).getByTestId('list-demo-lazy');
+
+      act(() => {
+        within(lazyList).getByRole('button', { name: 'Expand item 1' }).click();
+      });
+
+      expect(within(listSection).getByRole('status')).toHaveTextContent('Loading children');
+      expect(await within(listSection).findByText('Lazy success branch child')).toBeInTheDocument();
+
+      act(() => {
+        within(lazyList).getByRole('button', { name: 'Expand item 2' }).click();
+      });
+
+      const retryButton = await within(listSection).findByRole('button', { name: 'Retry' });
+      expect(within(listSection).getByRole('alert')).toHaveTextContent('Preview load failed once');
+
+      act(() => {
+        retryButton.click();
+      });
+
+      expect(await within(listSection).findByText('Lazy retry branch child')).toBeInTheDocument();
+    });
+  });
+
+  it('DatePicker section exposes a Show code button and renders demo', () => {
+    render(<ComponentCatalog theme={DEV_THEME.default} onThemeChange={() => {}} />);
+
+    const datePickerSection = screen.getByTestId('catalog-section-date-picker');
+    const showCodeButton = within(datePickerSection).getByRole('button', { name: 'Show code' });
+    expect(showCodeButton).toBeInTheDocument();
+    expect(showCodeButton).toHaveAttribute('aria-expanded', 'false');
+    expect(within(datePickerSection).getByTestId('date-picker-demo')).toBeInTheDocument();
+    expect(within(datePickerSection).getByTestId('date-picker-demo-value')).toHaveTextContent(
+      'Selected date: 2026-01-15',
+    );
+  });
+
+  it('Modal section exposes a Show code button and renders open trigger', () => {
+    render(<ComponentCatalog theme={DEV_THEME.default} onThemeChange={() => {}} />);
+
+    const modalSection = screen.getByTestId('catalog-section-modal');
+    const showCodeButton = within(modalSection).getByRole('button', { name: 'Show code' });
+    expect(showCodeButton).toBeInTheDocument();
+    expect(showCodeButton).toHaveAttribute('aria-expanded', 'false');
+    expect(within(modalSection).getByTestId('modal-demo-open')).toBeInTheDocument();
+  });
+
+  it('Confirm section exposes a Show code button and renders both triggers', () => {
+    render(<ComponentCatalog theme={DEV_THEME.default} onThemeChange={() => {}} />);
+
+    const confirmSection = screen.getByTestId('catalog-section-confirm');
+    const showCodeButton = within(confirmSection).getByRole('button', { name: 'Show code' });
+    expect(showCodeButton).toBeInTheDocument();
+    expect(showCodeButton).toHaveAttribute('aria-expanded', 'false');
+    expect(within(confirmSection).getByTestId('confirm-demo-inline-open')).toBeInTheDocument();
+    expect(within(confirmSection).getByTestId('confirm-demo-imperative-open')).toBeInTheDocument();
+    expect(within(confirmSection).getByTestId('confirm-demo-imperative-result')).toHaveTextContent(
+      'Imperative result: none',
+    );
   });
 });

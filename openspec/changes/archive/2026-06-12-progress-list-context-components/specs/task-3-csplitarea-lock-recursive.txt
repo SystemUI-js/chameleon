@@ -1,0 +1,24 @@
+Task 3 - CSplitArea recursive lock evidence
+Date: 2026-06-09
+
+Implementation checked:
+- `SplitAreaLockContext` is created inside `CSplitArea.tsx` and read by each `CSplitArea` instance.
+- Effective current separator lock is `ancestor lock || own lock || own lockCurrent`.
+- Propagated descendant lock is `ancestor lock || own lock`, so `lock` recurses and `lockCurrent` does not.
+- When effective locked, the drag effect returns before binding `pointerdown` or constructing `Drag`.
+- Locked separators keep rendering and use `cm-split-area__separator--locked`; SCSS sets locked cursor to `default`.
+
+Targeted test evidence:
+- Command: `yarn test CSplitArea.test.tsx`
+- Result: PASS, 20/20 tests.
+- Relevant scenarios:
+  - `locks current and nested descendants recursively with lock`
+  - `prevents descendants from bypassing an ancestor lock`
+- Assertions covered:
+  - parent and nested separators both have `cm-split-area__separator--locked` under `lock`
+  - no mock `Drag` instances are created under recursive lock
+  - descendant `lock={false}` and `lockCurrent={false}` do not bypass ancestor `lock`
+
+Broader verification notes:
+- Command: `yarn test` exposed pre-existing/unrelated failures in `tests/Widget.test.tsx` and `tests/Dock.test.tsx`; `tests/CSplitArea.test.tsx` passed in that run.
+- Command: `yarn build` exited 0, while vite-plugin-dts printed unrelated existing type errors in `src/components/Input/CInput.tsx`, `src/components/Table/CTable.tsx`, `tests/CInput.test.tsx`, and `tests/Widget.test.tsx`.

@@ -10,6 +10,10 @@
     opacity: 0.6;
 }
 
+.cm-checkbox--indeterminate .cm-checkbox__input {
+    accent-color: gray;
+}
+
 .cm-checkbox__input {
     margin: 0;
 }

@@ -8,7 +8,7 @@
 - 2026-03-28: Task 4 验证完成 - CWindowManager 的 `isManagedConstructor(candidate, CWidget)` 原型链检查对 `CWindow` 及其子类仍然有效，因为 `CWindow extends CWidget` 保持了正确的原型继承链。WindowManager 测试全部通过（8/8）。
 - 2026-03-28: `data-window-uuid` 保留在 `window-content` div 上（Window.tsx:56），未因 CWidget 迁移而改变。
 - 2026-03-28: DefaultTheme 测试通过（1/1）- frame 有 `cm-window-frame`，content 有 `cm-window`，title 有 `cm-window__title-bar--with-controls`，拖动功能正常。Theme 类名层级未受 CWidget 迁移影响。
-- 2026-03-28: Task 5 验证完成 - 所有 15 个 Playwright window specs 通过（window.smoke × 2, window.move × 2, window.resize × 8, window.resize-guards × 3），Selectors（window-frame, window-content, window-title, window-resize-*）保持稳定，未因 CWidget 迁移而改变。
+- 2026-03-28: Task 5 验证完成 - 所有 15 个 Playwright window specs 通过（window.smoke × 2, window.move × 2, window.resize × 8, window.resize-guards × 3），Selectors（window-frame, window-content, window-title, window-resize-\*）保持稳定，未因 CWidget 迁移而改变。
 - 2026-03-28: F1 合规审计结论：Task 1-5 的窗口拖拽/缩放交付与证据链完整匹配计划；`CWidget` 为 frame state 与 resize lifecycle 唯一所有者，`CWindow` 仅保留窗口组合与契约覆写。
 - 2026-03-28: 全量质量门中 `yarn test --runInBand` 通过，但 `yarn playwright test` 存在 2 个 Win98 common-controls 失败（边框色、focus outline offset），与 window-resize-drag-cwidget 交付无直接耦合，需单独跟进。
 - 2026-03-28: F4 Scope Fidelity 审计通过：Window/Widget 路径未引入 hooks/context，`src/index.ts` 无新增导出，`window-frame/window-content/window-title/window-resize-*` 与 `data-window-uuid` 保持稳定，`@system-ui-js/multi-drag` 依赖与导入均未替换。
@@ -22,4 +22,4 @@
   - Drag-only fixture: 验证 resizable=false 时无 resize handles ✓
   - Min-clamp fixture: 验证 east/south shrink clamp 到 (30, 30, 1, 1) ✓
   - Max-clamp fixture: 验证 east grow + NW anchor clamp 到 (50, 50, 150, 110) ✓
-  - Screenshot 证据: f3-manual-qa-default.png, f3-manual-qa-guards-*.png (4 个 fixtures)
+  - Screenshot 证据: f3-manual-qa-default.png, f3-manual-qa-guards-\*.png (4 个 fixtures)

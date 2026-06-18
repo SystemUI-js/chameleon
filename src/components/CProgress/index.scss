@@ -1,0 +1,117 @@
+.cm-cprogress {
+    display: inline-flex;
+    align-items: center;
+    gap: 8px;
+    color: currentColor;
+}
+
+.cm-cprogress__track,
+.cm-cprogress__fill,
+.cm-cprogress__circle {
+    box-sizing: border-box;
+}
+
+// Statuses
+.cm-cprogress--status-default {
+    color: #f5a623;
+}
+
+.cm-cprogress--status-active {
+    color: #3498db;
+}
+
+.cm-cprogress--status-success {
+    color: #27ae60;
+}
+
+.cm-cprogress--status-exception {
+    color: #e74c3c;
+}
+
+// Sizes
+.cm-cprogress--size-small {
+    --cm-cprogress-size: 16px;
+}
+
+.cm-cprogress--size-medium {
+    --cm-cprogress-size: 32px;
+}
+
+.cm-cprogress--size-large {
+    --cm-cprogress-size: 48px;
+}
+
+// Label
+.cm-cprogress__label {
+    display: flex;
+    align-items: center;
+    gap: 4px;
+    font-size: 12px;
+    line-height: 1.4;
+    color: inherit;
+}
+
+// Bar variant
+.cm-cprogress--bar .cm-cprogress__track {
+    width: 120px;
+    height: 8px;
+    background: rgba(128, 128, 128, 0.2);
+    border-radius: 999px;
+    overflow: hidden;
+}
+
+.cm-cprogress--bar .cm-cprogress__fill {
+    height: 100%;
+    background: currentColor;
+    border-radius: inherit;
+    transition: width 0.2s ease;
+}
+
+.cm-cprogress--bar.cm-cprogress--indeterminate .cm-cprogress__fill {
+    width: 40%;
+    animation: cm-cprogress-indeterminate-bar 1.5s ease-in-out infinite;
+}
+
+// Circle / ring variant
+.cm-cprogress__circle {
+    width: var(--cm-cprogress-size, 32px);
+    height: var(--cm-cprogress-size, 32px);
+    border-radius: 50%;
+    background: conic-gradient(currentColor 0%, transparent 0%);
+    mask: radial-gradient(transparent 55%, black 56%);
+}
+
+.cm-cprogress--ring .cm-cprogress__circle {
+    mask: radial-gradient(transparent 55%, black 56%);
+}
+
+.cm-cprogress--circle .cm-cprogress__circle {
+    mask: none;
+}
+
+.cm-cprogress--indeterminate .cm-cprogress__circle {
+    animation: cm-cprogress-spin 1s linear infinite;
+    background: conic-gradient(
+        currentColor 0%,
+        currentColor 25%,
+        transparent 75%,
+        transparent 100%
+    );
+}
+
+// Animations
+@keyframes cm-cprogress-indeterminate-bar {
+    0% {
+        transform: translateX(-150%);
+    }
+
+    100% {
+        transform: translateX(250%);
+    }
+}
+
+@keyframes cm-cprogress-spin {
+    to {
+        transform: rotate(360deg);
+    }
+}

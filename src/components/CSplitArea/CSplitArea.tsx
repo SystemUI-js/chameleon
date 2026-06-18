@@ -9,6 +9,10 @@ export interface CSplitAreaProps {
   readonly children?: React.ReactNode;
   readonly direction?: CSplitAreaDirection;
   readonly separatorMovable?: boolean;
+  readonly separatorVisibleOnHover?: boolean;
+  readonly separatorHoverMode?: 'area' | 'separator';
+  readonly lockCurrent?: boolean;
+  readonly lock?: boolean;
   readonly className?: string;
   readonly theme?: string;
   readonly style?: React.CSSProperties;
@@ -29,6 +33,7 @@ type DragSession = {
 
 const MIN_PANEL_SIZE_PX = 48;
 const SEPARATOR_SIZE_PX = 8;
+const SplitAreaLockContext = React.createContext(false);
 
 function createEqualRatios(count: number): number[] {
   if (count <= 0) {
@@ -146,11 +151,18 @@ export function CSplitArea({
   children,
   direction = 'horizontal',
   separatorMovable = false,
+  separatorVisibleOnHover = false,
+  separatorHoverMode = 'area',
+  lockCurrent = false,
+  lock = false,
   className,
   theme,
   style,
   'data-testid': dataTestId,
 }: CSplitAreaProps): React.ReactElement {
+  const hasAncestorLock = React.useContext(SplitAreaLockContext);
+  const hasRecursiveLock = hasAncestorLock || lock;
+  const isSeparatorLocked = hasRecursiveLock || lockCurrent;
   const items = React.useMemo(() => buildSplitAreaItems(children), [children]);
   const itemIds = React.useMemo(() => items.map((item) => item.id), [items]);
   const [ratios, setRatios] = React.useState<number[]>(() => createEqualRatios(items.length));
@@ -171,7 +183,7 @@ export function CSplitArea({
   }, [itemIds]);
 
   React.useEffect(() => {
-    if (!separatorMovable || items.length <= 1) {
+    if (!separatorMovable || isSeparatorLocked || items.length <= 1) {
       return undefined;
     }
 
@@ -274,67 +286,81 @@ export function CSplitArea({
         instance.drag.setDisabled();
       });
     };
-  }, [direction, items, separatorMovable]);
+  }, [direction, isSeparatorLocked, items, separatorMovable]);
 
   return (
-    <ResolvedThemeClassName theme={theme}>
-      {(resolvedTheme) => (
-        <div
-          ref={containerRef}
-          data-testid={dataTestId}
-          className={mergeClasses(
-            [
-              'cm-split-area',
-              `cm-split-area--${direction}`,
-              separatorMovable ? 'cm-split-area--movable' : 'cm-split-area--static',
-            ],
-            resolvedTheme,
-            className,
-          )}
-          style={style}
-        >
-          {items.map((item, index) => {
-            const ratio = normalizedRatios[index] ?? 0;
-            const totalSeparatorSize = Math.max(items.length - 1, 0) * SEPARATOR_SIZE_PX;
-            const panelStyle = {
-              flex: `0 0 calc((100% - ${totalSeparatorSize}px) * ${ratio})`,
-            } satisfies React.CSSProperties;
+    <SplitAreaLockContext.Provider value={hasRecursiveLock}>
+      <ResolvedThemeClassName theme={theme}>
+        {(resolvedTheme) => (
+          <div
+            ref={containerRef}
+            data-testid={dataTestId}
+            className={mergeClasses(
+              [
+                'cm-split-area',
+                `cm-split-area--${direction}`,
+                separatorMovable && !isSeparatorLocked
+                  ? 'cm-split-area--movable'
+                  : 'cm-split-area--static',
+                separatorVisibleOnHover && separatorHoverMode === 'area'
+                  ? 'cm-split-area--separator-visible-on-hover'
+                  : '',
+                separatorVisibleOnHover && separatorHoverMode === 'separator'
+                  ? 'cm-split-area--separator-visible-on-separator-hover'
+                  : '',
+              ],
+              resolvedTheme,
+              className,
+            )}
+            style={style}
+          >
+            {items.map((item, index) => {
+              const ratio = normalizedRatios[index] ?? 0;
+              const totalSeparatorSize = Math.max(items.length - 1, 0) * SEPARATOR_SIZE_PX;
+              const separatorStateClass = isSeparatorLocked
+                ? 'cm-split-area__separator--locked'
+                : 'cm-split-area__separator--static';
+              const interactiveSeparatorStateClass = separatorMovable
+                ? 'cm-split-area__separator--movable'
+                : separatorStateClass;
+              const panelStyle = {
+                flex: `0 0 calc((100% - ${totalSeparatorSize}px) * ${ratio})`,
+              } satisfies React.CSSProperties;
 
-            return (
-              <React.Fragment key={item.id}>
-                <div
-                  data-split-area-panel={index}
-                  className="cm-split-area__panel"
-                  style={panelStyle}
-                >
-                  {item.node}
-                </div>
-                {index < items.length - 1 ? (
+              return (
+                <React.Fragment key={item.id}>
                   <div
-                    ref={(element) => {
-                      separatorRefs.current[index] = element;
-                    }}
-                    data-split-area-separator={index}
-                    data-separator-orientation={
-                      direction === 'horizontal' ? 'vertical' : 'horizontal'
-                    }
-                    className={[
-                      'cm-split-area__separator',
-                      `cm-split-area__separator--${direction}`,
-                      separatorMovable
-                        ? 'cm-split-area__separator--movable'
-                        : 'cm-split-area__separator--static',
-                    ].join(' ')}
-                    aria-hidden="true"
+                    data-split-area-panel={index}
+                    className="cm-split-area__panel"
+                    style={panelStyle}
                   >
-                    <span className="cm-split-area__separator-handle" />
+                    {item.node}
                   </div>
-                ) : null}
-              </React.Fragment>
-            );
-          })}
-        </div>
-      )}
-    </ResolvedThemeClassName>
+                  {index < items.length - 1 ? (
+                    <div
+                      ref={(element) => {
+                        separatorRefs.current[index] = element;
+                      }}
+                      data-split-area-separator={index}
+                      data-separator-orientation={
+                        direction === 'horizontal' ? 'vertical' : 'horizontal'
+                      }
+                      className={[
+                        'cm-split-area__separator',
+                        `cm-split-area__separator--${direction}`,
+                        isSeparatorLocked ? separatorStateClass : interactiveSeparatorStateClass,
+                      ].join(' ')}
+                      aria-hidden="true"
+                    >
+                      <span className="cm-split-area__separator-handle" />
+                    </div>
+                  ) : null}
+                </React.Fragment>
+              );
+            })}
+          </div>
+        )}
+      </ResolvedThemeClassName>
+    </SplitAreaLockContext.Provider>
   );
 }

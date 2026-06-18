@@ -12,6 +12,7 @@
 ## Capabilities
 
 ### New Capabilities
+
 - `ccheckbox-component`: 定义 `CCheckbox` 的复选框组件能力，包括受控/非受控选中行为、禁用态、标签渲染、基础可访问性语义、稳定类名与公共入口导出。
 
 ### Modified Capabilities

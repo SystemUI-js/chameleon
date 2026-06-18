@@ -1,26 +1,32 @@
 # Refine Win98 Button Radio Select Styles
 
 ## TL;DR
+
 > **Summary**: 以 `98.css` 为高拟真视觉参考，收敛 `Win98` 主题下 `Button`、`Radio`、`Select` 的颜色、尺寸、bevel 边框和状态表现，只改样式层，不触碰组件行为逻辑。
 > **Deliverables**:
+>
 > - Win98 主题下 `Button` / `Radio` / `Select` 的高拟真样式修订
 > - 可执行的 Playwright Win98 样式校验与证据产物
 > - 开发预览与现有冒烟路径保持可用，且不影响 `WinXP` / `default`
-> **Effort**: Medium
-> **Parallel**: YES - 2 waves
-> **Critical Path**: 1 → 2/3/4 → 5
+>   **Effort**: Medium
+>   **Parallel**: YES - 2 waves
+>   **Critical Path**: 1 → 2/3/4 → 5
 
 ## Context
+
 ### Original Request
+
 - 根据 `https://jdan.github.io/98.css` 这个网站中的颜色值、大小等等，配合项目代码，优化 Win98 主题下 `Button`、`Radio`、`Select` 的样式；这次只管 CSS 样式，不管行为逻辑。
 
 ### Interview Summary
+
 - 用户确认采用 **高拟真映射**：尽量贴近 `98.css` 的颜色、边框层次、尺寸与 focus/active 细节。
 - 用户确认采用 **全状态覆盖**：默认、hover、active、focus、disabled 都需要纳入 Win98 校准。
 - 用户确认 `Button` 的 `default`、`primary`、`ghost` 三个既有 variant 都要统一收敛到 Win98 语言，不只修默认按钮。
 - 已探明仓库架构：视觉样式集中在 `src/theme/*/styles/index.scss`，`src/components/*/index.scss` 仅保留结构壳层；Win98 现有实现已存在，但与 `98.css` 在 bevel 层次、focus offset、select 箭头/field 边框等处仍有差距。
 
 ### Metis Review (gaps addressed)
+
 - 增加护栏：Win98 控件必须保持 `border-radius: 0` 与明确的 raised/sunken bevel 方向，不允许退化为现代扁平边框。
 - 增加护栏：按钮 focus 必须是内收的 dotted outline，而不是任意可见 outline。
 - 增加护栏：Select 必须保持 field-style inset 边框与 Win98 风格箭头处理，不能退化为 generic native select。
@@ -28,15 +34,19 @@
 - 增加边界说明：若现有 markup 无法精准复刻某个细节，优先在现有类名和伪元素内求解，明确拒绝通过结构改动“解决”样式问题。
 
 ## Work Objectives
+
 ### Core Objective
+
 - 在不改动 `CButton`、`CRadio`、`CRadioGroup`、`CSelect` 行为逻辑、类名体系和主题注册关系的前提下，将 `Win98` 主题的三类控件样式拉齐到接近 `98.css` 的视觉基准。
 
 ### Deliverables
+
 - `src/theme/win98/styles/index.scss` 中 `Button`、`Radio`、`Select` 的样式更新，覆盖默认、hover、active、focus、disabled 状态。
 - Win98 专用的 UI 验证路径（基于现有 Playwright harness/fixture 扩展），可对关键 CSS 表现做 agent-executed 验证。
 - 针对 `Button` / `Radio` / `Select` 的 targeted Jest、Win98 UI smoke、lint、build 通过的证据文件。
 
 ### Definition of Done (verifiable conditions with commands)
+
 - `yarn test --runInBand tests/Button.test.tsx tests/Radio.test.tsx tests/Select.test.tsx` exits `0`.
 - `yarn test:ui --grep "Win98 controls"` exits `0`.
 - `yarn lint` exits `0`.
@@ -44,6 +54,7 @@
 - Playwright 证据确认 Win98 `Button` 呈现 raised/sunken bevel、`Radio` 呈现 checked dot、`Select` 呈现 field-style inset border 与 Win98 arrow treatment。
 
 ### Must Have
+
 - 仅在 `Win98` 主题实现层调整，不改组件 TSX 行为逻辑。
 - 保持 `.cm-system--windows.cm-theme--win98` 作用域，不污染 `WinXP` / `default`。
 - 保持现有类名契约：`cm-button`、`cm-button--primary`、`cm-button--ghost`、`cm-radio`、`cm-radio__input`、`cm-radio__label`、`cm-select`。
@@ -55,6 +66,7 @@
 - Select 目标值固定为：field 高度 `21px`、内边距遵循左 `4px` / 右侧预留箭头区、`border-radius: 0`、field-style inset border、纯 CSS Win98 箭头、focus 采用 **inner dotted outline**；本次明确 **不实现蓝底白字反转**。
 
 ### Must NOT Have (guardrails, AI slop patterns, scope boundaries)
+
 - 不修改 `src/components/Button/Button.tsx:17`、`src/components/Radio/Radio.tsx:13`、`src/components/Select/Select.tsx:24` 的行为逻辑、DOM 结构或类名拼接方式。
 - 不新增主题、不调整 `src/system/registry.ts:23` 的 `SYSTEM_THEME_MATRIX`、不影响 `src/theme/winxp/styles/index.scss:90` 或 `src/theme/default/styles/index.scss:152` 的视觉表现。
 - 不引入新的全局 token 系统、CSS-in-JS、全局字体重写、SVG/data-uri 资产复制、JS 态样式驱动。
@@ -62,13 +74,17 @@
 - 不接受依赖人工主观口头判断的验收；必须有可运行命令与证据文件。
 
 ## Verification Strategy
+
 > ZERO HUMAN INTERVENTION — all verification is agent-executed.
+
 - Test decision: tests-after，复用 Jest + Playwright + 现有 dev/playwright harness。
 - QA policy: 每个任务都自带 happy path 与 edge/failure path，必须产出 `.sisyphus/evidence/task-{N}-{slug}.{ext}`。
 - Evidence: `.sisyphus/evidence/task-{N}-{slug}.{ext}`；Playwright 失败截图可辅以 `test-results/` 自动产物，但计划内主证据仍写入 `.sisyphus/evidence/`。
 
 ## Execution Strategy
+
 ### Parallel Execution Waves
+
 > Target: 5-8 tasks per wave. <3 per wave (except final) = under-splitting.
 > Extract shared dependencies as Wave-1 tasks for max parallelism.
 
@@ -76,6 +92,7 @@ Wave 1: 1 个 QA 基础任务 + 3 个控件样式任务并行（Button / Radio /
 Wave 2: 1 个回归收口任务（跨主题确认 + 预览/冒烟收尾）
 
 ### Dependency Matrix (full, all tasks)
+
 - 1 blocks 2, 3, 4, 5
 - 2 blocks 5
 - 3 blocks 5
@@ -83,10 +100,12 @@ Wave 2: 1 个回归收口任务（跨主题确认 + 预览/冒烟收尾）
 - 5 blocks Final Verification Wave
 
 ### Agent Dispatch Summary (wave → task count → categories)
+
 - Wave 1 → 4 tasks → `visual-engineering`, `visual-engineering`, `visual-engineering`, `visual-engineering`
 - Wave 2 → 1 task → `unspecified-high`
 
 ## TODOs
+
 > Implementation + Test = ONE task. Never separate.
 > EVERY task MUST have: Agent Profile + Parallelization + QA Scenarios.
 
@@ -120,6 +139,7 @@ Wave 2: 1 个回归收口任务（跨主题确认 + 预览/冒烟收尾）
   - [ ] 证据文件写入 `.sisyphus/evidence/task-1-win98-qa.txt`，失败时保留 `.sisyphus/evidence/task-1-win98-qa-error.txt`。
 
   **QA Scenarios** (MANDATORY — task incomplete without these):
+
   ```
   Scenario: Win98 controls happy path
     Tool: Bash
@@ -166,6 +186,7 @@ Wave 2: 1 个回归收口任务（跨主题确认 + 预览/冒烟收尾）
   - [ ] `primary` / `ghost` 仍然保留各自 variant class，且 Playwright 断言二者都保持 `border-radius: 0`、无 XP 渐变、无 default-theme shadow 泄漏。
 
   **QA Scenarios** (MANDATORY — task incomplete without these):
+
   ```
   Scenario: Button bevel happy path
     Tool: Bash
@@ -211,6 +232,7 @@ Wave 2: 1 个回归收口任务（跨主题确认 + 预览/冒烟收尾）
   - [ ] Radio 视觉改动不要求新增 DOM 或类名。
 
   **QA Scenarios** (MANDATORY — task incomplete without these):
+
   ```
   Scenario: Radio checked-dot happy path
     Tool: Bash
@@ -256,6 +278,7 @@ Wave 2: 1 个回归收口任务（跨主题确认 + 预览/冒烟收尾）
   - [ ] Select focus 样式固定为 inner dotted outline，且无蓝底白字反转实现。
 
   **QA Scenarios** (MANDATORY — task incomplete without these):
+
   ```
   Scenario: Select field happy path
     Tool: Bash
@@ -303,6 +326,7 @@ Wave 2: 1 个回归收口任务（跨主题确认 + 预览/冒烟收尾）
   - [ ] 证据文件写入 `.sisyphus/evidence/task-5-win98-regression.txt`，记录命令与通过结果。
 
   **QA Scenarios** (MANDATORY — task incomplete without these):
+
   ```
   Scenario: Full regression happy path
     Tool: Bash
@@ -320,9 +344,11 @@ Wave 2: 1 个回归收口任务（跨主题确认 + 预览/冒烟收尾）
   **Commit**: YES | Message: `chore(win98): close common controls style regression gates` | Files: `src/theme/win98/styles/index.scss`, `tests/ui/*`, `src/dev/playwright/*`
 
 ## Final Verification Wave (MANDATORY — after ALL implementation tasks)
+
 > 4 review agents run in PARALLEL. ALL must APPROVE. Present consolidated results to user and get explicit "okay" before completing.
 > **Do NOT auto-proceed after verification. Wait for user's explicit approval before marking work complete.**
 > **Never mark F1-F4 as checked before getting user's okay.** Rejection or user feedback -> fix -> re-run -> present again -> wait for okay.
+
 - [ ] F1. Plan Compliance Audit — oracle
 
   **Execution**:
@@ -356,12 +382,14 @@ Wave 2: 1 个回归收口任务（跨主题确认 + 预览/冒烟收尾）
   - Evidence: `.sisyphus/evidence/f4-scope-fidelity.md`
 
 **Final Verification Acceptance Criteria**:
+
 - [ ] All four review artifacts exist at the evidence paths above.
 - [ ] All four reviewers return explicit APPROVE-equivalent verdicts.
 - [ ] Consolidated verification summary is presented to the user before completion.
 - [ ] User gives explicit "okay" before any work is marked fully complete.
 
 ## Commit Strategy
+
 - 建议按任务粒度提交 3 个原子提交：
 - `test(win98): add css verification for common controls`
 - `style(win98): refine button radio select controls`
@@ -369,6 +397,7 @@ Wave 2: 1 个回归收口任务（跨主题确认 + 预览/冒烟收尾）
 - 若执行代理偏好更细粒度，也可保持任务 2/3/4 各自独立提交，但必须在最终回归前完成 rebase/整理，避免 QA harness 与主题 SCSS 交叉冲突。
 
 ## Success Criteria
+
 - Win98 Button/Radio/Select 在视觉上明显更接近 `98.css`，核心 fidelity 标记（bevel、field border、checked dot、inner focus）可被 Playwright 直接断言。
 - 改动限定在 Win98 样式实现与必要 QA 支撑，不包含行为逻辑重构。
 - `WinXP` / `default` 主题、主题注册矩阵、组件 API 与行为测试保持稳定。

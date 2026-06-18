@@ -1,0 +1,113 @@
+.cm-tooltip {
+    position: relative;
+    display: inline-flex;
+    align-items: center;
+}
+
+.cm-tooltip__trigger {
+    display: inline-flex;
+}
+
+.cm-tooltip__popup,
+.cm-tooltip__overlay {
+    position: absolute;
+    z-index: 1000;
+    max-width: 240px;
+    padding: 4px 8px;
+    color: var(--cm-tooltip-color, #ffffff);
+    font-size: 12px;
+    line-height: 1.4;
+    white-space: nowrap;
+    pointer-events: none;
+    background: var(--cm-tooltip-background, #111827);
+    border-radius: 4px;
+    box-shadow: 0 4px 12px rgb(0 0 0 / 18%);
+    opacity: 0;
+    transform: translate(-50%, -4px);
+    transition:
+        opacity 120ms ease,
+        transform 120ms ease,
+        visibility 120ms ease;
+    visibility: hidden;
+}
+
+.cm-tooltip__overlay--visible {
+    opacity: 1;
+    visibility: visible;
+}
+
+.cm-tooltip__overlay--hidden {
+    opacity: 0;
+    visibility: hidden;
+}
+
+.cm-tooltip__overlay--top {
+    bottom: calc(100% + 6px);
+    left: 50%;
+    transform: translate(-50%, -4px);
+}
+
+.cm-tooltip__overlay--bottom {
+    top: calc(100% + 6px);
+    left: 50%;
+    transform: translate(-50%, 4px);
+}
+
+.cm-tooltip__overlay--left {
+    top: 50%;
+    right: calc(100% + 6px);
+    transform: translate(-4px, -50%);
+}
+
+.cm-tooltip__overlay--right {
+    top: 50%;
+    left: calc(100% + 6px);
+    transform: translate(4px, -50%);
+}
+
+.cm-tooltip__overlay--visible.cm-tooltip__overlay--top,
+.cm-tooltip__overlay--visible.cm-tooltip__overlay--bottom {
+    transform: translate(-50%, 0);
+}
+
+.cm-tooltip__overlay--visible.cm-tooltip__overlay--left,
+.cm-tooltip__overlay--visible.cm-tooltip__overlay--right {
+    transform: translate(0, -50%);
+}
+
+.cm-tooltip__arrow {
+    position: absolute;
+    width: 8px;
+    height: 8px;
+    background: var(--cm-tooltip-background, #111827);
+    transform: rotate(45deg);
+}
+
+.cm-tooltip__overlay--top .cm-tooltip__arrow {
+    bottom: -4px;
+    left: 50%;
+    margin-left: -4px;
+}
+
+.cm-tooltip__overlay--bottom .cm-tooltip__arrow {
+    top: -4px;
+    left: 50%;
+    margin-left: -4px;
+}
+
+.cm-tooltip__overlay--left .cm-tooltip__arrow {
+    top: 50%;
+    right: -4px;
+    margin-top: -4px;
+}
+
+.cm-tooltip__overlay--right .cm-tooltip__arrow {
+    top: 50%;
+    left: -4px;
+    margin-top: -4px;
+}
+
+.cm-tooltip__content {
+    position: relative;
+    z-index: 1;
+}

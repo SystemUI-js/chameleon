@@ -4,11 +4,43 @@
     justify-content: center;
 }
 
+// Size variants
 .cm-button--compact {
     min-height: 20px;
     padding: 0 8px;
+    font-size: 11px;
 }
 
+.cm-button--small {
+    min-height: 24px;
+    padding: 0 10px;
+    font-size: 12px;
+}
+
+.cm-button--medium {
+    min-height: 32px;
+    padding: 0 16px;
+    font-size: 13px;
+}
+
+.cm-button--large {
+    min-height: 40px;
+    padding: 0 20px;
+    font-size: 14px;
+}
+
+// Display type variants
+.cm-button--round {
+    aspect-ratio: 1;
+    padding: 0;
+    border-radius: 50%; // fallback, will be overridden by inline style
+}
+
+.cm-button--rect {
+    // rect is the default shape, no special styles needed
+}
+
+// Variant styles (base)
 .cm-button--primary {
 }
 

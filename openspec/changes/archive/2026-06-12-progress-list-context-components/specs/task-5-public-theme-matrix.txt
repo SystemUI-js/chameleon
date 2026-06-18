@@ -1,0 +1,30 @@
+    ✓ covers CDock explicit theme (21 ms)
+    ✓ covers CGrid and CGridItem explicit theme (2 ms)
+    ✓ covers CRadioGroup and CRadio theme inheritance/override (6 ms)
+    ✓ covers CSelect explicit theme (5 ms)
+    ✓ covers CStartBar explicit theme (2 ms)
+    ✓ covers CWidget explicit theme (1 ms)
+    ✓ covers CWindow explicit theme (5 ms)
+    ✓ covers CWindowBody explicit theme (1 ms)
+    ✓ covers CWindowTitle explicit theme (1 ms)
+    ✓ covers CListIcon explicit theme (2 ms)
+    ✓ covers CLoading explicit theme (1 ms)
+    ✓ covers CDatePicker explicit theme (cm-theme--default) (9 ms)
+    ✓ covers CDatePicker explicit theme (cm-theme--win98) (16 ms)
+    ✓ covers CDatePicker explicit theme (cm-theme--winxp) (7 ms)
+    ✓ covers CDatePicker explicit theme (cm-theme--win7) (8 ms)
+    ✓ covers CModal explicit theme (cm-theme--default) (5 ms)
+    ✓ covers CModal explicit theme (cm-theme--win98) (2 ms)
+    ✓ covers CModal explicit theme (cm-theme--winxp) (2 ms)
+    ✓ covers CModal explicit theme (cm-theme--win7) (2 ms)
+    ✓ covers CConfirm explicit theme (cm-theme--default) (3 ms)
+    ✓ covers CConfirm explicit theme (cm-theme--win98) (2 ms)
+    ✓ covers CConfirm explicit theme (cm-theme--winxp) (3 ms)
+    ✓ covers CConfirm explicit theme (cm-theme--win7) (3 ms)
+
+Test Suites: 1 passed, 1 total
+Tests:       27 passed, 27 total
+Snapshots:   0 total
+Time:        0.798 s, estimated 1 s
+Ran all test suites matching /tests\/PublicThemeMatrix.test.tsx/i.
+Done in 2.20s.

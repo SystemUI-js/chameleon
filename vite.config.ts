@@ -18,6 +18,13 @@ export default defineConfig({
       tsconfigPath: './tsconfig.json',
     }),
   ],
+  css: {
+    preprocessorOptions: {
+      scss: {
+        api: 'modern-compiler',
+      },
+    },
+  },
   server: {
     port: 5673,
     host: '0.0.0.0',

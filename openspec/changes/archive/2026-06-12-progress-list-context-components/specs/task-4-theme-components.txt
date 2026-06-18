@@ -1,0 +1,30 @@
+      
+      This ensures that you're testing the behavior the user would see in the browser. Learn more at https://react.dev/link/wrap-tests-with-act
+
+      245 |     }
+      246 |
+    > 247 |     root.render(
+          |          ^
+      248 |       <ImperativeConfirmHost
+      249 |         options={options}
+      250 |         onOk={handleOk}
+
+      at node_modules/react-dom/cjs/react-dom-client.development.js:18758:19
+      at runWithFiberInDEV (node_modules/react-dom/cjs/react-dom-client.development.js:874:13)
+      at warnIfUpdatesNotWrappedWithActDEV (node_modules/react-dom/cjs/react-dom-client.development.js:18757:9)
+      at scheduleUpdateOnFiber (node_modules/react-dom/cjs/react-dom-client.development.js:16409:11)
+      at updateContainerImpl (node_modules/react-dom/cjs/react-dom-client.development.js:23509:9)
+      at ReactDOMRoot.Object.<anonymous>.process.env.NODE_ENV.ReactDOMHydrationRoot.render.ReactDOMRoot.render [as render] (node_modules/react-dom/cjs/react-dom-client.development.js:27893:9)
+      at src/components/Confirm/CConfirm.tsx:247:10
+      at confirm (src/components/Confirm/CConfirm.tsx:205:10)
+      at Object.<anonymous> (tests/CConfirm.test.tsx:250:22)
+
+PASS tests/CDatePicker.test.tsx
+PASS tests/CModal.test.tsx
+
+Test Suites: 3 passed, 3 total
+Tests:       52 passed, 52 total
+Snapshots:   0 total
+Time:        1.094 s
+Ran all test suites matching /tests\/CDatePicker.test.tsx|tests\/CModal.test.tsx|tests\/CConfirm.test.tsx/i.
+Done in 2.58s.

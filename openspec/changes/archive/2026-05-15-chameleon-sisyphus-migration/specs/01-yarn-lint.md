@@ -3,6 +3,7 @@
 ## Exit Code: 0
 
 ## Output:
+
 ```
 yarn run v1.22.19
 warning ../../../package.json: No license field
@@ -14,6 +15,7 @@ EXIT_CODE: 0
 ```
 
 ## Summary:
+
 - No lint errors
 - Only a warning about deprecated .eslintignore format (non-blocking)
 - Exit code: 0 ✓

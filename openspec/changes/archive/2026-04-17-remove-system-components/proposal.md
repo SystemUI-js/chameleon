@@ -12,9 +12,11 @@
 ## Capabilities
 
 ### New Capabilities
+
 - `package-entry-without-system`: 定义移除 system layer 后的包入口行为，包括保留哪些组件与纯主题定义导出，以及哪些 legacy system API 必须停止暴露。
 
 ### Modified Capabilities
+
 - 无
 
 ## Impact

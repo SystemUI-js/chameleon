@@ -12,7 +12,7 @@ function tokenizeClassNames(classNames: string | undefined): string[] {
 export function mergeClasses(baseClasses: string[], theme?: string, className?: string): string {
   const themeClasses = theme ? [theme] : [];
   const mergedClasses = [...baseClasses, ...themeClasses, ...tokenizeClassNames(className)].filter(
-    (value) => value.length > 0,
+    (value) => value && value.length > 0,
   );
 
   return Array.from(new Set(mergedClasses)).join(' ');

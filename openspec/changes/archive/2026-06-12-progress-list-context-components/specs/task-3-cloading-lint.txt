@@ -1,0 +1,12 @@
+Task: CLoading Component - Lint Evidence
+Date: 2026-06-05
+Command: yarn lint
+Result: PASS (no errors)
+
+Files checked:
+- src/components/CLoading/CLoading.tsx
+- src/components/CLoading/index.scss
+- src/components/CLoading/index.ts
+- tests/CLoading.test.tsx
+
+ESLint exited cleanly with no errors in new files.

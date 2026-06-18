@@ -4,34 +4,52 @@ import {
   CButtonGroup,
   CButtonSeparator,
   CCheckbox,
-  CSlider,
+  CConfirm,
+  CContextMenu,
+  CDatePicker,
   CDock,
   CGrid,
   CGridItem,
   CIconContainer,
+  CInput,
+  type CInputSuggestionOption,
+  CList,
+  CListIcon,
+  CLoading,
   CMenu,
+  CModal,
+  CProgress,
   CRadio,
   CRadioGroup,
   CScrollArea,
   CSelect,
+  type CSelectOption,
+  CSlider,
+  CSplitArea,
+  CStartBar,
   CStatusBar,
   CStatusBarItem,
-  CStartBar,
-  CSplitArea,
   CTab,
   CTabItem,
+  CTable,
+  CTimePicker,
+  CTooltip,
+  CTransfer,
+  type CTransferItem,
+  CTree,
+  type CTreeDataNode,
   CWindow,
   CWindowBody,
   CWindowTitle,
-  Theme,
-  type CSelectOption,
+  confirm as imperativeConfirm,
   type MenuListItem,
-  type WindowTitleActionButtonPosition,
+  Theme,
   WidgetInteractionBehavior,
+  type WindowTitleActionButtonPosition,
 } from '@/components';
 import { ShowcaseCodeDisclosure } from './ShowcaseCodeDisclosure';
 import './styles/catalog.scss';
-import { DEV_THEME, DevThemeRoot, type DevThemeId } from './themeSwitcher';
+import { DEV_THEME, type DevThemeId, DevThemeRoot } from './themeSwitcher';
 
 const SIZE_OPTIONS: readonly CSelectOption[] = [
   { label: 'Small', value: 'small' },
@@ -41,6 +59,140 @@ const SIZE_OPTIONS: readonly CSelectOption[] = [
 
 const GRID_COLUMNS = ['1fr', '1fr', '1fr'];
 const WINDOW_ACTION_BUTTON_POSITIONS = ['left', 'right'] as const;
+
+interface CatalogListItem {
+  readonly id: string;
+  readonly name: string;
+  readonly description: string;
+  readonly icon: string;
+  readonly actions?: readonly string[];
+  readonly children?: readonly CatalogListItem[];
+  readonly lazyMode?: 'success' | 'retry';
+}
+
+const LIST_ITEMS: readonly CatalogListItem[] = [
+  {
+    id: '1',
+    name: 'Item 1',
+    description: 'First list item',
+    icon: '□',
+    actions: ['Edit', 'Delete'],
+  },
+  {
+    id: '2',
+    name: 'Item 2',
+    description: 'Second list item',
+    icon: '◇',
+    actions: ['Edit', 'Delete'],
+  },
+  {
+    id: '3',
+    name: 'Item 3',
+    description: 'Third list item',
+    icon: '○',
+    actions: ['Edit', 'Delete'],
+    children: [
+      {
+        id: '3-1',
+        name: 'Nested note',
+        description: 'Immediate child rendered from caller-owned data',
+        icon: '↳',
+      },
+    ],
+  },
+] as const;
+
+const LIST_GRID_ITEMS: readonly CatalogListItem[] = [
+  {
+    id: 'grid-1',
+    name: 'Grid Alpha',
+    description: 'Compact grid card',
+    icon: '▣',
+  },
+  {
+    id: 'grid-2',
+    name: 'Grid Beta',
+    description: 'Second grid card',
+    icon: '▤',
+  },
+  {
+    id: 'grid-3',
+    name: 'Grid Gamma',
+    description: 'Third grid card',
+    icon: '▥',
+  },
+] as const;
+
+const LIST_ICON_ITEMS: readonly CatalogListItem[] = [
+  {
+    id: 'icon-1',
+    name: 'Desktop',
+    description: 'Icon mode uses larger affordances',
+    icon: '▦',
+  },
+  {
+    id: 'icon-2',
+    name: 'Archive',
+    description: 'Double-click or hover to emit intent',
+    icon: '▧',
+  },
+  {
+    id: 'icon-3',
+    name: 'Settings',
+    description: 'Keyboard drag handle remains focusable',
+    icon: '⚙',
+  },
+] as const;
+
+interface CatalogListIconDemoItem {
+  readonly id: string;
+  readonly label: string;
+  readonly visual: string;
+  readonly helper: string;
+  readonly disabled?: boolean;
+  readonly draggable?: boolean;
+}
+
+const LIST_ICON_DEMO_ITEMS: readonly CatalogListIconDemoItem[] = [
+  {
+    id: 'documents',
+    label: 'Documents',
+    visual: '▤',
+    helper: 'Click selects the shortcut',
+    draggable: true,
+  },
+  {
+    id: 'network',
+    label: 'Network',
+    visual: '◈',
+    helper: 'Double-click opens the target',
+    draggable: true,
+  },
+  {
+    id: 'locked',
+    label: 'Locked',
+    visual: '◆',
+    helper: 'Disabled icon keeps layout affordance',
+    disabled: true,
+  },
+] as const;
+
+const LIST_LAZY_ITEMS: readonly CatalogListItem[] = [
+  {
+    id: 'lazy-success',
+    name: 'Lazy success branch',
+    description: 'Expands into async children',
+    icon: '▸',
+    lazyMode: 'success',
+  },
+  {
+    id: 'lazy-retry',
+    name: 'Lazy retry branch',
+    description: 'Fails once, then Retry loads children',
+    icon: '!',
+    lazyMode: 'retry',
+  },
+] as const;
 
 const isWindowTitleActionButtonPosition = (
   value: string,
@@ -107,9 +259,27 @@ const [buttonClicks, setButtonClicks] = useState(0);
 
 return (
   <>
-    <CButton variant="primary" onClick={() => setButtonClicks((c) => c + 1)}>Primary action</CButton>
-    <CButton>Default action</CButton>
-    <CButton variant="ghost">Ghost action</CButton>
+    <div className="cm-catalog__row">
+      <CButton variant="primary" onClick={() => setButtonClicks((c) => c + 1)}>Primary action</CButton>
+      <CButton>Default action</CButton>
+      <CButton variant="ghost">Ghost action</CButton>
+    </div>
+
+    <div className="cm-catalog__row">
+      <CButton size="compact">Compact</CButton>
+      <CButton size="small">Small</CButton>
+      <CButton size="medium">Medium</CButton>
+      <CButton size="large">Large</CButton>
+    </div>
+
+    <div className="cm-catalog__row">
+      <CButton displayType="round" size="small" aria-label="Small icon">
+        <span aria-hidden="true">+</span>
+      </CButton>
+      <CButton displayType="round" variant="primary" aria-label="Primary icon">
+        <span aria-hidden="true">+</span>
+      </CButton>
+    </div>
 
     <p>Primary button clicks: {buttonClicks}</p>
   </>
@@ -137,6 +307,26 @@ function ButtonShowcase(): React.ReactElement {
           <CButton disabled>Disabled default</CButton>
           <CButton variant="primary" disabled>
             Disabled primary
+          </CButton>
+        </div>
+        <div className="cm-catalog__row">
+          <CButton size="compact">Compact</CButton>
+          <CButton size="small">Small</CButton>
+          <CButton size="medium">Medium</CButton>
+          <CButton size="large">Large</CButton>
+        </div>
+        <div className="cm-catalog__row">
+          <CButton displayType="round" size="small" aria-label="Small icon">
+            <span aria-hidden="true">+</span>
+          </CButton>
+          <CButton displayType="round" size="medium" aria-label="Medium icon">
+            <span aria-hidden="true">+</span>
+          </CButton>
+          <CButton displayType="round" size="large" aria-label="Large icon">
+            <span aria-hidden="true">+</span>
+          </CButton>
+          <CButton displayType="round" variant="primary" aria-label="Primary icon">
+            <span aria-hidden="true">+</span>
           </CButton>
         </div>
         <p className="cm-catalog__value">Primary button clicks: {buttonClicks}</p>
@@ -174,24 +364,146 @@ const BUTTON_GROUP_SNIPPET = `
 const SPLIT_AREA_SNIPPET = `
 const [showInspector, setShowInspector] = useState(true);
 
+// 基础用法：嵌套分割区域
+<CSplitArea direction="horizontal" separatorMovable className="workspace-layout">
+  <section>Explorer</section>
+  <CSplitArea direction="vertical" separatorMovable>
+    <section>Editor</section>
+    <CSplitArea direction="horizontal" separatorMovable>
+      <section>Preview</section>
+      <section>Console</section>
+    </CSplitArea>
+  </CSplitArea>
+  {showInspector ? <section>Inspector</section> : null}
+</CSplitArea>
+
+// Hover 模式: area — 鼠标悬停于区域时显示分割线（默认）
+<CSplitArea separatorVisibleOnHover separatorHoverMode="area">
+  <section>Left</section>
+  <section>Right</section>
+</CSplitArea>
+
+// Hover 模式: separator — 仅鼠标悬停于分割线本身时才显示
+<CSplitArea separatorVisibleOnHover separatorHoverMode="separator">
+  <section>Left</section>
+  <section>Right</section>
+</CSplitArea>
+
+// lockCurrent — 仅锁定当前层分割线，不影响子级
+<CSplitArea direction="horizontal" separatorMovable lockCurrent>
+  <section>Locked current</section>
+  <section>Freely resizable</section>
+</CSplitArea>
+
+// lock — 递归锁定当前层及所有子级分割线
+<CSplitArea direction="horizontal" separatorMovable lock>
+  <section>Locked recursively</section>
+  <CSplitArea direction="vertical" separatorMovable>
+    <section>Also locked</section>
+    <section>Also locked</section>
+  </CSplitArea>
+</CSplitArea>
+`.trim();
+
+const LIST_SNIPPET = `
+const [selectedItem, setSelectedItem] = useState(null);
+const [lastIntent, setLastIntent] = useState('none');
+
 return (
   <>
-    <CButton onClick={() => setShowInspector((visible) => !visible)}>
-      {showInspector ? 'Hide inspector' : 'Restore inspector'}
-    </CButton>
+    <CList
+      type="list"
+      draggable
+      items={items}
+      getItemKey={(item) => item.id}
+      getItemChildren={(item) => item.children}
+      renderItem={(item) => <ListLabel item={item} />}
+      renderActions={(item) => item.actions?.map((action) => <CButton>{action}</CButton>)}
+      onItemClick={(item) => setSelectedItem(item)}
+      onItemHover={(payload) => setLastIntent('Hover ' + payload.item.name)}
+      onItemDoubleClick={(payload) => setLastIntent('Open ' + payload.item.name)}
+      onItemDrag={(payload) => setLastIntent(payload.source.key + ' ' + payload.position + ' ' + payload.target.key)}
+      onItemDragInto={(payload) => setLastIntent(payload.source.key + ' inside ' + payload.target.key)}
+    />
 
-    <CSplitArea direction="horizontal" separatorMovable className="workspace-layout">
-      <section>Explorer</section>
-      <CSplitArea direction="vertical" separatorMovable>
-        <section>Editor</section>
-        <CSplitArea direction="horizontal" separatorMovable>
-          <section>Preview</section>
-          <section>Console</section>
-        </CSplitArea>
-      </CSplitArea>
-      {showInspector ? <section>Inspector</section> : null}
-    </CSplitArea>
+    <CList type="grid" iconSize={32} items={gridItems} renderItem={(item) => <ListLabel item={item} />} />
+    <CList
+      type="icon"
+      iconSize={40}
+      items={iconItems}
+      renderItem={(item) => (
+        <CListIcon visual={<span aria-hidden="true">{item.icon}</span>} label={item.name} />
+      )}
+    />
+
+    <CList
+      items={lazyItems}
+      getItemKey={(item) => item.id}
+      isItemExpandable={(item) => item.lazyMode !== undefined}
+      onLoadChildren={loadChildren}
+      renderItem={(item) => <ListLabel item={item} />}
+    />
+
+    <p>Selected: {selectedItem?.name ?? 'none'}</p>
+    <p>Intent: {lastIntent}</p>
   </>
+);
+`.trim();
+
+const CLIST_LAYOUT_SNIPPET = `
+<CList items={items} renderItem={renderItem} />
+
+<CList
+  data-testid="clist-horizontal"
+  direction="horizontal"
+  draggable
+  gap="12px"
+  items={items}
+  renderItem={renderItem}
+/>
+
+<CList direction="horizontal" wrap gap={8} items={items} renderItem={renderItem} />
+<CList gap={10} items={items} renderItem={renderItem} />
+<CList direction="horizontal" wrap="wrap-reverse" gap={{ row: 10, column: '18px' }} items={items} renderItem={renderItem} />
+`.trim();
+
+const CCONTEXT_MENU_SNIPPET = `
+const [selectedItem, setSelectedItem] = useState<MenuListItem | null>(null);
+
+return (
+  <>
+    <CContextMenu menuList={CONTEXT_MENU_ITEMS} onSelect={setSelectedItem}>
+      <CButton>Right-click or long-press me</CButton>
+    </CContextMenu>
+
+    <p>Selected: {selectedItem?.title ?? 'none'}</p>
+  </>
+);
+`.trim();
+
+const LIST_ICON_SNIPPET = `
+const [activeIcon, setActiveIcon] = useState('documents');
+const [lastIconEvent, setLastIconEvent] = useState('none');
+
+return (
+  <div className="cm-catalog__list-icon-strip">
+    {items.map((item) => (
+      <CListIcon
+        key={item.id}
+        visual={<span aria-hidden="true">{item.visual}</span>}
+        label={item.label}
+        active={activeIcon === item.id}
+        disabled={item.disabled}
+        draggable={item.draggable}
+        aria-label={item.label}
+        onClick={() => {
+          setActiveIcon(item.id);
+          setLastIconEvent(item.label + ' clicked');
+        }}
+        onDoubleClick={() => setLastIconEvent(item.label + ' opened')}
+      />
+    ))}
+  </div>
 );
 `.trim();
 
@@ -255,6 +567,49 @@ function ButtonGroupShowcase(): React.ReactElement {
             <CButton variant="ghost">Reset</CButton>
           </CButtonGroup>
         </div>
+      </div>
+    </ShowcaseSection>
+  );
+}
+
+function ListIconShowcase(): React.ReactElement {
+  const [activeIcon, setActiveIcon] = React.useState('documents');
+  const [lastIconEvent, setLastIconEvent] = React.useState('none');
+
+  return (
+    <ShowcaseSection title="ListIcon" testId="catalog-section-list-icon" code={LIST_ICON_SNIPPET}>
+      <div className="cm-catalog__stack">
+        <p className="cm-catalog__value">
+          Standalone shortcut icons: click to activate, double-click to open, and keep disabled
+          items visible in the same desktop-style strip.
+        </p>
+        <div className="cm-catalog__list-icon-strip" data-testid="list-icon-demo-strip">
+          {LIST_ICON_DEMO_ITEMS.map((item) => (
+            <div key={item.id} className="cm-catalog__list-icon-card">
+              <CListIcon
+                data-testid={`list-icon-demo-${item.id}`}
+                visual={<span aria-hidden="true">{item.visual}</span>}
+                label={item.label}
+                active={activeIcon === item.id}
+                disabled={item.disabled}
+                draggable={item.draggable}
+                aria-label={item.label}
+                onClick={() => {
+                  setActiveIcon(item.id);
+                  setLastIconEvent(`${item.label} clicked`);
+                }}
+                onDoubleClick={() => setLastIconEvent(`${item.label} opened`)}
+              />
+              <span className="cm-catalog__list-icon-helper">{item.helper}</span>
+            </div>
+          ))}
+        </div>
+        <p className="cm-catalog__value" data-testid="list-icon-demo-active">
+          Active icon: {activeIcon}
+        </p>
+        <p className="cm-catalog__value" data-testid="list-icon-demo-event">
+          Event: {lastIconEvent}
+        </p>
       </div>
     </ShowcaseSection>
   );
@@ -346,12 +701,22 @@ function CheckboxShowcase(): React.ReactElement {
 
 const SELECT_SNIPPET = `
 const [selectedSize, setSelectedSize] = useState('medium');
+const [selectedSizes, setSelectedSizes] = useState<string[]>(['small', 'large']);
 
 return (
   <>
     <CSelect name="size" value={selectedSize} options={sizeOptions} onChange={setSelectedSize} />
+    <CSelect
+      multiple
+      name="sizes"
+      value={selectedSizes}
+      options={sizeOptions}
+      placeholder="Select sizes"
+      onChange={setSelectedSizes}
+    />
 
     <p>Selected size: {selectedSize}</p>
+    <p>Selected sizes: {selectedSizes.join(', ') || 'none'}</p>
   </>
 );
 `.trim();
@@ -366,6 +731,30 @@ return (
     <p>Volume: {volume}</p>
   </>
 );
+`.trim();
+
+const LOADING_SNIPPET = `
+<CLoading variant="spinner" label="Loading..." />
+
+<CLoading variant="dots" label="Please wait" />
+
+<CLoading variant="bar" progress={65} indeterminate={false} label="65%" />
+
+<CLoading variant="bar" indeterminate label="Working..." />
+`.trim();
+
+const CPROGRESS_SNIPPET = `
+<CProgress
+  variant="bar"
+  value={64}
+  label="Deployment"
+  showValue
+  format={(percent, value, max) => Math.round(percent) + '% (' + value + '/' + max + ')'}
+/>
+
+<CProgress variant="circle" value={82} size="large" status="success" showValue />
+<CProgress variant="ring" value={35} size="small" status="exception" showValue />
+<CProgress variant="bar" indeterminate label="Syncing records" status="active" />
 `.trim();
 
 const SCROLL_AREA_SNIPPET = `
@@ -405,6 +794,11 @@ const SCROLL_AREA_ACTIVITY_ITEMS = [
     detail: 'Consider adding optional scrollbar size tokens if more skins arrive later.',
   },
 ] as const;
+
+const SCROLL_AREA_BOTH_AXIS_LINE_NUMBERS = Array.from(
+  { length: 20 },
+  (_, lineIndex) => lineIndex + 1,
+);
 
 const SAMPLE_MENU_LIST: readonly MenuListItem[] = [
   {
@@ -475,19 +869,38 @@ const TAB_SNIPPET = `
 
 function SelectShowcase(): React.ReactElement {
   const [selectedSize, setSelectedSize] = React.useState('medium');
+  const [selectedSizes, setSelectedSizes] = React.useState<string[]>(['small', 'large']);
 
   return (
     <ShowcaseSection title="Select" testId="catalog-section-select" code={SELECT_SNIPPET}>
       <div className="cm-catalog__stack">
         <CSelect
+          aria-label="Catalog size"
           data-testid="select-demo-size"
           name="size"
           value={selectedSize}
           options={SIZE_OPTIONS}
           onChange={setSelectedSize}
         />
-        <CSelect name="size-disabled" value="large" options={SIZE_OPTIONS} disabled />
+        <CSelect
+          multiple
+          aria-label="Catalog sizes"
+          data-testid="select-demo-sizes"
+          name="sizes"
+          value={selectedSizes}
+          options={SIZE_OPTIONS}
+          placeholder="Select sizes"
+          onChange={setSelectedSizes}
+        />
+        <CSelect
+          aria-label="Disabled catalog size"
+          name="size-disabled"
+          value="large"
+          options={SIZE_OPTIONS}
+          disabled
+        />
         <p className="cm-catalog__value">Selected size: {selectedSize}</p>
+        <p className="cm-catalog__value">Selected sizes: {selectedSizes.join(', ') || 'none'}</p>
       </div>
     </ShowcaseSection>
   );
@@ -518,15 +931,180 @@ function SliderShowcase(): React.ReactElement {
           Volume: {volume}
         </p>
         <div className="cm-catalog__slider-presets">
-          <CButton data-testid="slider-demo-min" compact onClick={() => setVolume(0)}>
+          <CButton data-testid="slider-demo-min" size="compact" onClick={() => setVolume(0)}>
             Min
           </CButton>
-          <CButton data-testid="slider-demo-mid" compact onClick={() => setVolume(50)}>
+          <CButton data-testid="slider-demo-mid" size="compact" onClick={() => setVolume(50)}>
             Mid
           </CButton>
-          <CButton data-testid="slider-demo-max" compact onClick={() => setVolume(100)}>
+          <CButton data-testid="slider-demo-max" size="compact" onClick={() => setVolume(100)}>
             Max
           </CButton>
+        </div>
+      </div>
+    </ShowcaseSection>
+  );
+}
+
+function LoadingShowcase(): React.ReactElement {
+  const [barProgress, setBarProgress] = React.useState(45);
+
+  return (
+    <ShowcaseSection title="Loading" testId="catalog-section-loading" code={LOADING_SNIPPET}>
+      <div className="cm-catalog__stack">
+        <div className="cm-catalog__row">
+          <div>
+            <p className="cm-catalog__value">Spinner</p>
+            <CLoading variant="spinner" label="Loading..." data-testid="loading-demo-spinner" />
+          </div>
+          <div>
+            <p className="cm-catalog__value">Dots</p>
+            <CLoading variant="dots" label="Please wait" data-testid="loading-demo-dots" />
+          </div>
+        </div>
+        <div className="cm-catalog__row">
+          <div>
+            <p className="cm-catalog__value">Bar — determinate ({barProgress}%)</p>
+            <CLoading
+              variant="bar"
+              progress={barProgress}
+              indeterminate={false}
+              label={`${barProgress}%`}
+              data-testid="loading-demo-bar"
+            />
+          </div>
+          <div>
+            <p className="cm-catalog__value">Bar — indeterminate</p>
+            <CLoading
+              variant="bar"
+              indeterminate
+              label="Working..."
+              data-testid="loading-demo-bar-indeterminate"
+            />
+          </div>
+        </div>
+        <div className="cm-catalog__slider-presets">
+          <CButton size="compact" onClick={() => setBarProgress(0)}>
+            0%
+          </CButton>
+          <CButton size="compact" onClick={() => setBarProgress(25)}>
+            25%
+          </CButton>
+          <CButton size="compact" onClick={() => setBarProgress(50)}>
+            50%
+          </CButton>
+          <CButton size="compact" onClick={() => setBarProgress(75)}>
+            75%
+          </CButton>
+          <CButton size="compact" onClick={() => setBarProgress(100)}>
+            100%
+          </CButton>
+        </div>
+      </div>
+    </ShowcaseSection>
+  );
+}
+
+function ProgressShowcase(): React.ReactElement {
+  return (
+    <ShowcaseSection title="CProgress" testId="catalog-section-cprogress" code={CPROGRESS_SNIPPET}>
+      <div className="cm-catalog__stack">
+        <p className="cm-catalog__value">
+          CProgress is for business progress display such as rollout, quota, or task completion.
+          Keep <code>CLoading variant=&quot;bar&quot;</code> for loading indicators.
+        </p>
+
+        <div className="cm-catalog__stack">
+          <p className="cm-catalog__value">Bar variants: sizes, status colors, and formatting</p>
+          <CProgress
+            data-testid="cprogress-bar"
+            variant="bar"
+            value={64}
+            max={120}
+            label="Deployment"
+            showValue
+            format={(percent, value, max) => `${Math.round(percent)}% (${value}/${max})`}
+            size="medium"
+            status="active"
+          />
+          <CProgress
+            data-testid="cprogress-bar-small"
+            variant="bar"
+            value={28}
+            label="Small default"
+            showValue
+            size="small"
+            status="default"
+          />
+          <CProgress
+            data-testid="cprogress-bar-large"
+            variant="bar"
+            value={100}
+            label="Large success"
+            showValue
+            size="large"
+            status="success"
+          />
+          <CProgress
+            data-testid="cprogress-bar-exception"
+            variant="bar"
+            value={42}
+            label="Exception status"
+            showValue
+            status="exception"
+          />
+          <CProgress
+            data-testid="cprogress-bar-indeterminate"
+            variant="bar"
+            indeterminate
+            label="Indeterminate business job"
+            status="active"
+          />
+        </div>
+
+        <div className="cm-catalog__row">
+          <div className="cm-catalog__stack">
+            <p className="cm-catalog__value">Circle</p>
+            <CProgress
+              data-testid="cprogress-circle"
+              variant="circle"
+              value={82}
+              label="Circle success"
+              showValue
+              size="large"
+              status="success"
+            />
+            <CProgress
+              data-testid="cprogress-circle-indeterminate"
+              variant="circle"
+              indeterminate
+              label="Circle active"
+              size="medium"
+              status="active"
+            />
+          </div>
+
+          <div className="cm-catalog__stack">
+            <p className="cm-catalog__value">Ring</p>
+            <CProgress
+              data-testid="cprogress-ring"
+              variant="ring"
+              value={35}
+              label="Ring exception"
+              showValue
+              size="small"
+              status="exception"
+            />
+            <CProgress
+              data-testid="cprogress-ring-default"
+              variant="ring"
+              value={55}
+              label="Ring default"
+              showValue
+              size="medium"
+              status="default"
+            />
+          </div>
         </div>
       </div>
     </ShowcaseSection>
@@ -540,9 +1118,9 @@ function ScrollAreaShowcase(): React.ReactElement {
     width: '800px',
   };
 
-  const bothAxisItems = Array.from({ length: 20 }, (_, idx) => (
-    <p key={`both-line-${idx}`} style={{ margin: '0 0 8px 0', whiteSpace: 'nowrap' }}>
-      Line {idx + 1}: Wide content — scroll horizontally and vertically.
+  const bothAxisItems = SCROLL_AREA_BOTH_AXIS_LINE_NUMBERS.map((lineNumber) => (
+    <p key={`both-line-${lineNumber}`} style={{ margin: '0 0 8px 0', whiteSpace: 'nowrap' }}>
+      Line {lineNumber}: Wide content — scroll horizontally and vertically.
     </p>
   ));
 
@@ -658,6 +1236,7 @@ function MenuShowcase(): React.ReactElement {
 
 const WINDOW_SNIPPET =
   `const [actionButtonPosition, setActionButtonPosition] = useState<'left' | 'right'>('right');
+const [windowActive, setWindowActive] = useState(true);
 
 const actionButtons = (
   <div className="cm-catalog__window-actions">
@@ -679,7 +1258,11 @@ return (
       <CRadio value="right">Right</CRadio>
     </CRadioGroup>
 
-    <CWindow x={24} y={24} width={300} height={140} resizeBehavior={WidgetInteractionBehavior.Outline}>
+    <CCheckbox checked={windowActive} onChange={setWindowActive}>
+      Active
+    </CCheckbox>
+
+    <CWindow active={windowActive} x={24} y={24} width={300} height={140} resizeBehavior={WidgetInteractionBehavior.Outline}>
       <CWindowTitle actionButton={actionButtons} actionButtonPosition={actionButtonPosition}>
         Sample Window
       </CWindowTitle>
@@ -698,6 +1281,7 @@ return (
 function WindowShowcase(): React.ReactElement {
   const [actionButtonPosition, setActionButtonPosition] =
     React.useState<WindowTitleActionButtonPosition>('right');
+  const [windowActive, setWindowActive] = React.useState(true);
 
   const handleActionButtonPositionChange = React.useCallback((nextValue: string) => {
     if (isWindowTitleActionButtonPosition(nextValue)) {
@@ -714,7 +1298,7 @@ function WindowShowcase(): React.ReactElement {
           className="cm-catalog__window-action"
           data-testid="window-demo-minimize"
           aria-label="Minimize window"
-          compact
+          size="compact"
           onClick={handleWindowActionClick}
         >
           _
@@ -723,7 +1307,7 @@ function WindowShowcase(): React.ReactElement {
           className="cm-catalog__window-action"
           data-testid="window-demo-maximize"
           aria-label="Maximize window"
-          compact
+          size="compact"
           onClick={handleWindowActionClick}
         >
           □
@@ -732,7 +1316,7 @@ function WindowShowcase(): React.ReactElement {
           className="cm-catalog__window-action cm-catalog__window-action--close"
           data-testid="window-demo-close"
           aria-label="Close window"
-          compact
+          size="compact"
           onClick={handleWindowActionClick}
         >
           ×
@@ -745,20 +1329,30 @@ function WindowShowcase(): React.ReactElement {
   return (
     <ShowcaseSection title="Window" testId="catalog-section-window" code={WINDOW_SNIPPET}>
       <div className="cm-catalog__stack">
-        <CRadioGroup
-          aria-label="Window action button position"
-          data-testid="window-demo-position"
-          name="window-action-button-position"
-          value={actionButtonPosition}
-          onChange={handleActionButtonPositionChange}
-        >
-          <div className="cm-catalog__choice-row cm-catalog__window-position-choice-row">
-            <CRadio value="left">Left</CRadio>
-            <CRadio value="right">Right</CRadio>
-          </div>
-        </CRadioGroup>
+        <div className="cm-catalog__row">
+          <CRadioGroup
+            aria-label="Window action button position"
+            data-testid="window-demo-position"
+            name="window-action-button-position"
+            value={actionButtonPosition}
+            onChange={handleActionButtonPositionChange}
+          >
+            <div className="cm-catalog__choice-row cm-catalog__window-position-choice-row">
+              <CRadio value="left">Left</CRadio>
+              <CRadio value="right">Right</CRadio>
+            </div>
+          </CRadioGroup>
+          <CCheckbox
+            data-testid="window-demo-active"
+            checked={windowActive}
+            onChange={setWindowActive}
+          >
+            Active
+          </CCheckbox>
+        </div>
         <div className="cm-catalog__stage cm-catalog__stage--relative">
           <CWindow
+            active={windowActive}
             x={24}
             y={24}
             width={300}
@@ -769,8 +1363,10 @@ function WindowShowcase(): React.ReactElement {
               Sample Window
             </CWindowTitle>
             <CWindowBody>
-              <p>Window content goes here.</p>
-              <p>Try dragging the title bar.</p>
+              <CScrollArea>
+                <p>Window content goes here.</p>
+                <p>Try dragging the title bar.</p>
+              </CScrollArea>
             </CWindowBody>
             <CStatusBar>
               <CStatusBarItem>Ready</CStatusBarItem>
@@ -1016,8 +1612,183 @@ function GridShowcase(): React.ReactElement {
   );
 }
 
+function ListShowcase(): React.ReactElement {
+  const lazyRetryAttemptsRef = React.useRef(0);
+  const [selectedItem, setSelectedItem] = React.useState<CatalogListItem | null>(null);
+  const [lastAction, setLastAction] = React.useState('none');
+  const [lastIntent, setLastIntent] = React.useState('none');
+
+  const renderCatalogListItem = React.useCallback((item: CatalogListItem): React.ReactNode => {
+    return (
+      <div>
+        <strong>
+          <span aria-hidden="true">{item.icon}</span> {item.name}
+        </strong>
+        <p>{item.description}</p>
+      </div>
+    );
+  }, []);
+
+  const handleLoadChildren = React.useCallback(
+    async (item: CatalogListItem): Promise<readonly CatalogListItem[]> => {
+      await new Promise<void>((resolve) => {
+        window.setTimeout(resolve, 20);
+      });
+
+      if (item.lazyMode === 'retry' && lazyRetryAttemptsRef.current === 0) {
+        lazyRetryAttemptsRef.current += 1;
+        throw new Error('Preview load failed once; Retry will succeed.');
+      }
+
+      return [
+        {
+          id: `${item.id}-child`,
+          name: `${item.name} child`,
+          description: 'Loaded asynchronously by the catalog caller',
+          icon: '↳',
+        },
+      ];
+    },
+    [],
+  );
+
+  return (
+    <ShowcaseSection title="List" testId="catalog-section-list" code={LIST_SNIPPET}>
+      <div className="cm-catalog__stack">
+        <p className="cm-catalog__value">
+          List mode: click selects, hover/double-click reports intent, drag handles emit movement
+          payloads without mutating caller-owned items.
+        </p>
+        <div className="cm-catalog__row">
+          <div className="cm-catalog__list-demo">
+            <CList
+              data-testid="list-demo-basic"
+              type="list"
+              draggable
+              items={LIST_ITEMS}
+              getItemKey={(item) => item.id}
+              getItemChildren={(item) => item.children}
+              renderItem={renderCatalogListItem}
+              renderActions={(item) =>
+                item.actions?.map((action) => (
+                  <CButton
+                    key={action}
+                    data-testid={`list-demo-action-${item.id}-${action.toLowerCase()}`}
+                    size="compact"
+                    onClick={(event) => {
+                      event.stopPropagation();
+                      setLastAction(`${action} ${item.name}`);
+                    }}
+                  >
+                    {action}
+                  </CButton>
+                ))
+              }
+              onItemClick={(item) => setSelectedItem(item)}
+              onItemHover={(payload) => setLastIntent(`Hover ${payload.item.name}`)}
+              onItemDoubleClick={(payload) => setLastIntent(`Open ${payload.item.name}`)}
+              onItemDrag={(payload) =>
+                setLastIntent(
+                  `Move ${String(payload.source.key)} ${payload.position} ${String(
+                    payload.target.key,
+                  )} by ${payload.input}`,
+                )
+              }
+              onItemDragInto={(payload) =>
+                setLastIntent(
+                  `Move ${String(payload.source.key)} inside ${String(payload.target.key)} by ${
+                    payload.input
+                  }`,
+                )
+              }
+            />
+          </div>
+        </div>
+        <p className="cm-catalog__value">Selected: {selectedItem?.name ?? 'none'}</p>
+        <p className="cm-catalog__value" data-testid="list-demo-intent">
+          Intent: {lastIntent}
+        </p>
+        <p className="cm-catalog__value">Action: {lastAction}</p>
+
+        <p className="cm-catalog__value">
+          Keyboard hint: focus a ↕ handle, press ArrowUp/ArrowDown to emit before/after, or
+          Alt+ArrowRight to emit inside.
+        </p>
+        <div className="cm-catalog__row">
+          <CList
+            data-testid="list-demo-grid"
+            type="grid"
+            iconSize={32}
+            items={LIST_GRID_ITEMS}
+            getItemKey={(item) => item.id}
+            renderItem={renderCatalogListItem}
+            onItemHover={(payload) => setLastIntent(`Grid hover ${payload.item.name}`)}
+            onItemDoubleClick={(payload) => setLastIntent(`Grid open ${payload.item.name}`)}
+          />
+          <CList
+            data-testid="list-demo-icon"
+            type="icon"
+            iconSize="40px"
+            draggable
+            items={LIST_ICON_ITEMS}
+            getItemKey={(item) => item.id}
+            renderItem={(item) => (
+              <CListIcon
+                className="cm-catalog__list-demo-icon"
+                visual={<span aria-hidden="true">{item.icon}</span>}
+                label={item.name}
+                aria-label={item.name}
+              />
+            )}
+            onItemHover={(payload) => setLastIntent(`Icon hover ${payload.item.name}`)}
+            onItemDoubleClick={(payload) => setLastIntent(`Icon open ${payload.item.name}`)}
+            onItemDrag={(payload) =>
+              setLastIntent(
+                `Icon move ${String(payload.source.key)} ${payload.position} ${String(
+                  payload.target.key,
+                )}`,
+              )
+            }
+            onItemDragInto={(payload) =>
+              setLastIntent(
+                `Icon move ${String(payload.source.key)} inside ${String(payload.target.key)}`,
+              )
+            }
+          />
+        </div>
+
+        <p className="cm-catalog__value">
+          Lazy loading: expand the success branch for children, expand the retry branch to see an
+          error and use Retry.
+        </p>
+        <div className="cm-catalog__row">
+          <CList
+            data-testid="list-demo-lazy"
+            items={LIST_LAZY_ITEMS}
+            getItemKey={(item) => item.id}
+            isItemExpandable={(item) => item.lazyMode !== undefined}
+            onLoadChildren={handleLoadChildren}
+            renderItem={renderCatalogListItem}
+          />
+        </div>
+
+        <div className="cm-catalog__row">
+          <CList
+            data-testid="list-demo-empty"
+            items={[]}
+            renderItem={() => null}
+            emptyState={<p>No items available</p>}
+          />
+        </div>
+      </div>
+    </ShowcaseSection>
+  );
+}
+
 function SplitAreaShowcase(): React.ReactElement {
   const [showInspector, setShowInspector] = React.useState(true);
+  const [lockCurrentEnabled, setLockCurrentEnabled] = React.useState(false);
+  const [lockEnabled, setLockEnabled] = React.useState(false);
 
   return (
     <ShowcaseSection
@@ -1088,6 +1859,858 @@ function SplitAreaShowcase(): React.ReactElement {
             ) : null}
           </CSplitArea>
         </div>
+
+        <div className="cm-catalog__stack">
+          <p className="cm-catalog__value">Hover over the SplitArea below to reveal separators</p>
+          <div className="cm-split-area-demo-shell">
+            <CSplitArea
+              data-testid="split-area-demo-hover"
+              direction="horizontal"
+              separatorMovable
+              separatorVisibleOnHover
+              className="cm-split-area-demo"
+            >
+              <section className="cm-split-area-demo__panel cm-split-area-demo__panel--sidebar">
+                <h3 className="cm-split-area-demo__title">Left</h3>
+                <p className="cm-split-area-demo__text">Hover to see separator</p>
+              </section>
+              <section className="cm-split-area-demo__panel cm-split-area-demo__panel--editor">
+                <h3 className="cm-split-area-demo__title">Right</h3>
+                <p className="cm-split-area-demo__text">Separator appears on hover</p>
+              </section>
+            </CSplitArea>
+          </div>
+        </div>
+
+        <div className="cm-catalog__stack">
+          <p className="cm-catalog__value">
+            separatorHoverMode=&quot;separator&quot; — only the separator itself responds to hover
+          </p>
+          <div className="cm-split-area-demo-shell">
+            <CSplitArea
+              data-testid="split-area-demo-separator-hover"
+              direction="horizontal"
+              separatorMovable
+              separatorVisibleOnHover
+              separatorHoverMode="separator"
+              className="cm-split-area-demo"
+            >
+              <section className="cm-split-area-demo__panel cm-split-area-demo__panel--sidebar">
+                <h3 className="cm-split-area-demo__title">Left</h3>
+                <p className="cm-split-area-demo__text">Hover the separator line to reveal it</p>
+              </section>
+              <section className="cm-split-area-demo__panel cm-split-area-demo__panel--editor">
+                <h3 className="cm-split-area-demo__title">Right</h3>
+                <p className="cm-split-area-demo__text">Only the separator responds to hover</p>
+              </section>
+            </CSplitArea>
+          </div>
+        </div>
+
+        <div className="cm-catalog__stack">
+          <div className="cm-catalog__row">
+            <CCheckbox
+              data-testid="split-area-demo-lock-current-toggle"
+              checked={lockCurrentEnabled}
+              onChange={setLockCurrentEnabled}
+            >
+              lockCurrent
+            </CCheckbox>
+            <CCheckbox
+              data-testid="split-area-demo-lock-toggle"
+              checked={lockEnabled}
+              onChange={setLockEnabled}
+            >
+              lock
+            </CCheckbox>
+          </div>
+          <p className="cm-catalog__value">
+            lockCurrent locks only the current level; lock recursively locks all descendants
+          </p>
+
+          <div className="cm-catalog__row" style={{ gap: 16 }}>
+            <div className="cm-split-area-demo-shell" style={{ flex: 1 }}>
+              <CSplitArea
+                data-testid="split-area-demo-lock-current"
+                direction="horizontal"
+                separatorMovable
+                lockCurrent={lockCurrentEnabled}
+                className="cm-split-area-demo"
+              >
+                <section className="cm-split-area-demo__panel cm-split-area-demo__panel--sidebar">
+                  <h3 className="cm-split-area-demo__title">lockCurrent</h3>
+                  <p className="cm-split-area-demo__text">
+                    {lockCurrentEnabled ? 'Current locked' : 'Current movable'}
+                  </p>
+                </section>
+                <CSplitArea
+                  direction="vertical"
+                  separatorMovable
+                  className="cm-split-area-demo__nested"
+                >
+                  <section className="cm-split-area-demo__panel cm-split-area-demo__panel--editor">
+                    <h3 className="cm-split-area-demo__title">Child</h3>
+                    <p className="cm-split-area-demo__text">Always movable</p>
+                  </section>
+                  <section className="cm-split-area-demo__panel cm-split-area-demo__panel--preview">
+                    <h3 className="cm-split-area-demo__title">Child</h3>
+                    <p className="cm-split-area-demo__text">Always movable</p>
+                  </section>
+                </CSplitArea>
+              </CSplitArea>
+            </div>
+
+            <div className="cm-split-area-demo-shell" style={{ flex: 1 }}>
+              <CSplitArea
+                data-testid="split-area-demo-lock-recursive"
+                direction="horizontal"
+                separatorMovable
+                lock={lockEnabled}
+                className="cm-split-area-demo"
+              >
+                <section className="cm-split-area-demo__panel cm-split-area-demo__panel--sidebar">
+                  <h3 className="cm-split-area-demo__title">lock</h3>
+                  <p className="cm-split-area-demo__text">
+                    {lockEnabled ? 'Locked recursively' : 'Movable'}
+                  </p>
+                </section>
+                <CSplitArea
+                  direction="vertical"
+                  separatorMovable
+                  className="cm-split-area-demo__nested"
+                >
+                  <section className="cm-split-area-demo__panel cm-split-area-demo__panel--editor">
+                    <h3 className="cm-split-area-demo__title">Child</h3>
+                    <p className="cm-split-area-demo__text">
+                      {lockEnabled ? 'Inherited lock' : 'Movable'}
+                    </p>
+                  </section>
+                  <section className="cm-split-area-demo__panel cm-split-area-demo__panel--preview">
+                    <h3 className="cm-split-area-demo__title">Child</h3>
+                    <p className="cm-split-area-demo__text">
+                      {lockEnabled ? 'Inherited lock' : 'Movable'}
+                    </p>
+                  </section>
+                </CSplitArea>
+              </CSplitArea>
+            </div>
+          </div>
+        </div>
+      </div>
+    </ShowcaseSection>
+  );
+}
+
+const INPUT_SNIPPET = `
+const [inputValue, setInputValue] = useState('');
+const [searchValue, setSearchValue] = useState('');
+const [selectedValue, setSelectedValue] = useState('');
+
+const suggestionOptions = [
+  { value: 'apple', label: 'Apple' },
+  { value: 'banana', label: 'Banana' },
+  { value: 'cherry', label: 'Cherry' },
+  { value: 'date', label: 'Date', disabled: true },
+  { value: 'elderberry', label: 'Elderberry' },
+];
+
+return (
+  <>
+    <CInput
+      placeholder="Type something…"
+      value={inputValue}
+      onChange={(nextValue) => setInputValue(nextValue)}
+    />
+    <CButton size="compact" onClick={() => setInputValue('')}>Clear</CButton>
+    <CInput placeholder="Disabled input" disabled />
+
+    <CInput
+      placeholder="Search fruits…"
+      suggestionOptions={suggestionOptions}
+      suggestionDebounce={300}
+      onSearch={(value) => setSearchValue(value)}
+      onSelect={(value) => setSelectedValue(value)}
+    />
+    <p>Search: {searchValue}</p>
+    <p>Selected: {selectedValue}</p>
+  </>
+);
+`.trim();
+
+const INPUT_SUGGESTION_OPTIONS: readonly CInputSuggestionOption[] = [
+  { value: 'apple', label: 'Apple' },
+  { value: 'banana', label: 'Banana' },
+  { value: 'cherry', label: 'Cherry' },
+  { value: 'date', label: 'Date', disabled: true },
+  { value: 'elderberry', label: 'Elderberry' },
+];
+
+function InputShowcase(): React.ReactElement {
+  const [inputValue, setInputValue] = React.useState('');
+  const [searchValue, setSearchValue] = React.useState('');
+  const [selectedValue, setSelectedValue] = React.useState('');
+
+  return (
+    <ShowcaseSection title="Input" testId="catalog-section-input" code={INPUT_SNIPPET}>
+      <div className="cm-catalog__stack">
+        <div className="cm-catalog__row">
+          <CInput
+            data-testid="input-demo"
+            placeholder="Type something…"
+            value={inputValue}
+            onChange={(nextValue) => setInputValue(nextValue)}
+          />
+          <CButton data-testid="input-demo-clear" size="compact" onClick={() => setInputValue('')}>
+            Clear
+          </CButton>
+        </div>
+        <div className="cm-catalog__row">
+          <CInput data-testid="input-demo-disabled" placeholder="Disabled input" disabled />
+        </div>
+        <p className="cm-catalog__value">Value: {inputValue || '(empty)'}</p>
+
+        <div className="cm-catalog__row">
+          <CInput
+            data-testid="input-demo-suggestions"
+            placeholder="Search fruits…"
+            suggestionOptions={INPUT_SUGGESTION_OPTIONS}
+            suggestionDebounce={300}
+            onSearch={(value) => setSearchValue(value)}
+            onSelect={(value) => setSelectedValue(value)}
+          />
+        </div>
+        <p className="cm-catalog__value" data-testid="input-demo-search-value">
+          Search (debounced): {searchValue || '(none)'}
+        </p>
+        <p className="cm-catalog__value" data-testid="input-demo-selected-value">
+          Selected: {selectedValue || '(none)'}
+        </p>
+      </div>
+    </ShowcaseSection>
+  );
+}
+
+const TOOLTIP_SNIPPET = `
+<CTooltip title="Hover tooltip" placement="top">
+  <CButton>Hover me</CButton>
+</CTooltip>
+
+<CTooltip title="Focus tooltip" placement="right">
+  <CButton>Focus me</CButton>
+</CTooltip>
+`.trim();
+
+function TooltipShowcase(): React.ReactElement {
+  return (
+    <ShowcaseSection title="Tooltip" testId="catalog-section-tooltip" code={TOOLTIP_SNIPPET}>
+      <div className="cm-catalog__stack">
+        <div className="cm-catalog__row">
+          <CTooltip data-testid="tooltip-demo-hover" title="Hover tooltip" placement="top">
+            <CButton>Hover me</CButton>
+          </CTooltip>
+          <CTooltip data-testid="tooltip-demo-focus" title="Focus tooltip" placement="right">
+            <CButton>Focus me</CButton>
+          </CTooltip>
+          <CTooltip data-testid="tooltip-demo-bottom" title="Bottom tooltip" placement="bottom">
+            <span>Hover text</span>
+          </CTooltip>
+        </div>
+      </div>
+    </ShowcaseSection>
+  );
+}
+
+const TIME_PICKER_SNIPPET = `
+const [time, setTime] = useState('09:30');
+
+return (
+  <>
+    <CTimePicker value={time} onChange={setTime} />
+    <CTimePicker disabled />
+    <p>Selected time: {time}</p>
+  </>
+);
+`.trim();
+
+function TimePickerShowcase(): React.ReactElement {
+  const [time, setTime] = React.useState<string | null>('09:30');
+
+  return (
+    <ShowcaseSection
+      title="TimePicker"
+      testId="catalog-section-time-picker"
+      code={TIME_PICKER_SNIPPET}
+    >
+      <div className="cm-catalog__stack">
+        <div className="cm-catalog__row">
+          <CTimePicker data-testid="time-picker-demo" value={time} onChange={setTime} />
+          <CTimePicker data-testid="time-picker-demo-disabled" disabled />
+        </div>
+        <p className="cm-catalog__value">Selected time: {time ?? '(empty)'}</p>
+      </div>
+    </ShowcaseSection>
+  );
+}
+
+const TREE_SAMPLE_DATA: readonly CTreeDataNode[] = [
+  {
+    key: 'root-1',
+    title: 'Documents',
+    children: [
+      { key: 'doc-1', title: 'Report.pdf' },
+      { key: 'doc-2', title: 'Notes.txt' },
+    ],
+  },
+  {
+    key: 'root-2',
+    title: 'Pictures',
+    children: [
+      { key: 'pic-1', title: 'Vacation.jpg' },
+      { key: 'pic-2', title: 'Portrait.png' },
+    ],
+  },
+  { key: 'root-3', title: 'Settings' },
+];
+
+const TREE_SNIPPET = `
+const treeData = [
+  {
+    key: 'root-1',
+    title: 'Documents',
+    children: [
+      { key: 'doc-1', title: 'Report.pdf' },
+      { key: 'doc-2', title: 'Notes.txt' },
+    ],
+  },
+];
+
+const [checkedKeys, setCheckedKeys] = useState<string[]>(['doc-1']);
+const [selectedKeys, setSelectedKeys] = useState<string[]>([]);
+
+return (
+  <>
+    <CTree
+      treeData={treeData}
+      checkable
+      checkedKeys={checkedKeys}
+      onCheck={setCheckedKeys}
+      onSelect={setSelectedKeys}
+    />
+    <p>Checked: {checkedKeys.join(', ')}</p>
+    <p>Selected: {selectedKeys.join(', ')}</p>
+  </>
+);
+`.trim();
+
+function TreeShowcase(): React.ReactElement {
+  const [checkedKeys, setCheckedKeys] = React.useState<string[]>(['doc-1']);
+  const [selectedKeys, setSelectedKeys] = React.useState<string[]>([]);
+
+  return (
+    <ShowcaseSection title="Tree" testId="catalog-section-tree" code={TREE_SNIPPET}>
+      <div className="cm-catalog__stack">
+        <CTree
+          data-testid="tree-demo"
+          treeData={TREE_SAMPLE_DATA}
+          checkable
+          checkedKeys={checkedKeys}
+          onCheck={(nextCheckedKeys) => setCheckedKeys(nextCheckedKeys)}
+          onSelect={(nextSelectedKeys) => setSelectedKeys(nextSelectedKeys)}
+        />
+        <p className="cm-catalog__value">Checked: {checkedKeys.join(', ') || 'none'}</p>
+        <p className="cm-catalog__value">Selected: {selectedKeys.join(', ') || 'none'}</p>
+      </div>
+    </ShowcaseSection>
+  );
+}
+
+const TRANSFER_SAMPLE_DATA: readonly CTransferItem[] = [
+  { key: 'a', title: 'Apple' },
+  { key: 'b', title: 'Banana' },
+  { key: 'c', title: 'Cherry' },
+  { key: 'd', title: 'Date' },
+  { key: 'e', title: 'Elderberry' },
+];
+
+const TRANSFER_SNIPPET = `
+const data = [
+  { key: 'a', title: 'Apple' },
+  { key: 'b', title: 'Banana' },
+  { key: 'c', title: 'Cherry' },
+];
+
+const [targetKeys, setTargetKeys] = useState<string[]>(['b']);
+
+return (
+  <CTransfer
+    dataSource={data}
+    targetKeys={targetKeys}
+    titles={['Available', 'Chosen']}
+    onChange={setTargetKeys}
+  />
+);
+`.trim();
+
+function TransferShowcase(): React.ReactElement {
+  const [targetKeys, setTargetKeys] = React.useState<string[]>(['b']);
+
+  return (
+    <ShowcaseSection title="Transfer" testId="catalog-section-transfer" code={TRANSFER_SNIPPET}>
+      <div className="cm-catalog__stack">
+        <CTransfer
+          data-testid="transfer-demo"
+          dataSource={TRANSFER_SAMPLE_DATA}
+          targetKeys={targetKeys}
+          titles={['Available', 'Chosen']}
+          onChange={(nextTargetKeys) => setTargetKeys(nextTargetKeys as string[])}
+        />
+        <p className="cm-catalog__value">Target keys: {targetKeys.join(', ') || 'none'}</p>
+      </div>
+    </ShowcaseSection>
+  );
+}
+
+interface TableRecord {
+  readonly id: number;
+  readonly name: string;
+  readonly role: string;
+  readonly age: number;
+}
+
+const TABLE_SAMPLE_DATA: readonly TableRecord[] = [
+  { id: 1, name: 'Alice', role: 'Developer', age: 28 },
+  { id: 2, name: 'Bob', role: 'Designer', age: 32 },
+  { id: 3, name: 'Carol', role: 'Manager', age: 45 },
+  { id: 4, name: 'Dave', role: 'Developer', age: 24 },
+  { id: 5, name: 'Eve', role: 'Tester', age: 29 },
+  { id: 6, name: 'Frank', role: 'DevOps', age: 35 },
+];
+
+const TABLE_COLUMNS = [
+  { title: 'Name', dataIndex: 'name' as const, sorter: true },
+  { title: 'Role', dataIndex: 'role' as const },
+  {
+    title: 'Age',
+    dataIndex: 'age' as const,
+    sorter: (a: TableRecord, b: TableRecord) => a.age - b.age,
+  },
+];
+
+const TABLE_SNIPPET = `
+const columns = [
+  { title: 'Name', dataIndex: 'name', sorter: true },
+  { title: 'Role', dataIndex: 'role' },
+  { title: 'Age', dataIndex: 'age', sorter: (a, b) => a.age - b.age },
+];
+
+const data = [
+  { id: 1, name: 'Alice', role: 'Developer', age: 28 },
+  { id: 2, name: 'Bob', role: 'Designer', age: 32 },
+];
+
+return (
+  <>
+    <CTable columns={columns} dataSource={data} pagination={{ pageSize: 4 }} rowKey="id" />
+  </>
+);
+`.trim();
+
+function TableShowcase(): React.ReactElement {
+  return (
+    <ShowcaseSection title="Table" testId="catalog-section-table" code={TABLE_SNIPPET}>
+      <div className="cm-catalog__stack">
+        <CTable<TableRecord>
+          data-testid="table-demo"
+          columns={TABLE_COLUMNS}
+          dataSource={TABLE_SAMPLE_DATA}
+          pagination={{ pageSize: 4 }}
+          rowKey="id"
+        />
+      </div>
+    </ShowcaseSection>
+  );
+}
+
+const DATE_PICKER_SNIPPET = `
+const [date, setDate] = useState<string | null>('2026-01-15');
+
+return (
+  <>
+    <CDatePicker
+      value={date}
+      onChange={setDate}
+      minDate="2025-12-01"
+      maxDate="2026-12-31"
+      allowClear
+    />
+    <p>Selected date: {date ?? '(empty)'}</p>
+  </>
+);
+`.trim();
+
+function DatePickerShowcase(): React.ReactElement {
+  const [date, setDate] = React.useState<string | null>('2026-01-15');
+
+  return (
+    <ShowcaseSection
+      title="DatePicker"
+      testId="catalog-section-date-picker"
+      code={DATE_PICKER_SNIPPET}
+    >
+      <div className="cm-catalog__stack">
+        <div className="cm-catalog__row">
+          <CDatePicker
+            data-testid="date-picker-demo"
+            aria-label="Demo date picker"
+            value={date}
+            onChange={setDate}
+            minDate="2025-12-01"
+            maxDate="2026-12-31"
+            allowClear
+          />
+          <CDatePicker
+            data-testid="date-picker-demo-disabled"
+            aria-label="Disabled date picker"
+            defaultValue="2026-01-15"
+            disabled
+          />
+        </div>
+        <p className="cm-catalog__value" data-testid="date-picker-demo-value">
+          Selected date: {date ?? '(empty)'}
+        </p>
+      </div>
+    </ShowcaseSection>
+  );
+}
+
+const MODAL_SNIPPET = `
+const [open, setOpen] = useState(false);
+const [draggable, setDraggable] = useState(false);
+const [resizable, setResizable] = useState(false);
+
+return (
+  <>
+    <CButton onClick={() => setOpen(true)}>Open modal</CButton>
+    <CModal open={open} title="Sample Modal" draggable={draggable} resizable={resizable} onClose={() => setOpen(false)}>
+      <p>Modal body content goes here.</p>
+    </CModal>
+  </>
+);
+`.trim();
+
+function ModalShowcase(): React.ReactElement {
+  const [open, setOpen] = React.useState(false);
+  const [defaultHeightOpen, setDefaultHeightOpen] = React.useState(false);
+  const [draggableOpen, setDraggableOpen] = React.useState(false);
+  const [modalDraggable, setModalDraggable] = React.useState(true);
+  const [modalResizable, setModalResizable] = React.useState(true);
+
+  return (
+    <ShowcaseSection title="Modal" testId="catalog-section-modal" code={MODAL_SNIPPET}>
+      <div className="cm-catalog__stack">
+        <div className="cm-catalog__row">
+          <CButton data-testid="modal-demo-open" onClick={() => setOpen(true)}>
+            Open modal
+          </CButton>
+          {/* Default-height (no `height` prop) trigger — exercises the F3 regression case
+              where CModal passes cWindowHeight=0 to CWindow. Without the Modal-scoped
+              `height: auto !important` override the .cm-window would collapse to 0px. */}
+          <CButton data-testid="modal-demo-default-open" onClick={() => setDefaultHeightOpen(true)}>
+            Open default-height modal
+          </CButton>
+          <CButton data-testid="modal-demo-draggable-open" onClick={() => setDraggableOpen(true)}>
+            Open draggable modal
+          </CButton>
+        </div>
+        <div className="cm-catalog__row">
+          <CCheckbox
+            data-testid="modal-demo-draggable"
+            checked={modalDraggable}
+            onChange={setModalDraggable}
+          >
+            Draggable
+          </CCheckbox>
+          <CCheckbox
+            data-testid="modal-demo-resizable"
+            checked={modalResizable}
+            onChange={setModalResizable}
+          >
+            Resizable
+          </CCheckbox>
+        </div>
+        <CModal
+          data-testid="modal-demo"
+          open={open}
+          title="Sample Modal"
+          width={420}
+          height={200}
+          onClose={() => setOpen(false)}
+        >
+          <p>Modal body content goes here.</p>
+          <p>Press ESC, click the mask, or click × to close.</p>
+        </CModal>
+        <CModal
+          data-testid="modal-demo-default"
+          open={defaultHeightOpen}
+          title="Default-height Modal"
+          onClose={() => setDefaultHeightOpen(false)}
+        >
+          <p>This modal has no explicit height prop and must render at intrinsic height.</p>
+        </CModal>
+        <CModal
+          data-testid="modal-demo-draggable"
+          open={draggableOpen}
+          title="Draggable & Resizable Modal"
+          width={400}
+          height={250}
+          draggable={modalDraggable}
+          resizable={modalResizable}
+          onClose={() => setDraggableOpen(false)}
+        >
+          <p>This modal supports drag and resize when enabled.</p>
+          <p>Try dragging the title bar or resizing from edges.</p>
+        </CModal>
+      </div>
+    </ShowcaseSection>
+  );
+}
+
+const CONFIRM_SNIPPET = `
+const [open, setOpen] = useState(false);
+const [result, setResult] = useState<string>('none');
+const [draggable, setDraggable] = useState(false);
+const [resizable, setResizable] = useState(false);
+
+const openImperative = async () => {
+  const ok = await confirm({ title: 'Delete?', content: 'Are you sure?' });
+  setResult(String(ok));
+};
+
+return (
+  <>
+    <CButton onClick={() => setOpen(true)}>Open inline CConfirm</CButton>
+    <CConfirm
+      open={open}
+      title="Inline confirm"
+      message="Click OK or Cancel."
+      draggable={draggable}
+      resizable={resizable}
+      onConfirm={() => setOpen(false)}
+      onCancel={() => setOpen(false)}
+    />
+
+    <CButton onClick={openImperative}>Call confirm()</CButton>
+    <p>Imperative result: {result}</p>
+  </>
+);
+`.trim();
+
+function ConfirmShowcase(): React.ReactElement {
+  const [inlineOpen, setInlineOpen] = React.useState(false);
+  const [imperativeResult, setImperativeResult] = React.useState<string>('none');
+  const [confirmDraggable, setConfirmDraggable] = React.useState(true);
+  const [confirmResizable, setConfirmResizable] = React.useState(true);
+
+  // 调用模块级 imperative confirm() 并把 Promise<boolean> 结果回填到 UI
+  const handleImperativeClick = React.useCallback(async () => {
+    const ok = await imperativeConfirm({
+      title: 'Delete item?',
+      content: 'Are you sure you want to delete this item?',
+    });
+    setImperativeResult(String(ok));
+  }, []);
+
+  return (
+    <ShowcaseSection title="Confirm" testId="catalog-section-confirm" code={CONFIRM_SNIPPET}>
+      <div className="cm-catalog__stack">
+        <div className="cm-catalog__row">
+          <CButton data-testid="confirm-demo-inline-open" onClick={() => setInlineOpen(true)}>
+            Open inline CConfirm
+          </CButton>
+          <CButton data-testid="confirm-demo-imperative-open" onClick={handleImperativeClick}>
+            Call confirm()
+          </CButton>
+        </div>
+        <div className="cm-catalog__row">
+          <CCheckbox
+            data-testid="confirm-demo-draggable"
+            checked={confirmDraggable}
+            onChange={setConfirmDraggable}
+          >
+            Draggable
+          </CCheckbox>
+          <CCheckbox
+            data-testid="confirm-demo-resizable"
+            checked={confirmResizable}
+            onChange={setConfirmResizable}
+          >
+            Resizable
+          </CCheckbox>
+        </div>
+        <p className="cm-catalog__value" data-testid="confirm-demo-imperative-result">
+          Imperative result: {imperativeResult}
+        </p>
+        <CConfirm
+          data-testid="confirm-demo-inline"
+          open={inlineOpen}
+          title="Inline confirm"
+          message="Click OK or Cancel to dismiss."
+          height={180}
+          draggable={confirmDraggable}
+          resizable={confirmResizable}
+          onConfirm={() => setInlineOpen(false)}
+          onCancel={() => setInlineOpen(false)}
+        />
+      </div>
+    </ShowcaseSection>
+  );
+}
+
+interface LayoutListItem {
+  readonly id: string;
+  readonly name: string;
+  readonly description: string;
+  readonly icon: string;
+}
+
+const LAYOUT_ITEMS: readonly LayoutListItem[] = [
+  {
+    id: 'alpha',
+    name: 'Alpha',
+    description: 'First layout item',
+    icon: '▣',
+  },
+  {
+    id: 'beta',
+    name: 'Beta',
+    description: 'Second layout item',
+    icon: '▤',
+  },
+  {
+    id: 'gamma',
+    name: 'Gamma',
+    description: 'Third layout item',
+    icon: '▥',
+  },
+] as const;
+
+const CONTEXT_MENU_ITEMS: readonly MenuListItem[] = [
+  { id: 'open', key: 'open', title: 'Open' },
+  { id: 'edit', key: 'edit', title: 'Edit' },
+  { id: 'delete', key: 'delete', title: 'Delete' },
+] as const;
+
+function CListLayoutShowcase(): React.ReactElement {
+  const renderLayoutItem = React.useCallback((item: LayoutListItem): React.ReactNode => {
+    return (
+      <div>
+        <strong>
+          <span aria-hidden="true">{item.icon}</span> {item.name}
+        </strong>
+        <p>{item.description}</p>
+      </div>
+    );
+  }, []);
+
+  return (
+    <ShowcaseSection
+      title="CList layout"
+      testId="catalog-section-clist-layout"
+      code={CLIST_LAYOUT_SNIPPET}
+    >
+      <div className="cm-catalog__stack">
+        <p className="cm-catalog__value">
+          CList layout props: direction, wrap, and gap. Default is vertical non-wrapping.
+        </p>
+        <div className="cm-catalog__row">
+          <div className="cm-catalog__list-demo" style={{ width: '100%' }}>
+            <CList
+              data-testid="clist-layout-default"
+              items={LAYOUT_ITEMS}
+              getItemKey={(item) => item.id}
+              renderItem={renderLayoutItem}
+            />
+          </div>
+        </div>
+        <div className="cm-catalog__row">
+          <div className="cm-catalog__list-demo" style={{ width: '100%' }}>
+            <CList
+              data-testid="clist-layout-horizontal"
+              direction="horizontal"
+              draggable
+              gap="12px"
+              items={LAYOUT_ITEMS}
+              getItemKey={(item) => item.id}
+              renderItem={renderLayoutItem}
+            />
+          </div>
+        </div>
+        <div className="cm-catalog__row">
+          <div className="cm-catalog__list-demo" style={{ width: '100%' }}>
+            <CList
+              data-testid="clist-layout-wrap"
+              direction="horizontal"
+              wrap
+              gap={8}
+              items={LAYOUT_ITEMS}
+              getItemKey={(item) => item.id}
+              renderItem={renderLayoutItem}
+            />
+          </div>
+        </div>
+        <div className="cm-catalog__row">
+          <div className="cm-catalog__list-demo" style={{ width: '100%' }}>
+            <CList
+              data-testid="clist-layout-object-gap"
+              gap={10}
+              items={LAYOUT_ITEMS}
+              getItemKey={(item) => item.id}
+              renderItem={renderLayoutItem}
+            />
+          </div>
+        </div>
+        <div className="cm-catalog__row">
+          <div className="cm-catalog__list-demo" style={{ width: '240px' }}>
+            <CList
+              data-testid="clist-layout-wrap-reverse"
+              direction="horizontal"
+              wrap="wrap-reverse"
+              gap={{ row: 10, column: '18px' }}
+              items={LAYOUT_ITEMS}
+              getItemKey={(item) => item.id}
+              renderItem={renderLayoutItem}
+            />
+          </div>
+        </div>
+      </div>
+    </ShowcaseSection>
+  );
+}
+
+function CContextMenuShowcase(): React.ReactElement {
+  const [lastSelected, setLastSelected] = React.useState<MenuListItem | null>(null);
+
+  return (
+    <ShowcaseSection
+      title="CContextMenu"
+      testId="catalog-section-ccontext-menu"
+      code={CCONTEXT_MENU_SNIPPET}
+    >
+      <div className="cm-catalog__stack">
+        <p className="cm-catalog__value">
+          Right-click the button (or long-press on touch) to open a context menu. Keyboard users can
+          focus the button and press Shift+F10 or the ContextMenu key.
+        </p>
+        <CContextMenu
+          data-testid="ccontext-menu-demo"
+          menuList={CONTEXT_MENU_ITEMS}
+          onSelect={setLastSelected}
+        >
+          <CButton data-testid="ccontext-menu-demo-trigger">Open context menu</CButton>
+        </CContextMenu>
+        <p className="cm-catalog__value" data-testid="ccontext-menu-demo-selected">
+          Selected: {lastSelected?.title ?? 'none'}
+        </p>
       </div>
     </ShowcaseSection>
   );
@@ -1116,15 +2739,30 @@ export function ComponentCatalog({
             <CheckboxShowcase />
             <SelectShowcase />
             <SliderShowcase />
+            <LoadingShowcase />
+            <ProgressShowcase />
             <ScrollAreaShowcase />
             <TabShowcase />
             <IconShowcase />
+            <ListIconShowcase />
             <MenuShowcase />
+            <CContextMenuShowcase />
             <WindowShowcase />
             <DockShowcase />
             <StartBarShowcase />
             <SplitAreaShowcase />
+            <ListShowcase />
+            <CListLayoutShowcase />
             <GridShowcase />
+            <InputShowcase />
+            <TooltipShowcase />
+            <TimePickerShowcase />
+            <TreeShowcase />
+            <TransferShowcase />
+            <TableShowcase />
+            <DatePickerShowcase />
+            <ModalShowcase />
+            <ConfirmShowcase />
           </div>
         </DevThemeRoot>
       </main>

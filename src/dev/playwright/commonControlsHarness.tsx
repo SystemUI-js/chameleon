@@ -1,4 +1,5 @@
-import { type ReactNode, useState } from 'react';
+import type { ReactNode } from 'react';
+import { useState } from 'react';
 import { createRoot } from 'react-dom/client';
 import {
   CButton,
@@ -56,6 +57,7 @@ const DefaultFixture = (): ReactNode => {
         <CRadio value="orange">Orange</CRadio>
       </CRadioGroup>
       <CSelect
+        aria-label="Playwright size"
         data-testid="select-demo-size"
         name="playwright-size"
         value={selectedSize}
@@ -83,6 +85,7 @@ const DisabledFixture = (): ReactNode => {
         </CRadio>
       </CRadioGroup>
       <CSelect
+        aria-label="Disabled playwright size"
         data-testid="select-demo-size"
         name="playwright-size-disabled"
         defaultValue="medium"

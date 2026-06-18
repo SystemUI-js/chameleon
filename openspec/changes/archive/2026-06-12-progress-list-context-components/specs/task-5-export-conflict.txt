@@ -1,0 +1,22 @@
+## Task 5: Export Conflict Evidence
+
+### CSlider still exported (grep proof)
+$ grep CSlider src/components/index.ts src/index.ts
+src/components/index.ts:10:export * from './CSlider';
+src/index.ts:20:  CSlider,
+
+### Three-component regression (CDatePicker + CModal + CConfirm)
+$ yarn test tests/CDatePicker.test.tsx tests/CModal.test.tsx tests/CConfirm.test.tsx --runInBand
+Test Suites: 3 passed, 3 total
+Tests:       52 passed, 52 total
+
+### PublicThemeMatrix
+$ yarn test tests/PublicThemeMatrix.test.tsx --runInBand
+Test Suites: 1 passed, 1 total
+Tests:       27 passed, 27 total
+
+### ThemeExports.test.tsx
+FILE DOES NOT EXIST — not created per task instructions.
+
+### Lint
+$ yarn lint → exit 0

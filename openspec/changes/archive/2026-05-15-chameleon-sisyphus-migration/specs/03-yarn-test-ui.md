@@ -3,6 +3,7 @@
 ## Exit Code: 0
 
 ## Output:
+
 ```
 Running 40 tests using 4 workers
 
@@ -51,5 +52,6 @@ Running 40 tests using 4 workers
 ```
 
 ## Summary:
+
 - All 40 Playwright UI tests passed
 - Exit code: 0 ✓

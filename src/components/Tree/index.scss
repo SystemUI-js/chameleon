@@ -1,0 +1,68 @@
+.cm-tree {
+    display: block;
+}
+
+.cm-tree__list {
+    margin: 0;
+    padding: 0;
+    list-style: none;
+}
+
+.cm-tree__children {
+    margin: 0;
+    padding-left: 1rem;
+    list-style: none;
+}
+
+.cm-tree__item {
+    margin: 0;
+}
+
+.cm-tree__node-content {
+    display: inline-flex;
+    align-items: center;
+    gap: 0.375rem;
+    min-height: 1.5rem;
+}
+
+.cm-tree__node:focus-visible > .cm-tree__node-content {
+    outline: 1px solid currentColor;
+    outline-offset: 2px;
+}
+
+.cm-tree__switcher {
+    width: 0;
+    height: 0;
+    padding: 0;
+    border-top: 0.25rem solid transparent;
+    border-bottom: 0.25rem solid transparent;
+    border-left: 0.375rem solid currentColor;
+    background: transparent;
+}
+
+.cm-tree__checkbox {
+    gap: 0;
+    margin: 0;
+}
+
+.cm-tree__checkbox > .cm-checkbox__label {
+    display: none;
+}
+
+.cm-tree__title {
+    padding: 0;
+    border: 0;
+    background: transparent;
+    color: inherit;
+    font: inherit;
+    text-align: left;
+    cursor: pointer;
+}
+
+.cm-tree__node--expanded > .cm-tree__node-content > .cm-tree__switcher {
+    transform: rotate(90deg);
+}
+
+.cm-tree__node--selected > .cm-tree__node-content > .cm-tree__title {
+    font-weight: 600;
+}

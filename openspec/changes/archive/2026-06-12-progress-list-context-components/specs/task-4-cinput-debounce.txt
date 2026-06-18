@@ -1,0 +1,15 @@
+Task 4 CInput debounce evidence
+
+Focused command run:
+yarn test CInput.test.tsx --runInBand
+
+Observed result:
+PASS tests/CInput.test.tsx
+CInput suite: 41 passed, 41 total
+
+Covered debounce assertions:
+- suggestionDebounce={50} delayed onSearch until timers advanced 50ms.
+- Multiple changes before the timer fired called only latest value: onSearch('ap').
+- allowClear called onChange('', event) immediately and scheduled onSearch('') through the same debounce pipeline.
+- Pending debounce timer was cleared on unmount; jest.getTimerCount() returned 0.
+- Default suggestionDebounce=0 called onSearch immediately.

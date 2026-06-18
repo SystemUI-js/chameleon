@@ -26,11 +26,13 @@ describe('CWidget active state', () => {
   it('uses controlled active prop and follows prop updates', () => {
     const { rerender } = render(<TestWidget active={false} />);
 
+    expect(screen.getByTestId('test-widget-frame')).toHaveClass('cm-widget--inactive');
     expect(screen.getByTestId('test-widget-frame')).not.toHaveClass('cm-widget--active');
 
     rerender(<TestWidget active />);
 
     expect(screen.getByTestId('test-widget-frame')).toHaveClass('cm-widget--active');
+    expect(screen.getByTestId('test-widget-frame')).not.toHaveClass('cm-widget--inactive');
   });
 
   it('updates uncontrolled active state, toggles class name, and fires onActive', () => {
@@ -49,11 +51,13 @@ describe('CWidget active state', () => {
 
     expect(frame).toHaveClass('test-widget-frame');
     expect(frame).not.toHaveClass('cm-widget--active');
+    expect(frame).toHaveClass('cm-widget--inactive');
     expect(handleActive).toHaveBeenNthCalledWith(1, false);
 
     fireEvent.pointerDown(frame);
 
     expect(frame).toHaveClass('test-widget-frame', 'cm-widget--active');
+    expect(frame).not.toHaveClass('cm-widget--inactive');
     expect(handleActive).toHaveBeenNthCalledWith(2, true);
     expect(handleActive).toHaveBeenCalledTimes(2);
   });

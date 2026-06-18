@@ -1,0 +1,87 @@
+/* CModal - base layout only (theme colors are added in Task 4). */
+
+.cm-modal {
+    position: fixed;
+    inset: 0;
+    z-index: 1000;
+    display: none;
+}
+
+.cm-modal--open {
+    display: block;
+}
+
+.cm-modal__mask {
+    position: absolute;
+    inset: 0;
+}
+
+.cm-modal__content {
+    position: absolute;
+    inset: 0;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    pointer-events: none;
+}
+
+/* The window host gives the absolutely-positioned CWindow a relative anchor.
+ * pointer-events re-enabled so the modal body is interactive. */
+.cm-modal__window-host {
+    position: relative;
+    pointer-events: auto;
+}
+
+/* Modal-scoped centering override (non-draggable only).
+ * When draggable=true, the frame uses absolute positioning for movement. */
+.cm-modal:not(.cm-modal--draggable) .cm-window-frame {
+    position: static !important;
+    left: auto !important;
+    top: auto !important;
+}
+
+.cm-modal:not(.cm-modal--resizable) .cm-window-frame {
+    height: auto !important;
+}
+
+/* Draggable modal: frame uses absolute positioning for drag movement */
+.cm-modal--draggable .cm-modal__window-host {
+    position: absolute;
+    inset: 0;
+    pointer-events: none;
+}
+
+.cm-modal--draggable .cm-window-frame {
+    position: absolute !important;
+    pointer-events: auto;
+}
+
+.cm-modal--draggable .cm-modal__content {
+    display: block;
+}
+
+/* Title bar layout inside CWindow children (no drag — not a CWindowTitle). */
+.cm-modal .cm-window__title-bar {
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    padding: 4px 8px;
+}
+
+.cm-modal__title {
+    flex: 1 1 auto;
+    min-width: 0;
+    overflow: hidden;
+    text-overflow: ellipsis;
+    white-space: nowrap;
+}
+
+.cm-modal__close-button {
+    flex: 0 0 auto;
+    margin-left: 8px;
+    padding: 0 6px;
+    border: 0;
+    background: transparent;
+    cursor: pointer;
+    font: inherit;
+}

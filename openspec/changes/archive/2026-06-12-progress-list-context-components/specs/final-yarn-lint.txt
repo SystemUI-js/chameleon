@@ -1,0 +1,4 @@
+yarn lint
+exit 0
+ESLint passed for all tracked {src,tests}/**/*.{ts,tsx} files.
+Only warning: .eslintignore deprecation (pre-existing).

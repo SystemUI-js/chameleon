@@ -1,0 +1,10 @@
+yarn build
+
+exit 0
+Vite lib build produced dist/chameleon.es.js and dist/chameleon.umd.cjs.
+DTS generation emitted declarations.
+
+Pre-existing TypeScript errors printed during DTS (not blocking build):
+- src/components/Table/CTable.tsx:429 - 'width' prop on th element
+- tests/Widget.test.tsx:8 - setWidgetActive does not exist on TestWidget
+These are unrelated to the current plan.

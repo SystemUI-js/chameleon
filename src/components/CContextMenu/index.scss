@@ -1,0 +1,36 @@
+.cm-ccontext-menu {
+    position: relative;
+    display: inline-block;
+}
+
+.cm-ccontext-menu__overlay {
+    position: fixed;
+    z-index: 1100;
+    min-width: 120px;
+    padding: 4px 0;
+    background: var(--cm-ccontext-menu-background, #ffffff);
+    border: 1px solid var(--cm-ccontext-menu-border-color, #d1d5db);
+    box-shadow: 0 4px 12px rgb(0 0 0 / 18%);
+}
+
+.cm-ccontext-menu__overlay .cm-menu__list {
+    margin: 0;
+    padding: 0;
+    list-style: none;
+}
+
+.cm-ccontext-menu__overlay .cm-menu__item-button {
+    display: flex;
+    align-items: center;
+    width: 100%;
+    padding: 4px 12px;
+    text-align: left;
+    background: transparent;
+    border: none;
+    cursor: pointer;
+}
+
+.cm-ccontext-menu__overlay .cm-menu__item-button--disabled {
+    cursor: not-allowed;
+    opacity: 0.5;
+}

@@ -10,23 +10,23 @@ This archive captures the following completed and in-progress changes:
 
 ### Completed Changes
 
-| Change | Status | Summary |
-|--------|--------|---------|
+| Change                                      | Status    | Summary                                                                                                                                                 |
+| ------------------------------------------- | --------- | ------------------------------------------------------------------------------------------------------------------------------------------------------- |
 | `chameleon-pure-component-library-refactor` | COMPLETED | Repositioned Chameleon from desktop-shell library to pure component library, removed WindowManager/Screen/SystemHost, rebuilt demo as component catalog |
-| `theme-no-nesting` | COMPLETED | Changed Theme to reject nested providers with stable error "Nested Theme is not supported", isolated Theme demo from outer provider |
-| `theme-demo-usage` | COMPLETED | Added standalone Theme showcase in component catalog explaining wrapper usage and explicit theme prop override |
-| `demo-code-display` | COMPLETED | Added collapsible code blocks to each dev catalog Showcase section |
-| `scrollarea-scrollbar` | COMPLETED | Added internal custom scrollbar system with dual-axis support, button stepping, and thumb drag |
-| `window-drag-resize-preview` | COMPLETED | Added move/resize outline preview mode with release-on-commit semantics |
-| `menu-component` | COMPLETED | Added CMenu with recursive submenu, click/hover triggers, and leaf selection |
-| `cicon-components` | COMPLETED | Added CIcon and CIconContainer with container-managed state, single-icon drag, and long-press context menu |
+| `theme-no-nesting`                          | COMPLETED | Changed Theme to reject nested providers with stable error "Nested Theme is not supported", isolated Theme demo from outer provider                     |
+| `theme-demo-usage`                          | COMPLETED | Added standalone Theme showcase in component catalog explaining wrapper usage and explicit theme prop override                                          |
+| `demo-code-display`                         | COMPLETED | Added collapsible code blocks to each dev catalog Showcase section                                                                                      |
+| `scrollarea-scrollbar`                      | COMPLETED | Added internal custom scrollbar system with dual-axis support, button stepping, and thumb drag                                                          |
+| `window-drag-resize-preview`                | COMPLETED | Added move/resize outline preview mode with release-on-commit semantics                                                                                 |
+| `menu-component`                            | COMPLETED | Added CMenu with recursive submenu, click/hover triggers, and leaf selection                                                                            |
+| `cicon-components`                          | COMPLETED | Added CIcon and CIconContainer with container-managed state, single-icon drag, and long-press context menu                                              |
 
 ### In-Progress Changes
 
-| Change | Status | Summary |
-|--------|--------|---------|
-| `window-title-action-buttons` | NOT STARTED | Extend CWindowTitle with actionButton slot and actionButtonPosition prop |
-| `cbutton-group-separator` | NOT STARTED | Add CButtonGroup wrapper and CButtonSeparator component for grouped button styling |
+| Change                        | Status      | Summary                                                                            |
+| ----------------------------- | ----------- | ---------------------------------------------------------------------------------- |
+| `window-title-action-buttons` | NOT STARTED | Extend CWindowTitle with actionButton slot and actionButtonPosition prop           |
+| `cbutton-group-separator`     | NOT STARTED | Add CButtonGroup wrapper and CButtonSeparator component for grouped button styling |
 
 ## Capabilities
 
@@ -40,6 +40,7 @@ This archive captures the following completed and in-progress changes:
 ## Impact
 
 This migration captures all Sisyphus workflow artifacts including:
+
 - 10 plan documents with task breakdowns
 - 30+ notepad entries with decisions, issues, problems, and learnings
 - 100+ evidence files from QA verification

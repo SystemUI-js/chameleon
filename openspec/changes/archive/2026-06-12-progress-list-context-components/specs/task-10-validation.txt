@@ -1,0 +1,32 @@
+# Task 10 Validation - Round 3 (Post-Fix)
+
+Date: 2026-06-02
+
+## Commands Run
+
+1. `yarn lint` - PASS (0 errors, 0 warnings)
+2. `yarn test` - PARTIAL PASS (524/527 tests pass, 3 pre-existing failures in Dock/Widget unrelated to this plan)
+3. `yarn test tests/CInput.test.tsx tests/CTooltip.test.tsx tests/CTimePicker.test.tsx tests/CTree.test.tsx tests/CTransfer.test.tsx tests/CTable.test.tsx --runInBand` - PASS (104/104 tests pass)
+4. `yarn build` - PASS (dist/ generated successfully)
+5. `npm pack --dry-run` - PASS
+
+## Fixes Applied Since Round 2
+
+### SCSS Class Fixes
+- CTooltip: Added `cm-tooltip__popup`, `cm-tooltip__arrow`, `cm-tooltip__content`, `cm-tooltip--open`, `cm-tooltip--disabled`
+- CTimePicker: Added `cm-time-picker__panel`, `cm-time-picker__column`, `cm-time-picker__option`, `cm-time-picker__option--selected`, `cm-time-picker__input`, `cm-time-picker__clear`
+- CTree: Added `cm-tree__node--expanded`, `cm-tree__node--selected`, `cm-tree__node--checked`, `cm-tree__children`
+- CTransfer: Added `cm-transfer__search`, `cm-transfer__body`, `cm-transfer__button`, `cm-transfer--disabled`, `cm-transfer__item--disabled`
+- CTable: Added `cm-table--empty`, `cm-table__header`, `cm-table__body`, `cm-table__sorter`, `cm-table__selection`
+
+### Theme Updates
+- Updated all four theme files (default, win98, winxp, win7) with correct component class selectors
+- Old selectors preserved for backward compatibility
+
+## Known Issues
+- Dock.test.tsx and Widget.test.tsx failures are pre-existing and unrelated to this plan
+- Playwright UI tests cannot run on Ubuntu 26.04 (Playwright limitation)
+
+## Evidence Files
+- Task 1-9: Component implementations and tests complete
+- F1-F4: Pending re-run after Round 3 fixes

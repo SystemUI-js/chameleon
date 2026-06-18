@@ -1,0 +1,136 @@
+/* ────────────────────────────────────────────────────────────────
+ * CDatePicker — base layout only.
+ * Theme colors/borders/shadows are added per theme in Task 4.
+ * ──────────────────────────────────────────────────────────────── */
+
+.cm-date-picker {
+    position: relative;
+    display: inline-flex;
+    align-items: center;
+    gap: 4px;
+    margin: 0;
+    padding: 0;
+    border: 0;
+}
+
+.cm-date-picker--disabled {
+    opacity: 0.6;
+}
+
+/* ── Input row ── */
+.cm-date-picker__input {
+    min-width: 110px;
+    padding: 4px 8px;
+    font: inherit;
+    cursor: pointer;
+}
+
+.cm-date-picker__input:disabled {
+    cursor: not-allowed;
+}
+
+.cm-date-picker__trigger,
+.cm-date-picker__clear {
+    display: inline-flex;
+    align-items: center;
+    justify-content: center;
+    width: 20px;
+    height: 20px;
+    padding: 0;
+    border: 0;
+    background: transparent;
+    cursor: pointer;
+    font: inherit;
+}
+
+/* ── Panel ── */
+.cm-date-picker__panel {
+    position: absolute;
+    top: 100%;
+    left: 0;
+    z-index: 1000;
+    margin-top: 4px;
+    padding: 8px;
+    border: 1px solid #ccc;
+    background: #fff;
+    min-width: 224px;
+}
+
+.cm-date-picker__header {
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    margin-bottom: 6px;
+}
+
+.cm-date-picker__nav {
+    width: 24px;
+    height: 24px;
+    padding: 0;
+    border: 0;
+    background: transparent;
+    cursor: pointer;
+    font: inherit;
+}
+
+.cm-date-picker__month-label {
+    font-weight: bold;
+}
+
+/* ── Weekday row ── */
+.cm-date-picker__weekdays {
+    display: grid;
+    grid-template-columns: repeat(7, 1fr);
+    gap: 2px;
+    margin-bottom: 4px;
+    font-size: 0.85em;
+    opacity: 0.7;
+    text-align: center;
+}
+
+/* ── Grid of date cells ── */
+.cm-date-picker__grid {
+    display: grid;
+    grid-template-columns: repeat(7, 1fr);
+    gap: 2px;
+}
+
+.cm-date-picker__cell {
+    display: inline-flex;
+    align-items: center;
+    justify-content: center;
+    width: 28px;
+    height: 28px;
+    padding: 0;
+    border: 0;
+    background: transparent;
+    cursor: pointer;
+    font: inherit;
+    text-align: center;
+}
+
+.cm-date-picker__cell:hover {
+    background: #e6e6e6;
+}
+
+.cm-date-picker__cell--today {
+    outline: 1px solid #1a73e8;
+}
+
+.cm-date-picker__cell--selected {
+    background: #1a73e8;
+    color: #fff;
+}
+
+.cm-date-picker__cell--selected:hover {
+    background: #1557b0;
+}
+
+.cm-date-picker__cell--out-of-month {
+    opacity: 0.4;
+}
+
+.cm-date-picker__cell--disabled {
+    cursor: not-allowed;
+    opacity: 0.3;
+}

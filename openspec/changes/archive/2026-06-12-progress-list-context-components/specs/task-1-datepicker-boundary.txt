@@ -1,0 +1,31 @@
+yarn run v1.22.22
+warning package.json: No license field
+$ jest tests/CDatePicker.test.tsx --runInBand -t out-of-range
+PASS tests/CDatePicker.test.tsx
+  CDatePicker
+    ✓ disables out-of-range cells and prevents click (121 ms)
+    ○ skipped exports CDatePicker and props from component barrel
+    ○ skipped has ARIA combobox attributes when closed
+    ○ skipped has ARIA combobox attributes when open
+    ○ skipped opens panel on input click, selects a date, closes panel
+    ○ skipped updates displayed date and selected cell when rerendered with new value
+    ○ skipped shows defaultValue when no value prop is given
+    ○ skipped clears value when allowClear is true and clear button is clicked
+    ○ skipped does not render clear button when allowClear is false
+    ○ skipped disabled prevents panel open and hides clear
+    ○ skipped navigates months without changing selected value
+    ○ skipped calls onOpenChange when panel opens and closes
+    ○ skipped marks today cell with --today class
+    ○ skipped marks out-of-month cells with --out-of-month class
+    ○ skipped renders with theme class from explicit theme prop
+    ○ skipped renders with theme class from Theme provider
+    ○ skipped clear button does not open panel (stops propagation)
+    ○ skipped renders aria-label and placeholder on input
+    ○ skipped clicking out-of-month cell does nothing
+
+Test Suites: 1 passed, 1 total
+Tests:       18 skipped, 1 passed, 19 total
+Snapshots:   0 total
+Time:        1.351 s
+Ran all test suites matching /tests\/CDatePicker.test.tsx/i with tests matching "out-of-range".
+Done in 4.55s.

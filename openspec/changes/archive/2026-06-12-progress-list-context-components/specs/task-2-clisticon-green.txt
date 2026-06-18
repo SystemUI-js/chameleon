@@ -1,0 +1,19 @@
+CListIcon Tests - Green Evidence
+=================================
+Date: 2026-06-05
+Command: yarn test -- CListIcon.test.tsx --runInBand
+Result: PASS
+Tests: 24 passed, 24 total
+Test Suites: 1 passed, 1 total
+
+Summary:
+- Package entry export verified
+- Button root with type="button" verified
+- Visual and label rendering into correct DOM regions verified
+- active, disabled, draggable modifiers verified
+- Click, double-click, context-menu event forwarding verified
+- Drag-start, drag, drag-end event forwarding verified
+- Theme prop and Theme provider integration verified
+- className merging order verified
+- aria-label forwarding verified
+- Type safety for arbitrary props verified

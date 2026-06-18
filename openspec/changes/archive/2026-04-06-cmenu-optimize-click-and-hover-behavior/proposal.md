@@ -13,9 +13,11 @@
 ## Capabilities
 
 ### New Capabilities
+
 - `cmenu-mixed-trigger-modes`: 定义 CMenu 根菜单与嵌套子菜单的默认触发行为及覆盖规则，支持 click 打开总菜单、hover 展开子菜单的混合交互。
 
 ### Modified Capabilities
+
 - 无
 
 ## Impact

@@ -7,6 +7,11 @@ import {
   gotoWin98DisabledCommonControls,
   gotoWin98GroupedButtons,
   readCommonControlsRadioValue,
+  readCommonControlsSelectNativeValue,
+  SELECT_LARGE_MENU_ITEM_TEST_ID,
+  SELECT_MENU_POPUP_TEST_ID,
+  SELECT_NATIVE_TEST_ID,
+  SELECT_TEST_ID,
 } from './common-controls.helpers';
 
 test('default fixture exposes baseline controls state', async ({ page }) => {
@@ -14,7 +19,25 @@ test('default fixture exposes baseline controls state', async ({ page }) => {
 
   await expect(page.getByTestId('button-demo-primary')).toBeVisible();
   await expect(readCommonControlsRadioValue(page)).resolves.toBe('apple');
-  await expect(page.getByTestId('select-demo-size')).toHaveValue('medium');
+  await expect(page.getByTestId(SELECT_TEST_ID)).toHaveText('Medium');
+  await expect(page.getByTestId(SELECT_NATIVE_TEST_ID)).toHaveValue('medium');
+});
+
+test('default fixture selects CSelect options through the visible CMenu trigger', async ({
+  page,
+}) => {
+  await gotoCommonControlsFixture(page, 'default');
+
+  const trigger = page.getByTestId(SELECT_TEST_ID);
+  await trigger.click();
+
+  const largeItem = page.getByTestId(SELECT_LARGE_MENU_ITEM_TEST_ID);
+  await expect(largeItem).toBeVisible();
+  await largeItem.click();
+
+  await expect(trigger).toHaveText('Large');
+  await expect(trigger).toHaveAttribute('data-select-value', 'large');
+  await expect(readCommonControlsSelectNativeValue(page)).resolves.toBe('large');
 });
 
 test('disabled fixture exposes disabled controls state', async ({ page }) => {
@@ -22,7 +45,22 @@ test('disabled fixture exposes disabled controls state', async ({ page }) => {
 
   await expect(page.getByTestId('button-demo-primary')).toBeDisabled();
   await expect(page.getByRole('radio', { name: 'Orange' })).toBeDisabled();
-  await expect(page.getByTestId('select-demo-size')).toBeDisabled();
+  await expect(page.getByTestId(SELECT_TEST_ID)).toBeDisabled();
+  await expect(page.getByTestId(SELECT_NATIVE_TEST_ID)).toBeDisabled();
+});
+
+test('disabled CSelect trigger does not open a CMenu popup or mutate value', async ({ page }) => {
+  await gotoCommonControlsFixture(page, 'disabled');
+
+  const trigger = page.getByTestId(SELECT_TEST_ID);
+  await expect(trigger).toHaveText('Medium');
+  await expect(page.getByTestId(SELECT_NATIVE_TEST_ID)).toHaveValue('medium');
+
+  await trigger.click({ force: true });
+
+  await expect(page.getByTestId(SELECT_MENU_POPUP_TEST_ID)).toHaveCount(0);
+  await expect(trigger).toHaveText('Medium');
+  await expect(readCommonControlsSelectNativeValue(page)).resolves.toBe('medium');
 });
 
 test('unknown fixture shows explicit error', async ({ page }) => {
@@ -273,7 +311,7 @@ test.describe('Win98 controls', () => {
 
   test.describe('Select', () => {
     test('has Win98 sunken border style', async ({ page }) => {
-      const select = page.getByTestId('select-demo-size');
+      const select = page.getByTestId(SELECT_TEST_ID);
 
       const borderTopColor = await select.evaluate((el) => {
         const styles = window.getComputedStyle(el);
@@ -289,7 +327,7 @@ test.describe('Win98 controls', () => {
     });
 
     test('has white background', async ({ page }) => {
-      const select = page.getByTestId('select-demo-size');
+      const select = page.getByTestId(SELECT_TEST_ID);
 
       const backgroundColor = await select.evaluate((el) => {
         const styles = window.getComputedStyle(el);
@@ -300,7 +338,7 @@ test.describe('Win98 controls', () => {
     });
 
     test('has dropdown arrow background', async ({ page }) => {
-      const select = page.getByTestId('select-demo-size');
+      const select = page.getByTestId(SELECT_TEST_ID);
 
       const backgroundImage = await select.evaluate((el) => {
         const styles = window.getComputedStyle(el);
@@ -311,7 +349,7 @@ test.describe('Win98 controls', () => {
     });
 
     test('has 21px height', async ({ page }) => {
-      const select = page.getByTestId('select-demo-size');
+      const select = page.getByTestId(SELECT_TEST_ID);
 
       const height = await select.evaluate((el) => {
         const styles = window.getComputedStyle(el);
@@ -322,7 +360,7 @@ test.describe('Win98 controls', () => {
     });
 
     test('has border-radius 0', async ({ page }) => {
-      const select = page.getByTestId('select-demo-size');
+      const select = page.getByTestId(SELECT_TEST_ID);
 
       const borderRadius = await select.evaluate((el) => {
         const styles = window.getComputedStyle(el);
@@ -333,7 +371,7 @@ test.describe('Win98 controls', () => {
     });
 
     test('has arrow reserve area', async ({ page }) => {
-      const select = page.getByTestId('select-demo-size');
+      const select = page.getByTestId(SELECT_TEST_ID);
 
       const paddingRight = await select.evaluate((el) => {
         const styles = window.getComputedStyle(el);
@@ -344,7 +382,7 @@ test.describe('Win98 controls', () => {
     });
 
     test('has focus inner dotted outline', async ({ page }) => {
-      const select = page.getByTestId('select-demo-size');
+      const select = page.getByTestId(SELECT_TEST_ID);
 
       await select.focus();
 
@@ -393,7 +431,7 @@ test.describe('Win98 disabled controls', () => {
   });
 
   test('Select is disabled with Win98 styling', async ({ page }) => {
-    const select = page.getByTestId('select-demo-size');
+    const select = page.getByTestId(SELECT_TEST_ID);
 
     await expect(select).toBeDisabled();
   });

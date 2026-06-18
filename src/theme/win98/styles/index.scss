@@ -1,4 +1,12 @@
+@import url(../../../styles/global.css);
+
 .cm-theme--win98 {
+    [class^='cm-'] {
+        &,
+        & > * {
+            box-sizing: border-box;
+        }
+    }
     font-size: 11px;
     -webkit-font-smoothing: none;
     font-family: 'Pixelated MS Sans Serif', Arial, sans-serif;
@@ -29,12 +37,41 @@
         padding: 3px;
     }
 
+    // Inactive windows keep the classic bevel but switch to the muted system title colors.
+    .cm-window-frame.cm-widget--inactive,
+    &.cm-window-frame.cm-widget--inactive {
+        background: #c0c0c0;
+        box-shadow:
+            inset -1px -1px #404040,
+            inset 1px 1px #dcdcdc,
+            inset -2px -2px #909090,
+            inset 2px 2px #ffffff;
+
+        .cm-window__title-bar {
+            background: linear-gradient(90deg, #808080, #b5b5b5);
+
+            .cm-window__title-bar__text {
+                color: #e0e0e0;
+                text-shadow: 1px 1px 0 #6f6f6f;
+            }
+        }
+    }
+
     .cm-window-preview-frame,
     &.cm-window-preview-frame {
-        border: 2px dashed navy;
+        border: 1px dashed rgb(126, 126, 126);
         background: transparent;
         pointer-events: none;
         box-sizing: border-box;
+    }
+
+    .cm-window--fullscreen,
+    &.cm-window--fullscreen {
+        position: fixed;
+        top: 0;
+        left: 0;
+        width: 100vw;
+        height: 100vh;
     }
 
     .cm-window__title-bar,
@@ -49,6 +86,7 @@
             color: #fff;
             letter-spacing: 0;
             margin-right: 24px;
+            font-weight: 700;
         }
     }
 
@@ -94,7 +132,18 @@
 
     .cm-window__body,
     &.cm-window__body {
-        margin: 8px;
+        flex: 1;
+    }
+
+    .cm-status-bar__item {
+        box-shadow:
+            inset -1px -1px #dfdfdf,
+            inset 1px 1px grey;
+        flex-grow: 1;
+        margin: 0;
+        padding: 2px 3px;
+        line-height: 1.5;
+        font-size: 11px;
     }
 
     .cm-common-controls-preview,
@@ -151,32 +200,6 @@
         gap: 8px;
     }
 
-    .cm-scroll-area,
-    &.cm-scroll-area {
-        padding: 6px;
-        background: #c0c0c0;
-        box-shadow:
-            inset -1px -1px #0a0a0a,
-            inset 1px 1px #ffffff,
-            inset -2px -2px #808080,
-            inset 2px 2px #dfdfdf;
-        scrollbar-color: #808080 #c0c0c0;
-    }
-
-    .cm-scroll-area:focus,
-    &.cm-scroll-area:focus,
-    .cm-scroll-area.cm-theme--win98:focus {
-        outline: 1px dotted #000000;
-        outline-offset: 2px;
-    }
-
-    .cm-scroll-area__content,
-    &.cm-scroll-area__content {
-        display: flex;
-        flex-direction: column;
-        gap: 6px;
-    }
-
     .cm-scroll-area__scrollbar-vertical,
     .cm-scroll-area__scrollbar-horizontal,
     .cm-scroll-area__scrollbar-corner {
@@ -207,6 +230,14 @@
             inset 2px 2px #dfdfdf;
     }
 
+    .cm-scroll-area__viewport.has-vertical {
+        padding-right: var(--cm-scroll-area-scrollbar-size);
+    }
+
+    .cm-scroll-area__viewport.has-horizontal {
+        padding-bottom: var(--cm-scroll-area-scrollbar-size);
+    }
+
     &.cm-button {
         min-width: 75px;
         min-height: 23px;
@@ -222,13 +253,6 @@
         box-sizing: border-box;
         color: transparent;
         text-shadow: 0 0 #222;
-        &--compact {
-            min-width: auto;
-            min-height: auto;
-            width: 16px;
-            height: 14px;
-            padding: 0;
-        }
     }
 
     &.cm-button:hover:not(:disabled) {
@@ -243,9 +267,31 @@
         text-shadow: 1px 1px #222;
     }
 
+    &.cm-button--no-active:active:not(:disabled) {
+        box-shadow:
+            inset -1px -1px #0a0a0a,
+            inset 1px 1px #fff,
+            inset -2px -2px grey,
+            inset 2px 2px #dfdfdf;
+        text-shadow: 0 0 #222;
+    }
+
+    &.cm-button--active:not(:disabled) {
+        box-shadow:
+            inset -1px -1px #fff,
+            inset 1px 1px #0a0a0a,
+            inset -2px -2px #dfdfdf,
+            inset 2px 2px grey;
+        text-shadow: 1px 1px #222;
+    }
+
     &.cm-button:focus {
         outline: 1px dotted #000;
         outline-offset: -4px;
+    }
+
+    &.cm-button--no-focus:focus {
+        outline: none;
     }
 
     &.cm-button--primary {
@@ -262,10 +308,54 @@
         background: #cccccc;
     }
 
+    &.cm-button--no-active.cm-button--ghost:active:not(:disabled) {
+        background: #d9d9d9;
+    }
+
+    &.cm-button--active.cm-button--ghost:not(:disabled) {
+        background: #cccccc;
+    }
+
     &.cm-button:disabled {
         color: #808080;
         text-shadow: 1px 1px 0 #ffffff;
         cursor: not-allowed;
+    }
+
+    // Size variants
+    &.cm-button--compact {
+        min-width: auto;
+        min-height: 16px;
+        padding: 0 6px;
+        font-size: 10px;
+    }
+
+    &.cm-button--small {
+        min-width: 50px;
+        min-height: 19px;
+        padding: 0 10px;
+        font-size: 11px;
+    }
+
+    &.cm-button--medium {
+        min-width: 75px;
+        min-height: 23px;
+        padding: 0 12px;
+        font-size: 12px;
+    }
+
+    &.cm-button--large {
+        min-width: 90px;
+        min-height: 28px;
+        padding: 0 16px;
+        font-size: 13px;
+    }
+
+    // Display type variants
+    &.cm-button--round {
+        min-width: auto;
+        aspect-ratio: 1;
+        padding: 0;
     }
 
     &.cm-button--grouped {
@@ -552,5 +642,629 @@
 
     .cm-menu__caret {
         margin-left: 8px;
+    }
+
+    // ──────────────────────────────────────────────
+    // CInput
+    // ──────────────────────────────────────────────
+    &.cm-input {
+        border: 2px solid;
+        border-color: #808080 #ffffff #ffffff #808080;
+        border-radius: 0;
+        background: #ffffff;
+        color: #000000;
+        font-size: 11px;
+        font-family: 'MS Sans Serif', Tahoma, sans-serif;
+    }
+
+    &.cm-input:focus {
+        outline: 1px dotted #000000;
+        outline-offset: -2px;
+    }
+
+    &.cm-input--disabled {
+        background: #c0c0c0;
+        color: #808080;
+    }
+
+    &.cm-input--readonly {
+        background: #c0c0c0;
+    }
+
+    // ──────────────────────────────────────────────
+    // CTooltip
+    // ──────────────────────────────────────────────
+    .cm-tooltip__popup,
+    .cm-tooltip__overlay {
+        background: #000000;
+        color: #ffffff;
+        border-radius: 0;
+        box-shadow: none;
+        font-size: 11px;
+        font-family: 'MS Sans Serif', Tahoma, sans-serif;
+    }
+
+    .cm-tooltip__arrow {
+        background: #000000;
+    }
+
+    .cm-tooltip__content {
+        color: #ffffff;
+        font-size: 11px;
+        font-family: 'MS Sans Serif', Tahoma, sans-serif;
+    }
+
+    .cm-tooltip--open .cm-tooltip__popup,
+    .cm-tooltip--open .cm-tooltip__overlay {
+        opacity: 1;
+        visibility: visible;
+    }
+
+    .cm-tooltip--disabled {
+        opacity: 0.5;
+        pointer-events: none;
+    }
+
+    // ──────────────────────────────────────────────
+    // CTimePicker
+    // ──────────────────────────────────────────────
+    .cm-time-picker__select,
+    .cm-time-picker__input {
+        border: 2px solid;
+        border-color: #808080 #ffffff #ffffff #808080;
+        border-radius: 0;
+        background: #ffffff;
+        color: #000000;
+        font-size: 11px;
+        font-family: 'MS Sans Serif', Tahoma, sans-serif;
+    }
+
+    .cm-time-picker__select:focus,
+    .cm-time-picker__input:focus {
+        outline: 1px dotted #000000;
+        outline-offset: -2px;
+    }
+
+    .cm-time-picker__select:disabled,
+    .cm-time-picker__input:disabled {
+        background: #c0c0c0;
+        color: #808080;
+    }
+
+    .cm-time-picker__panel {
+        border: 2px solid;
+        border-color: #808080 #ffffff #ffffff #808080;
+        background: #c0c0c0;
+        box-shadow: inset -1px -1px 0 #000000;
+    }
+
+    .cm-time-picker__column {
+        border-right: 1px solid #808080;
+    }
+
+    .cm-time-picker__column:last-child {
+        border-right: none;
+    }
+
+    .cm-time-picker__option {
+        padding: 4px 8px;
+        color: #000000;
+        font-size: 11px;
+        font-family: 'MS Sans Serif', Tahoma, sans-serif;
+        cursor: pointer;
+    }
+
+    .cm-time-picker__option:hover {
+        background: navy;
+        color: #ffffff;
+    }
+
+    .cm-time-picker__option--selected {
+        background: navy;
+        color: #ffffff;
+    }
+
+    .cm-time-picker__clear {
+        color: #000000;
+        cursor: pointer;
+    }
+
+    .cm-time-picker__separator {
+        color: #000000;
+    }
+
+    // ──────────────────────────────────────────────
+    // CTree
+    // ──────────────────────────────────────────────
+    .cm-tree__title {
+        color: #000000;
+        font-size: 11px;
+        font-family: 'MS Sans Serif', Tahoma, sans-serif;
+    }
+
+    .cm-tree__title:hover {
+        color: navy;
+    }
+
+    .cm-tree__node--selected > .cm-tree__node-content > .cm-tree__title,
+    .cm-tree__item--selected > .cm-tree__node > .cm-tree__title {
+        background: navy;
+        color: #ffffff;
+    }
+
+    .cm-tree__node--expanded > .cm-tree__node-content > .cm-tree__switcher {
+        color: navy;
+    }
+
+    .cm-tree__node--checked > .cm-tree__node-content > .cm-tree__title {
+        color: #000080;
+    }
+
+    .cm-tree__children {
+        padding-left: 16px;
+    }
+
+    .cm-tree__switcher {
+        color: #000000;
+    }
+
+    // ──────────────────────────────────────────────
+    // CTransfer
+    // ──────────────────────────────────────────────
+    .cm-transfer__panel {
+        border: 2px solid;
+        border-color: #808080 #ffffff #ffffff #808080;
+        background: #c0c0c0;
+        box-shadow: inset -1px -1px 0 #000000;
+    }
+
+    .cm-transfer__header {
+        border-bottom: 2px solid;
+        border-color: #808080 #ffffff #ffffff #808080;
+        background: silver;
+        color: #000000;
+        font-size: 11px;
+        font-weight: 700;
+    }
+
+    .cm-transfer__search {
+        border: 2px solid;
+        border-color: #808080 #ffffff #ffffff #808080;
+        background: #ffffff;
+        color: #000000;
+        font-size: 11px;
+        font-family: 'MS Sans Serif', Tahoma, sans-serif;
+    }
+
+    .cm-transfer__body {
+        padding: 4px;
+        background: #c0c0c0;
+    }
+
+    .cm-transfer__item--selected {
+        background: navy;
+        color: #ffffff;
+    }
+
+    .cm-transfer__item-button:hover {
+        background: navy;
+        color: #ffffff;
+    }
+
+    .cm-transfer__operation,
+    .cm-transfer__button {
+        border: none;
+        border-radius: 0;
+        background: silver;
+        box-shadow: inset -1px -1px #0a0a0a, inset 1px 1px #fff, inset -2px -2px grey, inset 2px 2px #dfdfdf;
+        color: #000000;
+        font-size: 11px;
+    }
+
+    .cm-transfer__operation:hover:not(:disabled),
+    .cm-transfer__button:hover:not(:disabled) {
+        background: #d6d6d6;
+    }
+
+    .cm-transfer__operation:disabled,
+    .cm-transfer__button:disabled {
+        color: #808080;
+        text-shadow: 1px 1px 0 #ffffff;
+    }
+
+    .cm-transfer--disabled {
+        opacity: 0.5;
+        pointer-events: none;
+    }
+
+    // ──────────────────────────────────────────────
+    // CTable
+    // ──────────────────────────────────────────────
+    .cm-table__scroll {
+        border: 2px solid;
+        border-color: #808080 #ffffff #ffffff #808080;
+        background: #ffffff;
+        box-shadow: inset -1px -1px 0 #000000;
+    }
+
+    .cm-table__header {
+        background: silver;
+    }
+
+    .cm-table__row--header {
+        background: silver;
+    }
+
+    .cm-table__cell--header {
+        color: #000000;
+        font-weight: 700;
+        font-size: 11px;
+    }
+
+    .cm-table__body {
+        background: #ffffff;
+    }
+
+    .cm-table__row {
+        border-bottom: 1px solid #c0c0c0;
+    }
+
+    .cm-table__sorter {
+        color: #000000;
+        cursor: pointer;
+    }
+
+    .cm-table__selection {
+        text-align: center;
+    }
+
+    .cm-table--empty {
+        color: #808080;
+    }
+
+    .cm-table__loading {
+        background: rgba(192, 192, 192, 0.85);
+        color: #000000;
+    }
+
+    .cm-table__pagination-button {
+        border: none;
+        border-radius: 0;
+        background: silver;
+        box-shadow: inset -1px -1px #0a0a0a, inset 1px 1px #fff, inset -2px -2px grey, inset 2px 2px #dfdfdf;
+        color: #000000;
+        font-size: 11px;
+    }
+
+    .cm-table__pagination-button:hover:not(:disabled) {
+        background: #d6d6d6;
+    }
+
+    .cm-table__pagination-button:disabled {
+        color: #808080;
+    }
+
+    .cm-table__pagination-status {
+        color: #000000;
+    }
+
+    // CListIcon
+    .cm-list-icon,
+    &.cm-list-icon {
+        padding: 4px;
+        color: #000000;
+        background: transparent;
+        border: 1px solid transparent;
+    }
+
+    .cm-list-icon--active,
+    &.cm-list-icon--active {
+        background: silver;
+        box-shadow:
+            inset -1px -1px #fff,
+            inset 1px 1px #0a0a0a,
+            inset -2px -2px #dfdfdf,
+            inset 2px 2px grey;
+    }
+
+    .cm-list-icon:focus-visible,
+    &.cm-list-icon:focus-visible {
+        outline: 1px dotted #000;
+        outline-offset: -2px;
+    }
+
+    .cm-list-icon--disabled,
+    &.cm-list-icon--disabled {
+        opacity: 0.5;
+        cursor: not-allowed;
+        color: #808080;
+        text-shadow: 1px 1px 0 #ffffff;
+    }
+
+    .cm-list-icon__label,
+    &.cm-list-icon__label {
+        font-size: 11px;
+        font-family: 'MS Sans Serif', Tahoma, sans-serif;
+        color: #000000;
+        text-align: center;
+    }
+
+    // CLoading
+    .cm-loading,
+    &.cm-loading {
+        color: #000000;
+    }
+
+    .cm-loading__label,
+    &.cm-loading__label {
+        font-size: 11px;
+        font-family: 'MS Sans Serif', Tahoma, sans-serif;
+        color: #000000;
+    }
+
+    .cm-loading--spinner .cm-loading__indicator,
+    &.cm-loading--spinner .cm-loading__indicator {
+        border-color: #000000;
+        border-top-color: transparent;
+    }
+
+    .cm-loading--dots .cm-loading__indicator::before,
+    .cm-loading--dots .cm-loading__indicator::after,
+    &.cm-loading--dots .cm-loading__indicator::before,
+    &.cm-loading--dots .cm-loading__indicator::after {
+        background: #000000;
+    }
+
+    .cm-loading--bar .cm-loading__indicator,
+    &.cm-loading--bar .cm-loading__indicator {
+        background: #c0c0c0;
+        border: 2px solid;
+        border-color: #808080 #ffffff #ffffff #808080;
+        border-radius: 0;
+        box-shadow: inset -1px -1px 0 #000000;
+        height: 16px;
+    }
+
+    .cm-loading--bar .cm-loading__fill,
+    &.cm-loading--bar .cm-loading__fill {
+        background: navy;
+        border-radius: 0;
+    }
+
+    // ──────────────────────────────────────────────
+    // CDatePicker — sunken white input, beveled gray panel, navy selection
+    // ──────────────────────────────────────────────
+    .cm-date-picker__input {
+        border: 2px solid;
+        border-color: #808080 #ffffff #ffffff #808080;
+        border-radius: 0;
+        background: #ffffff;
+        color: #000000;
+        font-size: 11px;
+        font-family: 'MS Sans Serif', Tahoma, sans-serif;
+    }
+
+    .cm-date-picker__input:focus {
+        outline: 1px dotted #000000;
+        outline-offset: -2px;
+    }
+
+    .cm-date-picker__input:disabled {
+        background: #c0c0c0;
+        color: #808080;
+    }
+
+    .cm-date-picker__clear {
+        color: #000000;
+        font-family: 'MS Sans Serif', Tahoma, sans-serif;
+    }
+
+    .cm-date-picker__panel {
+        border: 2px solid;
+        border-color: #808080 #ffffff #ffffff #808080;
+        border-radius: 0;
+        background: #c0c0c0;
+        box-shadow: inset -1px -1px 0 #000000;
+        font-family: 'MS Sans Serif', Tahoma, sans-serif;
+    }
+
+    .cm-date-picker__header {
+        padding-bottom: 4px;
+        border-bottom: 1px solid #808080;
+        margin-bottom: 6px;
+    }
+
+    // Nav arrows mimic mini beveled buttons.
+    .cm-date-picker__nav {
+        border: none;
+        border-radius: 0;
+        background: silver;
+        box-shadow:
+            inset -1px -1px #0a0a0a,
+            inset 1px 1px #ffffff,
+            inset -2px -2px grey,
+            inset 2px 2px #dfdfdf;
+        color: #000000;
+        font-size: 11px;
+        font-family: 'MS Sans Serif', Tahoma, sans-serif;
+    }
+
+    .cm-date-picker__nav:active:not(:disabled) {
+        box-shadow:
+            inset -1px -1px #ffffff,
+            inset 1px 1px #0a0a0a,
+            inset -2px -2px #dfdfdf,
+            inset 2px 2px grey;
+    }
+
+    .cm-date-picker__nav:focus {
+        outline: 1px dotted #000000;
+        outline-offset: -4px;
+    }
+
+    .cm-date-picker__month-label {
+        color: #000000;
+        font-size: 11px;
+        font-weight: 700;
+        font-family: 'MS Sans Serif', Tahoma, sans-serif;
+    }
+
+    .cm-date-picker__weekdays {
+        color: #000000;
+        font-size: 11px;
+        font-weight: 700;
+        opacity: 1;
+        font-family: 'MS Sans Serif', Tahoma, sans-serif;
+    }
+
+    .cm-date-picker__cell {
+        border: 1px solid transparent;
+        border-radius: 0;
+        background: transparent;
+        color: #000000;
+        font-size: 11px;
+        font-family: 'MS Sans Serif', Tahoma, sans-serif;
+    }
+
+    .cm-date-picker__cell:hover:not(:disabled) {
+        background: navy;
+        color: #ffffff;
+    }
+
+    // Today: dotted black ring evoking Win98 keyboard-focus marquee.
+    .cm-date-picker__cell--today {
+        outline: none;
+        border: 1px dotted #000000;
+    }
+
+    .cm-date-picker__cell--selected,
+    .cm-date-picker__cell--selected:hover:not(:disabled) {
+        background: navy;
+        color: #ffffff;
+    }
+
+    .cm-date-picker__cell--out-of-month {
+        color: #808080;
+        opacity: 1;
+    }
+
+    .cm-date-picker__cell--disabled {
+        color: #808080;
+        cursor: not-allowed;
+        text-shadow: 1px 1px 0 #ffffff;
+        opacity: 1;
+    }
+
+    // ──────────────────────────────────────────────
+    // CModal — classic 50% grey mask, native title bar, beveled close box
+    // ──────────────────────────────────────────────
+    .cm-modal__mask {
+        background: rgba(0, 0, 0, 0.4);
+    }
+
+    .cm-modal__content {
+        color: #000000;
+        font-family: 'MS Sans Serif', Tahoma, sans-serif;
+    }
+
+    .cm-modal__title {
+        color: #ffffff;
+        font-size: 11px;
+        font-weight: 700;
+        font-family: 'MS Sans Serif', Tahoma, sans-serif;
+    }
+
+    // Close button: tiny beveled gray square with the classic × glyph.
+    .cm-modal__close-button {
+        width: 16px;
+        height: 14px;
+        padding: 0;
+        border: none;
+        border-radius: 0;
+        background: silver;
+        box-shadow:
+            inset -1px -1px #0a0a0a,
+            inset 1px 1px #ffffff,
+            inset -2px -2px grey,
+            inset 2px 2px #dfdfdf;
+        color: #000000;
+        font-size: 9px;
+        font-weight: 700;
+        font-family: 'MS Sans Serif', Tahoma, sans-serif;
+        line-height: 1;
+    }
+
+    .cm-modal__close-button:active {
+        box-shadow:
+            inset -1px -1px #ffffff,
+            inset 1px 1px #0a0a0a,
+            inset -2px -2px #dfdfdf,
+            inset 2px 2px grey;
+    }
+
+    .cm-modal__close-button:focus {
+        outline: 1px dotted #000000;
+        outline-offset: -4px;
+    }
+
+    // ──────────────────────────────────────────────
+    // CConfirm — gray bottom action bar with beveled OK/Cancel buttons
+    // ──────────────────────────────────────────────
+    .cm-confirm__body {
+        background: #c0c0c0;
+        color: #000000;
+        font-size: 11px;
+        font-family: 'MS Sans Serif', Tahoma, sans-serif;
+        line-height: 1.4;
+    }
+
+    .cm-confirm__actions {
+        background: #c0c0c0;
+        border-top: 1px solid #808080;
+        box-shadow: inset 0 1px 0 #ffffff;
+    }
+
+    // OK + Cancel share the classic Win98 button bevel.
+    .cm-confirm__cancel,
+    .cm-confirm__ok {
+        min-width: 75px;
+        min-height: 23px;
+        padding: 0 12px;
+        border: none;
+        border-radius: 0;
+        background: silver;
+        box-shadow:
+            inset -1px -1px #0a0a0a,
+            inset 1px 1px #ffffff,
+            inset -2px -2px grey,
+            inset 2px 2px #dfdfdf;
+        color: #000000;
+        font-size: 11px;
+        font-family: 'MS Sans Serif', Tahoma, sans-serif;
+    }
+
+    .cm-confirm__cancel:active,
+    .cm-confirm__ok:active {
+        box-shadow:
+            inset -1px -1px #ffffff,
+            inset 1px 1px #0a0a0a,
+            inset -2px -2px #dfdfdf,
+            inset 2px 2px grey;
+    }
+
+    .cm-confirm__cancel:focus,
+    .cm-confirm__ok:focus {
+        outline: 1px dotted #000000;
+        outline-offset: -4px;
+    }
+
+    // Primary (OK) gets a darker default-button-style border accent.
+    .cm-confirm__ok {
+        box-shadow:
+            inset -1px -1px #0a0a0a,
+            inset 1px 1px #ffffff,
+            inset -2px -2px grey,
+            inset 2px 2px #dfdfdf,
+            inset 0 0 0 1px #000000;
     }
 }
